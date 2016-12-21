@@ -1,5 +1,5 @@
-var Graphics = require('./graphics');
-var Entity   = require('./entity');
+var Graphics        = require('./graphics');
+var HumanController = require('./controller/human');
 
 // // // // Game loop // // // //
 
@@ -26,40 +26,18 @@ function start() {
     step();
 }
 
+var controller;
+
 window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
     Graphics.init();
-
-    var s = Entity.create('Star', {
-        x      : 20,
-        y      : 50,
-        radius : 300
-    });
-
-    var f = Entity.create('Fighter', {
-        x : 20,
-        y : 50
-    });
-
-    shot = Entity.create('Freighter', {
-        x : 30,
-        y : 50
-    });
-
-    Graphics.addChild(s);
-    Graphics.addChild(f);
-    Graphics.addChild(shot);
-
+    controller = HumanController;
+    controller.init();
     start();
 });
 
 // // // // Game logic // // // //
-// todo: modularize
 
-var shot;
-
-function calculate(){
-    shot.x += 0.5;
-    shot.y += 0.5;
-
-    Graphics.centerOn(shot);
+function calculate() {
+    controller.process();
+    Graphics.centerOn(controller.getFocalPoint());
 }

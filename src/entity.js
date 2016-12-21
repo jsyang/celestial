@@ -1,5 +1,6 @@
 var Geometry = require('./geometry');
 
+var Planet     = require('./geometry/Planet.json');
 var Star       = require('./geometry/Star.json');
 var ShotNormal = require('./geometry/ShotNormal.json');
 var Fighter    = require('./geometry/Fighter.json');
@@ -20,6 +21,8 @@ function getGeometry(geometryDef, options) {
 function create(type, options) {
     if (type === 'Star') {
         return getGeometry(Star, options);
+    } else if (type === 'Planet') {
+        return getGeometry(Planet, options);
     } else if (type === 'ShotNormal') {
         return getGeometry(ShotNormal, options);
     } else if (type === 'Fighter') {
@@ -34,7 +37,14 @@ function create(type, options) {
         var turretRear  = getGeometry(Freighter.turretRear, origin);
         var flag        = getGeometry(Freighter.flag, origin);
 
-        freighter.addChild(cargoPodL, cargoPodR, turretFront, turretRear, flag);
+        freighter.graphics
+            .addChild(
+                cargoPodL.graphics,
+                cargoPodR.graphics,
+                turretFront.graphics,
+                turretRear.graphics,
+                flag.graphics
+            );
 
         return freighter;
     }

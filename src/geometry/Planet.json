@@ -1,0 +1,8 @@
+{
+  "type": "circle",
+  "lineStyle": {
+    "width": 1,
+    "color": 65280,
+    "alpha": 1
+  }
+}

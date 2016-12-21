@@ -34,21 +34,27 @@ function onResize() {
     updateDimensions();
 }
 
-function addChild(child) {
-    stage.addChild(child);
+function addChild() {
+    stage.addChild.apply(stage, arguments);
 }
 
-function removeChild(child) {
-    stage.removeChild(child);
+function removeChild() {
+    stage.removeChild.apply(stage, arguments);
 }
 
 function render() {
     renderer.render(stage);
 }
 
+// Game specific methods
+
 function centerOn(point) {
     stage.x = width2 - point.x;
     stage.y = height2 - point.y;
+}
+
+function starField() {
+
 }
 
 module.exports = {

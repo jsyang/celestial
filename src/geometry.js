@@ -1,4 +1,39 @@
 var PIXI = require('pixi.js');
+var SAT  = require('sat');
+
+function v(x, y) {
+    return new SAT.Vector(x, y);
+}
+
+function createMutableGeoInterface(graphics, collision) {
+    return {
+        set x(x) {
+            this.graphics.x      = x;
+            this.collision.pos.x = x;
+        },
+        set y(y) {
+            this.graphics.y      = y;
+            this.collision.pos.y = y;
+        },
+        set rotation(rotation) {
+            this.graphics.rotation = rotation;
+            this.collision.setAngle(rotation);
+        },
+
+        get x() {
+            return this.graphics.x;
+        },
+        get y() {
+            return this.graphics.y;
+        },
+        get rotation() {
+            return this.graphics.rotation;
+        },
+
+        graphics  : graphics,
+        collision : collision
+    };
+}
 
 function createCircle(options) {
     var g = new PIXI.Graphics();
@@ -10,7 +45,7 @@ function createCircle(options) {
     if (options.fill) {
         g.beginFill(options.fill.color, options.fill.alpha);
     } else {
-        g.beginFill(0, 1);
+        g.beginFill(0, 0);
     }
 
     g.drawCircle(0, 0, options.radius);
@@ -18,7 +53,10 @@ function createCircle(options) {
 
     g.x = options.x;
     g.y = options.y;
-    return g;
+
+    return createMutableGeoInterface(
+        g, new SAT.Circle(v(g.x, g.y), options.radius)
+    );
 }
 
 function createRectangle(options) {
@@ -39,7 +77,10 @@ function createRectangle(options) {
 
     g.x = options.x;
     g.y = options.y;
-    return g;
+
+    return createMutableGeoInterface(
+        g, new SAT.Box(v(g.x, g.y), options.w, options.h)
+    );
 }
 
 function createLine(options) {
@@ -74,7 +115,20 @@ function createPolygon(options) {
     g.endFill();
     g.x = options.x;
     g.y = options.y;
-    return g;
+
+    var polygonSAT = [];
+    if(options.collisionPath) {
+        for (var i = 0; i < options.collisionPath.length; i += 2) {
+            polygonSAT.push(v(
+                options.collisionPath[i],       // x
+                options.collisionPath[i + 1]    // y
+            ));
+        }
+    }
+
+    return createMutableGeoInterface(
+        g, new SAT.Polygon(v(g.x, g.y), polygonSAT)
+    );
 }
 
 function Geometry(options) {

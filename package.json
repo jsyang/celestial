@@ -18,6 +18,7 @@
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "load-grunt-config": "^0.19.2",
-    "pixi.js": "^4.3.0"
+    "pixi.js": "^4.3.0",
+    "sat": "^0.6.0"
   }
 }

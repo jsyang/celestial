@@ -3,7 +3,7 @@ module.exports = {
         livereload: false
     },
     js: {
-        files: ["src/**/*.js"],
+        files: ["src/**/*"],
         tasks: "browserify,uglify".split(',')
     }
 };
