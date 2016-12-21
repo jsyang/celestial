@@ -1,0 +1,9 @@
+{
+  "type": "rectangle",
+  "fill": {
+    "color": 16777215,
+    "alpha": 1
+  },
+  "w": 2,
+  "h": 2
+}

@@ -60,4 +60,6 @@ var shot;
 function calculate(){
     shot.x += 0.5;
     shot.y += 0.5;
+
+    Graphics.centerOn(shot);
 }

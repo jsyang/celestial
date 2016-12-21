@@ -2,6 +2,7 @@
  * Graphics interface
  */
 
+// todo: pixi is a large inclusion, need to strip it of unused features via custom build
 var PIXI = require('pixi.js');
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
@@ -9,8 +10,8 @@ PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 var stage;
 var renderer;
 
-var width;
-var height;
+var width, width2;
+var height, height2;
 
 function init() {
     stage    = new PIXI.Container();
@@ -22,8 +23,10 @@ function init() {
 }
 
 function updateDimensions() {
-    width  = window.innerWidth;
-    height = window.innerHeight;
+    width   = window.innerWidth;
+    height  = window.innerHeight;
+    width2  = width >> 1;
+    height2 = height >> 1;
     renderer.resize(width, height);
 }
 
@@ -43,9 +46,15 @@ function render() {
     renderer.render(stage);
 }
 
+function centerOn(point) {
+    stage.x = width2 - point.x;
+    stage.y = height2 - point.y;
+}
+
 module.exports = {
     init        : init,
     addChild    : addChild,
     removeChild : removeChild,
-    render      : render
+    render      : render,
+    centerOn    : centerOn
 };

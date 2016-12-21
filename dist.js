@@ -36323,32 +36323,16 @@ module.exports = {
 },{}],178:[function(require,module,exports){
 var Geometry = require('./geometry');
 
-var GEOMETRY_DEFAULTS = {
-    Star : {
-        type      : 'circle',
-        lineStyle : {
-            width : 1,
-            color : 0xffff00,
-            alpha : 1
-        }
-    },
+var Star       = require('./geometry/Star.json');
+var ShotNormal = require('./geometry/ShotNormal.json');
+var Fighter    = require('./geometry/Fighter.json');
+var Freighter  = require('./geometry/Freighter.json');
 
-    Shot0 : {
-        type : 'rectangle',
-        fill : { color : 0xffffff, alpha : 1 },
-        w    : 2,
-        h    : 2
-    },
-
-    Fighter   : require('./geometry/Fighter.json'),
-    Freighter : require('./geometry/Freighter.json')
-};
-
-function create(type, options) {
-    var geometryOptions = JSON.parse(JSON.stringify(GEOMETRY_DEFAULTS[type]));
+function getGeometry(geometryDef, options) {
+    var geometryOptions = JSON.parse(JSON.stringify(geometryDef));
 
     for (var k in options) {
-        if(options.hasOwnProperty(k)) {
+        if (options.hasOwnProperty(k)) {
             geometryOptions[k] = options[k];
         }
     }
@@ -36356,10 +36340,33 @@ function create(type, options) {
     return Geometry(geometryOptions);
 }
 
+function create(type, options) {
+    if (type === 'Star') {
+        return getGeometry(Star, options);
+    } else if (type === 'ShotNormal') {
+        return getGeometry(ShotNormal, options);
+    } else if (type === 'Fighter') {
+        return getGeometry(Fighter, options);
+    } else if (type === 'Freighter') {
+        var origin = { x : 0, y : 0 };
+
+        var freighter   = getGeometry(Freighter.body, options);
+        var cargoPodL   = getGeometry(Freighter.cargopodL, origin);
+        var cargoPodR   = getGeometry(Freighter.cargopodR, origin);
+        var turretFront = getGeometry(Freighter.turretFront, origin);
+        var turretRear  = getGeometry(Freighter.turretRear, origin);
+        var flag        = getGeometry(Freighter.flag, origin);
+
+        freighter.addChild(cargoPodL, cargoPodR, turretFront, turretRear, flag);
+
+        return freighter;
+    }
+}
+
 module.exports = {
     create : create
 };
-},{"./geometry":179,"./geometry/Fighter.json":180,"./geometry/Freighter.json":181}],179:[function(require,module,exports){
+},{"./geometry":179,"./geometry/Fighter.json":180,"./geometry/Freighter.json":181,"./geometry/ShotNormal.json":182,"./geometry/Star.json":183}],179:[function(require,module,exports){
 var PIXI = require('pixi.js');
 
 function createCircle(options) {
@@ -36494,37 +36501,151 @@ module.exports={
 }
 },{}],181:[function(require,module,exports){
 module.exports={
-  "type": "polygon",
-  "lineStyle": {
-    "width": 1,
-    "color": 16777215,
-    "alpha": 1
+  "body": {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 16777215,
+      "alpha": 1
+    },
+    "path": [
+      -26,
+      -2,
+      -26,
+      -8,
+      -38,
+      -8,
+      -38,
+      2,
+      -44,
+      4,
+      -44,
+      -4,
+      -38,
+      -2,
+      -38,
+      8,
+      -26,
+      8,
+      -26,
+      -2,
+      24,
+      -2,
+      26,
+      -10,
+      44,
+      0,
+      26,
+      10,
+      24,
+      2,
+      -26,
+      2
+    ]
   },
-  "path": [
-    -26,-2,
-    -26,-8,
-    -38,-8,
-    -38,2,
-    -44,4,
-    -44,-4,
-    -38,-2,
-    -38,8,
-    -26,8,
-    -26,-2,
-    24,-2,
-    26,-10,
-    44,0,
-    26,10,
-    24,2,
-    -26,2
-  ]
+  "cargopodL": {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 16777215,
+      "alpha": 1
+    },
+    "path": [
+      -24,
+      -2,
+      -24,
+      -12,
+      22,
+      -12,
+      22,
+      -2
+    ]
+  },
+  "cargopodR": {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 16777215,
+      "alpha": 1
+    },
+    "path": [
+      -24,
+      2,
+      -24,
+      12,
+      22,
+      12,
+      22,
+      2
+    ]
+  },
+  "flag" : {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 2556,
+      "alpha": 1
+    },
+    "path":[
+      34,0,
+      42,0
+    ]
+  },
+  "turretRear" : {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 255,
+      "alpha": 1
+    },
+    "path":[
+      -34,0,
+      -30,-3,
+      -30,3,
+      -34,0
+    ]
+  },
+  "turretFront" : {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 255,
+      "alpha": 1
+    },
+    "path":[
+      28,-3,
+      32,0,
+      28,3,
+      28,-2
+    ]
+  }
 }
 
 },{}],182:[function(require,module,exports){
+module.exports={
+  "type": "rectangle",
+  "fill": {
+    "color": 16777215,
+    "alpha": 1
+  },
+  "w": 2,
+  "h": 2
+}
+},{}],183:[function(require,module,exports){
+module.exports={
+  "type": "circle",
+  "lineStyle": {
+    "width": 1,
+    "color": 16776960,
+    "alpha": 1
+  }
+}
+},{}],184:[function(require,module,exports){
 /**
  * Graphics interface
  */
 
+// todo: pixi is a large inclusion, need to strip it of unused features via custom build
 var PIXI = require('pixi.js');
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
@@ -36532,8 +36653,8 @@ PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 var stage;
 var renderer;
 
-var width;
-var height;
+var width, width2;
+var height, height2;
 
 function init() {
     stage    = new PIXI.Container();
@@ -36545,8 +36666,10 @@ function init() {
 }
 
 function updateDimensions() {
-    width  = window.innerWidth;
-    height = window.innerHeight;
+    width   = window.innerWidth;
+    height  = window.innerHeight;
+    width2  = width >> 1;
+    height2 = height >> 1;
     renderer.resize(width, height);
 }
 
@@ -36566,13 +36689,19 @@ function render() {
     renderer.render(stage);
 }
 
+function centerOn(point) {
+    stage.x = width2 - point.x;
+    stage.y = height2 - point.y;
+}
+
 module.exports = {
     init        : init,
     addChild    : addChild,
     removeChild : removeChild,
-    render      : render
+    render      : render,
+    centerOn    : centerOn
 };
-},{"pixi.js":131}],183:[function(require,module,exports){
+},{"pixi.js":131}],185:[function(require,module,exports){
 var Graphics = require('./graphics');
 var Entity   = require('./entity');
 
@@ -36635,6 +36764,8 @@ var shot;
 function calculate(){
     shot.x += 0.5;
     shot.y += 0.5;
+
+    Graphics.centerOn(shot);
 }
 
-},{"./entity":178,"./graphics":182}]},{},[183]);
+},{"./entity":178,"./graphics":184}]},{},[185]);
