@@ -17,7 +17,7 @@ function step() {
     update();
 
     if (elapsed > FPS_INTERVAL) {
-        Graphics.centerOn(controller.getFocalPoint());
+        Graphics.centerOn(HumanController.getFocalPoint());
         Graphics.render();
         then = now - (elapsed % FPS_INTERVAL);
     }
