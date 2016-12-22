@@ -30,14 +30,12 @@ function start() {
     step();
 }
 
-var controller;
-
 window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
     Graphics.init();
-    controller = HumanController;
-    controller.init();
 
+    HumanController.init();
     PlanetController.init();
+
     Assets.init(start);
 });
 
@@ -45,6 +43,5 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
 
 function update() {
     PlanetController.process();
-    controller.process();
-    // todo: process collisions
+    HumanController.process();
 }
