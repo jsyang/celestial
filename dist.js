@@ -18333,8 +18333,6 @@ function init() {
 
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
-
-    window.f = freighter;
 }
 
 var keyDown = {};
@@ -18377,7 +18375,7 @@ function process() {
     }
 
     if (keyDown.down_arrow) {
-
+        // shoot
     }
 
     if (keyDown.up_arrow) {
@@ -18389,10 +18387,12 @@ function process() {
     }
 
     if (SAT.testPolygonCircle(freighter.collision, star.collision)) {
-        freighter.graphics.alpha = 0.1;
+        freighter.graphics.alpha = 0.4;
     } else {
-        freighter.graphics.alpha = 0.9;
+        freighter.graphics.alpha = 0.8;
     }
+
+
 }
 
 function getFocalPoint() {
@@ -18456,7 +18456,6 @@ function process() {
     childRotation += dChildRotation;
     var px = Math.cos(childRotation) * childDistance + attractorX;
     var py = Math.sin(childRotation) * childDistance + attractorY;
-
     updatePosition(px, py);
 
     // todo: convert sample orbit rotation to more generalized case
@@ -19523,7 +19522,7 @@ var PlanetController = require('./controller/planet');
 
 var raf;
 var then;
-var FPS          = 90;
+var FPS          = 60;
 var FPS_INTERVAL = 1000 / FPS;
 
 function step() {

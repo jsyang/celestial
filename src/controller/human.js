@@ -37,8 +37,6 @@ function init() {
 
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
-
-    window.f = freighter;
 }
 
 var keyDown = {};
@@ -81,7 +79,7 @@ function process() {
     }
 
     if (keyDown.down_arrow) {
-
+        // shoot
     }
 
     if (keyDown.up_arrow) {
@@ -93,10 +91,12 @@ function process() {
     }
 
     if (SAT.testPolygonCircle(freighter.collision, star.collision)) {
-        freighter.graphics.alpha = 0.1;
+        freighter.graphics.alpha = 0.4;
     } else {
-        freighter.graphics.alpha = 0.9;
+        freighter.graphics.alpha = 0.8;
     }
+
+
 }
 
 function getFocalPoint() {

@@ -49,7 +49,6 @@ function process() {
     childRotation += dChildRotation;
     var px = Math.cos(childRotation) * childDistance + attractorX;
     var py = Math.sin(childRotation) * childDistance + attractorY;
-
     updatePosition(px, py);
 
     // todo: convert sample orbit rotation to more generalized case

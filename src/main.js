@@ -7,7 +7,7 @@ var PlanetController = require('./controller/planet');
 
 var raf;
 var then;
-var FPS          = 90;
+var FPS          = 60;
 var FPS_INTERVAL = 1000 / FPS;
 
 function step() {
