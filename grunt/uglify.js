@@ -3,6 +3,6 @@ module.exports = {
         options : {
             sourceMap : false
         },
-        files   : { 'dist.min.js' : ['dist.js'] }
+        files   : { 'dist.js' : ['dist.js'] }
     }
 };

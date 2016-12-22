@@ -3,3 +3,7 @@ default:
   - compress
   - connect
   - watch
+
+release:
+  - browserify
+  - uglify

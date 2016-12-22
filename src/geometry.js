@@ -1,4 +1,4 @@
-var PIXI = require('pixi.js');
+var PIXI = require('./custom-lib/pixi.min.js');
 var SAT  = require('sat');
 
 function v(x, y) {

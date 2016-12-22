@@ -3,7 +3,7 @@
  */
 
 // todo: pixi is a large inclusion, need to strip it of unused features via custom build
-var PIXI = require('pixi.js');
+var PIXI = require('./custom-lib/pixi.min.js');
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
