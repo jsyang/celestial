@@ -54443,20 +54443,25 @@ var freighter;
 var star;
 var fighter;
 var planet;
+var pbase;
 
 function init() {
     planet = Entity.create('Planet', {
         x        : -200,
         y        : 300,
-        rotation : 0,
-        radius   : 125
+        rotation : 0
+    });
+
+    pbase = Entity.create('PBase', {
+        x        : -200,
+        y        : 300,
+        rotation : 0
     });
 
     star = Entity.create('Star', {
         x        : 400,
         y        : 50,
-        rotation : 0,
-        radius   : 300
+        rotation : 0
     });
 
     fighter = Entity.create('Fighter', {
@@ -54475,7 +54480,8 @@ function init() {
         star.graphics,
         fighter.graphics,
         freighter.graphics,
-        planet.graphics
+        planet.graphics,
+        pbase.graphics
     );
 
     window.addEventListener('keydown', onKeyDown);
@@ -54548,10 +54554,11 @@ module.exports = {
     process       : process,
     getFocalPoint : getFocalPoint
 };
-},{"../audio":283,"../entity":285,"../graphics":292,"sat":273}],285:[function(require,module,exports){
+},{"../audio":283,"../entity":285,"../graphics":293,"sat":273}],285:[function(require,module,exports){
 var Geometry = require('./geometry');
 
 var Planet     = require('./geometry/Planet.json');
+var PBase      = require('./geometry/PBase.json');
 var Star       = require('./geometry/Star.json');
 var ShotNormal = require('./geometry/ShotNormal.json');
 var Fighter    = require('./geometry/Fighter.json');
@@ -54570,23 +54577,40 @@ function getGeometry(geometryDef, options) {
 }
 
 function create(type, options) {
+    var origin = { x : 0, y : 0 };
+
     if (type === 'Star') {
         return getGeometry(Star, options);
     } else if (type === 'Planet') {
         return getGeometry(Planet, options);
+    } else if (type === 'PBase') {
+        var pbase   = getGeometry(PBase.body, options);
+        var turret1 = getGeometry(PBase.turret1, origin);
+        var turret2 = getGeometry(PBase.turret2, origin);
+        var turret3 = getGeometry(PBase.turret3, origin);
+        var turret4 = getGeometry(PBase.turret4, origin);
+
+        pbase.graphics.addChild(
+            turret1.graphics,
+            turret2.graphics,
+            turret3.graphics,
+            turret4.graphics
+        );
+
+        return pbase;
+
     } else if (type === 'ShotNormal') {
         return getGeometry(ShotNormal, options);
     } else if (type === 'Fighter') {
         return getGeometry(Fighter, options);
     } else if (type === 'Freighter') {
-        var origin = { x : 0, y : 0 };
-
         var freighter   = getGeometry(Freighter.body, options);
         var cargoPodL   = getGeometry(Freighter.cargopodL, origin);
         var cargoPodR   = getGeometry(Freighter.cargopodR, origin);
         var turretFront = getGeometry(Freighter.turretFront, origin);
         var turretRear  = getGeometry(Freighter.turretRear, origin);
         var flag        = getGeometry(Freighter.flag, origin);
+        var flame       = getGeometry(Freighter.flame, origin);
 
         freighter.graphics
             .addChild(
@@ -54594,6 +54618,7 @@ function create(type, options) {
                 cargoPodR.graphics,
                 turretFront.graphics,
                 turretRear.graphics,
+                flame.graphics,
                 flag.graphics
             );
 
@@ -54604,7 +54629,7 @@ function create(type, options) {
 module.exports = {
     create : create
 };
-},{"./geometry":286,"./geometry/Fighter.json":287,"./geometry/Freighter.json":288,"./geometry/Planet.json":289,"./geometry/ShotNormal.json":290,"./geometry/Star.json":291}],286:[function(require,module,exports){
+},{"./geometry":286,"./geometry/Fighter.json":287,"./geometry/Freighter.json":288,"./geometry/PBase.json":289,"./geometry/Planet.json":290,"./geometry/ShotNormal.json":291,"./geometry/Star.json":292}],286:[function(require,module,exports){
 var PIXI = require('pixi.js');
 var SAT  = require('sat');
 
@@ -54867,8 +54892,8 @@ module.exports={
   "flag" : {
     "type": "polygon",
     "lineStyle": {
-      "width": 1,
-      "color": 2556,
+      "width": 2,
+      "color": 16711680,
       "alpha": 1
     },
     "path":[
@@ -54880,7 +54905,7 @@ module.exports={
     "type": "polygon",
     "lineStyle": {
       "width": 1,
-      "color": 255,
+      "color": 65535,
       "alpha": 1
     },
     "path":[
@@ -54894,7 +54919,7 @@ module.exports={
     "type": "polygon",
     "lineStyle": {
       "width": 1,
-      "color": 255,
+      "color": 65535,
       "alpha": 1
     },
     "path":[
@@ -54903,19 +54928,107 @@ module.exports={
       28,3,
       28,-2
     ]
+  },
+  "flame" :{
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 65535,
+      "alpha": 1
+    },
+    "path":[
+      -44,-2,
+      -50,0,
+      -44,2
+    ]
   }
 }
 
 },{}],289:[function(require,module,exports){
 module.exports={
+  "body": {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 255,
+      "alpha": 1
+    },
+    "path": [
+      -20,20,
+      -20,-20,
+      20,-20,
+      20,20,
+      -20,20
+    ]
+  },
+  "turret1": {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 65280,
+      "alpha": 1
+    },
+    "path": [
+      65,-60,
+      65,-65,
+      60,-65,
+      65,-60
+    ]
+  },
+  "turret2": {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 65280,
+      "alpha": 1
+    },
+    "path": [
+      -65,-60,
+      -65,-65,
+      -60,-65,
+      -65,-60
+    ]
+  },
+  "turret3": {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 65280,
+      "alpha": 1
+    },
+    "path": [
+      65,60,
+      65,65,
+      60,65,
+      65,60
+    ]
+  },
+  "turret4": {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 65280,
+      "alpha": 1
+    },
+    "path": [
+      -65,60,
+      -65,65,
+      -60,65,
+      -65,60
+    ]
+  }
+}
+},{}],290:[function(require,module,exports){
+module.exports={
   "type": "circle",
+  "radius": 100,
   "lineStyle": {
     "width": 1,
     "color": 65280,
     "alpha": 1
   }
 }
-},{}],290:[function(require,module,exports){
+},{}],291:[function(require,module,exports){
 module.exports={
   "type": "rectangle",
   "fill": {
@@ -54925,16 +55038,17 @@ module.exports={
   "w": 2,
   "h": 2
 }
-},{}],291:[function(require,module,exports){
+},{}],292:[function(require,module,exports){
 module.exports={
   "type": "circle",
+  "radius": 300,
   "lineStyle": {
     "width": 1,
     "color": 16776960,
     "alpha": 1
   }
 }
-},{}],292:[function(require,module,exports){
+},{}],293:[function(require,module,exports){
 /**
  * Graphics interface
  */
@@ -55001,7 +55115,7 @@ module.exports = {
     render      : render,
     centerOn    : centerOn
 };
-},{"pixi.js":216}],293:[function(require,module,exports){
+},{"pixi.js":216}],294:[function(require,module,exports){
 var Assets          = require('./assets');
 var Graphics        = require('./graphics');
 var HumanController = require('./controller/human');
@@ -55048,4 +55162,4 @@ function calculate() {
     Graphics.centerOn(controller.getFocalPoint());
 }
 
-},{"./assets":282,"./controller/human":284,"./graphics":292}]},{},[293]);
+},{"./assets":282,"./controller/human":284,"./graphics":293}]},{},[294]);

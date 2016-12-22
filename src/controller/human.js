@@ -7,20 +7,25 @@ var freighter;
 var star;
 var fighter;
 var planet;
+var pbase;
 
 function init() {
     planet = Entity.create('Planet', {
         x        : -200,
         y        : 300,
-        rotation : 0,
-        radius   : 125
+        rotation : 0
+    });
+
+    pbase = Entity.create('PBase', {
+        x        : -200,
+        y        : 300,
+        rotation : 0
     });
 
     star = Entity.create('Star', {
         x        : 400,
         y        : 50,
-        rotation : 0,
-        radius   : 300
+        rotation : 0
     });
 
     fighter = Entity.create('Fighter', {
@@ -39,7 +44,8 @@ function init() {
         star.graphics,
         fighter.graphics,
         freighter.graphics,
-        planet.graphics
+        planet.graphics,
+        pbase.graphics
     );
 
     window.addEventListener('keydown', onKeyDown);

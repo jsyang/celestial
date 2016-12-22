@@ -1,0 +1,73 @@
+{
+  "body": {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 255,
+      "alpha": 1
+    },
+    "path": [
+      -20,20,
+      -20,-20,
+      20,-20,
+      20,20,
+      -20,20
+    ]
+  },
+  "turret1": {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 65280,
+      "alpha": 1
+    },
+    "path": [
+      65,-60,
+      65,-65,
+      60,-65,
+      65,-60
+    ]
+  },
+  "turret2": {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 65280,
+      "alpha": 1
+    },
+    "path": [
+      -65,-60,
+      -65,-65,
+      -60,-65,
+      -65,-60
+    ]
+  },
+  "turret3": {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 65280,
+      "alpha": 1
+    },
+    "path": [
+      65,60,
+      65,65,
+      60,65,
+      65,60
+    ]
+  },
+  "turret4": {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 65280,
+      "alpha": 1
+    },
+    "path": [
+      -65,60,
+      -65,65,
+      -60,65,
+      -65,60
+    ]
+  }
+}
