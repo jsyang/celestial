@@ -1,0 +1,19 @@
+{
+  "type": "polygon",
+  "_name": "Planetary Communications Center",
+  "lineStyle": {
+    "width": 1,
+    "color": 255,
+    "alpha": 1
+  },
+  "path": [
+    40,30,
+    0,30,
+    0,50,
+    40,50,
+    40,30,
+    60,35,
+    30,10,
+    40,30
+  ]
+}

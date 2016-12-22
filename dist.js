@@ -54443,18 +54443,11 @@ var freighter;
 var star;
 var fighter;
 var planet;
-var pbase;
 
 function init() {
-    planet = Entity.create('Planet', {
+    starport = Entity.create('StarPort', {
         x        : -200,
-        y        : 300,
-        rotation : 0
-    });
-
-    pbase = Entity.create('PBase', {
-        x        : -200,
-        y        : 300,
+        y        : 100,
         rotation : 0
     });
 
@@ -54480,14 +54473,11 @@ function init() {
         star.graphics,
         fighter.graphics,
         freighter.graphics,
-        planet.graphics,
-        pbase.graphics
+        starport.graphics
     );
 
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
-
-    window.f = freighter;
 }
 
 var keyDown = {};
@@ -54554,11 +54544,73 @@ module.exports = {
     process       : process,
     getFocalPoint : getFocalPoint
 };
-},{"../audio":283,"../entity":285,"../graphics":293,"sat":273}],285:[function(require,module,exports){
+},{"../audio":283,"../entity":286,"../graphics":298,"sat":273}],285:[function(require,module,exports){
+var Graphics = require('../graphics');
+var Entity   = require('../entity');
+
+var childRotation  = 0;
+var dChildRotation = 0.0001;
+var childDistance  = 400;
+var attractorX     = -500;
+var attractorY     = 200;
+
+function updatePosition(x, y) {
+    planet.x  = x;
+    planet.y  = y;
+    pbase.x   = x;
+    pbase.y   = y;
+    pcomm.x   = x;
+    pcomm.y   = y;
+    plab.x    = x;
+    plab.y    = y;
+    pcolony.x = x;
+    pcolony.y = y;
+}
+
+var planet, pbase, pcomm, plab, pcolony;
+
+function init() {
+    var defaultPosition = { x : 0, y : 0, rotation : 0 };
+
+    planet  = Entity.create('Planet', defaultPosition);
+    pbase   = Entity.create('PBase', defaultPosition);
+    pcomm   = Entity.create('PComm', pcomm);
+    plab    = Entity.create('PLab', plab);
+    pcolony = Entity.create('PColony', pcolony);
+
+    Graphics.addChild(
+        planet.graphics,
+        pbase.graphics,
+        pcomm.graphics,
+        plab.graphics,
+        pcolony.graphics
+    );
+}
+
+function process() {
+    childRotation += dChildRotation;
+    var px = Math.cos(childRotation) * childDistance;
+    var py = Math.sin(childRotation) * childDistance;
+
+    updatePosition(
+        px + attractorX,
+        py + attractorY
+    );
+}
+
+module.exports = {
+    init    : init,
+    process : process
+};
+},{"../entity":286,"../graphics":298}],286:[function(require,module,exports){
 var Geometry = require('./geometry');
 
 var Planet     = require('./geometry/Planet.json');
 var PBase      = require('./geometry/PBase.json');
+var PComm      = require('./geometry/PComm.json');
+var PColony    = require('./geometry/PColony.json');
+var PLab       = require('./geometry/PLab.json');
+var StarPort   = require('./geometry/StarPort.json');
 var Star       = require('./geometry/Star.json');
 var ShotNormal = require('./geometry/ShotNormal.json');
 var Fighter    = require('./geometry/Fighter.json');
@@ -54567,69 +54619,151 @@ var Freighter  = require('./geometry/Freighter.json');
 function getGeometry(geometryDef, options) {
     var geometryOptions = JSON.parse(JSON.stringify(geometryDef));
 
-    for (var k in options) {
-        if (options.hasOwnProperty(k)) {
-            geometryOptions[k] = options[k];
+    if (options) {
+        for (var k in options) {
+            if (options.hasOwnProperty(k)) {
+                geometryOptions[k] = options[k];
+            }
         }
+    } else {
+        geometryOptions.x = 0;
+        geometryOptions.y = 0;
     }
 
     return Geometry(geometryOptions);
 }
 
-function create(type, options) {
-    var origin = { x : 0, y : 0 };
+//
 
-    if (type === 'Star') {
-        return getGeometry(Star, options);
-    } else if (type === 'Planet') {
-        return getGeometry(Planet, options);
-    } else if (type === 'PBase') {
-        var pbase   = getGeometry(PBase.body, options);
-        var turret1 = getGeometry(PBase.turret1, origin);
-        var turret2 = getGeometry(PBase.turret2, origin);
-        var turret3 = getGeometry(PBase.turret3, origin);
-        var turret4 = getGeometry(PBase.turret4, origin);
+function createPlanet(options) {
+    var planet = getGeometry(Planet.body, options);
+    var flag   = getGeometry(Planet.flag);
 
-        pbase.graphics.addChild(
+    planet.graphics.addChild(flag.graphics);
+
+    return planet;
+}
+
+function createFighter(options) {
+    var fighter = getGeometry(Fighter.body, options);
+
+    var flame1 = getGeometry(Fighter.flame1);
+    var flame2 = getGeometry(Fighter.flame2);
+
+    fighter.graphics.addChild(
+        flame1.graphics,
+        flame2.graphics
+    );
+
+    return fighter;
+}
+
+function createStarPort(options){
+    var starport = getGeometry(StarPort.body, options);
+    var flame1   = getGeometry(StarPort.flame1);
+    var flame2   = getGeometry(StarPort.flame2);
+    var flame3   = getGeometry(StarPort.flame3);
+    var flame4   = getGeometry(StarPort.flame4);
+
+    var shipyard = getGeometry(StarPort.shipyard);
+    var sensors  = getGeometry(StarPort.sensors);
+
+    var turret1 = getGeometry(StarPort.turret1);
+    var turret2 = getGeometry(StarPort.turret2);
+    var turret3 = getGeometry(StarPort.turret3);
+    var turret4 = getGeometry(StarPort.turret4);
+
+    starport.graphics
+        .addChild(
+            flame1.graphics,
+            flame2.graphics,
+            flame3.graphics,
+            flame4.graphics,
+
             turret1.graphics,
             turret2.graphics,
             turret3.graphics,
-            turret4.graphics
+            turret4.graphics,
+
+            sensors.graphics,
+            shipyard.graphics
         );
 
-        return pbase;
+    return starport;
+}
 
+function createPBase(options) {
+    var pbase   = getGeometry(PBase.body, options);
+    var turret1 = getGeometry(PBase.turret1);
+    var turret2 = getGeometry(PBase.turret2);
+    var turret3 = getGeometry(PBase.turret3);
+    var turret4 = getGeometry(PBase.turret4);
+
+    pbase.graphics.addChild(
+        turret1.graphics,
+        turret2.graphics,
+        turret3.graphics,
+        turret4.graphics
+    );
+
+    return pbase;
+}
+
+function createFreighter(options) {
+    var freighter = getGeometry(Freighter.body, options);
+    var cargoPodL = getGeometry(Freighter.cargopodL);
+    var cargoPodR = getGeometry(Freighter.cargopodR);
+    var turret1   = getGeometry(Freighter.turret1);
+    var turret2   = getGeometry(Freighter.turret2);
+    var flag      = getGeometry(Freighter.flag);
+    var flame     = getGeometry(Freighter.flame);
+
+    freighter.graphics
+        .addChild(
+            cargoPodL.graphics,
+            cargoPodR.graphics,
+            turret1.graphics,
+            turret2.graphics,
+            flame.graphics,
+            flag.graphics
+        );
+
+    return freighter;
+}
+
+function createPComm(options) {
+    // todo: collisionPath should be a convex polygon
+    return getGeometry(PComm, options);
+}
+
+function create(type, options) {
+    if (type === 'Star') {
+        return getGeometry(Star, options);
     } else if (type === 'ShotNormal') {
         return getGeometry(ShotNormal, options);
+    } else if (type === 'PColony') {
+        return getGeometry(PColony, options);
+    } else if (type === 'PLab') {
+        return getGeometry(PLab, options);
+    } else if (type === 'PComm') {
+        return createPComm(options);
+    } else if (type === 'Planet') {
+        return createPlanet(options);
     } else if (type === 'Fighter') {
-        return getGeometry(Fighter, options);
+        return createFighter(options);
+    } else if (type === 'StarPort') {
+        return createStarPort(options);
+    } else if (type === 'PBase') {
+        return createPBase(options);
     } else if (type === 'Freighter') {
-        var freighter   = getGeometry(Freighter.body, options);
-        var cargoPodL   = getGeometry(Freighter.cargopodL, origin);
-        var cargoPodR   = getGeometry(Freighter.cargopodR, origin);
-        var turretFront = getGeometry(Freighter.turretFront, origin);
-        var turretRear  = getGeometry(Freighter.turretRear, origin);
-        var flag        = getGeometry(Freighter.flag, origin);
-        var flame       = getGeometry(Freighter.flame, origin);
-
-        freighter.graphics
-            .addChild(
-                cargoPodL.graphics,
-                cargoPodR.graphics,
-                turretFront.graphics,
-                turretRear.graphics,
-                flame.graphics,
-                flag.graphics
-            );
-
-        return freighter;
+        return createFreighter(options);
     }
 }
 
 module.exports = {
     create : create
 };
-},{"./geometry":286,"./geometry/Fighter.json":287,"./geometry/Freighter.json":288,"./geometry/PBase.json":289,"./geometry/Planet.json":290,"./geometry/ShotNormal.json":291,"./geometry/Star.json":292}],286:[function(require,module,exports){
+},{"./geometry":287,"./geometry/Fighter.json":288,"./geometry/Freighter.json":289,"./geometry/PBase.json":290,"./geometry/PColony.json":291,"./geometry/PComm.json":292,"./geometry/PLab.json":293,"./geometry/Planet.json":294,"./geometry/ShotNormal.json":295,"./geometry/Star.json":296,"./geometry/StarPort.json":297}],287:[function(require,module,exports){
 var PIXI = require('pixi.js');
 var SAT  = require('sat');
 
@@ -54779,44 +54913,59 @@ function Geometry(options) {
 }
 
 module.exports = Geometry;
-},{"pixi.js":216,"sat":273}],287:[function(require,module,exports){
+},{"pixi.js":216,"sat":273}],288:[function(require,module,exports){
 module.exports={
-  "type": "polygon",
-  "lineStyle": {
-    "width": 1,
-    "color": 255,
-    "alpha": 1
+  "body" :{
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 255,
+      "alpha": 1
+    },
+    "path": [
+      -2, 2,
+      -4, 0,
+      -2, -2,
+      -4, -4,
+      -4, -6,
+      2, -4,
+      0, -2,
+      8, 0,
+      0, 2,
+      2, 4,
+      -4, 6,
+      -4, 4,
+      -2, 2
+    ]
   },
-  "path": [
-    -2,
-    2,
-    -4,
-    0,
-    -2,
-    -2,
-    -4,
-    -4,
-    -4,
-    -6,
-    2,
-    -4,
-    0,
-    -2,
-    8,
-    0,
-    0,
-    2,
-    2,
-    4,
-    -4,
-    6,
-    -4,
-    4,
-    -2,
-    2
-  ]
+  "flame1" : {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 65535,
+      "alpha": 1
+    },
+    "path": [
+      -4,-4,
+      -8,-5,
+      -4,-6
+    ]
+  },
+  "flame2" : {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 65535,
+      "alpha": 1
+    },
+    "path": [
+      -4,4,
+      -8,5,
+      -4,6
+    ]
+  }
 }
-},{}],288:[function(require,module,exports){
+},{}],289:[function(require,module,exports){
 module.exports={
   "body": {
     "type": "polygon",
@@ -54893,7 +55042,7 @@ module.exports={
     "type": "polygon",
     "lineStyle": {
       "width": 2,
-      "color": 16711680,
+      "color": 255,
       "alpha": 1
     },
     "path":[
@@ -54901,12 +55050,12 @@ module.exports={
       42,0
     ]
   },
-  "turretRear" : {
+  "turret1" : {
     "type": "polygon",
     "lineStyle": {
       "width": 1,
       "color": 65535,
-      "alpha": 1
+      "alpha": 0.5
     },
     "path":[
       -34,0,
@@ -54915,12 +55064,12 @@ module.exports={
       -34,0
     ]
   },
-  "turretFront" : {
+  "turret2" : {
     "type": "polygon",
     "lineStyle": {
       "width": 1,
       "color": 65535,
-      "alpha": 1
+      "alpha": 0.5
     },
     "path":[
       28,-3,
@@ -54944,8 +55093,9 @@ module.exports={
   }
 }
 
-},{}],289:[function(require,module,exports){
+},{}],290:[function(require,module,exports){
 module.exports={
+  "_name": "Planetary Base",
   "body": {
     "type": "polygon",
     "lineStyle": {
@@ -54966,7 +55116,7 @@ module.exports={
     "lineStyle": {
       "width": 1,
       "color": 65280,
-      "alpha": 1
+      "alpha": 0.5
     },
     "path": [
       65,-60,
@@ -54980,7 +55130,7 @@ module.exports={
     "lineStyle": {
       "width": 1,
       "color": 65280,
-      "alpha": 1
+      "alpha": 0.5
     },
     "path": [
       -65,-60,
@@ -54994,7 +55144,7 @@ module.exports={
     "lineStyle": {
       "width": 1,
       "color": 65280,
-      "alpha": 1
+      "alpha": 0.5
     },
     "path": [
       65,60,
@@ -55008,7 +55158,7 @@ module.exports={
     "lineStyle": {
       "width": 1,
       "color": 65280,
-      "alpha": 1
+      "alpha": 0.5
     },
     "path": [
       -65,60,
@@ -55018,17 +55168,86 @@ module.exports={
     ]
   }
 }
-},{}],290:[function(require,module,exports){
+},{}],291:[function(require,module,exports){
 module.exports={
-  "type": "circle",
-  "radius": 100,
+  "type": "polygon",
+  "_name": "Planetary Colony",
   "lineStyle": {
     "width": 1,
-    "color": 65280,
+    "color": 255,
     "alpha": 1
+  },
+  "path": [
+    -30,40,
+    -70,40,
+    -70,-40,
+    -30,-40,
+    -30,40
+  ]
+}
+},{}],292:[function(require,module,exports){
+module.exports={
+  "type": "polygon",
+  "_name": "Planetary Communications Center",
+  "lineStyle": {
+    "width": 1,
+    "color": 255,
+    "alpha": 1
+  },
+  "path": [
+    40,30,
+    0,30,
+    0,50,
+    40,50,
+    40,30,
+    60,35,
+    30,10,
+    40,30
+  ]
+}
+},{}],293:[function(require,module,exports){
+module.exports={
+  "type": "polygon",
+  "_name": "Planetary Lab",
+  "lineStyle": {
+    "width": 1,
+    "color": 255,
+    "alpha": 1
+  },
+  "path": [
+    0,-40,
+    0,-70,
+    50,-70,
+    50,-40,
+    0,-40
+  ]
+}
+},{}],294:[function(require,module,exports){
+module.exports={
+  "body" :{
+    "type": "circle",
+    "radius": 100,
+    "lineStyle": {
+      "width": 1,
+      "color": 65280,
+      "alpha": 1
+    }
+  },
+  "flag" : {
+    "type": "polygon",
+    "fill": {
+      "color": 255,
+      "alpha": 1
+    },
+    "path" : [
+      -5,-4,
+      -5,4,
+      5,4,
+      5,-4
+    ]
   }
 }
-},{}],291:[function(require,module,exports){
+},{}],295:[function(require,module,exports){
 module.exports={
   "type": "rectangle",
   "fill": {
@@ -55038,7 +55257,7 @@ module.exports={
   "w": 2,
   "h": 2
 }
-},{}],292:[function(require,module,exports){
+},{}],296:[function(require,module,exports){
 module.exports={
   "type": "circle",
   "radius": 300,
@@ -55048,7 +55267,173 @@ module.exports={
     "alpha": 1
   }
 }
-},{}],293:[function(require,module,exports){
+},{}],297:[function(require,module,exports){
+module.exports={
+  "_name": "High Port",
+  "body" : {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 255,
+      "alpha": 1
+    },
+    "path": [
+      -2,0,
+      -6,-20,
+      -6,-36,
+      -2,-44,
+      6,-44,
+      6,-24,
+      2,-20,
+      2,20,
+      6,24,
+      6,44,
+      -2,44,
+      -6,36,
+      -6,20,
+      -2,0
+    ]
+  },
+  "shipyard":{
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 255,
+      "alpha": 1
+    },
+    "path": [
+      6,-42,
+      20,-42,
+      20,-22,
+      14,-26,
+      6,-26
+    ]
+  },
+  "sensors":{
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 255,
+      "alpha": 1
+    },
+    "path": [
+      6,26,
+      12,28,
+      12,40,
+      18,46,
+      18,34,
+      12,40,
+      6,42
+    ]
+  },
+  "turret1" : {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 65535,
+      "alpha": 0.5
+    },
+    "path": [
+      0,28,
+      4,26,
+      4,30,
+      0,28
+    ]
+  },
+  "turret2" : {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 65535,
+      "alpha": 0.5
+    },
+    "path": [
+      0,-28,
+      4,-26,
+      4,-30,
+      0,-28
+    ]
+  },
+  "turret3" : {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 65535,
+      "alpha": 0.5
+    },
+    "path": [
+      4,44,
+      2,48,
+      0,44
+    ]
+  },
+  "turret4" : {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 65535,
+      "alpha": 0.5
+    },
+    "path": [
+      4,-44,
+      2,-48,
+      0,-44
+    ]
+  },
+  "flame1" : {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 65535,
+      "alpha": 1
+    },
+    "path": [
+      -6,20,
+      -12,22,
+      -6,24
+    ]
+  },
+  "flame2" : {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 65535,
+      "alpha": 1
+    },
+    "path": [
+      -6,-24,
+      -12,-22,
+      -6,-20
+    ]
+  },
+  "flame3" : {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 65535,
+      "alpha": 1
+    },
+    "path": [
+      -6,32,
+      -12,34,
+      -6,36
+    ]
+  },
+  "flame4" : {
+    "type": "polygon",
+    "lineStyle": {
+      "width": 1,
+      "color": 65535,
+      "alpha": 1
+    },
+    "path": [
+      -6,-36,
+      -12,-34,
+      -6,-32
+    ]
+  }
+}
+},{}],298:[function(require,module,exports){
 /**
  * Graphics interface
  */
@@ -55064,13 +55449,16 @@ var renderer;
 var width, width2;
 var height, height2;
 
-function init() {
-    stage    = new PIXI.Container();
-    renderer = PIXI.autoDetectRenderer(width, height);
-    document.body.appendChild(renderer.view);
+var RENDERER_OPTIONS = {};
 
-    window.addEventListener('resize', onResize);
+function init() {
     updateDimensions();
+
+    stage      = new PIXI.Container();
+    renderer   = new PIXI.WebGLRenderer(width, height, RENDERER_OPTIONS);
+
+    document.body.appendChild(renderer.view);
+    window.addEventListener('resize', onResize);
 }
 
 function updateDimensions() {
@@ -55078,7 +55466,10 @@ function updateDimensions() {
     height  = window.innerHeight;
     width2  = width >> 1;
     height2 = height >> 1;
-    renderer.resize(width, height);
+
+    if (renderer) {
+        renderer.resize(width, height);
+    }
 }
 
 function onResize() {
@@ -55115,24 +55506,27 @@ module.exports = {
     render      : render,
     centerOn    : centerOn
 };
-},{"pixi.js":216}],294:[function(require,module,exports){
+},{"pixi.js":216}],299:[function(require,module,exports){
 var Assets          = require('./assets');
 var Graphics        = require('./graphics');
 var HumanController = require('./controller/human');
+var PlanetController = require('./controller/planet');
 
 // // // // Game loop // // // //
 
 var raf;
 var then;
-var FPS_INTERVAL = 1000 / 90;
+var FPS          = 90;
+var FPS_INTERVAL = 1000 / FPS;
 
 function step() {
     var now     = Date.now();
     var elapsed = now - then;
 
-    calculate();
+    update();
 
     if (elapsed > FPS_INTERVAL) {
+        Graphics.centerOn(controller.getFocalPoint());
         Graphics.render();
         then = now - (elapsed % FPS_INTERVAL);
     }
@@ -55152,14 +55546,15 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
     controller = HumanController;
     controller.init();
 
+    PlanetController.init();
     Assets.init(start);
 });
 
 // // // // Game logic // // // //
 
-function calculate() {
+function update() {
+    PlanetController.process();
     controller.process();
-    Graphics.centerOn(controller.getFocalPoint());
 }
 
-},{"./assets":282,"./controller/human":284,"./graphics":293}]},{},[294]);
+},{"./assets":282,"./controller/human":284,"./controller/planet":285,"./graphics":298}]},{},[299]);

@@ -13,13 +13,16 @@ var renderer;
 var width, width2;
 var height, height2;
 
-function init() {
-    stage    = new PIXI.Container();
-    renderer = PIXI.autoDetectRenderer(width, height);
-    document.body.appendChild(renderer.view);
+var RENDERER_OPTIONS = {};
 
-    window.addEventListener('resize', onResize);
+function init() {
     updateDimensions();
+
+    stage      = new PIXI.Container();
+    renderer   = new PIXI.WebGLRenderer(width, height, RENDERER_OPTIONS);
+
+    document.body.appendChild(renderer.view);
+    window.addEventListener('resize', onResize);
 }
 
 function updateDimensions() {
@@ -27,7 +30,10 @@ function updateDimensions() {
     height  = window.innerHeight;
     width2  = width >> 1;
     height2 = height >> 1;
-    renderer.resize(width, height);
+
+    if (renderer) {
+        renderer.resize(width, height);
+    }
 }
 
 function onResize() {

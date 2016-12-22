@@ -74,7 +74,7 @@
     "type": "polygon",
     "lineStyle": {
       "width": 2,
-      "color": 16711680,
+      "color": 255,
       "alpha": 1
     },
     "path":[
@@ -82,12 +82,12 @@
       42,0
     ]
   },
-  "turretRear" : {
+  "turret1" : {
     "type": "polygon",
     "lineStyle": {
       "width": 1,
       "color": 65535,
-      "alpha": 1
+      "alpha": 0.5
     },
     "path":[
       -34,0,
@@ -96,12 +96,12 @@
       -34,0
     ]
   },
-  "turretFront" : {
+  "turret2" : {
     "type": "polygon",
     "lineStyle": {
       "width": 1,
       "color": 65535,
-      "alpha": 1
+      "alpha": 0.5
     },
     "path":[
       28,-3,

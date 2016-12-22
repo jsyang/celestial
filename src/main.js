@@ -1,20 +1,23 @@
 var Assets          = require('./assets');
 var Graphics        = require('./graphics');
 var HumanController = require('./controller/human');
+var PlanetController = require('./controller/planet');
 
 // // // // Game loop // // // //
 
 var raf;
 var then;
-var FPS_INTERVAL = 1000 / 90;
+var FPS          = 90;
+var FPS_INTERVAL = 1000 / FPS;
 
 function step() {
     var now     = Date.now();
     var elapsed = now - then;
 
-    calculate();
+    update();
 
     if (elapsed > FPS_INTERVAL) {
+        Graphics.centerOn(controller.getFocalPoint());
         Graphics.render();
         then = now - (elapsed % FPS_INTERVAL);
     }
@@ -34,12 +37,13 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
     controller = HumanController;
     controller.init();
 
+    PlanetController.init();
     Assets.init(start);
 });
 
 // // // // Game logic // // // //
 
-function calculate() {
+function update() {
+    PlanetController.process();
     controller.process();
-    Graphics.centerOn(controller.getFocalPoint());
 }

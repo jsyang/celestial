@@ -7,18 +7,11 @@ var freighter;
 var star;
 var fighter;
 var planet;
-var pbase;
 
 function init() {
-    planet = Entity.create('Planet', {
+    starport = Entity.create('StarPort', {
         x        : -200,
-        y        : 300,
-        rotation : 0
-    });
-
-    pbase = Entity.create('PBase', {
-        x        : -200,
-        y        : 300,
+        y        : 100,
         rotation : 0
     });
 
@@ -44,14 +37,11 @@ function init() {
         star.graphics,
         fighter.graphics,
         freighter.graphics,
-        planet.graphics,
-        pbase.graphics
+        starport.graphics
     );
 
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
-
-    window.f = freighter;
 }
 
 var keyDown = {};
