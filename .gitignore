@@ -2,3 +2,5 @@
 .DS_Store
 node_modules/
 *.min.js
+dist.js
+assets.zip

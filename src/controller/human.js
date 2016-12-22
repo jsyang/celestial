@@ -1,3 +1,4 @@
+var Audio    = require('../audio');
 var Entity   = require('../entity');
 var Graphics = require('../graphics');
 var SAT      = require('sat');
@@ -6,7 +7,6 @@ var freighter;
 var star;
 var fighter;
 var planet;
-
 
 function init() {
     planet = Entity.create('Planet', {
@@ -75,15 +75,20 @@ function onKeyDown(e) {
 
     } else if (e.which === 40) {
         // Down arrow
-
+        keyDown.down_arrow = true;
+        Audio.play('hit');
     }
 }
 
 function process() {
     if (keyDown.left_arrow) {
-        freighter.rotation -= 0.01;
+        freighter.rotation -= 0.03;
     } else if (keyDown.right_arrow) {
-        freighter.rotation += 0.01;
+        freighter.rotation += 0.03;
+    }
+
+    if (keyDown.down_arrow) {
+
     }
 
     if (keyDown.up_arrow) {

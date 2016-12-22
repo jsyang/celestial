@@ -1,3 +1,4 @@
+var Assets          = require('./assets');
 var Graphics        = require('./graphics');
 var HumanController = require('./controller/human');
 
@@ -32,7 +33,8 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
     Graphics.init();
     controller = HumanController;
     controller.init();
-    start();
+
+    Assets.init(start);
 });
 
 // // // // Game logic // // // //

@@ -4,6 +4,13 @@ module.exports = {
     },
     js: {
         files: ["src/**/*"],
-        tasks: "browserify,uglify".split(',')
+        tasks: "browserify".split(',')
+    },
+    assets: {
+        files: [
+            //"assets/images/**/*",
+            "assets/sounds/**/*"
+        ],
+        tasks: "compress".split(',')
     }
 };

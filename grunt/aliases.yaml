@@ -1,5 +1,5 @@
 default:
   - browserify
-  - uglify
+  - compress
   - connect
   - watch
