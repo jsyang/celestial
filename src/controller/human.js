@@ -6,42 +6,39 @@ var SAT      = require('sat');
 var freighter;
 var star;
 var fighter;
-var planet;
 
 function init() {
-    starport = Entity.create('StarPort', {
-        x        : -200,
-        y        : 100,
-        rotation : 0
-    });
-
     star = Entity.create('Star', {
         x        : 400,
         y        : 50,
-        rotation : 0
+        rotation : 0,
+        team     : Entity.TEAM.BLUE
     });
 
     fighter = Entity.create('Fighter', {
         x        : 20,
         y        : 0,
-        rotation : 0
+        rotation : 0,
+        team     : Entity.TEAM.BLUE
     });
 
     freighter = Entity.create('Freighter', {
         x        : 30,
-        y        : 50,
-        rotation : 0
+        y        : -30,
+        rotation : 0,
+        team     : Entity.TEAM.BLUE
     });
 
     Graphics.addChild(
         star.graphics,
         fighter.graphics,
-        freighter.graphics,
-        starport.graphics
+        freighter.graphics
     );
 
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
+
+    window.f = freighter;
 }
 
 var keyDown = {};
@@ -90,6 +87,9 @@ function process() {
     if (keyDown.up_arrow) {
         freighter.x += Math.cos(freighter.rotation);
         freighter.y += Math.sin(freighter.rotation);
+        freighter.flameOn();
+    } else {
+        freighter.flameOff();
     }
 
     if (SAT.testPolygonCircle(freighter.collision, star.collision)) {

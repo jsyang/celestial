@@ -46,4 +46,5 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
 function update() {
     PlanetController.process();
     controller.process();
+    // todo: process collisions
 }

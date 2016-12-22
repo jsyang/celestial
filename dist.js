@@ -18302,42 +18302,39 @@ var SAT      = require('sat');
 var freighter;
 var star;
 var fighter;
-var planet;
 
 function init() {
-    starport = Entity.create('StarPort', {
-        x        : -200,
-        y        : 100,
-        rotation : 0
-    });
-
     star = Entity.create('Star', {
         x        : 400,
         y        : 50,
-        rotation : 0
+        rotation : 0,
+        team     : Entity.TEAM.BLUE
     });
 
     fighter = Entity.create('Fighter', {
         x        : 20,
         y        : 0,
-        rotation : 0
+        rotation : 0,
+        team     : Entity.TEAM.BLUE
     });
 
     freighter = Entity.create('Freighter', {
         x        : 30,
-        y        : 50,
-        rotation : 0
+        y        : -30,
+        rotation : 0,
+        team     : Entity.TEAM.BLUE
     });
 
     Graphics.addChild(
         star.graphics,
         fighter.graphics,
-        freighter.graphics,
-        starport.graphics
+        freighter.graphics
     );
 
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
+
+    window.f = freighter;
 }
 
 var keyDown = {};
@@ -18386,6 +18383,9 @@ function process() {
     if (keyDown.up_arrow) {
         freighter.x += Math.cos(freighter.rotation);
         freighter.y += Math.sin(freighter.rotation);
+        freighter.flameOn();
+    } else {
+        freighter.flameOff();
     }
 
     if (SAT.testPolygonCircle(freighter.collision, star.collision)) {
@@ -18404,7 +18404,7 @@ module.exports = {
     process       : process,
     getFocalPoint : getFocalPoint
 };
-},{"../audio":107,"../entity":111,"../graphics":123,"sat":99}],109:[function(require,module,exports){
+},{"../audio":107,"../entity":111,"../graphics":124,"sat":99}],109:[function(require,module,exports){
 var Graphics = require('../graphics');
 var Entity   = require('../entity');
 
@@ -18427,18 +18427,23 @@ function updatePosition(x, y) {
     pcolony.y = y;
 }
 
-var planet, pbase, pcomm, plab, pcolony;
+var planet, pbase, pcomm, plab, pcolony, starport;
+
+var DEFAULT_OPTIONS = { x : 0, y : 0, rotation : 0, team : Entity.TEAM.BLUE };
 
 function init() {
-    var defaultPosition = { x : 0, y : 0, rotation : 0 };
 
-    planet  = Entity.create('Planet', defaultPosition);
-    pbase   = Entity.create('PBase', defaultPosition);
-    pcomm   = Entity.create('PComm', pcomm);
-    plab    = Entity.create('PLab', plab);
-    pcolony = Entity.create('PColony', pcolony);
+    planet  = Entity.create('Planet', DEFAULT_OPTIONS);
+    pbase   = Entity.create('PBase', DEFAULT_OPTIONS);
+    pcomm   = Entity.create('PComm', DEFAULT_OPTIONS);
+    plab    = Entity.create('PLab', DEFAULT_OPTIONS);
+    pcolony = Entity.create('PColony', DEFAULT_OPTIONS);
+
+    starport = Entity.create('StarPort', DEFAULT_OPTIONS);
 
     Graphics.addChild(
+        starport.graphics,
+
         planet.graphics,
         pbase.graphics,
         pcomm.graphics,
@@ -18449,20 +18454,22 @@ function init() {
 
 function process() {
     childRotation += dChildRotation;
-    var px = Math.cos(childRotation) * childDistance;
-    var py = Math.sin(childRotation) * childDistance;
+    var px = Math.cos(childRotation) * childDistance + attractorX;
+    var py = Math.sin(childRotation) * childDistance + attractorY;
 
-    updatePosition(
-        px + attractorX,
-        py + attractorY
-    );
+    updatePosition(px, py);
+
+    // todo: convert sample orbit rotation to more generalized case
+    starport.rotation += dChildRotation * 2.5;
+    starport.x = px + Math.cos(starport.rotation) * 150;
+    starport.y = py + Math.sin(starport.rotation) * 150;
 }
 
 module.exports = {
     init    : init,
     process : process
 };
-},{"../entity":111,"../graphics":123}],110:[function(require,module,exports){
+},{"../entity":111,"../graphics":124}],110:[function(require,module,exports){
 (function (global){
 /*!
  * pixi.js - v4.3.0
@@ -18488,40 +18495,37 @@ module.exports = {
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],111:[function(require,module,exports){
 var Geometry = require('./geometry');
+var EntityDB = require('./entityDB');
 
-var Planet     = require('./geometry/Planet.json');
-var PBase      = require('./geometry/PBase.json');
-var PComm      = require('./geometry/PComm.json');
-var PColony    = require('./geometry/PColony.json');
-var PLab       = require('./geometry/PLab.json');
-var StarPort   = require('./geometry/StarPort.json');
-var Star       = require('./geometry/Star.json');
-var ShotNormal = require('./geometry/ShotNormal.json');
-var Fighter    = require('./geometry/Fighter.json');
-var Freighter  = require('./geometry/Freighter.json');
+var Planet    = require('./geometry/Planet.json');
+var PBase     = require('./geometry/PBase.json');
+var PComm     = require('./geometry/PComm.json');
+var PColony   = require('./geometry/PColony.json');
+var PLab      = require('./geometry/PLab.json');
+var StarPort  = require('./geometry/StarPort.json');
+var Star      = require('./geometry/Star.json');
+var Shot      = require('./geometry/Shot.json');
+var Fighter   = require('./geometry/Fighter.json');
+var Freighter = require('./geometry/Freighter.json');
 
-function getGeometry(geometryDef, options) {
-    var geometryOptions = JSON.parse(JSON.stringify(geometryDef));
-
-    if (options) {
-        for (var k in options) {
-            if (options.hasOwnProperty(k)) {
-                geometryOptions[k] = options[k];
-            }
-        }
-    } else {
-        geometryOptions.x = 0;
-        geometryOptions.y = 0;
-    }
-
-    return Geometry(geometryOptions);
+/**
+ * Set child DisplayObject visibility.
+ * @param {number} childIndex
+ * @param {boolean} isVisible
+ */
+function setVisible(childIndex, isVisible) {
+    this.graphics.getChildAt(childIndex).visible = isVisible;
 }
 
-//
+/**
+ * Creation of more complicated entities: e.g. ones with
+ * multiple hit polygons and segments / conditionally
+ * rendered parts.
+ */
 
 function createPlanet(options) {
-    var planet = getGeometry(Planet.body, options);
-    var flag   = getGeometry(Planet.flag);
+    var planet = Geometry(Planet.body, options);
+    var flag   = Geometry(Planet.flag);
 
     planet.graphics.addChild(flag.graphics);
 
@@ -18529,33 +18533,41 @@ function createPlanet(options) {
 }
 
 function createFighter(options) {
-    var fighter = getGeometry(Fighter.body, options);
+    var fighter = Geometry(Fighter.body, options);
 
-    var flame1 = getGeometry(Fighter.flame1);
-    var flame2 = getGeometry(Fighter.flame2);
+    var flame1 = Geometry(Fighter.flame1);
+    var flame2 = Geometry(Fighter.flame2);
 
     fighter.graphics.addChild(
         flame1.graphics,
         flame2.graphics
     );
 
+    flame1.graphics.visible = false;
+    flame2.graphics.visible = false;
+
+    fighter.flame1On  = setVisible.bind(fighter, 0, true);
+    fighter.flame1Off = setVisible.bind(fighter, 0, false);
+    fighter.flame2On  = setVisible.bind(fighter, 1, true);
+    fighter.flame2Off = setVisible.bind(fighter, 1, false);
+
     return fighter;
 }
 
-function createStarPort(options){
-    var starport = getGeometry(StarPort.body, options);
-    var flame1   = getGeometry(StarPort.flame1);
-    var flame2   = getGeometry(StarPort.flame2);
-    var flame3   = getGeometry(StarPort.flame3);
-    var flame4   = getGeometry(StarPort.flame4);
+function createStarPort(options) {
+    var starport = Geometry(StarPort.body, options);
+    var flame1   = Geometry(StarPort.flame1);
+    var flame2   = Geometry(StarPort.flame2);
+    var flame3   = Geometry(StarPort.flame3);
+    var flame4   = Geometry(StarPort.flame4);
 
-    var shipyard = getGeometry(StarPort.shipyard);
-    var sensors  = getGeometry(StarPort.sensors);
+    var shipyard = Geometry(StarPort.shipyard);
+    var sensors  = Geometry(StarPort.sensors);
 
-    var turret1 = getGeometry(StarPort.turret1);
-    var turret2 = getGeometry(StarPort.turret2);
-    var turret3 = getGeometry(StarPort.turret3);
-    var turret4 = getGeometry(StarPort.turret4);
+    var turret1 = Geometry(StarPort.turret1);
+    var turret2 = Geometry(StarPort.turret2);
+    var turret3 = Geometry(StarPort.turret3);
+    var turret4 = Geometry(StarPort.turret4);
 
     starport.graphics
         .addChild(
@@ -18577,11 +18589,11 @@ function createStarPort(options){
 }
 
 function createPBase(options) {
-    var pbase   = getGeometry(PBase.body, options);
-    var turret1 = getGeometry(PBase.turret1);
-    var turret2 = getGeometry(PBase.turret2);
-    var turret3 = getGeometry(PBase.turret3);
-    var turret4 = getGeometry(PBase.turret4);
+    var pbase   = Geometry(PBase.body, options);
+    var turret1 = Geometry(PBase.turret1);
+    var turret2 = Geometry(PBase.turret2);
+    var turret3 = Geometry(PBase.turret3);
+    var turret4 = Geometry(PBase.turret4);
 
     pbase.graphics.addChild(
         turret1.graphics,
@@ -18594,67 +18606,152 @@ function createPBase(options) {
 }
 
 function createFreighter(options) {
-    var freighter = getGeometry(Freighter.body, options);
-    var cargoPodL = getGeometry(Freighter.cargopodL);
-    var cargoPodR = getGeometry(Freighter.cargopodR);
-    var turret1   = getGeometry(Freighter.turret1);
-    var turret2   = getGeometry(Freighter.turret2);
-    var flag      = getGeometry(Freighter.flag);
-    var flame     = getGeometry(Freighter.flame);
+    var freighter = Geometry(Freighter.body, options);
+    var cargoPodL = Geometry(Freighter.cargopodL);
+    var cargoPodR = Geometry(Freighter.cargopodR);
+    var turret1   = Geometry(Freighter.turret1);
+    var turret2   = Geometry(Freighter.turret2);
+    var flag      = Geometry(Freighter.flag);
+    var flame     = Geometry(Freighter.flame);
 
     freighter.graphics
         .addChild(
+            flame.graphics,
+            flag.graphics,
             cargoPodL.graphics,
             cargoPodR.graphics,
             turret1.graphics,
-            turret2.graphics,
-            flame.graphics,
-            flag.graphics
+            turret2.graphics
         );
+
+    freighter.flameOn  = setVisible.bind(freighter, 0, true);
+    freighter.flameOff = setVisible.bind(freighter, 0, false);
 
     return freighter;
 }
 
 function createPComm(options) {
     // todo: collisionPath should be a convex polygon
-    return getGeometry(PComm, options);
+    return Geometry(PComm, options);
 }
 
 function create(type, options) {
+    var entity;
+
     if (type === 'Star') {
-        return getGeometry(Star, options);
-    } else if (type === 'ShotNormal') {
-        return getGeometry(ShotNormal, options);
+        entity = Geometry(Star, options);
+    } else if (type === 'Shot') {
+        entity = Geometry(Shot, options);
     } else if (type === 'PColony') {
-        return getGeometry(PColony, options);
+        entity = Geometry(PColony, options);
     } else if (type === 'PLab') {
-        return getGeometry(PLab, options);
+        entity = Geometry(PLab, options);
     } else if (type === 'PComm') {
-        return createPComm(options);
+        entity = createPComm(options);
     } else if (type === 'Planet') {
-        return createPlanet(options);
+        entity = createPlanet(options);
     } else if (type === 'Fighter') {
-        return createFighter(options);
+        entity = createFighter(options);
     } else if (type === 'StarPort') {
-        return createStarPort(options);
+        entity = createStarPort(options);
     } else if (type === 'PBase') {
-        return createPBase(options);
+        entity = createPBase(options);
     } else if (type === 'Freighter') {
-        return createFreighter(options);
+        entity = createFreighter(options);
     }
+
+    if (entity) {
+        entity.type = type;
+        entity.team = options.team;
+        EntityDB.add(entity);
+    }
+
+    return entity;
+}
+
+var TEAM = {
+    BLUE    : 0,
+    GREEN   : 1,
+    RED     : 2,
+    YELLOW  : 3,
+    MAGENTA : 4
+};
+
+module.exports = {
+    create : create,
+    TEAM   : TEAM
+};
+},{"./entityDB":112,"./geometry":113,"./geometry/Fighter.json":114,"./geometry/Freighter.json":115,"./geometry/PBase.json":116,"./geometry/PColony.json":117,"./geometry/PComm.json":118,"./geometry/PLab.json":119,"./geometry/Planet.json":120,"./geometry/Shot.json":121,"./geometry/Star.json":122,"./geometry/StarPort.json":123}],112:[function(require,module,exports){
+var Random = require('./random');
+
+var byId   = {};
+var byType = {};
+var byTeam = {};
+
+function generateId() {
+    return Random.int(0, Date.now()).toString(16).substr(0, 6);
+}
+
+function add(entity) {
+    entity.id = generateId();
+
+    byId[entity.id.toString()]     = entity;
+    byType[entity.type.toString()] = entity;
+    byTeam[entity.team.toString()] = entity;
+}
+
+function getByType(type) {
+    return byType[type];
+}
+
+function getByTeam(team) {
+    return byType[team];
+}
+
+function getById(id) {
+    return byId[id];
+}
+
+function remove(entity) {
+    /** todo **/
+    // delete byId reference
+    // delete byType reference
+    // delete byTeam reference
+
+    // delete from SAT
+    // delete from PixiJS stage
+
+    // break any remaining references for garbage collector
 }
 
 module.exports = {
-    create : create
+    add    : add,
+    remove : remove,
+
+    getByType : getByType,
+    getByTeam : getByTeam,
+    getById   : getById
 };
-},{"./geometry":112,"./geometry/Fighter.json":113,"./geometry/Freighter.json":114,"./geometry/PBase.json":115,"./geometry/PColony.json":116,"./geometry/PComm.json":117,"./geometry/PLab.json":118,"./geometry/Planet.json":119,"./geometry/ShotNormal.json":120,"./geometry/Star.json":121,"./geometry/StarPort.json":122}],112:[function(require,module,exports){
+},{"./random":126}],113:[function(require,module,exports){
 var PIXI = require('./custom-lib/pixi.min.js');
 var SAT  = require('sat');
 
+/**
+ * Alias for SAT.Vector
+ * @param {number} x
+ * @param {number} y
+ * @returns {*|Vector}
+ */
 function v(x, y) {
     return new SAT.Vector(x, y);
 }
 
+/**
+ *
+ * @param {object} graphics     - PixiJS primitive
+ * @param {object} collision    - SAT primitive
+ * @returns {{x, y, rotation, x, y, rotation, graphics: *, collision: *}}
+ */
 function createMutableGeoInterface(graphics, collision) {
     return {
         set x(x) {
@@ -18685,6 +18782,7 @@ function createMutableGeoInterface(graphics, collision) {
     };
 }
 
+
 function createCircle(options) {
     var g = new PIXI.Graphics();
 
@@ -18708,6 +18806,7 @@ function createCircle(options) {
         g, new SAT.Circle(v(g.x, g.y), options.radius)
     );
 }
+
 
 function createRectangle(options) {
     var g = new PIXI.Graphics();
@@ -18733,6 +18832,7 @@ function createRectangle(options) {
     );
 }
 
+
 function createLine(options) {
     var g = new PIXI.Graphics();
 
@@ -18747,6 +18847,7 @@ function createLine(options) {
     g.y = options.y1;
     return g;
 }
+
 
 function createPolygon(options) {
     var g = new PIXI.Graphics();
@@ -18781,23 +18882,43 @@ function createPolygon(options) {
     );
 }
 
-function Geometry(options) {
-    if (options.type === 'circle') {
-        return createCircle(options);
+/**
+ * @param {object} geometryDef Collision and Graphics Geometry
+ * @param {object} options
+ */
+function Geometry(geometryDef, options) {
+    // Start with default geometries loaded from `src/geometry/*.json`
+    var geometryOptions = JSON.parse(JSON.stringify(geometryDef));
 
-    } else if (options.type === 'line') {
-        return createLine(options);
+    // Overwrite properties as needed (e.g. x, y, rotation, lineStyle, ...)
+    if (options) {
+        for (var k in options) {
+            if (options.hasOwnProperty(k)) {
+                geometryOptions[k] = options[k];
+            }
+        }
+    } else {
+        geometryOptions.x = 0;
+        geometryOptions.y = 0;
+    }
 
-    } else if (options.type === 'rectangle') {
-        return createRectangle(options);
+    // Create geometry for graphics and collision
+    if (geometryOptions.type === 'circle') {
+        return createCircle(geometryOptions);
 
-    } else if (options.type === 'polygon') {
-        return createPolygon(options);
+    } else if (geometryOptions.type === 'line') {
+        return createLine(geometryOptions);
+
+    } else if (geometryOptions.type === 'rectangle') {
+        return createRectangle(geometryOptions);
+
+    } else if (geometryOptions.type === 'polygon') {
+        return createPolygon(geometryOptions);
     }
 }
 
 module.exports = Geometry;
-},{"./custom-lib/pixi.min.js":110,"sat":99}],113:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":110,"sat":99}],114:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "polygon",
@@ -18849,7 +18970,7 @@ module.exports={
     ]
   }
 }
-},{}],114:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 module.exports={
   "body": {
     "type": "polygon",
@@ -18977,7 +19098,7 @@ module.exports={
   }
 }
 
-},{}],115:[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 module.exports={
   "_name": "Planetary Base",
   "body": {
@@ -19052,7 +19173,7 @@ module.exports={
     ]
   }
 }
-},{}],116:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Colony",
@@ -19069,7 +19190,7 @@ module.exports={
     -30,40
   ]
 }
-},{}],117:[function(require,module,exports){
+},{}],118:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Communications Center",
@@ -19089,7 +19210,7 @@ module.exports={
     40,30
   ]
 }
-},{}],118:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Lab",
@@ -19106,7 +19227,7 @@ module.exports={
     0,-40
   ]
 }
-},{}],119:[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "circle",
@@ -19131,17 +19252,19 @@ module.exports={
     ]
   }
 }
-},{}],120:[function(require,module,exports){
-module.exports={
-  "type": "rectangle",
-  "fill": {
-    "color": 16777215,
-    "alpha": 1
-  },
-  "w": 2,
-  "h": 2
-}
 },{}],121:[function(require,module,exports){
+module.exports={
+  "cannon_normal" : {
+    "type": "rectangle",
+    "fill": {
+      "color": 16777215,
+      "alpha": 1
+    },
+    "w": 2,
+    "h": 2
+  }
+}
+},{}],122:[function(require,module,exports){
 module.exports={
   "type": "circle",
   "radius": 300,
@@ -19151,7 +19274,7 @@ module.exports={
     "alpha": 1
   }
 }
-},{}],122:[function(require,module,exports){
+},{}],123:[function(require,module,exports){
 module.exports={
   "_name": "High Port",
   "body" : {
@@ -19317,7 +19440,7 @@ module.exports={
     ]
   }
 }
-},{}],123:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
 /**
  * Graphics interface
  */
@@ -19390,7 +19513,7 @@ module.exports = {
     render      : render,
     centerOn    : centerOn
 };
-},{"./custom-lib/pixi.min.js":110}],124:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":110}],125:[function(require,module,exports){
 var Assets          = require('./assets');
 var Graphics        = require('./graphics');
 var HumanController = require('./controller/human');
@@ -19439,6 +19562,44 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
 function update() {
     PlanetController.process();
     controller.process();
+    // todo: process collisions
 }
 
-},{"./assets":106,"./controller/human":108,"./controller/planet":109,"./graphics":123}]},{},[124]);
+},{"./assets":106,"./controller/human":108,"./controller/planet":109,"./graphics":124}],126:[function(require,module,exports){
+/**
+ * Random functions
+ */
+
+/**
+ * @param {number} min
+ * @param {number} max
+ * @returns {number}
+ */
+function int(min, max) {
+    return Math.round(float(min, max));
+}
+
+/**
+ * @param {number} min
+ * @param {number} max
+ * @returns {number}
+ */
+function float(min, max) {
+    return min + Math.random() * (max - min);
+}
+
+/**
+ * @param {Array} a
+ * @returns {any}
+ */
+function arrayEl(a) {
+    return a[Math.floor(a.length * Math.random())];
+}
+
+module.exports = {
+    int     : int,
+    float   : float,
+    arrayEl : arrayEl
+};
+
+},{}]},{},[125]);

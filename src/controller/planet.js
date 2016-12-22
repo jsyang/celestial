@@ -20,18 +20,23 @@ function updatePosition(x, y) {
     pcolony.y = y;
 }
 
-var planet, pbase, pcomm, plab, pcolony;
+var planet, pbase, pcomm, plab, pcolony, starport;
+
+var DEFAULT_OPTIONS = { x : 0, y : 0, rotation : 0, team : Entity.TEAM.BLUE };
 
 function init() {
-    var defaultPosition = { x : 0, y : 0, rotation : 0 };
 
-    planet  = Entity.create('Planet', defaultPosition);
-    pbase   = Entity.create('PBase', defaultPosition);
-    pcomm   = Entity.create('PComm', pcomm);
-    plab    = Entity.create('PLab', plab);
-    pcolony = Entity.create('PColony', pcolony);
+    planet  = Entity.create('Planet', DEFAULT_OPTIONS);
+    pbase   = Entity.create('PBase', DEFAULT_OPTIONS);
+    pcomm   = Entity.create('PComm', DEFAULT_OPTIONS);
+    plab    = Entity.create('PLab', DEFAULT_OPTIONS);
+    pcolony = Entity.create('PColony', DEFAULT_OPTIONS);
+
+    starport = Entity.create('StarPort', DEFAULT_OPTIONS);
 
     Graphics.addChild(
+        starport.graphics,
+
         planet.graphics,
         pbase.graphics,
         pcomm.graphics,
@@ -42,13 +47,15 @@ function init() {
 
 function process() {
     childRotation += dChildRotation;
-    var px = Math.cos(childRotation) * childDistance;
-    var py = Math.sin(childRotation) * childDistance;
+    var px = Math.cos(childRotation) * childDistance + attractorX;
+    var py = Math.sin(childRotation) * childDistance + attractorY;
 
-    updatePosition(
-        px + attractorX,
-        py + attractorY
-    );
+    updatePosition(px, py);
+
+    // todo: convert sample orbit rotation to more generalized case
+    starport.rotation += dChildRotation * 2.5;
+    starport.x = px + Math.cos(starport.rotation) * 150;
+    starport.y = py + Math.sin(starport.rotation) * 150;
 }
 
 module.exports = {

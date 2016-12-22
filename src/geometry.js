@@ -1,10 +1,22 @@
 var PIXI = require('./custom-lib/pixi.min.js');
 var SAT  = require('sat');
 
+/**
+ * Alias for SAT.Vector
+ * @param {number} x
+ * @param {number} y
+ * @returns {*|Vector}
+ */
 function v(x, y) {
     return new SAT.Vector(x, y);
 }
 
+/**
+ *
+ * @param {object} graphics     - PixiJS primitive
+ * @param {object} collision    - SAT primitive
+ * @returns {{x, y, rotation, x, y, rotation, graphics: *, collision: *}}
+ */
 function createMutableGeoInterface(graphics, collision) {
     return {
         set x(x) {
@@ -35,6 +47,7 @@ function createMutableGeoInterface(graphics, collision) {
     };
 }
 
+
 function createCircle(options) {
     var g = new PIXI.Graphics();
 
@@ -58,6 +71,7 @@ function createCircle(options) {
         g, new SAT.Circle(v(g.x, g.y), options.radius)
     );
 }
+
 
 function createRectangle(options) {
     var g = new PIXI.Graphics();
@@ -83,6 +97,7 @@ function createRectangle(options) {
     );
 }
 
+
 function createLine(options) {
     var g = new PIXI.Graphics();
 
@@ -97,6 +112,7 @@ function createLine(options) {
     g.y = options.y1;
     return g;
 }
+
 
 function createPolygon(options) {
     var g = new PIXI.Graphics();
@@ -131,18 +147,38 @@ function createPolygon(options) {
     );
 }
 
-function Geometry(options) {
-    if (options.type === 'circle') {
-        return createCircle(options);
+/**
+ * @param {object} geometryDef Collision and Graphics Geometry
+ * @param {object} options
+ */
+function Geometry(geometryDef, options) {
+    // Start with default geometries loaded from `src/geometry/*.json`
+    var geometryOptions = JSON.parse(JSON.stringify(geometryDef));
 
-    } else if (options.type === 'line') {
-        return createLine(options);
+    // Overwrite properties as needed (e.g. x, y, rotation, lineStyle, ...)
+    if (options) {
+        for (var k in options) {
+            if (options.hasOwnProperty(k)) {
+                geometryOptions[k] = options[k];
+            }
+        }
+    } else {
+        geometryOptions.x = 0;
+        geometryOptions.y = 0;
+    }
 
-    } else if (options.type === 'rectangle') {
-        return createRectangle(options);
+    // Create geometry for graphics and collision
+    if (geometryOptions.type === 'circle') {
+        return createCircle(geometryOptions);
 
-    } else if (options.type === 'polygon') {
-        return createPolygon(options);
+    } else if (geometryOptions.type === 'line') {
+        return createLine(geometryOptions);
+
+    } else if (geometryOptions.type === 'rectangle') {
+        return createRectangle(geometryOptions);
+
+    } else if (geometryOptions.type === 'polygon') {
+        return createPolygon(geometryOptions);
     }
 }
 

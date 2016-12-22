@@ -1,38 +1,35 @@
 var Geometry = require('./geometry');
+var EntityDB = require('./entityDB');
 
-var Planet     = require('./geometry/Planet.json');
-var PBase      = require('./geometry/PBase.json');
-var PComm      = require('./geometry/PComm.json');
-var PColony    = require('./geometry/PColony.json');
-var PLab       = require('./geometry/PLab.json');
-var StarPort   = require('./geometry/StarPort.json');
-var Star       = require('./geometry/Star.json');
-var ShotNormal = require('./geometry/ShotNormal.json');
-var Fighter    = require('./geometry/Fighter.json');
-var Freighter  = require('./geometry/Freighter.json');
+var Planet    = require('./geometry/Planet.json');
+var PBase     = require('./geometry/PBase.json');
+var PComm     = require('./geometry/PComm.json');
+var PColony   = require('./geometry/PColony.json');
+var PLab      = require('./geometry/PLab.json');
+var StarPort  = require('./geometry/StarPort.json');
+var Star      = require('./geometry/Star.json');
+var Shot      = require('./geometry/Shot.json');
+var Fighter   = require('./geometry/Fighter.json');
+var Freighter = require('./geometry/Freighter.json');
 
-function getGeometry(geometryDef, options) {
-    var geometryOptions = JSON.parse(JSON.stringify(geometryDef));
-
-    if (options) {
-        for (var k in options) {
-            if (options.hasOwnProperty(k)) {
-                geometryOptions[k] = options[k];
-            }
-        }
-    } else {
-        geometryOptions.x = 0;
-        geometryOptions.y = 0;
-    }
-
-    return Geometry(geometryOptions);
+/**
+ * Set child DisplayObject visibility.
+ * @param {number} childIndex
+ * @param {boolean} isVisible
+ */
+function setVisible(childIndex, isVisible) {
+    this.graphics.getChildAt(childIndex).visible = isVisible;
 }
 
-//
+/**
+ * Creation of more complicated entities: e.g. ones with
+ * multiple hit polygons and segments / conditionally
+ * rendered parts.
+ */
 
 function createPlanet(options) {
-    var planet = getGeometry(Planet.body, options);
-    var flag   = getGeometry(Planet.flag);
+    var planet = Geometry(Planet.body, options);
+    var flag   = Geometry(Planet.flag);
 
     planet.graphics.addChild(flag.graphics);
 
@@ -40,33 +37,41 @@ function createPlanet(options) {
 }
 
 function createFighter(options) {
-    var fighter = getGeometry(Fighter.body, options);
+    var fighter = Geometry(Fighter.body, options);
 
-    var flame1 = getGeometry(Fighter.flame1);
-    var flame2 = getGeometry(Fighter.flame2);
+    var flame1 = Geometry(Fighter.flame1);
+    var flame2 = Geometry(Fighter.flame2);
 
     fighter.graphics.addChild(
         flame1.graphics,
         flame2.graphics
     );
 
+    flame1.graphics.visible = false;
+    flame2.graphics.visible = false;
+
+    fighter.flame1On  = setVisible.bind(fighter, 0, true);
+    fighter.flame1Off = setVisible.bind(fighter, 0, false);
+    fighter.flame2On  = setVisible.bind(fighter, 1, true);
+    fighter.flame2Off = setVisible.bind(fighter, 1, false);
+
     return fighter;
 }
 
-function createStarPort(options){
-    var starport = getGeometry(StarPort.body, options);
-    var flame1   = getGeometry(StarPort.flame1);
-    var flame2   = getGeometry(StarPort.flame2);
-    var flame3   = getGeometry(StarPort.flame3);
-    var flame4   = getGeometry(StarPort.flame4);
+function createStarPort(options) {
+    var starport = Geometry(StarPort.body, options);
+    var flame1   = Geometry(StarPort.flame1);
+    var flame2   = Geometry(StarPort.flame2);
+    var flame3   = Geometry(StarPort.flame3);
+    var flame4   = Geometry(StarPort.flame4);
 
-    var shipyard = getGeometry(StarPort.shipyard);
-    var sensors  = getGeometry(StarPort.sensors);
+    var shipyard = Geometry(StarPort.shipyard);
+    var sensors  = Geometry(StarPort.sensors);
 
-    var turret1 = getGeometry(StarPort.turret1);
-    var turret2 = getGeometry(StarPort.turret2);
-    var turret3 = getGeometry(StarPort.turret3);
-    var turret4 = getGeometry(StarPort.turret4);
+    var turret1 = Geometry(StarPort.turret1);
+    var turret2 = Geometry(StarPort.turret2);
+    var turret3 = Geometry(StarPort.turret3);
+    var turret4 = Geometry(StarPort.turret4);
 
     starport.graphics
         .addChild(
@@ -88,11 +93,11 @@ function createStarPort(options){
 }
 
 function createPBase(options) {
-    var pbase   = getGeometry(PBase.body, options);
-    var turret1 = getGeometry(PBase.turret1);
-    var turret2 = getGeometry(PBase.turret2);
-    var turret3 = getGeometry(PBase.turret3);
-    var turret4 = getGeometry(PBase.turret4);
+    var pbase   = Geometry(PBase.body, options);
+    var turret1 = Geometry(PBase.turret1);
+    var turret2 = Geometry(PBase.turret2);
+    var turret3 = Geometry(PBase.turret3);
+    var turret4 = Geometry(PBase.turret4);
 
     pbase.graphics.addChild(
         turret1.graphics,
@@ -105,56 +110,78 @@ function createPBase(options) {
 }
 
 function createFreighter(options) {
-    var freighter = getGeometry(Freighter.body, options);
-    var cargoPodL = getGeometry(Freighter.cargopodL);
-    var cargoPodR = getGeometry(Freighter.cargopodR);
-    var turret1   = getGeometry(Freighter.turret1);
-    var turret2   = getGeometry(Freighter.turret2);
-    var flag      = getGeometry(Freighter.flag);
-    var flame     = getGeometry(Freighter.flame);
+    var freighter = Geometry(Freighter.body, options);
+    var cargoPodL = Geometry(Freighter.cargopodL);
+    var cargoPodR = Geometry(Freighter.cargopodR);
+    var turret1   = Geometry(Freighter.turret1);
+    var turret2   = Geometry(Freighter.turret2);
+    var flag      = Geometry(Freighter.flag);
+    var flame     = Geometry(Freighter.flame);
 
     freighter.graphics
         .addChild(
+            flame.graphics,
+            flag.graphics,
             cargoPodL.graphics,
             cargoPodR.graphics,
             turret1.graphics,
-            turret2.graphics,
-            flame.graphics,
-            flag.graphics
+            turret2.graphics
         );
+
+    freighter.flameOn  = setVisible.bind(freighter, 0, true);
+    freighter.flameOff = setVisible.bind(freighter, 0, false);
 
     return freighter;
 }
 
 function createPComm(options) {
     // todo: collisionPath should be a convex polygon
-    return getGeometry(PComm, options);
+    return Geometry(PComm, options);
 }
 
 function create(type, options) {
+    var entity;
+
     if (type === 'Star') {
-        return getGeometry(Star, options);
-    } else if (type === 'ShotNormal') {
-        return getGeometry(ShotNormal, options);
+        entity = Geometry(Star, options);
+    } else if (type === 'Shot') {
+        entity = Geometry(Shot, options);
     } else if (type === 'PColony') {
-        return getGeometry(PColony, options);
+        entity = Geometry(PColony, options);
     } else if (type === 'PLab') {
-        return getGeometry(PLab, options);
+        entity = Geometry(PLab, options);
     } else if (type === 'PComm') {
-        return createPComm(options);
+        entity = createPComm(options);
     } else if (type === 'Planet') {
-        return createPlanet(options);
+        entity = createPlanet(options);
     } else if (type === 'Fighter') {
-        return createFighter(options);
+        entity = createFighter(options);
     } else if (type === 'StarPort') {
-        return createStarPort(options);
+        entity = createStarPort(options);
     } else if (type === 'PBase') {
-        return createPBase(options);
+        entity = createPBase(options);
     } else if (type === 'Freighter') {
-        return createFreighter(options);
+        entity = createFreighter(options);
     }
+
+    if (entity) {
+        entity.type = type;
+        entity.team = options.team;
+        EntityDB.add(entity);
+    }
+
+    return entity;
 }
 
+var TEAM = {
+    BLUE    : 0,
+    GREEN   : 1,
+    RED     : 2,
+    YELLOW  : 3,
+    MAGENTA : 4
+};
+
 module.exports = {
-    create : create
+    create : create,
+    TEAM   : TEAM
 };
