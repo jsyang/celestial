@@ -3,9 +3,9 @@ var Entity   = require('../entity');
 
 var childRotation  = 0;
 var dChildRotation = 0.0001;
-var childDistance  = 400;
-var attractorX     = -500;
-var attractorY     = 100;
+var childDistance  = 1200;
+var attractorX     = -100;
+var attractorY     = -50;
 
 function updatePosition(x, y) {
     planet.x  = x;
@@ -20,11 +20,18 @@ function updatePosition(x, y) {
     pcolony.y = y;
 }
 
-var planet, pbase, pcomm, plab, pcolony, starport;
+var star, planet, pbase, pcomm, plab, pcolony, starport, freighter;
 
 var DEFAULT_OPTIONS = { x : 0, y : 0, rotation : 0, team : Entity.TEAM.BLUE };
+var DEGREES90       = Math.PI * 0.5;
+var DEGREES10       = Math.PI * 0.5 / 9;
 
 function init() {
+    star = Entity.create('Star', {
+        x        : attractorX,
+        y        : attractorY,
+        rotation : 0
+    });
 
     planet  = Entity.create('Planet', DEFAULT_OPTIONS);
     pbase   = Entity.create('PBase', DEFAULT_OPTIONS);
@@ -32,11 +39,16 @@ function init() {
     plab    = Entity.create('PLab', DEFAULT_OPTIONS);
     pcolony = Entity.create('PColony', DEFAULT_OPTIONS);
 
-    starport = Entity.create('StarPort', DEFAULT_OPTIONS);
+    starport  = Entity.create('StarPort', DEFAULT_OPTIONS);
+    freighter = Entity.create('Freighter', DEFAULT_OPTIONS);
+
+    freighter.rotation = -6 * DEGREES10;
 
     Graphics.addChild(
         starport.graphics,
+        freighter.graphics,
 
+        star.graphics,
         planet.graphics,
         pbase.graphics,
         pcomm.graphics,
@@ -45,6 +57,9 @@ function init() {
     );
 }
 
+var orbitRotationFactor = 2.5;
+var orbitDistance       = 200;
+
 function process() {
     childRotation += dChildRotation;
     var px = Math.cos(childRotation) * childDistance + attractorX;
@@ -52,12 +67,21 @@ function process() {
     updatePosition(px, py);
 
     // todo: convert sample orbit rotation to more generalized case
-    starport.rotation += dChildRotation * 2.5;
-    starport.x = px + Math.cos(starport.rotation) * 150;
-    starport.y = py + Math.sin(starport.rotation) * 150;
+    starport.rotation += dChildRotation * orbitRotationFactor;
+    starport.x = px + Math.cos(starport.rotation) * orbitDistance;
+    starport.y = py + Math.sin(starport.rotation) * orbitDistance;
+
+    freighter.rotation += dChildRotation * orbitRotationFactor;
+    freighter.x = px + Math.cos(freighter.rotation - DEGREES90) * orbitDistance;
+    freighter.y = py + Math.sin(freighter.rotation - DEGREES90) * orbitDistance;
+}
+
+function getFocalPoint() {
+    return pbase;
 }
 
 module.exports = {
-    init    : init,
-    process : process
+    init          : init,
+    process       : process,
+    getFocalPoint : getFocalPoint
 };

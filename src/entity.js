@@ -131,6 +131,9 @@ function createFreighter(options) {
     freighter.flameOn  = setVisible.bind(freighter, 0, true);
     freighter.flameOff = setVisible.bind(freighter, 0, false);
 
+    freighter.flameOff();
+    freighter.graphics.alpha = 0.85;
+
     return freighter;
 }
 

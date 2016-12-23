@@ -13,7 +13,10 @@ function add(entity) {
 
     byId[entity.id.toString()]     = entity;
     byType[entity.type.toString()] = entity;
-    byTeam[entity.team.toString()] = entity;
+
+    if(entity.team) {
+        byTeam[entity.team.toString()] = entity;
+    }
 }
 
 function getByType(type) {
@@ -46,5 +49,7 @@ module.exports = {
 
     getByType : getByType,
     getByTeam : getByTeam,
-    getById   : getById
+    getById   : getById,
+
+
 };

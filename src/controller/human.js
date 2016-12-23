@@ -1,20 +1,10 @@
 var Audio    = require('../audio');
 var Entity   = require('../entity');
 var Graphics = require('../graphics');
-var SAT      = require('sat');
 
-var freighter;
-var star;
 var fighter;
 
 function init() {
-    star = Entity.create('Star', {
-        x        : 400,
-        y        : 50,
-        rotation : 0,
-        team     : Entity.TEAM.BLUE
-    });
-
     fighter = Entity.create('Fighter', {
         x        : 20,
         y        : 0,
@@ -22,18 +12,7 @@ function init() {
         team     : Entity.TEAM.BLUE
     });
 
-    freighter = Entity.create('Freighter', {
-        x        : 30,
-        y        : -30,
-        rotation : 0,
-        team     : Entity.TEAM.BLUE
-    });
-
-    Graphics.addChild(
-        star.graphics,
-        fighter.graphics,
-        freighter.graphics
-    );
+    Graphics.addChild(fighter.graphics);
 
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
@@ -71,11 +50,14 @@ function onKeyDown(e) {
     }
 }
 
+var DROTATION = 0.05;
+var SPEED     = 3;
+
 function process() {
     if (keyDown.left_arrow) {
-        freighter.rotation -= 0.03;
+        fighter.rotation -= DROTATION;
     } else if (keyDown.right_arrow) {
-        freighter.rotation += 0.03;
+        fighter.rotation += DROTATION;
     }
 
     if (keyDown.down_arrow) {
@@ -83,24 +65,18 @@ function process() {
     }
 
     if (keyDown.up_arrow) {
-        freighter.x += Math.cos(freighter.rotation);
-        freighter.y += Math.sin(freighter.rotation);
-        freighter.flameOn();
+        fighter.x += Math.cos(fighter.rotation) * SPEED;
+        fighter.y += Math.sin(fighter.rotation) * SPEED;
+        fighter.flame1On();
+        fighter.flame2On();
     } else {
-        freighter.flameOff();
+        fighter.flame1Off();
+        fighter.flame2Off();
     }
-
-    if (SAT.testPolygonCircle(freighter.collision, star.collision)) {
-        freighter.graphics.alpha = 0.4;
-    } else {
-        freighter.graphics.alpha = 0.8;
-    }
-
-
 }
 
 function getFocalPoint() {
-    return freighter;
+    return fighter;
 }
 
 module.exports = {

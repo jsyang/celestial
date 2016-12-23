@@ -1,7 +1,10 @@
-var Assets          = require('./assets');
-var Graphics        = require('./graphics');
-var HumanController = require('./controller/human');
-var PlanetController = require('./controller/planet');
+var Assets   = require('./assets');
+var Graphics = require('./graphics');
+
+var HumanController      = require('./controller/human');
+var PlanetController     = require('./controller/planet');
+var CollisionController  = require('./controller/collision');
+var ProjectileController = require('./controller/projectile');
 
 // // // // Game loop // // // //
 
@@ -44,4 +47,6 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
 function update() {
     PlanetController.process();
     HumanController.process();
+    ProjectileController.process();
+    CollisionController.process();
 }

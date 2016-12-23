@@ -1,9 +1,5 @@
-var EntityDB = require('../entityDB');
-
 function init() {}
-function process() {
-
-}
+function process() {}
 function getFocalPoint() {}
 
 module.exports = {
