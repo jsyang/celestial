@@ -1,3 +1,4 @@
+var Graphics = require('./graphics');
 var Geometry = require('./geometry');
 var EntityDB = require('./entityDB');
 
@@ -147,8 +148,12 @@ function create(type, options) {
 
     if (type === 'Star') {
         entity = Geometry(Star, options);
-    } else if (type === 'Shot') {
-        entity = Geometry(Shot, options);
+    } else if (type === 'ShotCannonNormal') {
+        entity = Geometry(Shot.cannon_normal, options);
+
+        entity.dx       = options.dx;
+        entity.dy       = options.dy;
+        entity.lifespan = options.lifespan;
     } else if (type === 'PColony') {
         entity = Geometry(PColony, options);
     } else if (type === 'PLab') {
@@ -159,6 +164,9 @@ function create(type, options) {
         entity = createPlanet(options);
     } else if (type === 'Fighter') {
         entity = createFighter(options);
+
+        entity.dx = options.dx;
+        entity.dy = options.dy;
     } else if (type === 'StarPort') {
         entity = createStarPort(options);
     } else if (type === 'PBase') {
@@ -171,6 +179,9 @@ function create(type, options) {
         entity.type = type;
         entity.team = options.team;
         EntityDB.add(entity);
+
+        // Add entity to PixiJS stage
+        Graphics.addChild(entity.graphics);
     }
 
     return entity;

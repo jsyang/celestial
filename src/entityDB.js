@@ -1,4 +1,5 @@
-var Random = require('./random');
+var Graphics = require('./graphics');
+var Random   = require('./random');
 
 var byId   = {};
 var byType = {};
@@ -11,12 +12,19 @@ function generateId() {
 function add(entity) {
     entity.id = generateId();
 
-    byId[entity.id.toString()]     = entity;
-    byType[entity.type.toString()] = entity;
+    byId[entity.id.toString()] = entity;
 
-    if(entity.team) {
-        byTeam[entity.team.toString()] = entity;
+    if (byType[entity.type.toString()]) {
+        byType[entity.type.toString()].push(entity);
+    } else {
+        byType[entity.type.toString()] = [entity];
     }
+
+    /*
+     if(entity.team) {
+     byTeam[entity.team.toString()] = entity;
+     }
+     */
 }
 
 function getByType(type) {
@@ -33,12 +41,23 @@ function getById(id) {
 
 function remove(entity) {
     /** todo **/
+    delete byId[entity.id];
+
+    var byTypeIndex = -1;
+    byType[entity.type].filter(function (e, i) {
+        if (e === entity) {
+            byTypeIndex = i;
+        }
+    });
+
+    byType[entity.type].splice(byTypeIndex, 1);
+
     // delete byId reference
     // delete byType reference
     // delete byTeam reference
 
     // delete from SAT
-    // delete from PixiJS stage
+    Graphics.removeChild(entity.graphics);
 
     // break any remaining references for garbage collector
 }
@@ -49,7 +68,5 @@ module.exports = {
 
     getByType : getByType,
     getByTeam : getByTeam,
-    getById   : getById,
-
-
+    getById   : getById
 };

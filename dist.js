@@ -18308,9 +18308,10 @@ module.exports = {
     getFocalPoint : getFocalPoint
 };
 },{"../entityDB":114}],109:[function(require,module,exports){
-var Audio    = require('../audio');
-var Entity   = require('../entity');
-var Graphics = require('../graphics');
+var Audio  = require('../audio');
+var Entity = require('../entity');
+
+var ProjectileController = require('../controller/projectile');
 
 var fighter;
 
@@ -18318,11 +18319,11 @@ function init() {
     fighter = Entity.create('Fighter', {
         x        : 20,
         y        : 0,
+        dx       : 0,
+        dy       : 0,
         rotation : 0,
         team     : Entity.TEAM.BLUE
     });
-
-    Graphics.addChild(fighter.graphics);
 
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
@@ -18337,6 +18338,10 @@ function onKeyUp(e) {
         keyDown.right_arrow = false;
     } else if (e.which === 38) {
         keyDown.up_arrow = false;
+    } else if (e.which === 40) {
+        keyDown.down_arrow = false;
+    } else if (e.which === 70) {
+        keyDown.f = false;
     }
 }
 
@@ -18356,12 +18361,36 @@ function onKeyDown(e) {
     } else if (e.which === 40) {
         // Down arrow
         keyDown.down_arrow = true;
-        Audio.play('hit');
+
+    } else if (e.which === 70) {
+        // F
+        keyDown.f = true;
     }
+
 }
 
-var DROTATION = 0.05;
-var SPEED     = 3;
+var DROTATION    = 0.05;
+var ACCELERATION = 0.2;
+
+var TIME_BETWEEN_SHOTS = 100;
+var lastShotTime       = 0;
+
+function shoot() {
+    var now = Date.now();
+
+    if (now - lastShotTime > TIME_BETWEEN_SHOTS) {
+        ProjectileController.shoot(
+            'ShotCannonNormal',
+            fighter.collision.calcPoints[1],
+            fighter,
+            2
+        );
+
+        Audio.play('fire');
+
+        lastShotTime = now;
+    }
+}
 
 function process() {
     if (keyDown.left_arrow) {
@@ -18370,19 +18399,22 @@ function process() {
         fighter.rotation += DROTATION;
     }
 
-    if (keyDown.down_arrow) {
-        // shoot
+    if (keyDown.f) {
+        shoot();
     }
 
     if (keyDown.up_arrow) {
-        fighter.x += Math.cos(fighter.rotation) * SPEED;
-        fighter.y += Math.sin(fighter.rotation) * SPEED;
+        fighter.dx += Math.cos(fighter.rotation) * ACCELERATION;
+        fighter.dy += Math.sin(fighter.rotation) * ACCELERATION;
         fighter.flame1On();
         fighter.flame2On();
     } else {
         fighter.flame1Off();
         fighter.flame2Off();
     }
+
+    fighter.x += fighter.dx;
+    fighter.y += fighter.dy;
 }
 
 function getFocalPoint() {
@@ -18394,9 +18426,8 @@ module.exports = {
     process       : process,
     getFocalPoint : getFocalPoint
 };
-},{"../audio":107,"../entity":113,"../graphics":126}],110:[function(require,module,exports){
-var Graphics = require('../graphics');
-var Entity   = require('../entity');
+},{"../audio":107,"../controller/projectile":111,"../entity":113}],110:[function(require,module,exports){
+var Entity = require('../entity');
 
 var childRotation  = 0;
 var dChildRotation = 0.0001;
@@ -18440,18 +18471,6 @@ function init() {
     freighter = Entity.create('Freighter', DEFAULT_OPTIONS);
 
     freighter.rotation = -6 * DEGREES10;
-
-    Graphics.addChild(
-        starport.graphics,
-        freighter.graphics,
-
-        star.graphics,
-        planet.graphics,
-        pbase.graphics,
-        pcomm.graphics,
-        plab.graphics,
-        pcolony.graphics
-    );
 }
 
 var orbitRotationFactor = 2.5;
@@ -18482,17 +18501,51 @@ module.exports = {
     process       : process,
     getFocalPoint : getFocalPoint
 };
-},{"../entity":113,"../graphics":126}],111:[function(require,module,exports){
-function init() {}
-function process() {}
+},{"../entity":113}],111:[function(require,module,exports){
+var Entity   = require('../entity');
+var EntityDB = require('../entityDB');
+
+function shoot(type, muzzle, shooter, projectileSpeed) {
+    var dx = Math.cos(shooter.rotation) * projectileSpeed;
+    var dy = Math.sin(shooter.rotation) * projectileSpeed;
+
+    Entity.create(type, {
+        x        : muzzle.x + shooter.x,
+        y        : muzzle.y + shooter.y,
+        team     : shooter.team,
+        dx       : dx + shooter.dx,
+        dy       : dy + shooter.dy,
+        lifespan : 100
+    });
+}
+
+function move(p) {
+    p.x += p.dx;
+    p.y += p.dy;
+
+    if (p.lifespan > 0) {
+        p.lifespan--;
+    } else {
+        EntityDB.remove(p);
+    }
+}
+
+function process() {
+    var shotCannonNormal = EntityDB.getByType('ShotCannonNormal');
+
+    if (shotCannonNormal) {
+        shotCannonNormal.forEach(move);
+    }
+}
+
 function getFocalPoint() {}
 
 module.exports = {
-    init          : init,
+    shoot         : shoot,
     process       : process,
     getFocalPoint : getFocalPoint
 };
-},{}],112:[function(require,module,exports){
+},{"../entity":113,"../entityDB":114}],112:[function(require,module,exports){
 (function (global){
 /*!
  * pixi.js - v4.3.0
@@ -18517,6 +18570,7 @@ module.exports = {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],113:[function(require,module,exports){
+var Graphics = require('./graphics');
 var Geometry = require('./geometry');
 var EntityDB = require('./entityDB');
 
@@ -18666,8 +18720,12 @@ function create(type, options) {
 
     if (type === 'Star') {
         entity = Geometry(Star, options);
-    } else if (type === 'Shot') {
-        entity = Geometry(Shot, options);
+    } else if (type === 'ShotCannonNormal') {
+        entity = Geometry(Shot.cannon_normal, options);
+
+        entity.dx       = options.dx;
+        entity.dy       = options.dy;
+        entity.lifespan = options.lifespan;
     } else if (type === 'PColony') {
         entity = Geometry(PColony, options);
     } else if (type === 'PLab') {
@@ -18678,6 +18736,9 @@ function create(type, options) {
         entity = createPlanet(options);
     } else if (type === 'Fighter') {
         entity = createFighter(options);
+
+        entity.dx = options.dx;
+        entity.dy = options.dy;
     } else if (type === 'StarPort') {
         entity = createStarPort(options);
     } else if (type === 'PBase') {
@@ -18690,6 +18751,9 @@ function create(type, options) {
         entity.type = type;
         entity.team = options.team;
         EntityDB.add(entity);
+
+        // Add entity to PixiJS stage
+        Graphics.addChild(entity.graphics);
     }
 
     return entity;
@@ -18707,8 +18771,9 @@ module.exports = {
     create : create,
     TEAM   : TEAM
 };
-},{"./entityDB":114,"./geometry":115,"./geometry/Fighter.json":116,"./geometry/Freighter.json":117,"./geometry/PBase.json":118,"./geometry/PColony.json":119,"./geometry/PComm.json":120,"./geometry/PLab.json":121,"./geometry/Planet.json":122,"./geometry/Shot.json":123,"./geometry/Star.json":124,"./geometry/StarPort.json":125}],114:[function(require,module,exports){
-var Random = require('./random');
+},{"./entityDB":114,"./geometry":115,"./geometry/Fighter.json":116,"./geometry/Freighter.json":117,"./geometry/PBase.json":118,"./geometry/PColony.json":119,"./geometry/PComm.json":120,"./geometry/PLab.json":121,"./geometry/Planet.json":122,"./geometry/Shot.json":123,"./geometry/Star.json":124,"./geometry/StarPort.json":125,"./graphics":126}],114:[function(require,module,exports){
+var Graphics = require('./graphics');
+var Random   = require('./random');
 
 var byId   = {};
 var byType = {};
@@ -18721,12 +18786,19 @@ function generateId() {
 function add(entity) {
     entity.id = generateId();
 
-    byId[entity.id.toString()]     = entity;
-    byType[entity.type.toString()] = entity;
+    byId[entity.id.toString()] = entity;
 
-    if(entity.team) {
-        byTeam[entity.team.toString()] = entity;
+    if (byType[entity.type.toString()]) {
+        byType[entity.type.toString()].push(entity);
+    } else {
+        byType[entity.type.toString()] = [entity];
     }
+
+    /*
+     if(entity.team) {
+     byTeam[entity.team.toString()] = entity;
+     }
+     */
 }
 
 function getByType(type) {
@@ -18743,12 +18815,23 @@ function getById(id) {
 
 function remove(entity) {
     /** todo **/
+    delete byId[entity.id];
+
+    var byTypeIndex = -1;
+    byType[entity.type].filter(function (e, i) {
+        if (e === entity) {
+            byTypeIndex = i;
+        }
+    });
+
+    byType[entity.type].splice(byTypeIndex, 1);
+
     // delete byId reference
     // delete byType reference
     // delete byTeam reference
 
     // delete from SAT
-    // delete from PixiJS stage
+    Graphics.removeChild(entity.graphics);
 
     // break any remaining references for garbage collector
 }
@@ -18759,11 +18842,9 @@ module.exports = {
 
     getByType : getByType,
     getByTeam : getByTeam,
-    getById   : getById,
-
-
+    getById   : getById
 };
-},{"./random":128}],115:[function(require,module,exports){
+},{"./graphics":126,"./random":128}],115:[function(require,module,exports){
 var PIXI = require('./custom-lib/pixi.min.js');
 var SAT  = require('sat');
 
@@ -18972,6 +19053,11 @@ module.exports={
       -4, 6,
       -4, 4,
       -2, 2
+    ],
+    "collisionPath": [
+      -4, -6,
+      8, 0,
+      -4, 6
     ]
   },
   "flame1" : {

@@ -1,5 +1,4 @@
-var Graphics = require('../graphics');
-var Entity   = require('../entity');
+var Entity = require('../entity');
 
 var childRotation  = 0;
 var dChildRotation = 0.0001;
@@ -43,18 +42,6 @@ function init() {
     freighter = Entity.create('Freighter', DEFAULT_OPTIONS);
 
     freighter.rotation = -6 * DEGREES10;
-
-    Graphics.addChild(
-        starport.graphics,
-        freighter.graphics,
-
-        star.graphics,
-        planet.graphics,
-        pbase.graphics,
-        pcomm.graphics,
-        plab.graphics,
-        pcolony.graphics
-    );
 }
 
 var orbitRotationFactor = 2.5;
