@@ -1,5 +1,8 @@
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
+var Audio    = require('../audio');
+
+var SAT = require('sat');
 
 function shoot(type, muzzle, shooter, projectileSpeed) {
     var dx = Math.cos(shooter.rotation) * projectileSpeed;
@@ -20,6 +23,16 @@ function move(p) {
     p.y += p.dy;
 
     if (p.lifespan > 0) {
+        var freighter = EntityDB.getByType('Freighter')[0];
+        if (freighter && SAT.pointInPolygon(p, freighter.collision)) {
+            p.lifespan = 0;
+
+            freighter.hitTime = 5;
+            Audio.play('hit');
+
+            freighter.hp--;
+        }
+
         p.lifespan--;
     } else {
         EntityDB.remove(p);

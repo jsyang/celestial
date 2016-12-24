@@ -172,7 +172,9 @@ function create(type, options) {
     } else if (type === 'PBase') {
         entity = createPBase(options);
     } else if (type === 'Freighter') {
-        entity = createFreighter(options);
+        entity         = createFreighter(options);
+        entity.hitTime = 0;
+        entity.hp      = 10;
     }
 
     if (entity) {

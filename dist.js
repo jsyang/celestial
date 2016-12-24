@@ -18427,7 +18427,9 @@ module.exports = {
     getFocalPoint : getFocalPoint
 };
 },{"../audio":107,"../controller/projectile":111,"../entity":113}],110:[function(require,module,exports){
-var Entity = require('../entity');
+var Audio    = require('../audio');
+var Entity   = require('../entity');
+var EntityDB = require('../entityDB');
 
 var childRotation  = 0;
 var dChildRotation = 0.0001;
@@ -18470,7 +18472,8 @@ function init() {
     starport  = Entity.create('StarPort', DEFAULT_OPTIONS);
     freighter = Entity.create('Freighter', DEFAULT_OPTIONS);
 
-    freighter.rotation = -6 * DEGREES10;
+    freighter.rotation       = -6 * DEGREES10;
+    freighter.graphics.alpha = 0.8;
 }
 
 var orbitRotationFactor = 2.5;
@@ -18487,9 +18490,24 @@ function process() {
     starport.x = px + Math.cos(starport.rotation) * orbitDistance;
     starport.y = py + Math.sin(starport.rotation) * orbitDistance;
 
-    freighter.rotation += dChildRotation * orbitRotationFactor;
-    freighter.x = px + Math.cos(freighter.rotation - DEGREES90) * orbitDistance;
-    freighter.y = py + Math.sin(freighter.rotation - DEGREES90) * orbitDistance;
+    if (freighter) {
+        freighter.rotation += dChildRotation * orbitRotationFactor;
+        freighter.x = px + Math.cos(freighter.rotation - DEGREES90) * orbitDistance;
+        freighter.y = py + Math.sin(freighter.rotation - DEGREES90) * orbitDistance;
+
+        if (freighter.hp > 0) {
+            if (freighter.hitTime > 0) {
+                freighter.hitTime--;
+                freighter.graphics.alpha = 1;
+            } else {
+                freighter.graphics.alpha = 0.8;
+            }
+        } else {
+            EntityDB.remove(freighter);
+            Audio.play('collide');
+            freighter = undefined;
+        }
+    }
 }
 
 function getFocalPoint() {
@@ -18501,9 +18519,12 @@ module.exports = {
     process       : process,
     getFocalPoint : getFocalPoint
 };
-},{"../entity":113}],111:[function(require,module,exports){
+},{"../audio":107,"../entity":113,"../entityDB":114}],111:[function(require,module,exports){
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
+var Audio    = require('../audio');
+
+var SAT = require('sat');
 
 function shoot(type, muzzle, shooter, projectileSpeed) {
     var dx = Math.cos(shooter.rotation) * projectileSpeed;
@@ -18524,6 +18545,16 @@ function move(p) {
     p.y += p.dy;
 
     if (p.lifespan > 0) {
+        var freighter = EntityDB.getByType('Freighter')[0];
+        if (freighter && SAT.pointInPolygon(p, freighter.collision)) {
+            p.lifespan = 0;
+
+            freighter.hitTime = 5;
+            Audio.play('hit');
+
+            freighter.hp--;
+        }
+
         p.lifespan--;
     } else {
         EntityDB.remove(p);
@@ -18545,7 +18576,7 @@ module.exports = {
     process       : process,
     getFocalPoint : getFocalPoint
 };
-},{"../entity":113,"../entityDB":114}],112:[function(require,module,exports){
+},{"../audio":107,"../entity":113,"../entityDB":114,"sat":99}],112:[function(require,module,exports){
 (function (global){
 /*!
  * pixi.js - v4.3.0
@@ -18744,7 +18775,9 @@ function create(type, options) {
     } else if (type === 'PBase') {
         entity = createPBase(options);
     } else if (type === 'Freighter') {
-        entity = createFreighter(options);
+        entity         = createFreighter(options);
+        entity.hitTime = 0;
+        entity.hp      = 10;
     }
 
     if (entity) {
