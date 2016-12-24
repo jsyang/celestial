@@ -18383,7 +18383,7 @@ function shoot() {
             'ShotCannonNormal',
             fighter.collision.calcPoints[1],
             fighter,
-            2
+            4
         );
 
         Audio.play('fire');
@@ -18431,7 +18431,10 @@ var Audio    = require('../audio');
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
 
-var childRotation  = 0;
+var ProjectileController = require('./projectile');
+
+var childRotation = 0;
+
 var dChildRotation = 0.0001;
 var childDistance  = 1200;
 var attractorX     = -100;
@@ -18452,7 +18455,14 @@ function updatePosition(x, y) {
 
 var star, planet, pbase, pcomm, plab, pcolony, starport, freighter;
 
-var DEFAULT_OPTIONS = { x : 0, y : 0, rotation : 0, team : Entity.TEAM.BLUE };
+var DEFAULT_OPTIONS = {
+    x        : 0,
+    y        : 0,
+    rotation : 0,
+    team     : Entity.TEAM.BLUE,
+    dx       : 0,
+    dy       : 0
+};
 var DEGREES90       = Math.PI * 0.5;
 var DEGREES10       = Math.PI * 0.5 / 9;
 
@@ -18505,6 +18515,8 @@ function process() {
         } else {
             EntityDB.remove(freighter);
             Audio.play('collide');
+
+            ProjectileController.explode(freighter, 6);
             freighter = undefined;
         }
     }
@@ -18519,12 +18531,15 @@ module.exports = {
     process       : process,
     getFocalPoint : getFocalPoint
 };
-},{"../audio":107,"../entity":113,"../entityDB":114}],111:[function(require,module,exports){
+},{"../audio":107,"../entity":113,"../entityDB":114,"./projectile":111}],111:[function(require,module,exports){
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
 var Audio    = require('../audio');
+var Random   = require('../random');
 
 var SAT = require('sat');
+
+var LIFESPAN_SHOT_NORMAL = 50;
 
 function shoot(type, muzzle, shooter, projectileSpeed) {
     var dx = Math.cos(shooter.rotation) * projectileSpeed;
@@ -18534,9 +18549,9 @@ function shoot(type, muzzle, shooter, projectileSpeed) {
         x        : muzzle.x + shooter.x,
         y        : muzzle.y + shooter.y,
         team     : shooter.team,
-        dx       : dx + shooter.dx,
-        dy       : dy + shooter.dy,
-        lifespan : 100
+        dx       : dx + (shooter.dx || 0),
+        dy       : dy + (shooter.dy || 0),
+        lifespan : LIFESPAN_SHOT_NORMAL
     });
 }
 
@@ -18569,14 +18584,26 @@ function process() {
     }
 }
 
+function explode(entity, fragmentCount) {
+    for (; fragmentCount > 0; fragmentCount--) {
+        entity.rotation = Random.float(-Math.PI, Math.PI);
+        var muzzle      = {
+            x : Random.float(-10, 10),
+            y : Random.float(-10, 10)
+        };
+        shoot('ShotCannonNormal', muzzle, entity, Random.float(0, 2));
+    }
+}
+
 function getFocalPoint() {}
 
 module.exports = {
     shoot         : shoot,
     process       : process,
+    explode       : explode,
     getFocalPoint : getFocalPoint
 };
-},{"../audio":107,"../entity":113,"../entityDB":114,"sat":99}],112:[function(require,module,exports){
+},{"../audio":107,"../entity":113,"../entityDB":114,"../random":128,"sat":99}],112:[function(require,module,exports){
 (function (global){
 /*!
  * pixi.js - v4.3.0
@@ -18778,6 +18805,8 @@ function create(type, options) {
         entity         = createFreighter(options);
         entity.hitTime = 0;
         entity.hp      = 10;
+        entity.dx      = options.dx;
+        entity.dy      = options.dy;
     }
 
     if (entity) {

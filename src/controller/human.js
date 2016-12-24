@@ -73,7 +73,7 @@ function shoot() {
             'ShotCannonNormal',
             fighter.collision.calcPoints[1],
             fighter,
-            2
+            4
         );
 
         Audio.play('fire');

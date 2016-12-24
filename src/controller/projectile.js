@@ -1,8 +1,11 @@
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
 var Audio    = require('../audio');
+var Random   = require('../random');
 
 var SAT = require('sat');
+
+var LIFESPAN_SHOT_NORMAL = 50;
 
 function shoot(type, muzzle, shooter, projectileSpeed) {
     var dx = Math.cos(shooter.rotation) * projectileSpeed;
@@ -12,9 +15,9 @@ function shoot(type, muzzle, shooter, projectileSpeed) {
         x        : muzzle.x + shooter.x,
         y        : muzzle.y + shooter.y,
         team     : shooter.team,
-        dx       : dx + shooter.dx,
-        dy       : dy + shooter.dy,
-        lifespan : 100
+        dx       : dx + (shooter.dx || 0),
+        dy       : dy + (shooter.dy || 0),
+        lifespan : LIFESPAN_SHOT_NORMAL
     });
 }
 
@@ -47,10 +50,22 @@ function process() {
     }
 }
 
+function explode(entity, fragmentCount) {
+    for (; fragmentCount > 0; fragmentCount--) {
+        entity.rotation = Random.float(-Math.PI, Math.PI);
+        var muzzle      = {
+            x : Random.float(-10, 10),
+            y : Random.float(-10, 10)
+        };
+        shoot('ShotCannonNormal', muzzle, entity, Random.float(0, 2));
+    }
+}
+
 function getFocalPoint() {}
 
 module.exports = {
     shoot         : shoot,
     process       : process,
+    explode       : explode,
     getFocalPoint : getFocalPoint
 };

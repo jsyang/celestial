@@ -2,7 +2,10 @@ var Audio    = require('../audio');
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
 
-var childRotation  = 0;
+var ProjectileController = require('./projectile');
+
+var childRotation = 0;
+
 var dChildRotation = 0.0001;
 var childDistance  = 1200;
 var attractorX     = -100;
@@ -23,7 +26,14 @@ function updatePosition(x, y) {
 
 var star, planet, pbase, pcomm, plab, pcolony, starport, freighter;
 
-var DEFAULT_OPTIONS = { x : 0, y : 0, rotation : 0, team : Entity.TEAM.BLUE };
+var DEFAULT_OPTIONS = {
+    x        : 0,
+    y        : 0,
+    rotation : 0,
+    team     : Entity.TEAM.BLUE,
+    dx       : 0,
+    dy       : 0
+};
 var DEGREES90       = Math.PI * 0.5;
 var DEGREES10       = Math.PI * 0.5 / 9;
 
@@ -76,6 +86,8 @@ function process() {
         } else {
             EntityDB.remove(freighter);
             Audio.play('collide');
+
+            ProjectileController.explode(freighter, 6);
             freighter = undefined;
         }
     }

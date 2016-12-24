@@ -175,6 +175,8 @@ function create(type, options) {
         entity         = createFreighter(options);
         entity.hitTime = 0;
         entity.hp      = 10;
+        entity.dx      = options.dx;
+        entity.dy      = options.dy;
     }
 
     if (entity) {
