@@ -18327,28 +18327,28 @@ var TIME_BETWEEN_SHOTS = 100;
 var lastShotTime       = 0;
 
 function shoot() {
-    var now = Date.now();
+    if (fighter.hp > 0) {
+        var now = Date.now();
 
-    if (now - lastShotTime > TIME_BETWEEN_SHOTS) {
-        ProjectileController.shoot(
-            'ShotCannonNormal',
-            fighter.collision.calcPoints[1],
-            fighter,
-            4
-        );
+        if (now - lastShotTime > TIME_BETWEEN_SHOTS) {
+            ProjectileController.shoot(
+                'ShotCannonNormal',
+                fighter.collision.calcPoints[1],
+                fighter,
+                4
+            );
 
-        Audio.play('fire');
+            Audio.play('fire');
 
-        lastShotTime = now;
+            lastShotTime = now;
+        }
     }
-
-    return this;
 }
 
 var DOCK_DISTANCE_PLANET = 105;
 
 function process() {
-    if(fighter.hp > 0) {
+    if (fighter.hp > 0) {
         if (fighter.isDocked) {
             if (fighter.dockedTo) {
                 var dock  = fighter.dockedTo;
