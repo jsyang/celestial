@@ -11,6 +11,8 @@ function v(x, y) {
     return new SAT.Vector(x, y);
 }
 
+var PIPI = Math.PI * 2;
+
 /**
  *
  * @param {object} graphics     - PixiJS primitive
@@ -28,6 +30,12 @@ function createMutableGeoInterface(graphics, collision) {
             this.collision.pos.y = y;
         },
         set rotation(rotation) {
+            if (rotation > PIPI) {
+                rotation -= PIPI;
+            } else if (rotation < -PIPI) {
+                rotation += PIPI;
+            }
+
             this.graphics.rotation = rotation;
             this.collision.setAngle(rotation);
         },
@@ -46,7 +54,6 @@ function createMutableGeoInterface(graphics, collision) {
         collision : collision
     };
 }
-
 
 function createCircle(options) {
     var g = new PIXI.Graphics();
@@ -72,7 +79,6 @@ function createCircle(options) {
     );
 }
 
-
 function createRectangle(options) {
     var g = new PIXI.Graphics();
 
@@ -97,7 +103,6 @@ function createRectangle(options) {
     );
 }
 
-
 function createLine(options) {
     var g = new PIXI.Graphics();
 
@@ -112,7 +117,6 @@ function createLine(options) {
     g.y = options.y1;
     return g;
 }
-
 
 function createPolygon(options) {
     var g = new PIXI.Graphics();
@@ -133,7 +137,7 @@ function createPolygon(options) {
     g.y = options.y;
 
     var polygonSAT = [];
-    if(options.collisionPath) {
+    if (options.collisionPath) {
         for (var i = 0; i < options.collisionPath.length; i += 2) {
             polygonSAT.push(v(
                 options.collisionPath[i],       // x

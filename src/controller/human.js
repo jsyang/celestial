@@ -1,19 +1,10 @@
-var Audio  = require('../audio');
-var Entity = require('../entity');
+var FighterController = require('./fighter');
+var EntityDB          = require('../entityDB');
 
-var ProjectileController = require('../controller/projectile');
-
-var fighter;
+var focalPoint;
 
 function init() {
-    fighter = Entity.create('Fighter', {
-        x        : 20,
-        y        : 0,
-        dx       : 0,
-        dy       : 0,
-        rotation : 0,
-        team     : Entity.TEAM.BLUE
-    });
+    focalPoint = EntityDB.getByType('Fighter')[0];
 
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
@@ -61,54 +52,49 @@ function onKeyDown(e) {
 
 var DROTATION    = 0.05;
 var ACCELERATION = 0.2;
-
-var TIME_BETWEEN_SHOTS = 100;
-var lastShotTime       = 0;
-
-function shoot() {
-    var now = Date.now();
-
-    if (now - lastShotTime > TIME_BETWEEN_SHOTS) {
-        ProjectileController.shoot(
-            'ShotCannonNormal',
-            fighter.collision.calcPoints[1],
-            fighter,
-            4
-        );
-
-        Audio.play('fire');
-
-        lastShotTime = now;
-    }
-}
+var DOCKED_ACCELERATION = 0.4;
 
 function process() {
-    if (keyDown.left_arrow) {
-        fighter.rotation -= DROTATION;
-    } else if (keyDown.right_arrow) {
-        fighter.rotation += DROTATION;
+    var isDocked =FighterController.isDocked();
+
+    if (!isDocked) {
+        if (keyDown.left_arrow) {
+            FighterController.rotate(-DROTATION);
+        } else if (keyDown.right_arrow) {
+            FighterController.rotate(DROTATION);
+        }
     }
 
     if (keyDown.f) {
-        shoot();
+        FighterController.shoot();
     }
 
     if (keyDown.up_arrow) {
-        fighter.dx += Math.cos(fighter.rotation) * ACCELERATION;
-        fighter.dy += Math.sin(fighter.rotation) * ACCELERATION;
-        fighter.flame1On();
-        fighter.flame2On();
+        FighterController.undock();
+        var rotation = FighterController.getRotation();
+
+        FighterController.flameOn();
+
+        if(isDocked) {
+            FighterController.applyForce(
+                Math.cos(rotation) * DOCKED_ACCELERATION,
+                Math.sin(rotation) * DOCKED_ACCELERATION
+            );
+        } else {
+            FighterController.applyForce(
+                Math.cos(rotation) * ACCELERATION,
+                Math.sin(rotation) * ACCELERATION
+            );
+        }
+
     } else {
-        fighter.flame1Off();
-        fighter.flame2Off();
+        FighterController.flameOff();
     }
 
-    fighter.x += fighter.dx;
-    fighter.y += fighter.dy;
 }
 
 function getFocalPoint() {
-    return fighter;
+    return focalPoint;
 }
 
 module.exports = {

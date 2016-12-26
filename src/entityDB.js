@@ -1,23 +1,15 @@
 var Graphics = require('./graphics');
-var Random   = require('./random');
 
-var byId   = {};
 var byType = {};
 var byTeam = {};
 
-function generateId() {
-    return Random.int(0, Date.now()).toString(16).substr(0, 6);
-}
-
 function add(entity) {
-    entity.id = generateId();
+    var type = entity.type.toString();
 
-    byId[entity.id.toString()] = entity;
-
-    if (byType[entity.type.toString()]) {
-        byType[entity.type.toString()].push(entity);
+    if (byType[type]) {
+        byType[type].push(entity);
     } else {
-        byType[entity.type.toString()] = [entity];
+        byType[type] = [entity];
     }
 
     /*
@@ -35,13 +27,10 @@ function getByTeam(team) {
     return byType[team];
 }
 
-function getById(id) {
-    return byId[id];
-}
-
 function remove(entity) {
-    /** todo **/
-    delete byId[entity.id];
+    if(entity.hp != null) {
+        entity.hp = 0;
+    }
 
     var byTypeIndex = -1;
     byType[entity.type].filter(function (e, i) {
@@ -67,6 +56,5 @@ module.exports = {
     remove : remove,
 
     getByType : getByType,
-    getByTeam : getByTeam,
-    getById   : getById
+    getByTeam : getByTeam
 };

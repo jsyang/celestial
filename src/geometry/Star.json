@@ -1,6 +1,6 @@
 {
   "type": "circle",
-  "radius": 300,
+  "radius": 200,
   "lineStyle": {
     "width": 1,
     "color": 16776960,

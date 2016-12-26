@@ -151,8 +151,8 @@ function create(type, options) {
     } else if (type === 'ShotCannonNormal') {
         entity = Geometry(Shot.cannon_normal, options);
 
-        entity.dx       = options.dx;
-        entity.dy       = options.dy;
+        entity.dx       = options.dx || 0;
+        entity.dy       = options.dy || 0;
         entity.lifespan = options.lifespan;
     } else if (type === 'PColony') {
         entity = Geometry(PColony, options);
@@ -165,18 +165,23 @@ function create(type, options) {
     } else if (type === 'Fighter') {
         entity = createFighter(options);
 
-        entity.dx = options.dx;
-        entity.dy = options.dy;
+        entity.hp       = 6;
+        entity.dx       = options.dx || 0;
+        entity.dy       = options.dy || 0;
+        entity.rotation = options.rotation || 0;
     } else if (type === 'StarPort') {
         entity = createStarPort(options);
     } else if (type === 'PBase') {
         entity = createPBase(options);
     } else if (type === 'Freighter') {
-        entity         = createFreighter(options);
-        entity.hitTime = 0;
-        entity.hp      = 10;
-        entity.dx      = options.dx;
-        entity.dy      = options.dy;
+        entity          = createFreighter(options);
+        entity.hitTime  = 0;
+        entity.hp       = 10;
+        entity.dx       = options.dx || 0;
+        entity.dy       = options.dy || 0;
+        entity.rotation = options.rotation || 0;
+        entity.isDocked = options.isDocked || false;
+        entity.dockedTo = options.dockedTo;
     }
 
     if (entity) {

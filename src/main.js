@@ -2,9 +2,14 @@ var Assets   = require('./assets');
 var Graphics = require('./graphics');
 
 var HumanController      = require('./controller/human');
-var PlanetController     = require('./controller/planet');
 var CollisionController  = require('./controller/collision');
 var ProjectileController = require('./controller/projectile');
+
+var PlanetController    = require('./controller/planet');
+var StarController      = require('./controller/star');
+var FighterController   = require('./controller/fighter');
+var FreighterController = require('./controller/freighter');
+var GravityController   = require('./controller/gravity');
 
 // // // // Game loop // // // //
 
@@ -36,8 +41,15 @@ function start() {
 window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
     Graphics.init();
 
-    HumanController.init();
+    // Create all entities
+    StarController.init();
     PlanetController.init();
+    FighterController.init();
+    FreighterController.init();
+
+    // Initialize controllers
+    GravityController.init();
+    HumanController.init();
 
     Assets.init(start);
 });
@@ -45,8 +57,12 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
 // // // // Game logic // // // //
 
 function update() {
+    //StarController.process();
     PlanetController.process();
     HumanController.process();
+    FighterController.process();
+    FreighterController.process();
     ProjectileController.process();
+    GravityController.process();
     CollisionController.process();
 }
