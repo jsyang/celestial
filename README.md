@@ -2,6 +2,23 @@
 
 Celestial combat. Conquer the universe sector by sector.
 
+## todo
+
+- filter collision testing by grids
+- starfield for movement intuition
+- star collisions
+- homing missiles
+- rockets
+- multiple fighters
+- production ability
+- flag planting
+- gamefield generation
+- asteroids / uninhabitable worlds
+- capital ships
+- gamepad support
+- different mission objectives
+
+
 ## Custom pixijs build
 
 Via [How to build](https://github.com/pixijs/pixi.js#how-to-build), we exclude
