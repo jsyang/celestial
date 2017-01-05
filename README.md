@@ -4,6 +4,8 @@ Celestial combat. Conquer the universe sector by sector.
 
 ## todo
 
+- implement galcon-ish gameplay now that there is a boid-like entity
+
 - filter collision testing by grids
 - starfield for movement intuition
 - star collisions
@@ -17,7 +19,7 @@ Celestial combat. Conquer the universe sector by sector.
 - capital ships
 - gamepad support
 - different mission objectives
-
+- memoize math funcs
 
 ## Custom pixijs build
 

@@ -8,6 +8,7 @@ var ProjectileController = require('./controller/projectile');
 var PlanetController    = require('./controller/planet');
 var StarController      = require('./controller/star');
 var FighterController   = require('./controller/fighter');
+var ProbeController     = require('./controller/probe');
 var FreighterController = require('./controller/freighter');
 var GravityController   = require('./controller/gravity');
 
@@ -46,6 +47,7 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
     PlanetController.init();
     FighterController.init();
     FreighterController.init();
+    ProbeController.init();
 
     // Initialize controllers
     GravityController.init();
@@ -62,6 +64,7 @@ function update() {
     HumanController.process();
     FighterController.process();
     FreighterController.process();
+    ProbeController.process();
     ProjectileController.process();
     GravityController.process();
     CollisionController.process();

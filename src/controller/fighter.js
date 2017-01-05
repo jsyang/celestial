@@ -7,9 +7,10 @@ var fighter;
 
 function init() {
     fighter = Entity.create('Fighter', {
-        x    : 250,
-        y    : -20,
-        team : Entity.TEAM.BLUE
+        x        : 250,
+        y        : 120,
+        team     : Entity.TEAM.BLUE,
+        isDocked : true
     });
 }
 

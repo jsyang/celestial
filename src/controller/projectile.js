@@ -5,38 +5,50 @@ var Random   = require('../random');
 
 var SAT = require('sat');
 
-var LIFESPAN_SHOT_NORMAL = 50;
+var HP_SHOT_NORMAL = 50;
 
 function shoot(type, muzzle, shooter, projectileSpeed) {
     var dx = Math.cos(shooter.rotation) * projectileSpeed;
     var dy = Math.sin(shooter.rotation) * projectileSpeed;
 
     Entity.create(type, {
-        x        : muzzle.x + shooter.x,
-        y        : muzzle.y + shooter.y,
-        team     : shooter.team,
-        dx       : dx + (shooter.dx || 0),
-        dy       : dy + (shooter.dy || 0),
-        lifespan : LIFESPAN_SHOT_NORMAL
+        x    : muzzle.x + shooter.x,
+        y    : muzzle.y + shooter.y,
+        team : shooter.team,
+        dx   : dx + (shooter.dx || 0),
+        dy   : dy + (shooter.dy || 0),
+        hp   : HP_SHOT_NORMAL
     });
+}
+
+function registerHit(p, entity) {
+    Audio.play('hit');
+    entity.hp--;
+    entity.hitTime = 5;
+    EntityDB.remove(p);
 }
 
 function move(p) {
     p.x += p.dx;
     p.y += p.dy;
 
-    if (p.lifespan > 0) {
+    if (p.hp > 0) {
         var freighter = EntityDB.getByType('Freighter')[0];
         if (freighter && SAT.pointInPolygon(p, freighter.collision)) {
-            p.lifespan = 0;
-
-            freighter.hitTime = 5;
-            Audio.play('hit');
-
-            freighter.hp--;
+            registerHit(p, freighter);
         }
 
-        p.lifespan--;
+        var probe = EntityDB.getByType('Probe');
+        if (probe) {
+            for (var i = 0; i < probe.length; i++) {
+                if (Entity.getDistSquared(p, probe[i]) < 49) {
+                    registerHit(p, probe[i]);
+                    break;
+                }
+            }
+        }
+
+        p.hp--;
     } else {
         EntityDB.remove(p);
     }

@@ -39,7 +39,9 @@ function remove(entity) {
         }
     });
 
-    byType[entity.type].splice(byTypeIndex, 1);
+    if(byTypeIndex !== -1) {
+        byType[entity.type].splice(byTypeIndex, 1);
+    }
 
     // delete byId reference
     // delete byType reference

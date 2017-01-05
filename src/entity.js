@@ -2,16 +2,18 @@ var Graphics = require('./graphics');
 var Geometry = require('./geometry');
 var EntityDB = require('./entityDB');
 
-var Planet    = require('./geometry/Planet.json');
-var PBase     = require('./geometry/PBase.json');
-var PComm     = require('./geometry/PComm.json');
-var PColony   = require('./geometry/PColony.json');
-var PLab      = require('./geometry/PLab.json');
-var StarPort  = require('./geometry/StarPort.json');
-var Star      = require('./geometry/Star.json');
-var Shot      = require('./geometry/Shot.json');
-var Fighter   = require('./geometry/Fighter.json');
-var Freighter = require('./geometry/Freighter.json');
+var Planet       = require('./geometry/Planet.json');
+var PBase        = require('./geometry/PBase.json');
+var PComm        = require('./geometry/PComm.json');
+var PColony      = require('./geometry/PColony.json');
+var PLab         = require('./geometry/PLab.json');
+var StarPort     = require('./geometry/StarPort.json');
+var Star         = require('./geometry/Star.json');
+var Shot         = require('./geometry/Shot.json');
+var Fighter      = require('./geometry/Fighter.json');
+var Freighter    = require('./geometry/Freighter.json');
+var Probe        = require('./geometry/Probe.json');
+var PointDisplay = require('./geometry/PointDisplay.json');
 
 /**
  * Set child DisplayObject visibility.
@@ -27,6 +29,10 @@ function setVisible(childIndex, isVisible) {
  * multiple hit polygons and segments / conditionally
  * rendered parts.
  */
+
+function createPointDisplay(options) {
+    return Geometry(PointDisplay, options);
+}
 
 function createPlanet(options) {
     var planet = Geometry(Planet.body, options);
@@ -57,6 +63,20 @@ function createFighter(options) {
     fighter.flame2Off = setVisible.bind(fighter, 1, false);
 
     return fighter;
+}
+
+function createProbe(options) {
+    var probe = Geometry(Probe.body, options);
+    var flame = Geometry(Probe.flame);
+
+    probe.graphics.addChild(flame.graphics);
+
+    flame.graphics.visible = false;
+
+    probe.flameOn  = setVisible.bind(probe, 0, true);
+    probe.flameOff = setVisible.bind(probe, 0, false);
+
+    return probe;
 }
 
 function createStarPort(options) {
@@ -151,9 +171,9 @@ function create(type, options) {
     } else if (type === 'ShotCannonNormal') {
         entity = Geometry(Shot.cannon_normal, options);
 
-        entity.dx       = options.dx || 0;
-        entity.dy       = options.dy || 0;
-        entity.lifespan = options.lifespan;
+        entity.dx = options.dx || 0;
+        entity.dy = options.dy || 0;
+        entity.hp = options.hp || 50;
     } else if (type === 'PColony') {
         entity = Geometry(PColony, options);
     } else if (type === 'PLab') {
@@ -162,13 +182,25 @@ function create(type, options) {
         entity = createPComm(options);
     } else if (type === 'Planet') {
         entity = createPlanet(options);
+    } else if (type === 'PointDisplay') {
+        entity = createPointDisplay(options);
     } else if (type === 'Fighter') {
         entity = createFighter(options);
 
         entity.hp       = 6;
+        entity.isDocked = options.isDocked || false;
+        entity.dockedTo = options.dockedTo;
         entity.dx       = options.dx || 0;
         entity.dy       = options.dy || 0;
         entity.rotation = options.rotation || 0;
+    } else if (type === 'Probe') {
+        entity = createProbe(options);
+
+        entity.hp          = options.hp || 2;
+        entity.hasDied     = false;
+        entity.hitTime     = 0;
+        entity.patrolIndex = 0;
+        entity.rotation    = options.rotation || 0;
     } else if (type === 'StarPort') {
         entity = createStarPort(options);
     } else if (type === 'PBase') {
@@ -196,6 +228,18 @@ function create(type, options) {
     return entity;
 }
 
+function getDistSquared(e1, e2) {
+    var dx = e2.x - e1.x;
+    var dy = e2.y - e1.y;
+    return dx * dx + dy * dy;
+}
+
+function getAngleFromTo(e1, e2) {
+    var dx = e2.x - e1.x;
+    var dy = e2.y - e1.y;
+    return Math.atan2(dy, dx);
+}
+
 var TEAM = {
     BLUE    : 0,
     GREEN   : 1,
@@ -205,6 +249,8 @@ var TEAM = {
 };
 
 module.exports = {
-    create : create,
-    TEAM   : TEAM
+    create         : create,
+    getDistSquared : getDistSquared,
+    getAngleFromTo : getAngleFromTo,
+    TEAM           : TEAM
 };
