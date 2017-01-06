@@ -70,22 +70,12 @@ function process() {
             var rotation = FighterController.getRotation();
             var desiredRotation = gamepad.analogAngle;
 
-            var turnMagnitude = Math.abs(desiredRotation - rotation);
-            if (turnMagnitude > Math.PI) {
-                if (rotation > 0) {
-                    FighterController.rotate(DROTATION * 2);
-                } else {
-                    FighterController.rotate(-DROTATION * 2);
-                }
-            } else {
-                if (rotation > desiredRotation) {
-                    FighterController.rotate(-DROTATION * 2);
-                } else {
-                    FighterController.rotate(DROTATION);
-                }
-            }
-
+            FighterController.rotate(desiredRotation - rotation);
         }
+    }
+
+    if(gamepad.button3 && gamepad.button1) {
+        location.reload();
     }
 
     if (keyDown.f || gamepad.button0) {
