@@ -7,8 +7,6 @@ Celestial combat. Conquer the universe sector by sector.
 - implement galcon-ish gameplay now that there is a boid-like entity
 
 - filter collision testing by grids
-- starfield for movement intuition
-- star collisions
 - homing missiles
 - rockets
 - multiple fighters
