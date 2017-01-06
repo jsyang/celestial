@@ -2,6 +2,10 @@
   "body" :{
     "type": "circle",
     "radius": 100,
+    "fill": {
+      "color": 0,
+      "alpha": 1
+    },
     "lineStyle": {
       "width": 1,
       "color": 65280,

@@ -18307,7 +18307,7 @@ module.exports = {
     process       : process,
     getFocalPoint : getFocalPoint
 };
-},{"../entityDB":119}],109:[function(require,module,exports){
+},{"../entityDB":120}],109:[function(require,module,exports){
 var Audio  = require('../audio');
 var Entity = require('../entity');
 
@@ -18418,7 +18418,7 @@ module.exports = {
     undock      : undock,
     isDocked    : isDocked
 };
-},{"../audio":107,"../controller/projectile":115,"../entity":118}],110:[function(require,module,exports){
+},{"../audio":107,"../controller/projectile":115,"../entity":119}],110:[function(require,module,exports){
 var Audio    = require('../audio');
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
@@ -18478,7 +18478,7 @@ module.exports = {
     init    : init,
     process : process
 };
-},{"../audio":107,"../controller/projectile":115,"../entity":118,"../entityDB":119}],111:[function(require,module,exports){
+},{"../audio":107,"../controller/projectile":115,"../entity":119,"../entityDB":120}],111:[function(require,module,exports){
 /**
  * Gravity and related collisions
  */
@@ -18582,7 +18582,7 @@ module.exports = {
     init    : init,
     process : process
 };
-},{"../audio":107,"../controller/fighter":109,"../controller/projectile":115,"../entityDB":119}],112:[function(require,module,exports){
+},{"../audio":107,"../controller/fighter":109,"../controller/projectile":115,"../entityDB":120}],112:[function(require,module,exports){
 var FighterController = require('./fighter');
 var EntityDB          = require('../entityDB');
 
@@ -18687,7 +18687,7 @@ module.exports = {
     process       : process,
     getFocalPoint : getFocalPoint
 };
-},{"../entityDB":119,"./fighter":109}],113:[function(require,module,exports){
+},{"../entityDB":120,"./fighter":109}],113:[function(require,module,exports){
 var Entity = require('../entity');
 
 var childRotation = 0;
@@ -18750,7 +18750,7 @@ module.exports = {
     init    : init,
     process : process
 };
-},{"../entity":118}],114:[function(require,module,exports){
+},{"../entity":119}],114:[function(require,module,exports){
 var Random   = require('../random');
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
@@ -18775,10 +18775,10 @@ function init() {
     }
 
     for (i = 0; i < POINT_COUNT; i++) {
-        patrolPoints.push(Entity.create('PointDisplay', {
+        patrolPoints.push({
             x : 300 + Random.float(0, 600),
             y : Random.float(0, 600)
-        }));
+        });
     }
 }
 
@@ -18871,7 +18871,7 @@ module.exports = {
     init    : init,
     process : process
 };
-},{"../entity":118,"../entityDB":119,"../random":135}],115:[function(require,module,exports){
+},{"../entity":119,"../entityDB":120,"../random":136}],115:[function(require,module,exports){
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
 var Audio    = require('../audio');
@@ -18955,7 +18955,7 @@ module.exports = {
     explode       : explode,
     getFocalPoint : getFocalPoint
 };
-},{"../audio":107,"../entity":118,"../entityDB":119,"../random":135,"sat":99}],116:[function(require,module,exports){
+},{"../audio":107,"../entity":119,"../entityDB":120,"../random":136,"sat":99}],116:[function(require,module,exports){
 var Entity = require('../entity');
 
 var star;
@@ -18977,7 +18977,123 @@ module.exports = {
     init    : init,
     process : process
 };
-},{"../entity":118}],117:[function(require,module,exports){
+},{"../entity":119}],117:[function(require,module,exports){
+var PIXI   = require('../custom-lib/pixi.min.js');
+var Random = require('../random');
+
+var COUNT_STARS_DIM    = 40;
+var COUNT_STARS_BRIGHT = 20;
+
+var stars = [];
+
+function createStar(stage, options) {
+    var g = new PIXI.Graphics();
+
+    g.beginFill(0xffffff, options.alpha);
+
+    g.drawRect(0, 0, options.size, options.size);
+    g.endFill();
+
+    g.x = options.x;
+    g.y = options.y;
+
+    g.size = options.size;
+
+    stage.addChild(g);
+
+    return g;
+}
+
+var STAR_BRIGHT = {
+    size  : 1,
+    alpha : 0.92,
+    x     : 0,
+    y     : 0
+};
+
+var STAR_DIM = {
+    size  : 2,
+    alpha : 0.3,
+    x     : 0,
+    y     : 0
+};
+
+function init(stage) {
+    var i;
+
+    for (i = 0; i < COUNT_STARS_DIM; i++) {
+        stars.push(createStar(stage, STAR_DIM));
+    }
+
+    for (i = 0; i < COUNT_STARS_BRIGHT; i++) {
+        stars.push(createStar(stage, STAR_BRIGHT));
+    }
+
+    createStar(stage, {
+        size  : 4,
+        alpha : 1,
+        x     : 0, y : 0
+    });
+}
+
+function reinit(point) {
+    var width2  = innerWidth >> 1;
+    var height2 = innerHeight >> 1;
+
+    var count = COUNT_STARS_BRIGHT + COUNT_STARS_DIM;
+    for (var i = 0; i < count; i++) {
+        stars[i].x = point.x + Random.float(-width2, width2);
+        stars[i].y = point.y + Random.float(-height2, height2);
+    }
+}
+
+var SPEED_STARS_BRIGHT = 0.01;
+var SPEED_STARS_DIM    = 0.3;
+
+function moveStar(width2, height2, dx, dy, center, star) {
+    if (star.size === 1) {
+        dx *= SPEED_STARS_DIM;
+        dy *= SPEED_STARS_DIM;
+    } else {
+        dx *= SPEED_STARS_BRIGHT;
+        dy *= SPEED_STARS_BRIGHT;
+    }
+
+    star.x += dx;
+    star.y += dy;
+
+    if (star.x < center.x - width2) {
+        star.x = center.x + width2;
+    } else if (star.x > center.x + width2) {
+        star.x = center.x - width2;
+    }
+
+    if (star.y < center.y - height2) {
+        star.y = center.y + height2;
+    } else if (star.y > center.y + height2) {
+        star.y = center.y - height2;
+    }
+}
+
+function process(center, dx, dy) {
+    stars.forEach(
+        moveStar.bind(
+            null,
+            innerWidth >> 1,
+            innerHeight >> 1,
+            dx,
+            dy,
+            center
+        )
+    );
+}
+
+module.exports = {
+    init    : init,
+    reinit  : reinit,
+    process : process
+};
+},{"../custom-lib/pixi.min.js":118,"../random":136}],118:[function(require,module,exports){
 (function (global){
 /*!
  * pixi.js - v4.3.0
@@ -19001,7 +19117,7 @@ module.exports = {
 }],173:[function(t,e,r){"use strict";function n(t){return t&&t.__esModule?t:{default:t}}r.__esModule=!0;var i=t("./webgl/WebGLPrepare");Object.defineProperty(r,"webgl",{enumerable:!0,get:function(){return n(i).default}});var o=t("./canvas/CanvasPrepare");Object.defineProperty(r,"canvas",{enumerable:!0,get:function(){return n(o).default}});var s=t("./BasePrepare");Object.defineProperty(r,"BasePrepare",{enumerable:!0,get:function(){return n(s).default}});var a=t("./limiters/CountLimiter");Object.defineProperty(r,"CountLimiter",{enumerable:!0,get:function(){return n(a).default}});var u=t("./limiters/TimeLimiter");Object.defineProperty(r,"TimeLimiter",{enumerable:!0,get:function(){return n(u).default}})},{"./BasePrepare":171,"./canvas/CanvasPrepare":172,"./limiters/CountLimiter":174,"./limiters/TimeLimiter":175,"./webgl/WebGLPrepare":176}],174:[function(t,e,r){"use strict";function n(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}r.__esModule=!0;var i=function(){function t(e){n(this,t),this.maxItemsPerFrame=e,this.itemsLeft=0}return t.prototype.beginFrame=function(){this.itemsLeft=this.maxItemsPerFrame},t.prototype.allowedToUpload=function(){return this.itemsLeft-- >0},t}();r.default=i},{}],175:[function(t,e,r){"use strict";function n(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}r.__esModule=!0;var i=function(){function t(e){n(this,t),this.maxMilliseconds=e,this.frameStart=0}return t.prototype.beginFrame=function(){this.frameStart=Date.now()},t.prototype.allowedToUpload=function(){return Date.now()-this.frameStart<this.maxMilliseconds},t}();r.default=i},{}],176:[function(t,e,r){"use strict";function n(t){return t&&t.__esModule?t:{default:t}}function i(t){if(t&&t.__esModule)return t;var e={};if(null!=t)for(var r in t)Object.prototype.hasOwnProperty.call(t,r)&&(e[r]=t[r]);return e.default=t,e}function o(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function s(t,e){if(!t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!e||"object"!=typeof e&&"function"!=typeof e?t:e}function a(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function, not "+typeof e);t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,enumerable:!1,writable:!0,configurable:!0}}),e&&(Object.setPrototypeOf?Object.setPrototypeOf(t,e):t.__proto__=e)}function u(t,e){return e instanceof f.BaseTexture&&(e._glTextures[t.CONTEXT_UID]||t.textureManager.updateTexture(e),!0)}function h(t,e){return e instanceof f.Graphics&&((e.dirty||e.clearDirty||!e._webGL[t.plugins.graphics.CONTEXT_UID])&&t.plugins.graphics.updateGraphics(e),!0)}function l(t,e){if(t instanceof f.BaseTexture)return e.indexOf(t)===-1&&e.push(t),!0;if(t._texture&&t._texture instanceof f.Texture){var r=t._texture.baseTexture;return e.indexOf(r)===-1&&e.push(r),!0}return!1}function c(t,e){return t instanceof f.Graphics&&(e.push(t),!0)}r.__esModule=!0;var d=t("../../core"),f=i(d),p=t("../BasePrepare"),v=n(p),y=function(t){function e(r){o(this,e);var n=s(this,t.call(this,r));return n.uploadHookHelper=n.renderer,n.register(l,u).register(c,h),n}return a(e,t),e}(v.default);r.default=y,f.WebGLRenderer.registerPlugin("prepare",y)},{"../../core":61,"../BasePrepare":171}],177:[function(t,e,r){(function(e){"use strict";function n(t){if(t&&t.__esModule)return t;var e={};if(null!=t)for(var r in t)Object.prototype.hasOwnProperty.call(t,r)&&(e[r]=t[r]);return e.default=t,e}r.__esModule=!0,r.loader=r.prepare=r.particles=r.mesh=r.loaders=r.interaction=r.filters=r.extras=r.extract=r.accessibility=void 0;var i=t("./deprecation");Object.keys(i).forEach(function(t){"default"!==t&&"__esModule"!==t&&Object.defineProperty(r,t,{enumerable:!0,get:function(){return i[t]}})});var o=t("./core");Object.keys(o).forEach(function(t){"default"!==t&&"__esModule"!==t&&Object.defineProperty(r,t,{enumerable:!0,get:function(){return o[t]}})}),t("./polyfill");var s=t("./accessibility"),a=n(s),u=t("./extract"),h=n(u),l=t("./extras"),c=n(l),d=t("./filters"),f=n(d),p=t("./interaction"),v=n(p),y=t("./loaders"),g=n(y),m=t("./mesh"),_=n(m),b=t("./particles"),x=n(b),T=t("./prepare"),w=n(T);r.accessibility=a,r.extract=h,r.extras=c,r.filters=f,r.interaction=v,r.loaders=g,r.mesh=_,r.particles=x,r.prepare=w;var E=g&&g.Loader?new g.Loader:null;r.loader=E,e.PIXI=r}).call(this,"undefined"!=typeof global?global:"undefined"!=typeof self?self:"undefined"!=typeof window?window:{})},{"./accessibility":40,"./core":61,"./deprecation":120,"./extract":122,"./extras":131,"./filters":142,"./interaction":148,"./loaders":151,"./mesh":160,"./particles":163,"./polyfill":169,"./prepare":173}]},{},[177])(177)});
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],118:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 var Graphics = require('./graphics');
 var Geometry = require('./geometry');
 var EntityDB = require('./entityDB');
@@ -19258,7 +19374,7 @@ module.exports = {
     getAngleFromTo : getAngleFromTo,
     TEAM           : TEAM
 };
-},{"./entityDB":119,"./geometry":120,"./geometry/Fighter.json":121,"./geometry/Freighter.json":122,"./geometry/PBase.json":123,"./geometry/PColony.json":124,"./geometry/PComm.json":125,"./geometry/PLab.json":126,"./geometry/Planet.json":127,"./geometry/PointDisplay.json":128,"./geometry/Probe.json":129,"./geometry/Shot.json":130,"./geometry/Star.json":131,"./geometry/StarPort.json":132,"./graphics":133}],119:[function(require,module,exports){
+},{"./entityDB":120,"./geometry":121,"./geometry/Fighter.json":122,"./geometry/Freighter.json":123,"./geometry/PBase.json":124,"./geometry/PColony.json":125,"./geometry/PComm.json":126,"./geometry/PLab.json":127,"./geometry/Planet.json":128,"./geometry/PointDisplay.json":129,"./geometry/Probe.json":130,"./geometry/Shot.json":131,"./geometry/Star.json":132,"./geometry/StarPort.json":133,"./graphics":134}],120:[function(require,module,exports){
 var Graphics = require('./graphics');
 
 var byType = {};
@@ -19321,7 +19437,7 @@ module.exports = {
     getByType : getByType,
     getByTeam : getByTeam
 };
-},{"./graphics":133}],120:[function(require,module,exports){
+},{"./graphics":134}],121:[function(require,module,exports){
 var PIXI = require('./custom-lib/pixi.min.js');
 var SAT  = require('sat');
 
@@ -19511,7 +19627,7 @@ function Geometry(geometryDef, options) {
 }
 
 module.exports = Geometry;
-},{"./custom-lib/pixi.min.js":117,"sat":99}],121:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":118,"sat":99}],122:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "polygon",
@@ -19568,7 +19684,7 @@ module.exports={
     ]
   }
 }
-},{}],122:[function(require,module,exports){
+},{}],123:[function(require,module,exports){
 module.exports={
   "body": {
     "type": "polygon",
@@ -19696,7 +19812,7 @@ module.exports={
   }
 }
 
-},{}],123:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
 module.exports={
   "_name": "Planetary Base",
   "body": {
@@ -19771,7 +19887,7 @@ module.exports={
     ]
   }
 }
-},{}],124:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Colony",
@@ -19788,7 +19904,7 @@ module.exports={
     -30,40
   ]
 }
-},{}],125:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Communications Center",
@@ -19808,7 +19924,7 @@ module.exports={
     40,30
   ]
 }
-},{}],126:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Lab",
@@ -19825,11 +19941,15 @@ module.exports={
     0,-40
   ]
 }
-},{}],127:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "circle",
     "radius": 100,
+    "fill": {
+      "color": 0,
+      "alpha": 1
+    },
     "lineStyle": {
       "width": 1,
       "color": 65280,
@@ -19850,7 +19970,7 @@ module.exports={
     ]
   }
 }
-},{}],128:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 module.exports={
   "type": "circle",
   "radius": 4,
@@ -19860,7 +19980,7 @@ module.exports={
     "alpha": 1
   }
 }
-},{}],129:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "polygon",
@@ -19899,7 +20019,7 @@ module.exports={
     ]
   }
 }
-},{}],130:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 module.exports={
   "cannon_normal" : {
     "type": "rectangle",
@@ -19911,17 +20031,21 @@ module.exports={
     "h": 2
   }
 }
-},{}],131:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 module.exports={
   "type": "circle",
   "radius": 200,
+  "fill": {
+    "color": 0,
+    "alpha": 1
+  },
   "lineStyle": {
     "width": 1,
     "color": 16776960,
     "alpha": 1
   }
 }
-},{}],132:[function(require,module,exports){
+},{}],133:[function(require,module,exports){
 module.exports={
   "_name": "High Port",
   "body" : {
@@ -20087,15 +20211,16 @@ module.exports={
     ]
   }
 }
-},{}],133:[function(require,module,exports){
+},{}],134:[function(require,module,exports){
 /**
  * Graphics interface
  */
 
-// todo: pixi is a large inclusion, need to strip it of unused features via custom build
 var PIXI = require('./custom-lib/pixi.min.js');
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+
+var StarFieldController = require('./controller/starfield');
 
 var stage;
 var renderer;
@@ -20103,13 +20228,13 @@ var renderer;
 var width, width2;
 var height, height2;
 
-var RENDERER_OPTIONS = {};
-
 function init() {
     updateDimensions();
 
-    stage      = new PIXI.Container();
-    renderer   = new PIXI.WebGLRenderer(width, height, RENDERER_OPTIONS);
+    stage    = new PIXI.Container();
+    renderer = new PIXI.WebGLRenderer(width, height);
+
+    StarFieldController.init(stage);
 
     document.body.appendChild(renderer.view);
     window.addEventListener('resize', onResize);
@@ -20142,15 +20267,24 @@ function render() {
     renderer.render(stage);
 }
 
-// Game specific methods
+var lastX;
+var lastY;
 
 function centerOn(point) {
     stage.x = width2 - point.x;
     stage.y = height2 - point.y;
-}
 
-function starField() {
+    var dx = point.x - lastX;
+    var dy = point.y - lastY;
 
+    if(lastX === undefined && lastY === undefined ){
+        StarFieldController.reinit(point);
+    } else {
+        StarFieldController.process(point, dx, dy);
+    }
+
+    lastX = point.x;
+    lastY = point.y;
 }
 
 module.exports = {
@@ -20160,7 +20294,7 @@ module.exports = {
     render      : render,
     centerOn    : centerOn
 };
-},{"./custom-lib/pixi.min.js":117}],134:[function(require,module,exports){
+},{"./controller/starfield":117,"./custom-lib/pixi.min.js":118}],135:[function(require,module,exports){
 var Assets   = require('./assets');
 var Graphics = require('./graphics');
 
@@ -20233,7 +20367,7 @@ function update() {
     CollisionController.process();
 }
 
-},{"./assets":106,"./controller/collision":108,"./controller/fighter":109,"./controller/freighter":110,"./controller/gravity":111,"./controller/human":112,"./controller/planet":113,"./controller/probe":114,"./controller/projectile":115,"./controller/star":116,"./graphics":133}],135:[function(require,module,exports){
+},{"./assets":106,"./controller/collision":108,"./controller/fighter":109,"./controller/freighter":110,"./controller/gravity":111,"./controller/human":112,"./controller/planet":113,"./controller/probe":114,"./controller/projectile":115,"./controller/star":116,"./graphics":134}],136:[function(require,module,exports){
 /**
  * Random functions
  */
@@ -20270,4 +20404,4 @@ module.exports = {
     arrayEl : arrayEl
 };
 
-},{}]},{},[134]);
+},{}]},{},[135]);

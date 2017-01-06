@@ -22,10 +22,10 @@ function init() {
     }
 
     for (i = 0; i < POINT_COUNT; i++) {
-        patrolPoints.push(Entity.create('PointDisplay', {
+        patrolPoints.push({
             x : 300 + Random.float(0, 600),
             y : Random.float(0, 600)
-        }));
+        });
     }
 }
 

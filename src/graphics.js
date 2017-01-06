@@ -2,10 +2,11 @@
  * Graphics interface
  */
 
-// todo: pixi is a large inclusion, need to strip it of unused features via custom build
 var PIXI = require('./custom-lib/pixi.min.js');
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+
+var StarFieldController = require('./controller/starfield');
 
 var stage;
 var renderer;
@@ -13,13 +14,13 @@ var renderer;
 var width, width2;
 var height, height2;
 
-var RENDERER_OPTIONS = {};
-
 function init() {
     updateDimensions();
 
-    stage      = new PIXI.Container();
-    renderer   = new PIXI.WebGLRenderer(width, height, RENDERER_OPTIONS);
+    stage    = new PIXI.Container();
+    renderer = new PIXI.WebGLRenderer(width, height);
+
+    StarFieldController.init(stage);
 
     document.body.appendChild(renderer.view);
     window.addEventListener('resize', onResize);
@@ -52,15 +53,24 @@ function render() {
     renderer.render(stage);
 }
 
-// Game specific methods
+var lastX;
+var lastY;
 
 function centerOn(point) {
     stage.x = width2 - point.x;
     stage.y = height2 - point.y;
-}
 
-function starField() {
+    var dx = point.x - lastX;
+    var dy = point.y - lastY;
 
+    if(lastX === undefined && lastY === undefined ){
+        StarFieldController.reinit(point);
+    } else {
+        StarFieldController.process(point, dx, dy);
+    }
+
+    lastX = point.x;
+    lastY = point.y;
 }
 
 module.exports = {
