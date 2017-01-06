@@ -66,7 +66,7 @@ function process() {
             FighterController.rotate(DROTATION);
         }
 
-        if (gamepad.analogAngle !== false) {
+        if (typeof gamepad.analogAngle === 'number') {
             var rotation = FighterController.getRotation();
             var desiredRotation = gamepad.analogAngle;
 

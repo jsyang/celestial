@@ -1,27 +1,19 @@
-var gp;
-
-function init() {
-    //window.addEventListener("gamepadconnected", onGamePadConnected);
-}
-
-function update() {
-    gp = navigator.getGamepads()[0];
-}
-
 var NO_DATA = {};
 
 var AXES_ACTIVATION_VALUE = 0.1;
-var AXES_MIN_VALUE = 0.000001;
+var AXES_MIN_VALUE        = 0.000001;
 
 function getState() {
+    var gp = navigator.getGamepads()[0];
+
     if (gp) {
-        var dx = gp.axes[0];
-        var dy = gp.axes[1];
+        var dx        = gp.axes[0];
+        var dy        = gp.axes[1];
         var isXActive = Math.abs(dx) > AXES_ACTIVATION_VALUE;
         var isYActive = Math.abs(dy) > AXES_ACTIVATION_VALUE;
 
         var isAnalogEngaged = isXActive || isYActive;
-        var analogAngle = false;
+        var analogAngle     = false;
 
         if (isAnalogEngaged) {
             if (!isXActive) {
@@ -34,16 +26,16 @@ function getState() {
         }
 
         return {
-            left: gp.axes[0] < -AXES_ACTIVATION_VALUE,
-            right: gp.axes[0] > AXES_ACTIVATION_VALUE,
-            up: gp.axes[1] < -AXES_ACTIVATION_VALUE,
+            left  : gp.axes[0] < -AXES_ACTIVATION_VALUE,
+            right : gp.axes[0] > AXES_ACTIVATION_VALUE,
+            up    : gp.axes[1] < -AXES_ACTIVATION_VALUE,
 
-            analogAngle: analogAngle,
+            analogAngle : analogAngle,
 
-            button0: gp.buttons[0].pressed,
-            button1: gp.buttons[1].pressed,
-            button2: gp.buttons[2].pressed,
-            button3: gp.buttons[3].pressed
+            button0 : gp.buttons[0].pressed,
+            button1 : gp.buttons[1].pressed,
+            button2 : gp.buttons[2].pressed,
+            button3 : gp.buttons[3].pressed
         };
     } else {
         return NO_DATA;
@@ -51,7 +43,5 @@ function getState() {
 }
 
 module.exports = {
-    init: init,
-    update: update,
-    getState: getState
+    getState : getState
 };

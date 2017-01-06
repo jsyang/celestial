@@ -18649,7 +18649,7 @@ function process() {
             FighterController.rotate(DROTATION);
         }
 
-        if (gamepad.analogAngle !== false) {
+        if (typeof gamepad.analogAngle === 'number') {
             var rotation = FighterController.getRotation();
             var desiredRotation = gamepad.analogAngle;
 
@@ -19377,30 +19377,22 @@ module.exports = {
     getByTeam : getByTeam
 };
 },{"./graphics":134}],120:[function(require,module,exports){
-var gp;
-
-function init() {
-    //window.addEventListener("gamepadconnected", onGamePadConnected);
-}
-
-function update() {
-    gp = navigator.getGamepads()[0];
-}
-
 var NO_DATA = {};
 
 var AXES_ACTIVATION_VALUE = 0.1;
-var AXES_MIN_VALUE = 0.000001;
+var AXES_MIN_VALUE        = 0.000001;
 
 function getState() {
+    var gp = navigator.getGamepads()[0];
+
     if (gp) {
-        var dx = gp.axes[0];
-        var dy = gp.axes[1];
+        var dx        = gp.axes[0];
+        var dy        = gp.axes[1];
         var isXActive = Math.abs(dx) > AXES_ACTIVATION_VALUE;
         var isYActive = Math.abs(dy) > AXES_ACTIVATION_VALUE;
 
         var isAnalogEngaged = isXActive || isYActive;
-        var analogAngle = false;
+        var analogAngle     = false;
 
         if (isAnalogEngaged) {
             if (!isXActive) {
@@ -19413,16 +19405,16 @@ function getState() {
         }
 
         return {
-            left: gp.axes[0] < -AXES_ACTIVATION_VALUE,
-            right: gp.axes[0] > AXES_ACTIVATION_VALUE,
-            up: gp.axes[1] < -AXES_ACTIVATION_VALUE,
+            left  : gp.axes[0] < -AXES_ACTIVATION_VALUE,
+            right : gp.axes[0] > AXES_ACTIVATION_VALUE,
+            up    : gp.axes[1] < -AXES_ACTIVATION_VALUE,
 
-            analogAngle: analogAngle,
+            analogAngle : analogAngle,
 
-            button0: gp.buttons[0].pressed,
-            button1: gp.buttons[1].pressed,
-            button2: gp.buttons[2].pressed,
-            button3: gp.buttons[3].pressed
+            button0 : gp.buttons[0].pressed,
+            button1 : gp.buttons[1].pressed,
+            button2 : gp.buttons[2].pressed,
+            button3 : gp.buttons[3].pressed
         };
     } else {
         return NO_DATA;
@@ -19430,9 +19422,7 @@ function getState() {
 }
 
 module.exports = {
-    init: init,
-    update: update,
-    getState: getState
+    getState : getState
 };
 },{}],121:[function(require,module,exports){
 var PIXI = require('./custom-lib/pixi.min.js');
@@ -20311,7 +20301,6 @@ module.exports = {
 },{"./custom-lib/pixi.min.js":117,"./starfield":137}],135:[function(require,module,exports){
 var Assets   = require('./assets');
 var Graphics = require('./graphics');
-var GamePad = require('./gamepad');
 
 var HumanController      = require('./controller/human');
 var CollisionController  = require('./controller/collision');
@@ -20336,7 +20325,6 @@ function step() {
     var elapsed = now - then;
 
     update();
-    GamePad.update();
 
     if (elapsed > FPS_INTERVAL) {
         Graphics.centerOn(HumanController.getFocalPoint());
@@ -20354,7 +20342,6 @@ function start() {
 
 window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
     Graphics.init();
-    GamePad.init();
 
     // Create all entities
     StarController.init();
@@ -20384,7 +20371,7 @@ function update() {
     CollisionController.process();
 }
 
-},{"./assets":106,"./controller/collision":108,"./controller/fighter":109,"./controller/freighter":110,"./controller/gravity":111,"./controller/human":112,"./controller/planet":113,"./controller/probe":114,"./controller/projectile":115,"./controller/star":116,"./gamepad":120,"./graphics":134}],136:[function(require,module,exports){
+},{"./assets":106,"./controller/collision":108,"./controller/fighter":109,"./controller/freighter":110,"./controller/gravity":111,"./controller/human":112,"./controller/planet":113,"./controller/probe":114,"./controller/projectile":115,"./controller/star":116,"./graphics":134}],136:[function(require,module,exports){
 /**
  * Random functions
  */
