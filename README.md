@@ -10,6 +10,9 @@ Celestial combat. Conquer the universe sector by sector.
 
 - rockets
 - homing missiles
+- gamefield limit
+- speed limit on fighter ship
+- basic radar
 - filter collision testing by grids
 
 - gamefield generation
