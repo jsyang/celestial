@@ -37,6 +37,20 @@ function shoot() {
 }
 
 var DOCK_DISTANCE_PLANET = 105;
+var FIGHTER_MAX_SPEED    = 20;
+var FIGHTER_MAX_SPEED2   = FIGHTER_MAX_SPEED * FIGHTER_MAX_SPEED;
+
+function limitSpeed() {
+    var dx2 = fighter.dx * fighter.dx;
+    var dy2 = fighter.dy * fighter.dy;
+
+    var speed2 = dx2 + dy2;
+    if (speed2 > FIGHTER_MAX_SPEED2) {
+        var limitFactor = FIGHTER_MAX_SPEED * Math.pow(speed2, -0.5);
+        fighter.dx *= limitFactor;
+        fighter.dy *= limitFactor;
+    }
+}
 
 function process() {
     if (fighter.hp > 0) {
@@ -47,6 +61,8 @@ function process() {
                 fighter.y = Math.sin(fighter.rotation) * DOCK_DISTANCE_PLANET + dock.y;
             }
         } else {
+            limitSpeed();
+
             fighter.x += fighter.dx;
             fighter.y += fighter.dy;
         }
@@ -79,11 +95,9 @@ function getRotation() {
 function dockTo(entity) {
     fighter.isDocked = true;
     fighter.dockedTo = entity;
-    var dx           = entity.x - fighter.x;
-    var dy           = entity.y - fighter.y;
     fighter.dx       = 0;
     fighter.dy       = 0;
-    fighter.rotation = Math.atan2(-dy, -dx);
+    fighter.rotation = Entity.getAngleFromTo(entity, fighter);
 }
 
 function undock() {

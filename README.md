@@ -2,10 +2,6 @@
 
 Celestial combat. Conquer the universe sector by sector.
 
-## bugs
-
-- planet docking is way more difficult when landing from 6o'C to 9o'C
-
 ## todo
 
 - rockets

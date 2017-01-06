@@ -18347,6 +18347,20 @@ function shoot() {
 }
 
 var DOCK_DISTANCE_PLANET = 105;
+var FIGHTER_MAX_SPEED    = 20;
+var FIGHTER_MAX_SPEED2   = FIGHTER_MAX_SPEED * FIGHTER_MAX_SPEED;
+
+function limitSpeed() {
+    var dx2 = fighter.dx * fighter.dx;
+    var dy2 = fighter.dy * fighter.dy;
+
+    var speed2 = dx2 + dy2;
+    if (speed2 > FIGHTER_MAX_SPEED2) {
+        var limitFactor = FIGHTER_MAX_SPEED * Math.pow(speed2, -0.5);
+        fighter.dx *= limitFactor;
+        fighter.dy *= limitFactor;
+    }
+}
 
 function process() {
     if (fighter.hp > 0) {
@@ -18357,6 +18371,8 @@ function process() {
                 fighter.y = Math.sin(fighter.rotation) * DOCK_DISTANCE_PLANET + dock.y;
             }
         } else {
+            limitSpeed();
+
             fighter.x += fighter.dx;
             fighter.y += fighter.dy;
         }
@@ -18389,11 +18405,9 @@ function getRotation() {
 function dockTo(entity) {
     fighter.isDocked = true;
     fighter.dockedTo = entity;
-    var dx           = entity.x - fighter.x;
-    var dy           = entity.y - fighter.y;
     fighter.dx       = 0;
     fighter.dy       = 0;
-    fighter.rotation = Math.atan2(-dy, -dx);
+    fighter.rotation = Entity.getAngleFromTo(entity, fighter);
 }
 
 function undock() {
@@ -18485,6 +18499,7 @@ module.exports = {
 
 var Audio    = require('../audio');
 var EntityDB = require('../entityDB');
+var Entity   = require('../entity');
 
 var ProjectileController = require('../controller/projectile');
 var FighterController    = require('../controller/fighter');
@@ -18501,12 +18516,8 @@ var DOCK_DISTANCE_STAR2   = 200 * 200;
 
 var GRAVITY_MIN_DISTANCE_THRESHOLD2 = 600 * 600;
 
-function getMagnitude(dx, dy) {
-    return Math.pow(dx * dx + dy * dy, 0.5);
-}
-
 var ERROR_MARGIN_LANDING_ROTATION = Math.PI / 4;
-var ERROR_MARGIN_LANDING_SPEED    = 2.1;
+var ERROR_MARGIN_LANDING_SPEED2   = 2.1 * 2.1;
 
 function crashFighter(f) {
     EntityDB.remove(f);
@@ -18514,12 +18525,14 @@ function crashFighter(f) {
     ProjectileController.explode(f, 6);
 }
 
+var PIPI = Math.PI * 2;
+
 // https://www.khanacademy.org/computing/computer-programming/programming-natural-simulations/programming-forces/a/gravitational-attraction
 function attractFighterToBody(b, m1m2, dockDistance2, isNotDockable, f) {
     if (!f.isDocked) {
         var dx = b.x - f.x;
         var dy = b.y - f.y;
-        var r2 = dx * dx + dy * dy;
+        var r2 = Entity.getDistSquared(f, b);
 
         if (r2 < GRAVITY_MIN_DISTANCE_THRESHOLD2) {
             var forceFactor = m1m2 / Math.pow(r2, 1.5);
@@ -18531,15 +18544,27 @@ function attractFighterToBody(b, m1m2, dockDistance2, isNotDockable, f) {
             f.dy += attractY;
 
             if (r2 < dockDistance2) {
-                if(isNotDockable) {
+                if (isNotDockable) {
                     crashFighter(f);
                 } else {
-                    var landingSpeed           = getMagnitude(f.dx, f.dy);
+                    var landingSpeed           = f.dx * f.dx + f.dy * f.dy;
                     var fighterRotation        = f.rotation;
                     var correctLandingRotation = Math.atan2(-dy, -dx);
                     var landingAngleError      = Math.abs(correctLandingRotation - fighterRotation);
 
-                    var isSoftLanding  = landingSpeed < ERROR_MARGIN_LANDING_SPEED;
+                    // Limit fighterRotation to the open interval (-PI, PI)
+                    // todo: limit all entity rotations to within (-PI, PI) vs (-2PI, 2PI)?
+                    if (landingAngleError > Math.PI) {
+                        if (fighterRotation > 0) {
+                            fighterRotation -= PIPI;
+                        } else {
+                            fighterRotation += PIPI;
+                        }
+
+                        landingAngleError = Math.abs(correctLandingRotation - fighterRotation);
+                    }
+
+                    var isSoftLanding  = landingSpeed < ERROR_MARGIN_LANDING_SPEED2;
                     var isCorrectAngle = landingAngleError < ERROR_MARGIN_LANDING_ROTATION;
 
                     if (isCorrectAngle && isSoftLanding) {
@@ -18580,7 +18605,7 @@ module.exports = {
     init    : init,
     process : process
 };
-},{"../audio":107,"../controller/fighter":109,"../controller/projectile":115,"../entityDB":119}],112:[function(require,module,exports){
+},{"../audio":107,"../controller/fighter":109,"../controller/projectile":115,"../entity":118,"../entityDB":119}],112:[function(require,module,exports){
 var GamePad = require('../gamepad');
 var FighterController = require('./fighter');
 var EntityDB = require('../entityDB');
