@@ -9,7 +9,7 @@ function init() {
     fighter = Entity.create('Fighter', {
         x        : 250,
         y        : 120,
-        team     : Entity.TEAM.BLUE,
+        team     : Entity.TEAM.MAGENTA,
         isDocked : true
     });
 }

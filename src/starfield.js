@@ -1,5 +1,5 @@
-var PIXI   = require('../custom-lib/pixi.min.js');
-var Random = require('../random');
+var PIXI   = require('./custom-lib/pixi.min.js');
+var Random = require('./random');
 
 var COUNT_STARS_DIM    = 40;
 var COUNT_STARS_BRIGHT = 20;

@@ -24,6 +24,39 @@ function setVisible(childIndex, isVisible) {
     this.graphics.getChildAt(childIndex).visible = isVisible;
 }
 
+var TEAM = {
+    BLUE    : 0,
+    GREEN   : 1,
+    RED     : 2,
+    YELLOW  : 3,
+    MAGENTA : 4
+};
+
+var COLOR_TEAM = [
+    0x0000ff,
+    0x00ff00,
+    0xff0000,
+    0xffff00,
+    0xff00ff
+];
+
+function assignTeamColor(geometry, team) {
+    geometry.graphics.currentPath.lineColor = COLOR_TEAM[team];
+}
+
+// todo: figure out how to make lines flash white instead of using alpha
+var COLOR_HIT = 0xffffff;
+
+function renderHit() {
+    if (this.hitTime > 0) {
+        this.hitTime--;
+        this.graphics.alpha = 1;
+    } else if (this.hitTime === 0) {
+        this.graphics.alpha = 0.7;
+        this.hitTime        = -1;
+    }
+}
+
 /**
  * Creation of more complicated entities: e.g. ones with
  * multiple hit polygons and segments / conditionally
@@ -45,6 +78,8 @@ function createPlanet(options) {
 
 function createFighter(options) {
     var fighter = Geometry(Fighter.body, options);
+
+    assignTeamColor(fighter, options.team);
 
     var flame1 = Geometry(Fighter.flame1);
     var flame2 = Geometry(Fighter.flame2);
@@ -69,12 +104,15 @@ function createProbe(options) {
     var probe = Geometry(Probe.body, options);
     var flame = Geometry(Probe.flame);
 
+    assignTeamColor(probe, options.team);
+
     probe.graphics.addChild(flame.graphics);
 
     flame.graphics.visible = false;
 
-    probe.flameOn  = setVisible.bind(probe, 0, true);
-    probe.flameOff = setVisible.bind(probe, 0, false);
+    probe.flameOn   = setVisible.bind(probe, 0, true);
+    probe.flameOff  = setVisible.bind(probe, 0, false);
+    probe.renderHit = renderHit;
 
     return probe;
 }
@@ -239,14 +277,6 @@ function getAngleFromTo(e1, e2) {
     var dy = e2.y - e1.y;
     return Math.atan2(dy, dx);
 }
-
-var TEAM = {
-    BLUE    : 0,
-    GREEN   : 1,
-    RED     : 2,
-    YELLOW  : 3,
-    MAGENTA : 4
-};
 
 module.exports = {
     create         : create,

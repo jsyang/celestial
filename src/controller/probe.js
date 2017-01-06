@@ -15,7 +15,7 @@ function init() {
         var probe = Entity.create('Probe', {
             x    : -250 + Random.float(-40, 40),
             y    : -20 + Random.float(-40, 40),
-            team : Entity.TEAM.BLUE
+            team : Entity.TEAM.MAGENTA
         });
 
         probes.push(probe);
@@ -35,17 +35,12 @@ var REPEL_MAGNITUDE = 50;
 var PROBE_SPEED     = 0.5;
 var PROBE_TURN_RATE = 0.05;
 
-function applyForces(p) {
+function processProbe(p) {
     if (p.hp > 0) {
-        if (p.hitTime > 0) {
-            p.hitTime--;
-            p.graphics.alpha = 1;
-        } else {
-            p.graphics.alpha = 0.5;
-        }
-
         var dx = 0;
         var dy = 0;
+
+        p.renderHit();
 
         // Repel from other probes
         for (var i = 0; i < COUNT; i++) {
@@ -110,7 +105,7 @@ function applyForces(p) {
 function hasNotDied(p) { return !p.hasDied; }
 
 function process() {
-    probes.forEach(applyForces);
+    probes.forEach(processProbe);
     probes = probes.filter(hasNotDied);
 }
 

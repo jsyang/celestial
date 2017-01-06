@@ -6,7 +6,7 @@ var PIXI = require('./custom-lib/pixi.min.js');
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
-var StarFieldController = require('./controller/starfield');
+var StarField = require('./starfield');
 
 var stage;
 var renderer;
@@ -20,7 +20,7 @@ function init() {
     stage    = new PIXI.Container();
     renderer = new PIXI.WebGLRenderer(width, height);
 
-    StarFieldController.init(stage);
+    StarField.init(stage);
 
     document.body.appendChild(renderer.view);
     window.addEventListener('resize', onResize);
@@ -64,9 +64,9 @@ function centerOn(point) {
     var dy = point.y - lastY;
 
     if(lastX === undefined && lastY === undefined ){
-        StarFieldController.reinit(point);
+        StarField.reinit(point);
     } else {
-        StarFieldController.process(point, dx, dy);
+        StarField.process(point, dx, dy);
     }
 
     lastX = point.x;

@@ -4,20 +4,22 @@ Celestial combat. Conquer the universe sector by sector.
 
 ## todo
 
-- implement galcon-ish gameplay now that there is a boid-like entity
-
-- filter collision testing by grids
-- homing missiles
 - rockets
-- multiple fighters
+- homing missiles
+- filter collision testing by grids
+
+
 - production ability
 - flag planting
 - gamefield generation
+
+- multiple fighters
 - asteroids / uninhabitable worlds
 - capital ships
 - gamepad support
 - different mission objectives
 - memoize math funcs
+- implement galcon-like gameplay now that there is a boid entity behavior
 
 ## Custom pixijs build
 
