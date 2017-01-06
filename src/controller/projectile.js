@@ -21,11 +21,33 @@ function shoot(type, muzzle, shooter, projectileSpeed) {
     });
 }
 
+var SHOT_DAMAGE = {
+    ShotCannonHeavy  : 2,
+    ShotCannonNormal : 1
+};
+
 function registerHit(p, entity) {
     Audio.play('hit');
-    entity.hp--;
+    entity.hp -= SHOT_DAMAGE[p.type];
     entity.hitTime = 5;
     EntityDB.remove(p);
+}
+
+function hitTarget(p) {
+    var freighter = EntityDB.getByType('Freighter')[0];
+    if (freighter && SAT.pointInPolygon(p, freighter.collision)) {
+        registerHit(p, freighter);
+    }
+
+    var probe = EntityDB.getByType('Probe');
+    if (probe) {
+        for (var i = 0; i < probe.length; i++) {
+            if (Entity.getDistSquared(p, probe[i]) < 49) {
+                registerHit(p, probe[i]);
+                break;
+            }
+        }
+    }
 }
 
 function move(p) {
@@ -33,21 +55,7 @@ function move(p) {
     p.y += p.dy;
 
     if (p.hp > 0) {
-        var freighter = EntityDB.getByType('Freighter')[0];
-        if (freighter && SAT.pointInPolygon(p, freighter.collision)) {
-            registerHit(p, freighter);
-        }
-
-        var probe = EntityDB.getByType('Probe');
-        if (probe) {
-            for (var i = 0; i < probe.length; i++) {
-                if (Entity.getDistSquared(p, probe[i]) < 49) {
-                    registerHit(p, probe[i]);
-                    break;
-                }
-            }
-        }
-
+        hitTarget(p);
         p.hp--;
     } else {
         EntityDB.remove(p);
@@ -55,10 +63,15 @@ function move(p) {
 }
 
 function process() {
+    var shotCannonHeavy  = EntityDB.getByType('ShotCannonHeavy');
     var shotCannonNormal = EntityDB.getByType('ShotCannonNormal');
 
     if (shotCannonNormal) {
         shotCannonNormal.forEach(move);
+    }
+
+    if (shotCannonHeavy) {
+        shotCannonHeavy.forEach(move);
     }
 }
 

@@ -23,7 +23,7 @@ function shoot() {
 
         if (now - lastShotTime > TIME_BETWEEN_SHOTS) {
             ProjectileController.shoot(
-                'ShotCannonNormal',
+                'ShotCannonHeavy',
                 fighter.collision.calcPoints[1],
                 fighter,
                 4

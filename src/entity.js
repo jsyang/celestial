@@ -206,6 +206,12 @@ function create(type, options) {
 
     if (type === 'Star') {
         entity = Geometry(Star, options);
+    } else if (type === 'ShotCannonHeavy') {
+        entity = Geometry(Shot.cannon_heavy, options);
+
+        entity.dx = options.dx || 0;
+        entity.dy = options.dy || 0;
+        entity.hp = options.hp || 50;
     } else if (type === 'ShotCannonNormal') {
         entity = Geometry(Shot.cannon_normal, options);
 

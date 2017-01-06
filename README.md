@@ -2,18 +2,24 @@
 
 Celestial combat. Conquer the universe sector by sector.
 
+## bugs
+
+- planet docking is way more difficult when landing from 6o'C to 9o'C
+
 ## todo
 
 - rockets
 - homing missiles
 - filter collision testing by grids
 
-
+- gamefield generation
 - production ability
 - flag planting
-- gamefield generation
+- freighters move to colonize planets
+- planet base defences
 
 - multiple fighters
+- strategic enemy AI
 - asteroids / uninhabitable worlds
 - capital ships
 - gamepad support
