@@ -1,5 +1,6 @@
 var Assets   = require('./assets');
 var Graphics = require('./graphics');
+var GamePad = require('./gamepad');
 
 var HumanController      = require('./controller/human');
 var CollisionController  = require('./controller/collision');
@@ -24,6 +25,7 @@ function step() {
     var elapsed = now - then;
 
     update();
+    GamePad.update();
 
     if (elapsed > FPS_INTERVAL) {
         Graphics.centerOn(HumanController.getFocalPoint());
@@ -41,6 +43,7 @@ function start() {
 
 window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
     Graphics.init();
+    GamePad.init();
 
     // Create all entities
     StarController.init();

@@ -18581,8 +18581,9 @@ module.exports = {
     process : process
 };
 },{"../audio":107,"../controller/fighter":109,"../controller/projectile":115,"../entityDB":119}],112:[function(require,module,exports){
+var GamePad = require('../gamepad');
 var FighterController = require('./fighter');
-var EntityDB          = require('../entityDB');
+var EntityDB = require('../entityDB');
 
 var focalPoint;
 
@@ -18633,12 +18634,13 @@ function onKeyDown(e) {
 
 }
 
-var DROTATION    = 0.05;
+var DROTATION = 0.05;
 var ACCELERATION = 0.2;
 var DOCKED_ACCELERATION = 0.4;
 
 function process() {
-    var isDocked =FighterController.isDocked();
+    var gamepad = GamePad.getState();
+    var isDocked = FighterController.isDocked();
 
     if (!isDocked) {
         if (keyDown.left_arrow) {
@@ -18646,19 +18648,40 @@ function process() {
         } else if (keyDown.right_arrow) {
             FighterController.rotate(DROTATION);
         }
+
+        if (gamepad.analogAngle !== false) {
+            var rotation = FighterController.getRotation();
+            var desiredRotation = gamepad.analogAngle;
+
+            var turnMagnitude = Math.abs(desiredRotation - rotation);
+            if (turnMagnitude > Math.PI) {
+                if (rotation > 0) {
+                    FighterController.rotate(DROTATION * 2);
+                } else {
+                    FighterController.rotate(-DROTATION * 2);
+                }
+            } else {
+                if (rotation > desiredRotation) {
+                    FighterController.rotate(-DROTATION * 2);
+                } else {
+                    FighterController.rotate(DROTATION);
+                }
+            }
+
+        }
     }
 
-    if (keyDown.f) {
+    if (keyDown.f || gamepad.button0) {
         FighterController.shoot();
     }
 
-    if (keyDown.up_arrow) {
+    if (keyDown.up_arrow || gamepad.button2) {
         FighterController.undock();
         var rotation = FighterController.getRotation();
 
         FighterController.flameOn();
 
-        if(isDocked) {
+        if (isDocked) {
             FighterController.applyForce(
                 Math.cos(rotation) * DOCKED_ACCELERATION,
                 Math.sin(rotation) * DOCKED_ACCELERATION
@@ -18681,11 +18704,11 @@ function getFocalPoint() {
 }
 
 module.exports = {
-    init          : init,
-    process       : process,
-    getFocalPoint : getFocalPoint
+    init: init,
+    process: process,
+    getFocalPoint: getFocalPoint
 };
-},{"../entityDB":119,"./fighter":109}],113:[function(require,module,exports){
+},{"../entityDB":119,"../gamepad":120,"./fighter":109}],113:[function(require,module,exports){
 var Entity = require('../entity');
 
 var childRotation = 0;
@@ -18864,7 +18887,7 @@ module.exports = {
     init    : init,
     process : process
 };
-},{"../entity":118,"../entityDB":119,"../random":135}],115:[function(require,module,exports){
+},{"../entity":118,"../entityDB":119,"../random":136}],115:[function(require,module,exports){
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
 var Audio    = require('../audio');
@@ -18961,7 +18984,7 @@ module.exports = {
     explode       : explode,
     getFocalPoint : getFocalPoint
 };
-},{"../audio":107,"../entity":118,"../entityDB":119,"../random":135,"sat":99}],116:[function(require,module,exports){
+},{"../audio":107,"../entity":118,"../entityDB":119,"../random":136,"sat":99}],116:[function(require,module,exports){
 var Entity = require('../entity');
 
 var star;
@@ -19300,7 +19323,7 @@ module.exports = {
     getAngleFromTo : getAngleFromTo,
     TEAM           : TEAM
 };
-},{"./entityDB":119,"./geometry":120,"./geometry/Fighter.json":121,"./geometry/Freighter.json":122,"./geometry/PBase.json":123,"./geometry/PColony.json":124,"./geometry/PComm.json":125,"./geometry/PLab.json":126,"./geometry/Planet.json":127,"./geometry/PointDisplay.json":128,"./geometry/Probe.json":129,"./geometry/Shot.json":130,"./geometry/Star.json":131,"./geometry/StarPort.json":132,"./graphics":133}],119:[function(require,module,exports){
+},{"./entityDB":119,"./geometry":121,"./geometry/Fighter.json":122,"./geometry/Freighter.json":123,"./geometry/PBase.json":124,"./geometry/PColony.json":125,"./geometry/PComm.json":126,"./geometry/PLab.json":127,"./geometry/Planet.json":128,"./geometry/PointDisplay.json":129,"./geometry/Probe.json":130,"./geometry/Shot.json":131,"./geometry/Star.json":132,"./geometry/StarPort.json":133,"./graphics":134}],119:[function(require,module,exports){
 var Graphics = require('./graphics');
 
 var byType = {};
@@ -19363,7 +19386,65 @@ module.exports = {
     getByType : getByType,
     getByTeam : getByTeam
 };
-},{"./graphics":133}],120:[function(require,module,exports){
+},{"./graphics":134}],120:[function(require,module,exports){
+var gp;
+
+function init() {
+    //window.addEventListener("gamepadconnected", onGamePadConnected);
+}
+
+function update() {
+    gp = navigator.getGamepads()[0];
+}
+
+var NO_DATA = {};
+
+var AXES_ACTIVATION_VALUE = 0.1;
+var AXES_MIN_VALUE = 0.000001;
+
+function getState() {
+    if (gp) {
+        var dx = gp.axes[0];
+        var dy = gp.axes[1];
+        var isXActive = Math.abs(dx) > AXES_ACTIVATION_VALUE;
+        var isYActive = Math.abs(dy) > AXES_ACTIVATION_VALUE;
+
+        var isAnalogEngaged = isXActive || isYActive;
+        var analogAngle = false;
+
+        if (isAnalogEngaged) {
+            if (!isXActive) {
+                dx = dx > 0 ? AXES_MIN_VALUE : -AXES_MIN_VALUE;
+            }
+            if (!isYActive) {
+                dy = dy > 0 ? AXES_MIN_VALUE : -AXES_MIN_VALUE;
+            }
+            analogAngle = Math.atan2(dy, dx);
+        }
+
+        return {
+            left: gp.axes[0] < -AXES_ACTIVATION_VALUE,
+            right: gp.axes[0] > AXES_ACTIVATION_VALUE,
+            up: gp.axes[1] < -AXES_ACTIVATION_VALUE,
+
+            analogAngle: analogAngle,
+
+            button0: gp.buttons[0].pressed,
+            button1: gp.buttons[1].pressed,
+            button2: gp.buttons[2].pressed,
+            button3: gp.buttons[3].pressed
+        };
+    } else {
+        return NO_DATA;
+    }
+}
+
+module.exports = {
+    init: init,
+    update: update,
+    getState: getState
+};
+},{}],121:[function(require,module,exports){
 var PIXI = require('./custom-lib/pixi.min.js');
 var SAT  = require('sat');
 
@@ -19553,7 +19634,7 @@ function Geometry(geometryDef, options) {
 }
 
 module.exports = Geometry;
-},{"./custom-lib/pixi.min.js":117,"sat":99}],121:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":117,"sat":99}],122:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "polygon",
@@ -19610,7 +19691,7 @@ module.exports={
     ]
   }
 }
-},{}],122:[function(require,module,exports){
+},{}],123:[function(require,module,exports){
 module.exports={
   "body": {
     "type": "polygon",
@@ -19738,7 +19819,7 @@ module.exports={
   }
 }
 
-},{}],123:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
 module.exports={
   "_name": "Planetary Base",
   "body": {
@@ -19813,7 +19894,7 @@ module.exports={
     ]
   }
 }
-},{}],124:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Colony",
@@ -19830,7 +19911,7 @@ module.exports={
     -30,40
   ]
 }
-},{}],125:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Communications Center",
@@ -19850,7 +19931,7 @@ module.exports={
     40,30
   ]
 }
-},{}],126:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Lab",
@@ -19867,7 +19948,7 @@ module.exports={
     0,-40
   ]
 }
-},{}],127:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "circle",
@@ -19896,7 +19977,7 @@ module.exports={
     ]
   }
 }
-},{}],128:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 module.exports={
   "type": "circle",
   "radius": 4,
@@ -19906,7 +19987,7 @@ module.exports={
     "alpha": 1
   }
 }
-},{}],129:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "polygon",
@@ -19945,7 +20026,7 @@ module.exports={
     ]
   }
 }
-},{}],130:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 module.exports={
   "cannon_normal" : {
     "type": "rectangle",
@@ -19974,7 +20055,7 @@ module.exports={
     ]
   }
 }
-},{}],131:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 module.exports={
   "type": "circle",
   "radius": 200,
@@ -19988,7 +20069,7 @@ module.exports={
     "alpha": 1
   }
 }
-},{}],132:[function(require,module,exports){
+},{}],133:[function(require,module,exports){
 module.exports={
   "_name": "High Port",
   "body" : {
@@ -20154,7 +20235,7 @@ module.exports={
     ]
   }
 }
-},{}],133:[function(require,module,exports){
+},{}],134:[function(require,module,exports){
 /**
  * Graphics interface
  */
@@ -20237,9 +20318,10 @@ module.exports = {
     render      : render,
     centerOn    : centerOn
 };
-},{"./custom-lib/pixi.min.js":117,"./starfield":136}],134:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":117,"./starfield":137}],135:[function(require,module,exports){
 var Assets   = require('./assets');
 var Graphics = require('./graphics');
+var GamePad = require('./gamepad');
 
 var HumanController      = require('./controller/human');
 var CollisionController  = require('./controller/collision');
@@ -20264,6 +20346,7 @@ function step() {
     var elapsed = now - then;
 
     update();
+    GamePad.update();
 
     if (elapsed > FPS_INTERVAL) {
         Graphics.centerOn(HumanController.getFocalPoint());
@@ -20281,6 +20364,7 @@ function start() {
 
 window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
     Graphics.init();
+    GamePad.init();
 
     // Create all entities
     StarController.init();
@@ -20310,7 +20394,7 @@ function update() {
     CollisionController.process();
 }
 
-},{"./assets":106,"./controller/collision":108,"./controller/fighter":109,"./controller/freighter":110,"./controller/gravity":111,"./controller/human":112,"./controller/planet":113,"./controller/probe":114,"./controller/projectile":115,"./controller/star":116,"./graphics":133}],135:[function(require,module,exports){
+},{"./assets":106,"./controller/collision":108,"./controller/fighter":109,"./controller/freighter":110,"./controller/gravity":111,"./controller/human":112,"./controller/planet":113,"./controller/probe":114,"./controller/projectile":115,"./controller/star":116,"./gamepad":120,"./graphics":134}],136:[function(require,module,exports){
 /**
  * Random functions
  */
@@ -20347,7 +20431,7 @@ module.exports = {
     arrayEl : arrayEl
 };
 
-},{}],136:[function(require,module,exports){
+},{}],137:[function(require,module,exports){
 var PIXI   = require('./custom-lib/pixi.min.js');
 var Random = require('./random');
 
@@ -20463,4 +20547,4 @@ module.exports = {
     reinit  : reinit,
     process : process
 };
-},{"./custom-lib/pixi.min.js":117,"./random":135}]},{},[134]);
+},{"./custom-lib/pixi.min.js":117,"./random":136}]},{},[135]);

@@ -1,5 +1,6 @@
+var GamePad = require('../gamepad');
 var FighterController = require('./fighter');
-var EntityDB          = require('../entityDB');
+var EntityDB = require('../entityDB');
 
 var focalPoint;
 
@@ -50,12 +51,13 @@ function onKeyDown(e) {
 
 }
 
-var DROTATION    = 0.05;
+var DROTATION = 0.05;
 var ACCELERATION = 0.2;
 var DOCKED_ACCELERATION = 0.4;
 
 function process() {
-    var isDocked =FighterController.isDocked();
+    var gamepad = GamePad.getState();
+    var isDocked = FighterController.isDocked();
 
     if (!isDocked) {
         if (keyDown.left_arrow) {
@@ -63,19 +65,40 @@ function process() {
         } else if (keyDown.right_arrow) {
             FighterController.rotate(DROTATION);
         }
+
+        if (gamepad.analogAngle !== false) {
+            var rotation = FighterController.getRotation();
+            var desiredRotation = gamepad.analogAngle;
+
+            var turnMagnitude = Math.abs(desiredRotation - rotation);
+            if (turnMagnitude > Math.PI) {
+                if (rotation > 0) {
+                    FighterController.rotate(DROTATION * 2);
+                } else {
+                    FighterController.rotate(-DROTATION * 2);
+                }
+            } else {
+                if (rotation > desiredRotation) {
+                    FighterController.rotate(-DROTATION * 2);
+                } else {
+                    FighterController.rotate(DROTATION);
+                }
+            }
+
+        }
     }
 
-    if (keyDown.f) {
+    if (keyDown.f || gamepad.button0) {
         FighterController.shoot();
     }
 
-    if (keyDown.up_arrow) {
+    if (keyDown.up_arrow || gamepad.button2) {
         FighterController.undock();
         var rotation = FighterController.getRotation();
 
         FighterController.flameOn();
 
-        if(isDocked) {
+        if (isDocked) {
             FighterController.applyForce(
                 Math.cos(rotation) * DOCKED_ACCELERATION,
                 Math.sin(rotation) * DOCKED_ACCELERATION
@@ -98,7 +121,7 @@ function getFocalPoint() {
 }
 
 module.exports = {
-    init          : init,
-    process       : process,
-    getFocalPoint : getFocalPoint
+    init: init,
+    process: process,
+    getFocalPoint: getFocalPoint
 };

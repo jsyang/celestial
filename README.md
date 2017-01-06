@@ -22,7 +22,6 @@ Celestial combat. Conquer the universe sector by sector.
 - strategic enemy AI
 - asteroids / uninhabitable worlds
 - capital ships
-- gamepad support
 - different mission objectives
 - memoize math funcs
 - implement galcon-like gameplay now that there is a boid entity behavior
