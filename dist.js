@@ -18294,6 +18294,47 @@ module.exports = {
     play   : play
 };
 },{}],108:[function(require,module,exports){
+var Entity = require('../entity');
+var Audio  = require('../audio');
+
+var hasAlarmSounded = {
+    Planet : false,
+    Star   : false
+};
+
+var AUDIO_ALARM = {
+    Planet : 'nav',
+    Star   : 'siren'
+};
+
+function init() {
+    for (var k in hasAlarmSounded) {
+        if (hasAlarmSounded.hasOwnProperty(k)) {
+            hasAlarmSounded[k] = false;
+        }
+    }
+}
+
+function process(fighter, entity) {
+    var t = entity.type;
+
+    var isWithinAlarmDistance = Entity.getDistSquared(fighter, entity) < entity.DIST_MIN_GRAVITY2;
+
+    if (isWithinAlarmDistance) {
+        if (!hasAlarmSounded[t]) {
+            Audio.play(AUDIO_ALARM[t]);
+            hasAlarmSounded[t] = true;
+        }
+    } else if (hasAlarmSounded[t]) {
+        hasAlarmSounded[t] = false;
+    }
+}
+
+module.exports = {
+    init    : init,
+    process : process
+};
+},{"../audio":107,"../entity":119}],109:[function(require,module,exports){
 var EntityDB = require('../entityDB');
 
 function init() {}
@@ -18307,9 +18348,11 @@ module.exports = {
     process       : process,
     getFocalPoint : getFocalPoint
 };
-},{"../entityDB":119}],109:[function(require,module,exports){
-var Audio  = require('../audio');
-var Entity = require('../entity');
+},{"../entityDB":120}],110:[function(require,module,exports){
+var Audio    = require('../audio');
+var Entity   = require('../entity');
+var EntityDB = require('../entityDB');
+var Radar    = require('../radar');
 
 var ProjectileController = require('../controller/projectile');
 
@@ -18317,8 +18360,8 @@ var fighter;
 
 function init() {
     fighter = Entity.create('Fighter', {
-        x        : 250,
-        y        : 120,
+        x        : 2050,
+        y        : 1200,
         team     : Entity.TEAM.MAGENTA,
         isDocked : true
     });
@@ -18376,6 +18419,31 @@ function process() {
             fighter.x += fighter.dx;
             fighter.y += fighter.dy;
         }
+
+        if(Radar.isEnabled) {
+            updateRadar();
+        }
+    }
+}
+
+var RADAR_REFRESH_RATE = 10;
+var radarRefreshTime   = 10;
+
+function updateRadar() {
+    radarRefreshTime++;
+
+    if (radarRefreshTime > RADAR_REFRESH_RATE) {
+        var planet    = EntityDB.getByType('Planet')[0];
+        var star      = EntityDB.getByType('Star')[0];
+        var freighter = EntityDB.getByType('Freighter')[0];
+
+        Radar.setRotations({
+            nearestEnemy  : freighter ? Entity.getAngleFromTo(fighter, freighter) : undefined,
+            nearestPlanet : Entity.getAngleFromTo(fighter, planet),
+            nearestStar   : Entity.getAngleFromTo(fighter, star)
+        });
+
+        radarRefreshTime = 0;
     }
 }
 
@@ -18432,7 +18500,7 @@ module.exports = {
     undock      : undock,
     isDocked    : isDocked
 };
-},{"../audio":107,"../controller/projectile":115,"../entity":118}],110:[function(require,module,exports){
+},{"../audio":107,"../controller/projectile":116,"../entity":119,"../entityDB":120,"../radar":137}],111:[function(require,module,exports){
 var Audio    = require('../audio');
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
@@ -18492,7 +18560,7 @@ module.exports = {
     init    : init,
     process : process
 };
-},{"../audio":107,"../controller/projectile":115,"../entity":118,"../entityDB":119}],111:[function(require,module,exports){
+},{"../audio":107,"../controller/projectile":116,"../entity":119,"../entityDB":120}],112:[function(require,module,exports){
 /**
  * Gravity and related collisions
  */
@@ -18503,6 +18571,7 @@ var Entity   = require('../entity');
 
 var ProjectileController = require('../controller/projectile');
 var FighterController    = require('../controller/fighter');
+var AlarmController      = require('../controller/alarm');
 
 var MASS_STAR    = 500;
 var MASS_PLANET  = 100;
@@ -18510,11 +18579,6 @@ var MASS_FIGHTER = 10;
 
 var M1M2_PLANET_FIGHTER = MASS_PLANET * MASS_FIGHTER;
 var M1M2_STAR_FIGHTER   = MASS_STAR * MASS_FIGHTER;
-
-var DOCK_DISTANCE_PLANET2 = 105 * 105;
-var DOCK_DISTANCE_STAR2   = 200 * 200;
-
-var GRAVITY_MIN_DISTANCE_THRESHOLD2 = 600 * 600;
 
 var ERROR_MARGIN_LANDING_ROTATION = Math.PI / 4;
 var ERROR_MARGIN_LANDING_SPEED2   = 2.1 * 2.1;
@@ -18528,13 +18592,15 @@ function crashFighter(f) {
 var PIPI = Math.PI * 2;
 
 // https://www.khanacademy.org/computing/computer-programming/programming-natural-simulations/programming-forces/a/gravitational-attraction
-function attractFighterToBody(b, m1m2, dockDistance2, isNotDockable, f) {
+function attractFighterToBody(b, m1m2, isNotDockable, f) {
     if (!f.isDocked) {
         var dx = b.x - f.x;
         var dy = b.y - f.y;
         var r2 = Entity.getDistSquared(f, b);
 
-        if (r2 < GRAVITY_MIN_DISTANCE_THRESHOLD2) {
+        AlarmController.process(f, b);
+
+        if (r2 < b.DIST_MIN_GRAVITY2) {
             var forceFactor = m1m2 / Math.pow(r2, 1.5);
 
             var attractX = dx * forceFactor;
@@ -18543,7 +18609,7 @@ function attractFighterToBody(b, m1m2, dockDistance2, isNotDockable, f) {
             f.dx += attractX;
             f.dy += attractY;
 
-            if (r2 < dockDistance2) {
+            if (r2 < b.DIST_SURFACE2) {
                 if (isNotDockable) {
                     crashFighter(f);
                 } else {
@@ -18588,8 +18654,8 @@ function init() {
     planets = EntityDB.getByType('Planet');
     star    = EntityDB.getByType('Star');
 
-    attractFunc1 = attractFighterToBody.bind(null, planets[0], M1M2_PLANET_FIGHTER, DOCK_DISTANCE_PLANET2, false);
-    attractFunc2 = attractFighterToBody.bind(null, star[0], M1M2_STAR_FIGHTER, DOCK_DISTANCE_STAR2, true);
+    attractFunc1 = attractFighterToBody.bind(null, planets[0], M1M2_PLANET_FIGHTER, false);
+    attractFunc2 = attractFighterToBody.bind(null, star[0], M1M2_STAR_FIGHTER, true);
 }
 
 function process() {
@@ -18605,10 +18671,12 @@ module.exports = {
     init    : init,
     process : process
 };
-},{"../audio":107,"../controller/fighter":109,"../controller/projectile":115,"../entity":118,"../entityDB":119}],112:[function(require,module,exports){
-var GamePad = require('../gamepad');
+},{"../audio":107,"../controller/alarm":108,"../controller/fighter":110,"../controller/projectile":116,"../entity":119,"../entityDB":120}],113:[function(require,module,exports){
+var GamePad           = require('../gamepad');
 var FighterController = require('./fighter');
-var EntityDB = require('../entityDB');
+var EntityDB          = require('../entityDB');
+
+var Radar = require('../radar');
 
 var focalPoint;
 
@@ -18632,6 +18700,8 @@ function onKeyUp(e) {
         keyDown.down_arrow = false;
     } else if (e.which === 70) {
         keyDown.f = false;
+    } else if (e.which === 82) {
+        keyDown.r = false;
     }
 }
 
@@ -18651,6 +18721,9 @@ function onKeyDown(e) {
     } else if (e.which === 40) {
         // Down arrow
         keyDown.down_arrow = true;
+    } else if (e.which === 82) {
+        // R
+        keyDown.r = true;
 
     } else if (e.which === 70) {
         // F
@@ -18659,12 +18732,12 @@ function onKeyDown(e) {
 
 }
 
-var DROTATION = 0.05;
-var ACCELERATION = 0.2;
+var DROTATION           = 0.05;
+var ACCELERATION        = 0.2;
 var DOCKED_ACCELERATION = 0.4;
 
 function process() {
-    var gamepad = GamePad.getState();
+    var gamepad  = GamePad.getState();
     var isDocked = FighterController.isDocked();
 
     if (!isDocked) {
@@ -18675,20 +18748,23 @@ function process() {
         }
 
         if (typeof gamepad.analogAngle === 'number') {
-            var rotation = FighterController.getRotation();
+            var rotation        = FighterController.getRotation();
             var desiredRotation = gamepad.analogAngle;
 
             FighterController.rotate(desiredRotation - rotation);
         }
     }
 
-    if(gamepad.button3 && gamepad.button1) {
+    if (gamepad.button3 && gamepad.button1) {
         location.reload();
     }
 
     if (keyDown.f || gamepad.button0) {
         FighterController.shoot();
     }
+
+    // Hold button down for radar
+    Radar.isEnabled = keyDown.r || gamepad.button3;
 
     if (keyDown.up_arrow || gamepad.button2) {
         FighterController.undock();
@@ -18719,17 +18795,17 @@ function getFocalPoint() {
 }
 
 module.exports = {
-    init: init,
-    process: process,
-    getFocalPoint: getFocalPoint
+    init          : init,
+    process       : process,
+    getFocalPoint : getFocalPoint
 };
-},{"../entityDB":119,"../gamepad":120,"./fighter":109}],113:[function(require,module,exports){
+},{"../entityDB":120,"../gamepad":121,"../radar":137,"./fighter":110}],114:[function(require,module,exports){
 var Entity = require('../entity');
 
 var childRotation = 0;
 
 var dChildRotation = 0.0001;
-var childDistance  = 1200;
+var childDistance  = 2400;
 var attractorX     = -150;
 var attractorY     = -50;
 
@@ -18786,7 +18862,7 @@ module.exports = {
     init    : init,
     process : process
 };
-},{"../entity":118}],114:[function(require,module,exports){
+},{"../entity":119}],115:[function(require,module,exports){
 var Random   = require('../random');
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
@@ -18902,7 +18978,7 @@ module.exports = {
     init    : init,
     process : process
 };
-},{"../entity":118,"../entityDB":119,"../random":136}],115:[function(require,module,exports){
+},{"../entity":119,"../entityDB":120,"../random":138}],116:[function(require,module,exports){
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
 var Audio    = require('../audio');
@@ -18999,7 +19075,7 @@ module.exports = {
     explode       : explode,
     getFocalPoint : getFocalPoint
 };
-},{"../audio":107,"../entity":118,"../entityDB":119,"../random":136,"sat":99}],116:[function(require,module,exports){
+},{"../audio":107,"../entity":119,"../entityDB":120,"../random":138,"sat":99}],117:[function(require,module,exports){
 var Entity = require('../entity');
 
 var star;
@@ -19021,7 +19097,7 @@ module.exports = {
     init    : init,
     process : process
 };
-},{"../entity":118}],117:[function(require,module,exports){
+},{"../entity":119}],118:[function(require,module,exports){
 (function (global){
 /*!
  * pixi.js - v4.3.0
@@ -19045,7 +19121,7 @@ module.exports = {
 }],173:[function(t,e,r){"use strict";function n(t){return t&&t.__esModule?t:{default:t}}r.__esModule=!0;var i=t("./webgl/WebGLPrepare");Object.defineProperty(r,"webgl",{enumerable:!0,get:function(){return n(i).default}});var o=t("./canvas/CanvasPrepare");Object.defineProperty(r,"canvas",{enumerable:!0,get:function(){return n(o).default}});var s=t("./BasePrepare");Object.defineProperty(r,"BasePrepare",{enumerable:!0,get:function(){return n(s).default}});var a=t("./limiters/CountLimiter");Object.defineProperty(r,"CountLimiter",{enumerable:!0,get:function(){return n(a).default}});var u=t("./limiters/TimeLimiter");Object.defineProperty(r,"TimeLimiter",{enumerable:!0,get:function(){return n(u).default}})},{"./BasePrepare":171,"./canvas/CanvasPrepare":172,"./limiters/CountLimiter":174,"./limiters/TimeLimiter":175,"./webgl/WebGLPrepare":176}],174:[function(t,e,r){"use strict";function n(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}r.__esModule=!0;var i=function(){function t(e){n(this,t),this.maxItemsPerFrame=e,this.itemsLeft=0}return t.prototype.beginFrame=function(){this.itemsLeft=this.maxItemsPerFrame},t.prototype.allowedToUpload=function(){return this.itemsLeft-- >0},t}();r.default=i},{}],175:[function(t,e,r){"use strict";function n(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}r.__esModule=!0;var i=function(){function t(e){n(this,t),this.maxMilliseconds=e,this.frameStart=0}return t.prototype.beginFrame=function(){this.frameStart=Date.now()},t.prototype.allowedToUpload=function(){return Date.now()-this.frameStart<this.maxMilliseconds},t}();r.default=i},{}],176:[function(t,e,r){"use strict";function n(t){return t&&t.__esModule?t:{default:t}}function i(t){if(t&&t.__esModule)return t;var e={};if(null!=t)for(var r in t)Object.prototype.hasOwnProperty.call(t,r)&&(e[r]=t[r]);return e.default=t,e}function o(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function s(t,e){if(!t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!e||"object"!=typeof e&&"function"!=typeof e?t:e}function a(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function, not "+typeof e);t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,enumerable:!1,writable:!0,configurable:!0}}),e&&(Object.setPrototypeOf?Object.setPrototypeOf(t,e):t.__proto__=e)}function u(t,e){return e instanceof f.BaseTexture&&(e._glTextures[t.CONTEXT_UID]||t.textureManager.updateTexture(e),!0)}function h(t,e){return e instanceof f.Graphics&&((e.dirty||e.clearDirty||!e._webGL[t.plugins.graphics.CONTEXT_UID])&&t.plugins.graphics.updateGraphics(e),!0)}function l(t,e){if(t instanceof f.BaseTexture)return e.indexOf(t)===-1&&e.push(t),!0;if(t._texture&&t._texture instanceof f.Texture){var r=t._texture.baseTexture;return e.indexOf(r)===-1&&e.push(r),!0}return!1}function c(t,e){return t instanceof f.Graphics&&(e.push(t),!0)}r.__esModule=!0;var d=t("../../core"),f=i(d),p=t("../BasePrepare"),v=n(p),y=function(t){function e(r){o(this,e);var n=s(this,t.call(this,r));return n.uploadHookHelper=n.renderer,n.register(l,u).register(c,h),n}return a(e,t),e}(v.default);r.default=y,f.WebGLRenderer.registerPlugin("prepare",y)},{"../../core":61,"../BasePrepare":171}],177:[function(t,e,r){(function(e){"use strict";function n(t){if(t&&t.__esModule)return t;var e={};if(null!=t)for(var r in t)Object.prototype.hasOwnProperty.call(t,r)&&(e[r]=t[r]);return e.default=t,e}r.__esModule=!0,r.loader=r.prepare=r.particles=r.mesh=r.loaders=r.interaction=r.filters=r.extras=r.extract=r.accessibility=void 0;var i=t("./deprecation");Object.keys(i).forEach(function(t){"default"!==t&&"__esModule"!==t&&Object.defineProperty(r,t,{enumerable:!0,get:function(){return i[t]}})});var o=t("./core");Object.keys(o).forEach(function(t){"default"!==t&&"__esModule"!==t&&Object.defineProperty(r,t,{enumerable:!0,get:function(){return o[t]}})}),t("./polyfill");var s=t("./accessibility"),a=n(s),u=t("./extract"),h=n(u),l=t("./extras"),c=n(l),d=t("./filters"),f=n(d),p=t("./interaction"),v=n(p),y=t("./loaders"),g=n(y),m=t("./mesh"),_=n(m),b=t("./particles"),x=n(b),T=t("./prepare"),w=n(T);r.accessibility=a,r.extract=h,r.extras=c,r.filters=f,r.interaction=v,r.loaders=g,r.mesh=_,r.particles=x,r.prepare=w;var E=g&&g.Loader?new g.Loader:null;r.loader=E,e.PIXI=r}).call(this,"undefined"!=typeof global?global:"undefined"!=typeof self?self:"undefined"!=typeof window?window:{})},{"./accessibility":40,"./core":61,"./deprecation":120,"./extract":122,"./extras":131,"./filters":142,"./interaction":148,"./loaders":151,"./mesh":160,"./particles":163,"./polyfill":169,"./prepare":173}]},{},[177])(177)});
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],118:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 var Graphics = require('./graphics');
 var Geometry = require('./geometry');
 var EntityDB = require('./entityDB');
@@ -19254,6 +19330,23 @@ function create(type, options) {
 
     if (type === 'Star') {
         entity = Geometry(Star, options);
+
+        /**
+         * Squared distance within which this body imparts gravitational forces something
+         * @type {number}
+         */
+        entity.DIST_MIN_GRAVITY2 = 800 * 800;
+        entity.DIST_SURFACE2 = 200 * 200;
+
+    } else if (type === 'Planet') {
+        entity = createPlanet(options);
+        /**
+         * Squared distance within which this body imparts gravitational forces something
+         * @type {number}
+         */
+        entity.DIST_MIN_GRAVITY2 = 600 * 600;
+        entity.DIST_SURFACE2 = 105 * 105;
+
     } else if (type === 'ShotCannonHeavy') {
         entity = Geometry(Shot.cannon_heavy, options);
 
@@ -19272,8 +19365,6 @@ function create(type, options) {
         entity = Geometry(PLab, options);
     } else if (type === 'PComm') {
         entity = createPComm(options);
-    } else if (type === 'Planet') {
-        entity = createPlanet(options);
     } else if (type === 'PointDisplay') {
         entity = createPointDisplay(options);
     } else if (type === 'Fighter') {
@@ -19338,7 +19429,7 @@ module.exports = {
     getAngleFromTo : getAngleFromTo,
     TEAM           : TEAM
 };
-},{"./entityDB":119,"./geometry":121,"./geometry/Fighter.json":122,"./geometry/Freighter.json":123,"./geometry/PBase.json":124,"./geometry/PColony.json":125,"./geometry/PComm.json":126,"./geometry/PLab.json":127,"./geometry/Planet.json":128,"./geometry/PointDisplay.json":129,"./geometry/Probe.json":130,"./geometry/Shot.json":131,"./geometry/Star.json":132,"./geometry/StarPort.json":133,"./graphics":134}],119:[function(require,module,exports){
+},{"./entityDB":120,"./geometry":122,"./geometry/Fighter.json":123,"./geometry/Freighter.json":124,"./geometry/PBase.json":125,"./geometry/PColony.json":126,"./geometry/PComm.json":127,"./geometry/PLab.json":128,"./geometry/Planet.json":129,"./geometry/PointDisplay.json":130,"./geometry/Probe.json":131,"./geometry/Shot.json":132,"./geometry/Star.json":133,"./geometry/StarPort.json":134,"./graphics":135}],120:[function(require,module,exports){
 var Graphics = require('./graphics');
 
 var byType = {};
@@ -19401,7 +19492,7 @@ module.exports = {
     getByType : getByType,
     getByTeam : getByTeam
 };
-},{"./graphics":134}],120:[function(require,module,exports){
+},{"./graphics":135}],121:[function(require,module,exports){
 var NO_DATA = {};
 
 var AXES_ACTIVATION_VALUE = 0.1;
@@ -19449,7 +19540,7 @@ function getState() {
 module.exports = {
     getState : getState
 };
-},{}],121:[function(require,module,exports){
+},{}],122:[function(require,module,exports){
 var PIXI = require('./custom-lib/pixi.min.js');
 var SAT  = require('sat');
 
@@ -19639,7 +19730,7 @@ function Geometry(geometryDef, options) {
 }
 
 module.exports = Geometry;
-},{"./custom-lib/pixi.min.js":117,"sat":99}],122:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":118,"sat":99}],123:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "polygon",
@@ -19696,7 +19787,7 @@ module.exports={
     ]
   }
 }
-},{}],123:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
 module.exports={
   "body": {
     "type": "polygon",
@@ -19824,7 +19915,7 @@ module.exports={
   }
 }
 
-},{}],124:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 module.exports={
   "_name": "Planetary Base",
   "body": {
@@ -19899,7 +19990,7 @@ module.exports={
     ]
   }
 }
-},{}],125:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Colony",
@@ -19916,7 +20007,7 @@ module.exports={
     -30,40
   ]
 }
-},{}],126:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Communications Center",
@@ -19936,7 +20027,7 @@ module.exports={
     40,30
   ]
 }
-},{}],127:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Lab",
@@ -19953,7 +20044,7 @@ module.exports={
     0,-40
   ]
 }
-},{}],128:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "circle",
@@ -19982,7 +20073,7 @@ module.exports={
     ]
   }
 }
-},{}],129:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 module.exports={
   "type": "circle",
   "radius": 4,
@@ -19992,7 +20083,7 @@ module.exports={
     "alpha": 1
   }
 }
-},{}],130:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "polygon",
@@ -20031,7 +20122,7 @@ module.exports={
     ]
   }
 }
-},{}],131:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 module.exports={
   "cannon_normal" : {
     "type": "rectangle",
@@ -20060,7 +20151,7 @@ module.exports={
     ]
   }
 }
-},{}],132:[function(require,module,exports){
+},{}],133:[function(require,module,exports){
 module.exports={
   "type": "circle",
   "radius": 200,
@@ -20074,7 +20165,7 @@ module.exports={
     "alpha": 1
   }
 }
-},{}],133:[function(require,module,exports){
+},{}],134:[function(require,module,exports){
 module.exports={
   "_name": "High Port",
   "body" : {
@@ -20240,7 +20331,7 @@ module.exports={
     ]
   }
 }
-},{}],134:[function(require,module,exports){
+},{}],135:[function(require,module,exports){
 /**
  * Graphics interface
  */
@@ -20250,6 +20341,7 @@ var PIXI = require('./custom-lib/pixi.min.js');
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 var StarField = require('./starfield');
+var Radar     = require('./radar');
 
 var stage;
 var renderer;
@@ -20264,6 +20356,7 @@ function init() {
     renderer = new PIXI.WebGLRenderer(width, height);
 
     StarField.init(stage);
+    Radar.init(stage);
 
     document.body.appendChild(renderer.view);
     window.addEventListener('resize', onResize);
@@ -20306,7 +20399,11 @@ function centerOn(point) {
     var dx = point.x - lastX;
     var dy = point.y - lastY;
 
-    if(lastX === undefined && lastY === undefined ){
+    if(Radar.isEnabled) {
+        Radar.setPosition(point);
+    }
+
+    if (lastX === undefined && lastY === undefined) {
         StarField.reinit(point);
     } else {
         StarField.process(point, dx, dy);
@@ -20323,7 +20420,7 @@ module.exports = {
     render      : render,
     centerOn    : centerOn
 };
-},{"./custom-lib/pixi.min.js":117,"./starfield":137}],135:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":118,"./radar":137,"./starfield":139}],136:[function(require,module,exports){
 var Assets   = require('./assets');
 var Graphics = require('./graphics');
 
@@ -20396,7 +20493,138 @@ function update() {
     CollisionController.process();
 }
 
-},{"./assets":106,"./controller/collision":108,"./controller/fighter":109,"./controller/freighter":110,"./controller/gravity":111,"./controller/human":112,"./controller/planet":113,"./controller/probe":114,"./controller/projectile":115,"./controller/star":116,"./graphics":134}],136:[function(require,module,exports){
+},{"./assets":106,"./controller/collision":109,"./controller/fighter":110,"./controller/freighter":111,"./controller/gravity":112,"./controller/human":113,"./controller/planet":114,"./controller/probe":115,"./controller/projectile":116,"./controller/star":117,"./graphics":135}],137:[function(require,module,exports){
+var PIXI = require('./custom-lib/pixi.min.js');
+
+var DIAL_TRACK_ALPHA = 0.08;
+var DEGREES          = Math.PI * 0.5 / 90;
+
+var dialNearestPlanet;
+
+function createNearestPlanetDial() {
+    var g = new PIXI.Graphics();
+    g.beginFill(0, 0);
+    g.lineStyle(1, 0xffffff, DIAL_TRACK_ALPHA);
+    g.drawCircle(0, 0, 60);
+    g.endFill();
+
+    g.x = 0;
+    g.y = 0;
+
+    var d = new PIXI.Graphics();
+    d.beginFill(0, 0);
+    d.lineStyle(2, 0x00ff00, 1);
+    d.arc(0, 0, 60, -3 * DEGREES, 3 * DEGREES);
+    d.endFill();
+
+    d.x = 0;
+    d.y = 0;
+
+    g.addChild(d);
+    return g;
+}
+
+var dialNearestStar;
+
+function createNearestStarDial() {
+    var g = new PIXI.Graphics();
+    g.beginFill(0, 0);
+    g.lineStyle(1, 0xffffff, DIAL_TRACK_ALPHA);
+    g.drawCircle(0, 0, 64);
+    g.endFill();
+
+    g.x = 0;
+    g.y = 0;
+
+    var d = new PIXI.Graphics();
+    d.beginFill(0, 0);
+    d.lineStyle(2, 0xffff00, 1);
+    d.arc(0, 0, 64, -6 * DEGREES, 6 * DEGREES);
+    d.endFill();
+
+    d.x = 0;
+    d.y = 0;
+
+    g.addChild(d);
+    return g;
+}
+
+var dialNearestEnemy;
+
+function createNearestEnemyDial() {
+    var g = new PIXI.Graphics();
+    g.beginFill(0, 0);
+    g.lineStyle(1, 0xffffff, DIAL_TRACK_ALPHA);
+    g.drawCircle(0, 0, 68);
+    g.endFill();
+
+    g.x = 0;
+    g.y = 0;
+
+    var d = new PIXI.Graphics();
+    d.beginFill(0, 0);
+    d.lineStyle(2, 0xff0000, 1);
+    d.arc(0, 0, 68, -DEGREES, DEGREES);
+    d.endFill();
+
+    d.x = 0;
+    d.y = 0;
+
+    g.addChild(d);
+    return g;
+}
+
+var dials;
+
+function init(stage) {
+    dialNearestPlanet = createNearestPlanetDial();
+    dialNearestStar   = createNearestStarDial();
+    dialNearestEnemy  = createNearestEnemyDial();
+
+    dials = new PIXI.Container();
+    dials.addChild(
+        dialNearestPlanet,
+        dialNearestStar,
+        dialNearestEnemy
+    );
+
+    stage.addChild(dials);
+    dials.visible = false;
+}
+
+function setPosition(point) {
+    dials.x = point.x;
+    dials.y = point.y;
+}
+
+var radarEnabled = true;
+
+function setRotations(rotation) {
+    if (rotation.nearestEnemy) {
+        dialNearestEnemy.visible  = true;
+        dialNearestEnemy.rotation = rotation.nearestEnemy;
+    } else {
+        dialNearestEnemy.visible = false;
+    }
+
+    dialNearestPlanet.rotation = rotation.nearestPlanet;
+    dialNearestStar.rotation   = rotation.nearestStar;
+}
+
+module.exports = {
+    init         : init,
+    setRotations : setRotations,
+    setPosition  : setPosition,
+
+    set isEnabled(isEnabled) {
+        radarEnabled  = isEnabled;
+        dials.visible = isEnabled;
+    },
+    get isEnabled() {
+        return radarEnabled;
+    }
+};
+},{"./custom-lib/pixi.min.js":118}],138:[function(require,module,exports){
 /**
  * Random functions
  */
@@ -20433,7 +20661,7 @@ module.exports = {
     arrayEl : arrayEl
 };
 
-},{}],137:[function(require,module,exports){
+},{}],139:[function(require,module,exports){
 var PIXI   = require('./custom-lib/pixi.min.js');
 var Random = require('./random');
 
@@ -20549,4 +20777,4 @@ module.exports = {
     reinit  : reinit,
     process : process
 };
-},{"./custom-lib/pixi.min.js":117,"./random":136}]},{},[135]);
+},{"./custom-lib/pixi.min.js":118,"./random":138}]},{},[136]);

@@ -8,7 +8,6 @@ Celestial combat. Conquer the universe sector by sector.
 - homing missiles
 - gamefield limit
 - speed limit on fighter ship
-- basic radar
 - filter collision testing by grids
 
 - gamefield generation
@@ -24,6 +23,7 @@ Celestial combat. Conquer the universe sector by sector.
 - different mission objectives
 - memoize math funcs
 - implement galcon-like gameplay now that there is a boid entity behavior
+- galaxy radar
 
 ## Custom pixijs build
 

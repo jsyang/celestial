@@ -206,6 +206,23 @@ function create(type, options) {
 
     if (type === 'Star') {
         entity = Geometry(Star, options);
+
+        /**
+         * Squared distance within which this body imparts gravitational forces something
+         * @type {number}
+         */
+        entity.DIST_MIN_GRAVITY2 = 800 * 800;
+        entity.DIST_SURFACE2 = 200 * 200;
+
+    } else if (type === 'Planet') {
+        entity = createPlanet(options);
+        /**
+         * Squared distance within which this body imparts gravitational forces something
+         * @type {number}
+         */
+        entity.DIST_MIN_GRAVITY2 = 600 * 600;
+        entity.DIST_SURFACE2 = 105 * 105;
+
     } else if (type === 'ShotCannonHeavy') {
         entity = Geometry(Shot.cannon_heavy, options);
 
@@ -224,8 +241,6 @@ function create(type, options) {
         entity = Geometry(PLab, options);
     } else if (type === 'PComm') {
         entity = createPComm(options);
-    } else if (type === 'Planet') {
-        entity = createPlanet(options);
     } else if (type === 'PointDisplay') {
         entity = createPointDisplay(options);
     } else if (type === 'Fighter') {

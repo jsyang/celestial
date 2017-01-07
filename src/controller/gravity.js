@@ -8,6 +8,7 @@ var Entity   = require('../entity');
 
 var ProjectileController = require('../controller/projectile');
 var FighterController    = require('../controller/fighter');
+var AlarmController      = require('../controller/alarm');
 
 var MASS_STAR    = 500;
 var MASS_PLANET  = 100;
@@ -15,11 +16,6 @@ var MASS_FIGHTER = 10;
 
 var M1M2_PLANET_FIGHTER = MASS_PLANET * MASS_FIGHTER;
 var M1M2_STAR_FIGHTER   = MASS_STAR * MASS_FIGHTER;
-
-var DOCK_DISTANCE_PLANET2 = 105 * 105;
-var DOCK_DISTANCE_STAR2   = 200 * 200;
-
-var GRAVITY_MIN_DISTANCE_THRESHOLD2 = 600 * 600;
 
 var ERROR_MARGIN_LANDING_ROTATION = Math.PI / 4;
 var ERROR_MARGIN_LANDING_SPEED2   = 2.1 * 2.1;
@@ -33,13 +29,15 @@ function crashFighter(f) {
 var PIPI = Math.PI * 2;
 
 // https://www.khanacademy.org/computing/computer-programming/programming-natural-simulations/programming-forces/a/gravitational-attraction
-function attractFighterToBody(b, m1m2, dockDistance2, isNotDockable, f) {
+function attractFighterToBody(b, m1m2, isNotDockable, f) {
     if (!f.isDocked) {
         var dx = b.x - f.x;
         var dy = b.y - f.y;
         var r2 = Entity.getDistSquared(f, b);
 
-        if (r2 < GRAVITY_MIN_DISTANCE_THRESHOLD2) {
+        AlarmController.process(f, b);
+
+        if (r2 < b.DIST_MIN_GRAVITY2) {
             var forceFactor = m1m2 / Math.pow(r2, 1.5);
 
             var attractX = dx * forceFactor;
@@ -48,7 +46,7 @@ function attractFighterToBody(b, m1m2, dockDistance2, isNotDockable, f) {
             f.dx += attractX;
             f.dy += attractY;
 
-            if (r2 < dockDistance2) {
+            if (r2 < b.DIST_SURFACE2) {
                 if (isNotDockable) {
                     crashFighter(f);
                 } else {
@@ -93,8 +91,8 @@ function init() {
     planets = EntityDB.getByType('Planet');
     star    = EntityDB.getByType('Star');
 
-    attractFunc1 = attractFighterToBody.bind(null, planets[0], M1M2_PLANET_FIGHTER, DOCK_DISTANCE_PLANET2, false);
-    attractFunc2 = attractFighterToBody.bind(null, star[0], M1M2_STAR_FIGHTER, DOCK_DISTANCE_STAR2, true);
+    attractFunc1 = attractFighterToBody.bind(null, planets[0], M1M2_PLANET_FIGHTER, false);
+    attractFunc2 = attractFighterToBody.bind(null, star[0], M1M2_STAR_FIGHTER, true);
 }
 
 function process() {

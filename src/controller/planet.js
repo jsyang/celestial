@@ -3,7 +3,7 @@ var Entity = require('../entity');
 var childRotation = 0;
 
 var dChildRotation = 0.0001;
-var childDistance  = 1200;
+var childDistance  = 2400;
 var attractorX     = -150;
 var attractorY     = -50;
 

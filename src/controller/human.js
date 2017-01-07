@@ -1,6 +1,8 @@
-var GamePad = require('../gamepad');
+var GamePad           = require('../gamepad');
 var FighterController = require('./fighter');
-var EntityDB = require('../entityDB');
+var EntityDB          = require('../entityDB');
+
+var Radar = require('../radar');
 
 var focalPoint;
 
@@ -24,6 +26,8 @@ function onKeyUp(e) {
         keyDown.down_arrow = false;
     } else if (e.which === 70) {
         keyDown.f = false;
+    } else if (e.which === 82) {
+        keyDown.r = false;
     }
 }
 
@@ -43,6 +47,9 @@ function onKeyDown(e) {
     } else if (e.which === 40) {
         // Down arrow
         keyDown.down_arrow = true;
+    } else if (e.which === 82) {
+        // R
+        keyDown.r = true;
 
     } else if (e.which === 70) {
         // F
@@ -51,12 +58,12 @@ function onKeyDown(e) {
 
 }
 
-var DROTATION = 0.05;
-var ACCELERATION = 0.2;
+var DROTATION           = 0.05;
+var ACCELERATION        = 0.2;
 var DOCKED_ACCELERATION = 0.4;
 
 function process() {
-    var gamepad = GamePad.getState();
+    var gamepad  = GamePad.getState();
     var isDocked = FighterController.isDocked();
 
     if (!isDocked) {
@@ -67,20 +74,23 @@ function process() {
         }
 
         if (typeof gamepad.analogAngle === 'number') {
-            var rotation = FighterController.getRotation();
+            var rotation        = FighterController.getRotation();
             var desiredRotation = gamepad.analogAngle;
 
             FighterController.rotate(desiredRotation - rotation);
         }
     }
 
-    if(gamepad.button3 && gamepad.button1) {
+    if (gamepad.button3 && gamepad.button1) {
         location.reload();
     }
 
     if (keyDown.f || gamepad.button0) {
         FighterController.shoot();
     }
+
+    // Hold button down for radar
+    Radar.isEnabled = keyDown.r || gamepad.button3;
 
     if (keyDown.up_arrow || gamepad.button2) {
         FighterController.undock();
@@ -111,7 +121,7 @@ function getFocalPoint() {
 }
 
 module.exports = {
-    init: init,
-    process: process,
-    getFocalPoint: getFocalPoint
+    init          : init,
+    process       : process,
+    getFocalPoint : getFocalPoint
 };

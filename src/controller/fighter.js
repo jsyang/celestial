@@ -1,5 +1,7 @@
-var Audio  = require('../audio');
-var Entity = require('../entity');
+var Audio    = require('../audio');
+var Entity   = require('../entity');
+var EntityDB = require('../entityDB');
+var Radar    = require('../radar');
 
 var ProjectileController = require('../controller/projectile');
 
@@ -7,8 +9,8 @@ var fighter;
 
 function init() {
     fighter = Entity.create('Fighter', {
-        x        : 250,
-        y        : 120,
+        x        : 2050,
+        y        : 1200,
         team     : Entity.TEAM.MAGENTA,
         isDocked : true
     });
@@ -66,6 +68,31 @@ function process() {
             fighter.x += fighter.dx;
             fighter.y += fighter.dy;
         }
+
+        if(Radar.isEnabled) {
+            updateRadar();
+        }
+    }
+}
+
+var RADAR_REFRESH_RATE = 10;
+var radarRefreshTime   = 10;
+
+function updateRadar() {
+    radarRefreshTime++;
+
+    if (radarRefreshTime > RADAR_REFRESH_RATE) {
+        var planet    = EntityDB.getByType('Planet')[0];
+        var star      = EntityDB.getByType('Star')[0];
+        var freighter = EntityDB.getByType('Freighter')[0];
+
+        Radar.setRotations({
+            nearestEnemy  : freighter ? Entity.getAngleFromTo(fighter, freighter) : undefined,
+            nearestPlanet : Entity.getAngleFromTo(fighter, planet),
+            nearestStar   : Entity.getAngleFromTo(fighter, star)
+        });
+
+        radarRefreshTime = 0;
     }
 }
 
