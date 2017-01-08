@@ -37,12 +37,7 @@ function process() {
         freighter.y = py + Math.sin(freighter.rotation - DEGREES90) * ORBIT_DISTANCE;
 
         if (freighter.hp > 0) {
-            if (freighter.hitTime > 0) {
-                freighter.hitTime--;
-                freighter.graphics.alpha = 1;
-            } else {
-                freighter.graphics.alpha = 0.8;
-            }
+            freighter.renderHit();
         } else {
             EntityDB.remove(freighter);
             Audio.play('collide');

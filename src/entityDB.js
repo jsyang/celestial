@@ -1,7 +1,6 @@
 var Graphics = require('./graphics');
 
 var byType = {};
-var byTeam = {};
 
 function add(entity) {
     var type = entity.type.toString();
@@ -11,12 +10,6 @@ function add(entity) {
     } else {
         byType[type] = [entity];
     }
-
-    /*
-     if(entity.team) {
-     byTeam[entity.team.toString()] = entity;
-     }
-     */
 }
 
 function getByType(type) {
@@ -28,29 +21,24 @@ function getByTeam(team) {
 }
 
 function remove(entity) {
-    if(entity.hp != null) {
+    if (entity.hp != null) {
         entity.hp = 0;
     }
 
     var byTypeIndex = -1;
-    byType[entity.type].filter(function (e, i) {
-        if (e === entity) {
+    var byTypeCollection = byType[entity.type];
+    for (var i = -1; i < byTypeCollection.length; i++) {
+        if (entity === byTypeCollection[i]) {
             byTypeIndex = i;
+            break;
         }
-    });
+    }
 
-    if(byTypeIndex !== -1) {
+    if (byTypeIndex !== -1) {
         byType[entity.type].splice(byTypeIndex, 1);
     }
 
-    // delete byId reference
-    // delete byType reference
-    // delete byTeam reference
-
-    // delete from SAT
     Graphics.removeChild(entity.graphics);
-
-    // break any remaining references for garbage collector
 }
 
 module.exports = {

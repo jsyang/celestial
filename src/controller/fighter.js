@@ -19,7 +19,7 @@ function init() {
 var TIME_BETWEEN_SHOTS = 100;
 var lastShotTime       = 0;
 
-var shotType   = 'ShotCannonHeavy';
+var shotType   = 'ShotCannonNormal';
 var AUDIO_SHOT = {
     'ShotCannonHeavy'  : 'fire-heavy',
     'ShotCannonNormal' : 'fire'
@@ -31,7 +31,7 @@ function shoot() {
 
         if (now - lastShotTime > TIME_BETWEEN_SHOTS) {
             ProjectileController.shoot(
-                'ShotCannonHeavy',
+                shotType,
                 fighter.collision.calcPoints[1],
                 fighter,
                 4

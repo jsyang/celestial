@@ -18370,7 +18370,7 @@ function init() {
 var TIME_BETWEEN_SHOTS = 100;
 var lastShotTime       = 0;
 
-var shotType   = 'ShotCannonHeavy';
+var shotType   = 'ShotCannonNormal';
 var AUDIO_SHOT = {
     'ShotCannonHeavy'  : 'fire-heavy',
     'ShotCannonNormal' : 'fire'
@@ -18382,7 +18382,7 @@ function shoot() {
 
         if (now - lastShotTime > TIME_BETWEEN_SHOTS) {
             ProjectileController.shoot(
-                'ShotCannonHeavy',
+                shotType,
                 fighter.collision.calcPoints[1],
                 fighter,
                 4
@@ -18546,12 +18546,7 @@ function process() {
         freighter.y = py + Math.sin(freighter.rotation - DEGREES90) * ORBIT_DISTANCE;
 
         if (freighter.hp > 0) {
-            if (freighter.hitTime > 0) {
-                freighter.hitTime--;
-                freighter.graphics.alpha = 1;
-            } else {
-                freighter.graphics.alpha = 0.8;
-            }
+            freighter.renderHit();
         } else {
             EntityDB.remove(freighter);
             Audio.play('collide');
@@ -19155,6 +19150,7 @@ function setVisible(childIndex, isVisible) {
 }
 
 var TEAM = {
+    NONE    : -1,
     BLUE    : 0,
     GREEN   : 1,
     RED     : 2,
@@ -19174,16 +19170,13 @@ function assignTeamColor(geometry, team) {
     geometry.graphics.currentPath.lineColor = COLOR_TEAM[team];
 }
 
-// todo: figure out how to make lines flash white instead of using alpha
-var COLOR_HIT = 0xffffff;
-
 function renderHit() {
     if (this.hitTime > 0) {
         this.hitTime--;
-        this.graphics.alpha = 1;
+        this.graphics.alpha = this.hitTime % 2;
     } else if (this.hitTime === 0) {
-        this.graphics.alpha = 0.7;
         this.hitTime        = -1;
+        this.graphics.alpha = 1;
     }
 }
 
@@ -19317,11 +19310,11 @@ function createFreighter(options) {
             turret2.graphics
         );
 
-    freighter.flameOn  = setVisible.bind(freighter, 0, true);
-    freighter.flameOff = setVisible.bind(freighter, 0, false);
+    freighter.flameOn   = setVisible.bind(freighter, 0, true);
+    freighter.flameOff  = setVisible.bind(freighter, 0, false);
+    freighter.renderHit = renderHit;
 
     freighter.flameOff();
-    freighter.graphics.alpha = 0.85;
 
     return freighter;
 }
@@ -19388,7 +19381,7 @@ function create(type, options) {
         entity.AUDIO_HIT   = 'hit2';
         entity.hp          = options.hp || 2;
         entity.hasDied     = false;
-        entity.hitTime     = 0;
+        entity.hitTime     = -1;
         entity.patrolIndex = 0;
         entity.rotation    = options.rotation || 0;
     } else if (type === 'StarPort') {
@@ -19397,7 +19390,7 @@ function create(type, options) {
         entity = createPBase(options);
     } else if (type === 'Freighter') {
         entity          = createFreighter(options);
-        entity.hitTime  = 0;
+        entity.hitTime  = -1;
         entity.hp       = 10;
         entity.dx       = options.dx || 0;
         entity.dy       = options.dy || 0;
@@ -19408,7 +19401,7 @@ function create(type, options) {
 
     if (entity) {
         entity.type = type;
-        entity.team = options.team;
+        entity.team = options.team || TEAM.NONE;
         EntityDB.add(entity);
 
         // Add entity to PixiJS stage
@@ -19440,7 +19433,6 @@ module.exports = {
 var Graphics = require('./graphics');
 
 var byType = {};
-var byTeam = {};
 
 function add(entity) {
     var type = entity.type.toString();
@@ -19450,12 +19442,6 @@ function add(entity) {
     } else {
         byType[type] = [entity];
     }
-
-    /*
-     if(entity.team) {
-     byTeam[entity.team.toString()] = entity;
-     }
-     */
 }
 
 function getByType(type) {
@@ -19467,29 +19453,24 @@ function getByTeam(team) {
 }
 
 function remove(entity) {
-    if(entity.hp != null) {
+    if (entity.hp != null) {
         entity.hp = 0;
     }
 
     var byTypeIndex = -1;
-    byType[entity.type].filter(function (e, i) {
-        if (e === entity) {
+    var byTypeCollection = byType[entity.type];
+    for (var i = -1; i < byTypeCollection.length; i++) {
+        if (entity === byTypeCollection[i]) {
             byTypeIndex = i;
+            break;
         }
-    });
+    }
 
-    if(byTypeIndex !== -1) {
+    if (byTypeIndex !== -1) {
         byType[entity.type].splice(byTypeIndex, 1);
     }
 
-    // delete byId reference
-    // delete byType reference
-    // delete byTeam reference
-
-    // delete from SAT
     Graphics.removeChild(entity.graphics);
-
-    // break any remaining references for garbage collector
 }
 
 module.exports = {
