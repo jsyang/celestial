@@ -255,6 +255,7 @@ function create(type, options) {
     } else if (type === 'Probe') {
         entity = createProbe(options);
 
+        entity.AUDIO_HIT   = 'hit2';
         entity.hp          = options.hp || 2;
         entity.hasDied     = false;
         entity.hitTime     = 0;

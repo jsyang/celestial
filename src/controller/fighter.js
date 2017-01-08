@@ -19,6 +19,12 @@ function init() {
 var TIME_BETWEEN_SHOTS = 100;
 var lastShotTime       = 0;
 
+var shotType   = 'ShotCannonHeavy';
+var AUDIO_SHOT = {
+    'ShotCannonHeavy'  : 'fire-heavy',
+    'ShotCannonNormal' : 'fire'
+};
+
 function shoot() {
     if (fighter.hp > 0) {
         var now = Date.now();
@@ -31,7 +37,7 @@ function shoot() {
                 4
             );
 
-            Audio.play('fire');
+            Audio.play(AUDIO_SHOT[shotType]);
 
             lastShotTime = now;
         }
@@ -69,7 +75,7 @@ function process() {
             fighter.y += fighter.dy;
         }
 
-        if(Radar.isEnabled) {
+        if (Radar.isEnabled) {
             updateRadar();
         }
     }

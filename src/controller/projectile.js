@@ -27,7 +27,7 @@ var SHOT_DAMAGE = {
 };
 
 function registerHit(p, entity) {
-    Audio.play('hit');
+    Audio.play(entity.AUDIO_HIT || 'hit');
     entity.hp -= SHOT_DAMAGE[p.type];
     entity.hitTime = 5;
     EntityDB.remove(p);

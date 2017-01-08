@@ -7,10 +7,9 @@ Celestial combat. Conquer the universe sector by sector.
 - rockets
 - homing missiles
 - gamefield limit
-- speed limit on fighter ship
 - filter collision testing by grids
 
-- gamefield generation
+**gamefield generation**
 - production ability
 - flag planting
 - freighters move to colonize planets

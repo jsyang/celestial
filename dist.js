@@ -18370,6 +18370,12 @@ function init() {
 var TIME_BETWEEN_SHOTS = 100;
 var lastShotTime       = 0;
 
+var shotType   = 'ShotCannonHeavy';
+var AUDIO_SHOT = {
+    'ShotCannonHeavy'  : 'fire-heavy',
+    'ShotCannonNormal' : 'fire'
+};
+
 function shoot() {
     if (fighter.hp > 0) {
         var now = Date.now();
@@ -18382,7 +18388,7 @@ function shoot() {
                 4
             );
 
-            Audio.play('fire');
+            Audio.play(AUDIO_SHOT[shotType]);
 
             lastShotTime = now;
         }
@@ -18420,7 +18426,7 @@ function process() {
             fighter.y += fighter.dy;
         }
 
-        if(Radar.isEnabled) {
+        if (Radar.isEnabled) {
             updateRadar();
         }
     }
@@ -19008,7 +19014,7 @@ var SHOT_DAMAGE = {
 };
 
 function registerHit(p, entity) {
-    Audio.play('hit');
+    Audio.play(entity.AUDIO_HIT || 'hit');
     entity.hp -= SHOT_DAMAGE[p.type];
     entity.hitTime = 5;
     EntityDB.remove(p);
@@ -19379,6 +19385,7 @@ function create(type, options) {
     } else if (type === 'Probe') {
         entity = createProbe(options);
 
+        entity.AUDIO_HIT   = 'hit2';
         entity.hp          = options.hp || 2;
         entity.hasDied     = false;
         entity.hitTime     = 0;
