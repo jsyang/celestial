@@ -111,8 +111,19 @@ function setRotations(rotation) {
         dialNearestEnemy.visible = false;
     }
 
-    dialNearestPlanet.rotation = rotation.nearestPlanet;
-    dialNearestStar.rotation   = rotation.nearestStar;
+    if (rotation.nearestStar) {
+        dialNearestStar.visible  = true;
+        dialNearestStar.rotation = rotation.nearestStar;
+    } else {
+        dialNearestStar.visible = false;
+    }
+
+    if (rotation.nearestPlanet) {
+        dialNearestPlanet.visible  = true;
+        dialNearestPlanet.rotation = rotation.nearestPlanet;
+    } else {
+        dialNearestPlanet.visible = false;
+    }
 }
 
 module.exports = {

@@ -1,12 +1,13 @@
-var Assets   = require('./assets');
-var Graphics = require('./graphics');
+var Assets    = require('./assets');
+var Graphics  = require('./graphics');
+var GameField = require('./gamefield');
 
 var HumanController      = require('./controller/human');
 var CollisionController  = require('./controller/collision');
 var ProjectileController = require('./controller/projectile');
 
+var AlarmController    = require('./controller/alarm');
 var PlanetController    = require('./controller/planet');
-var StarController      = require('./controller/star');
 var FighterController   = require('./controller/fighter');
 var ProbeController     = require('./controller/probe');
 var FreighterController = require('./controller/freighter');
@@ -40,17 +41,17 @@ function start() {
 }
 
 window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
+    // assuming a fresh game start every time
+    // todo: generate based on a state
     Graphics.init();
+    GameField.init();
 
     // Create all entities
-    StarController.init();
-    PlanetController.init();
+    AlarmController.init();
     FighterController.init();
-    FreighterController.init();
     ProbeController.init();
 
     // Initialize controllers
-    GravityController.init();
     HumanController.init();
 
     Assets.init(start);
@@ -59,7 +60,6 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
 // // // // Game logic // // // //
 
 function update() {
-    //StarController.process();
     PlanetController.process();
     HumanController.process();
     FighterController.process();

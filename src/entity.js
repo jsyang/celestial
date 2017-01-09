@@ -220,6 +220,8 @@ function create(type, options) {
          */
         entity.DIST_MIN_GRAVITY2 = 600 * 600;
         entity.DIST_SURFACE2 = 105 * 105;
+        entity.orbitDistance = options.orbitDistance;
+        entity.star          = options.star;
 
     } else if (type === 'ShotCannonHeavy') {
         entity = Geometry(Shot.cannon_heavy, options);

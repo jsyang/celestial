@@ -1,12 +1,17 @@
 {
   "cannon_normal" : {
-    "type": "rectangle",
+    "type": "polygon",
     "fill": {
       "color": 16777215,
       "alpha": 1
     },
-    "w": 2,
-    "h": 2
+    "path": [
+      -1, 1,
+      1, 1,
+      1, -1,
+      -1, -1,
+      -1, 1
+    ]
   },
   "cannon_heavy" : {
     "type" : "polygon",

@@ -37,7 +37,11 @@ function createMutableGeoInterface(graphics, collision) {
             }
 
             this.graphics.rotation = rotation;
-            this.collision.setAngle(rotation);
+
+            // SAT.Circle.setAngle() doesn't exist
+            if(this.collision.setAngle) {
+                this.collision.setAngle(rotation);
+            }
         },
 
         get x() {
@@ -77,45 +81,6 @@ function createCircle(options) {
     return createMutableGeoInterface(
         g, new SAT.Circle(v(g.x, g.y), options.radius)
     );
-}
-
-function createRectangle(options) {
-    var g = new PIXI.Graphics();
-
-    if (options.lineStyle) {
-        g.lineStyle(options.lineStyle.width, options.lineStyle.color, options.lineStyle.alpha);
-    }
-
-    if (options.fill) {
-        g.beginFill(options.fill.color, options.fill.alpha);
-    } else {
-        g.beginFill(0x000000, 0);
-    }
-
-    g.drawRect(0, 0, options.w, options.h);
-    g.endFill();
-
-    g.x = options.x;
-    g.y = options.y;
-
-    return createMutableGeoInterface(
-        g, new SAT.Box(v(g.x, g.y), options.w, options.h)
-    );
-}
-
-function createLine(options) {
-    var g = new PIXI.Graphics();
-
-    if (options.lineStyle) {
-        g.lineStyle(options.lineStyle.width, options.lineStyle.color, options.lineStyle.alpha);
-    }
-
-    g.moveTo(0, 0);
-    g.lineTo(options.x2, options.y2);
-
-    g.x = options.x1;
-    g.y = options.y1;
-    return g;
 }
 
 function createPolygon(options) {
@@ -171,15 +136,8 @@ function Geometry(geometryDef, options) {
         geometryOptions.y = 0;
     }
 
-    // Create geometry for graphics and collision
     if (geometryOptions.type === 'circle') {
         return createCircle(geometryOptions);
-
-    } else if (geometryOptions.type === 'line') {
-        return createLine(geometryOptions);
-
-    } else if (geometryOptions.type === 'rectangle') {
-        return createRectangle(geometryOptions);
 
     } else if (geometryOptions.type === 'polygon') {
         return createPolygon(geometryOptions);

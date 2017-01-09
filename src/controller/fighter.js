@@ -84,18 +84,35 @@ function process() {
 var RADAR_REFRESH_RATE = 10;
 var radarRefreshTime   = 10;
 
+function getNearestEntityOfType(f, type) {
+    var entityOfType          = EntityDB.getByType(type);
+    var nearestEntity;
+    var nearestEntityDistance = Infinity;
+
+    if (entityOfType) {
+        entityOfType.forEach(function (e) {
+            var dist = Entity.getDistSquared(e, f);
+            if (dist < nearestEntityDistance) {
+                nearestEntityDistance = dist;
+                nearestEntity         = e;
+            }
+        });
+    }
+
+    return nearestEntity;
+}
+
 function updateRadar() {
     radarRefreshTime++;
 
     if (radarRefreshTime > RADAR_REFRESH_RATE) {
-        var planet    = EntityDB.getByType('Planet')[0];
-        var star      = EntityDB.getByType('Star')[0];
-        var freighter = EntityDB.getByType('Freighter')[0];
+        var nearestPlanet = getNearestEntityOfType(fighter, 'Planet');
+        var nearestStar   = getNearestEntityOfType(fighter, 'Star');
 
         Radar.setRotations({
-            nearestEnemy  : freighter ? Entity.getAngleFromTo(fighter, freighter) : undefined,
-            nearestPlanet : Entity.getAngleFromTo(fighter, planet),
-            nearestStar   : Entity.getAngleFromTo(fighter, star)
+            nearestEnemy  : undefined,
+            nearestPlanet : nearestPlanet ? Entity.getAngleFromTo(fighter, nearestPlanet) : undefined,
+            nearestStar   : nearestStar ? Entity.getAngleFromTo(fighter, nearestStar) : undefined
         });
 
         radarRefreshTime = 0;

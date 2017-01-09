@@ -34,10 +34,10 @@ function registerHit(p, entity) {
 }
 
 function hitTarget(p) {
-    var freighter = EntityDB.getByType('Freighter')[0];
-    if (freighter && SAT.pointInPolygon(p, freighter.collision)) {
-        registerHit(p, freighter);
-    }
+    //var freighter = EntityDB.getByType('Freighter');
+    //if (freighter && SAT.pointInPolygon(p, freighter.collision)) {
+//        registerHit(p, freighter[0]);
+//    }
 
     var probe = EntityDB.getByType('Probe');
     if (probe) {
