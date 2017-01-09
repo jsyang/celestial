@@ -1,4 +1,5 @@
-var EntityDB = require('../entityDB');
+var EntityDB   = require('../entityDB');
+var EntityGrid = require('../entitygrid');
 
 var D_ROTATION_ORBIT = 0.0001;
 
@@ -8,6 +9,8 @@ function orbitStar(planet) {
     var rotation = planet.rotation;
     planet.x     = Math.cos(rotation) * planet.orbitDistance + planet.star.x;
     planet.y     = Math.sin(rotation) * planet.orbitDistance + planet.star.y;
+
+    EntityGrid.add(planet);
 }
 
 function process() {

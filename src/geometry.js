@@ -1,5 +1,6 @@
-var PIXI = require('./custom-lib/pixi.min.js');
-var SAT  = require('sat');
+var PIXI      = require('./custom-lib/pixi.min.js');
+var SAT       = require('sat');
+var GameField = require('./gamefield');
 
 /**
  * Alias for SAT.Vector
@@ -22,10 +23,22 @@ var PIPI = Math.PI * 2;
 function createMutableGeoInterface(graphics, collision) {
     return {
         set x(x) {
+            if (x < 0) {
+                x = 0;
+            } else if (x > GameField.MAX.X) {
+                x = GameField.MAX.X;
+            }
+
             this.graphics.x      = x;
             this.collision.pos.x = x;
         },
         set y(y) {
+            if (y < 0) {
+                y = 0;
+            } else if (y > GameField.MAX.Y) {
+                y = GameField.MAX.Y;
+            }
+
             this.graphics.y      = y;
             this.collision.pos.y = y;
         },
@@ -36,7 +49,7 @@ function createMutableGeoInterface(graphics, collision) {
                 rotation += PIPI;
             }
 
-            if(!(this.collision instanceof SAT.Circle)) {
+            if (!(this.collision instanceof SAT.Circle)) {
                 // SAT.Circle.setAngle() doesn't exist
                 this.collision.setAngle(rotation);
                 this.graphics.rotation = rotation;

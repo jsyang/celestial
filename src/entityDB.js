@@ -2,6 +2,9 @@ var Graphics = require('./graphics');
 
 var byType = {};
 
+/**
+ * @param {object} entity
+ */
 function add(entity) {
     var type = entity.type.toString();
 
@@ -20,12 +23,16 @@ function getByTeam(team) {
     return byType[team];
 }
 
+/**
+ * Remove entity from the DB
+ * @param {object} entity
+ */
 function remove(entity) {
     if (entity.hp != null) {
         entity.hp = 0;
     }
 
-    var byTypeIndex = -1;
+    var byTypeIndex      = -1;
     var byTypeCollection = byType[entity.type];
     for (var i = -1; i < byTypeCollection.length; i++) {
         if (entity === byTypeCollection[i]) {
@@ -41,10 +48,35 @@ function remove(entity) {
     Graphics.removeChild(entity.graphics);
 }
 
+/**
+ * @param {object} f
+ * @param {string} type
+ * @returns {object|*}
+ */
+function getAbsoluteNearestByType(f, type) {
+    var entities    = getByType(type);
+    var nearest;
+    var nearestDist = Infinity;
+
+    if (entities) {
+        entities.forEach(function (e) {
+            var dist = Entity.getDistSquared(e, f);
+            if (dist < nearestDist) {
+                nearestDist = dist;
+                nearest     = e;
+            }
+        });
+    }
+
+    return nearest;
+}
+
 module.exports = {
     add    : add,
     remove : remove,
 
     getByType : getByType,
-    getByTeam : getByTeam
+    getByTeam : getByTeam,
+
+    getAbsoluteNearestByType : getAbsoluteNearestByType
 };

@@ -1,7 +1,8 @@
-var Audio    = require('../audio');
-var Entity   = require('../entity');
-var EntityDB = require('../entityDB');
-var Radar    = require('../radar');
+var Audio      = require('../audio');
+var Entity     = require('../entity');
+var EntityDB   = require('../entityDB');
+var EntityGrid = require('../entityGrid');
+var Radar      = require('../radar');
 
 var ProjectileController = require('../controller/projectile');
 
@@ -78,36 +79,20 @@ function process() {
         if (Radar.isEnabled) {
             updateRadar();
         }
+
+        EntityGrid.add(fighter);
     }
 }
 
 var RADAR_REFRESH_RATE = 10;
 var radarRefreshTime   = 10;
 
-function getNearestEntityOfType(f, type) {
-    var entityOfType          = EntityDB.getByType(type);
-    var nearestEntity;
-    var nearestEntityDistance = Infinity;
-
-    if (entityOfType) {
-        entityOfType.forEach(function (e) {
-            var dist = Entity.getDistSquared(e, f);
-            if (dist < nearestEntityDistance) {
-                nearestEntityDistance = dist;
-                nearestEntity         = e;
-            }
-        });
-    }
-
-    return nearestEntity;
-}
-
 function updateRadar() {
     radarRefreshTime++;
 
     if (radarRefreshTime > RADAR_REFRESH_RATE) {
-        var nearestPlanet = getNearestEntityOfType(fighter, 'Planet');
-        var nearestStar   = getNearestEntityOfType(fighter, 'Star');
+        var nearestPlanet = EntityDB.getAbsoluteNearestByType(fighter, 'Planet');
+        var nearestStar   = EntityDB.getAbsoluteNearestByType(fighter, 'Star');
 
         Radar.setRotations({
             nearestEnemy  : undefined,

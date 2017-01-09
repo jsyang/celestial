@@ -1,16 +1,17 @@
-var Assets    = require('./assets');
-var Graphics  = require('./graphics');
-var GameField = require('./gamefield');
+var Assets     = require('./assets');
+var Graphics   = require('./graphics');
+var GameField  = require('./gamefield');
+var EntityGrid = require('./entitygrid');
 
-var HumanController      = require('./controller/human');
-var CollisionController  = require('./controller/collision');
+var HumanInterface = require('./humanInterface');
+
 var ProjectileController = require('./controller/projectile');
-
-var PlanetController    = require('./controller/planet');
-var FighterController   = require('./controller/fighter');
-var ProbeController     = require('./controller/probe');
-var FreighterController = require('./controller/freighter');
-var GravityController   = require('./controller/gravity');
+var PlanetController     = require('./controller/planet');
+var StarController       = require('./controller/star');
+var FighterController    = require('./controller/fighter');
+var ProbeController      = require('./controller/probe');
+var FreighterController  = require('./controller/freighter');
+var GravityController    = require('./controller/gravity');
 
 // // // // Game loop // // // //
 
@@ -26,7 +27,7 @@ function step() {
     update();
 
     if (elapsed > FPS_INTERVAL) {
-        Graphics.centerOn(HumanController.getFocalPoint());
+        Graphics.centerOn(HumanInterface.getFocalPoint());
         Graphics.render();
         then = now - (elapsed % FPS_INTERVAL);
     }
@@ -40,30 +41,31 @@ function start() {
 }
 
 window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
-    // assuming a fresh game start every time
-    // todo: generate based on a state
+    // This entry-point assumes a fresh game start every time
+    // todo: generate a game state based from pre-exising saved data
     Graphics.init();
     GameField.init();
 
     // Create all entities
     FighterController.init();
-    ProbeController.init();
+    //ProbeController.init();
 
-    // Initialize controllers
-    HumanController.init();
-
+    HumanInterface.init();
     Assets.init(start);
 });
 
 // // // // Game logic // // // //
 
 function update() {
+    HumanInterface.process();
+
     PlanetController.process();
-    HumanController.process();
+    StarController.process();
     FighterController.process();
     FreighterController.process();
     ProbeController.process();
     ProjectileController.process();
     GravityController.process();
-    CollisionController.process();
+
+    EntityGrid.commit();
 }

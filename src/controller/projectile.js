@@ -1,11 +1,10 @@
-var Entity   = require('../entity');
-var EntityDB = require('../entityDB');
-var Audio    = require('../audio');
-var Random   = require('../random');
+var Entity     = require('../entity');
+var EntityDB   = require('../entityDB');
+var EntityGrid = require('../entitygrid');
+var Audio      = require('../audio');
+var Random     = require('../random');
 
 var SAT = require('sat');
-
-var HP_SHOT_NORMAL = 50;
 
 function shoot(type, muzzle, shooter, projectileSpeed) {
     var dx = Math.cos(shooter.rotation) * projectileSpeed;
@@ -16,38 +15,34 @@ function shoot(type, muzzle, shooter, projectileSpeed) {
         y    : muzzle.y + shooter.y,
         team : shooter.team,
         dx   : dx + (shooter.dx || 0),
-        dy   : dy + (shooter.dy || 0),
-        hp   : HP_SHOT_NORMAL
+        dy   : dy + (shooter.dy || 0)
     });
 }
 
-var SHOT_DAMAGE = {
-    ShotCannonHeavy  : 2,
-    ShotCannonNormal : 1
-};
-
 function registerHit(p, entity) {
     Audio.play(entity.AUDIO_HIT || 'hit');
-    entity.hp -= SHOT_DAMAGE[p.type];
+    entity.hp -= p.damage;
     entity.hitTime = 5;
     EntityDB.remove(p);
 }
 
 function hitTarget(p) {
-    //var freighter = EntityDB.getByType('Freighter');
-    //if (freighter && SAT.pointInPolygon(p, freighter.collision)) {
-//        registerHit(p, freighter[0]);
-//    }
+    /*
+     var freighter = EntityDB.getByType('Freighter');
+     if (freighter && SAT.pointInPolygon(p, freighter.collision)) {
+     registerHit(p, freighter[0]);
+     }
 
-    var probe = EntityDB.getByType('Probe');
-    if (probe) {
-        for (var i = 0; i < probe.length; i++) {
-            if (Entity.getDistSquared(p, probe[i]) < 49) {
-                registerHit(p, probe[i]);
-                break;
-            }
-        }
-    }
+     var probe = EntityDB.getByType('Probe');
+     if (probe) {
+     for (var i = 0; i < probe.length; i++) {
+     if (Entity.getDistSquared(p, probe[i]) < 49) {
+     registerHit(p, probe[i]);
+     break;
+     }
+     }
+     }
+     */
 }
 
 function move(p) {
@@ -56,6 +51,7 @@ function move(p) {
 
     if (p.hp > 0) {
         hitTarget(p);
+        EntityGrid.add(p);
         p.hp--;
     } else {
         EntityDB.remove(p);
@@ -63,13 +59,12 @@ function move(p) {
 }
 
 function process() {
-    var shotCannonHeavy  = EntityDB.getByType('ShotCannonHeavy');
     var shotCannonNormal = EntityDB.getByType('ShotCannonNormal');
-
     if (shotCannonNormal) {
         shotCannonNormal.forEach(move);
     }
 
+    var shotCannonHeavy  = EntityDB.getByType('ShotCannonHeavy');
     if (shotCannonHeavy) {
         shotCannonHeavy.forEach(move);
     }
@@ -86,11 +81,8 @@ function explode(entity, fragmentCount) {
     }
 }
 
-function getFocalPoint() {}
-
 module.exports = {
-    shoot         : shoot,
-    process       : process,
-    explode       : explode,
-    getFocalPoint : getFocalPoint
+    shoot   : shoot,
+    process : process,
+    explode : explode
 };

@@ -199,17 +199,19 @@ function createPComm(options) {
     return Geometry(PComm, options);
 }
 
+/**
+ * Squared distance within which this body imparts gravitational forces something
+ * @type {number}
+ */
+var DIST_MIN_STAR_GRAVITY2   = 1000 * 1000;
+var DIST_MIN_PLANET_GRAVITY2 = 800 * 800;
+
 function create(type, options) {
     var entity;
 
     if (type === 'Star') {
         entity = Geometry(Star, options);
 
-        /**
-         * Squared distance within which this body imparts gravitational forces something
-         * @type {number}
-         */
-        entity.DIST_MIN_GRAVITY2 = 800 * 800;
         entity.DIST_SURFACE2 = 200 * 200;
 
     } else if (type === 'Planet') {
@@ -227,15 +229,17 @@ function create(type, options) {
     } else if (type === 'ShotCannonHeavy') {
         entity = Geometry(Shot.cannon_heavy, options);
 
-        entity.dx = options.dx || 0;
-        entity.dy = options.dy || 0;
-        entity.hp = options.hp || 50;
+        entity.dx     = options.dx || 0;
+        entity.dy     = options.dy || 0;
+        entity.hp     = options.hp || 50;
+        entity.damage = 2;
     } else if (type === 'ShotCannonNormal') {
         entity = Geometry(Shot.cannon_normal, options);
 
-        entity.dx = options.dx || 0;
-        entity.dy = options.dy || 0;
-        entity.hp = options.hp || 50;
+        entity.dx     = options.dx || 0;
+        entity.dy     = options.dy || 0;
+        entity.hp     = options.hp || 50;
+        entity.damage = 1;
     } else if (type === 'PColony') {
         entity = Geometry(PColony, options);
     } else if (type === 'PLab') {
@@ -302,8 +306,10 @@ function getAngleFromTo(e1, e2) {
 }
 
 module.exports = {
-    create         : create,
-    getDistSquared : getDistSquared,
-    getAngleFromTo : getAngleFromTo,
-    TEAM           : TEAM
+    create                   : create,
+    getDistSquared           : getDistSquared,
+    getAngleFromTo           : getAngleFromTo,
+    TEAM                     : TEAM,
+    DIST_MIN_STAR_GRAVITY2   : DIST_MIN_STAR_GRAVITY2,
+    DIST_MIN_PLANET_GRAVITY2 : DIST_MIN_PLANET_GRAVITY2
 };

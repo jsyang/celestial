@@ -7,11 +7,6 @@ var MAX = {
     Y : 1 << 15
 };
 
-var GRID_SIZE = 1 << 10;
-
-var gridX;
-var gridY;
-
 var MIN_STARS                 = 2;
 var MAX_STARS                 = 8;
 var MAX_PLANETS_PER_STAR      = 2;
@@ -47,7 +42,10 @@ function isStarDistantFromOtherStars(star) {
     }
 }
 
-function createGalaxy() {
+/**
+ * Create a game field with some Stars and Planets orbiting them
+ */
+function init() {
     var starPosition;
     var starCount = Random.int(MIN_STARS, MAX_STARS);
 
@@ -73,16 +71,7 @@ function createGalaxy() {
     }
 }
 
-function init() {
-    createGalaxy();
-}
-
-function process() {
-
-}
-
 module.exports = {
-    init    : init,
-    process : process,
-    MAX     : MAX
+    init : init,
+    MAX  : MAX
 };

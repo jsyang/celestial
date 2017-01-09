@@ -18294,24 +18294,11 @@ module.exports = {
     play   : play
 };
 },{}],108:[function(require,module,exports){
-var EntityDB = require('../entityDB');
-
-function init() {}
-function process() {
-
-}
-function getFocalPoint() {}
-
-module.exports = {
-    init          : init,
-    process       : process,
-    getFocalPoint : getFocalPoint
-};
-},{"../entityDB":118}],109:[function(require,module,exports){
-var Audio    = require('../audio');
-var Entity   = require('../entity');
-var EntityDB = require('../entityDB');
-var Radar    = require('../radar');
+var Audio      = require('../audio');
+var Entity     = require('../entity');
+var EntityDB   = require('../entityDB');
+var EntityGrid = require('../entityGrid');
+var Radar      = require('../radar');
 
 var ProjectileController = require('../controller/projectile');
 
@@ -18388,36 +18375,20 @@ function process() {
         if (Radar.isEnabled) {
             updateRadar();
         }
+
+        EntityGrid.add(fighter);
     }
 }
 
 var RADAR_REFRESH_RATE = 10;
 var radarRefreshTime   = 10;
 
-function getNearestEntityOfType(f, type) {
-    var entityOfType          = EntityDB.getByType(type);
-    var nearestEntity;
-    var nearestEntityDistance = Infinity;
-
-    if (entityOfType) {
-        entityOfType.forEach(function (e) {
-            var dist = Entity.getDistSquared(e, f);
-            if (dist < nearestEntityDistance) {
-                nearestEntityDistance = dist;
-                nearestEntity         = e;
-            }
-        });
-    }
-
-    return nearestEntity;
-}
-
 function updateRadar() {
     radarRefreshTime++;
 
     if (radarRefreshTime > RADAR_REFRESH_RATE) {
-        var nearestPlanet = getNearestEntityOfType(fighter, 'Planet');
-        var nearestStar   = getNearestEntityOfType(fighter, 'Star');
+        var nearestPlanet = EntityDB.getAbsoluteNearestByType(fighter, 'Planet');
+        var nearestStar   = EntityDB.getAbsoluteNearestByType(fighter, 'Star');
 
         Radar.setRotations({
             nearestEnemy  : undefined,
@@ -18482,7 +18453,7 @@ module.exports = {
     undock      : undock,
     isDocked    : isDocked
 };
-},{"../audio":107,"../controller/projectile":115,"../entity":117,"../entityDB":118,"../radar":136}],110:[function(require,module,exports){
+},{"../audio":107,"../controller/projectile":113,"../entity":116,"../entityDB":117,"../entityGrid":118,"../radar":138}],109:[function(require,module,exports){
 var Audio    = require('../audio');
 var EntityDB = require('../entityDB');
 
@@ -18519,14 +18490,16 @@ function process() {
 module.exports = {
     process : process
 };
-},{"../audio":107,"../controller/projectile":115,"../entityDB":118}],111:[function(require,module,exports){
+},{"../audio":107,"../controller/projectile":113,"../entityDB":117}],110:[function(require,module,exports){
 /**
  * Gravity and related collisions
+ * todo: move this into fighter and some of the constants into entity
  */
 
-var Audio    = require('../audio');
-var EntityDB = require('../entityDB');
-var Entity   = require('../entity');
+var Audio      = require('../audio');
+var EntityDB   = require('../entityDB');
+var Entity     = require('../entity');
+var EntityGrid = require('../entitygrid');
 
 var ProjectileController = require('../controller/projectile');
 var FighterController    = require('../controller/fighter');
@@ -18549,81 +18522,80 @@ function crashFighter(f) {
 
 var PIPI = Math.PI * 2;
 
-function attractFighterToPlanet(f, p) {
-    if (f && f.hp > 0) {
-        var r2 = Entity.getDistSquared(f, p);
+function attractToPlanet(p) {
+    var r2 = Entity.getDistSquared(this, p);
 
-        if (r2 < p.DIST_MIN_GRAVITY2) {
+    var forceFactor = M1M2_FIGHTER_PLANET / Math.pow(r2, 1.5);
 
-            var forceFactor = M1M2_FIGHTER_PLANET / Math.pow(r2, 1.5);
+    var dx = p.x - this.x;
+    var dy = p.y - this.y;
 
-            var dx = p.x - f.x;
-            var dy = p.y - f.y;
+    this.dx += dx * forceFactor;
+    this.dy += dy * forceFactor;
 
-            f.dx += dx * forceFactor;
-            f.dy += dy * forceFactor;
+    if (r2 < p.DIST_SURFACE2) {
+        var landingSpeed           = this.dx * this.dx + this.dy * this.dy;
+        var fighterRotation        = this.rotation;
+        var correctLandingRotation = Entity.getAngleFromTo(p, this);
+        var landingAngleError      = Math.abs(correctLandingRotation - fighterRotation);
 
-            if (r2 < p.DIST_SURFACE2) {
-                var landingSpeed           = f.dx * f.dx + f.dy * f.dy;
-                var fighterRotation        = f.rotation;
-                var correctLandingRotation = Entity.getAngleFromTo(p, f);
-                var landingAngleError      = Math.abs(correctLandingRotation - fighterRotation);
-
-                // Limit fighterRotation to the open interval (-PI, PI)
-                // todo: limit all entity rotations to within (-PI, PI) vs (-2PI, 2PI)?
-                if (landingAngleError > Math.PI) {
-                    if (fighterRotation > 0) {
-                        fighterRotation -= PIPI;
-                    } else {
-                        fighterRotation += PIPI;
-                    }
-
-                    landingAngleError = Math.abs(correctLandingRotation - fighterRotation);
-                }
-
-                var isSoftLanding  = landingSpeed < ERROR_MARGIN_LANDING_SPEED2;
-                var isCorrectAngle = landingAngleError < ERROR_MARGIN_LANDING_ROTATION;
-
-                if (isCorrectAngle && isSoftLanding) {
-                    FighterController.dockTo(p);
-                } else {
-                    crashFighter(f);
-                }
+        // Limit fighterRotation to the open interval (-PI, PI)
+        // todo: limit all entity rotations to within (-PI, PI) vs (-2PI, 2PI)?
+        if (landingAngleError > Math.PI) {
+            if (fighterRotation > 0) {
+                fighterRotation -= PIPI;
+            } else {
+                fighterRotation += PIPI;
             }
+
+            landingAngleError = Math.abs(correctLandingRotation - fighterRotation);
+        }
+
+        var isSoftLanding  = landingSpeed < ERROR_MARGIN_LANDING_SPEED2;
+        var isCorrectAngle = landingAngleError < ERROR_MARGIN_LANDING_ROTATION;
+
+        if (isCorrectAngle && isSoftLanding) {
+            FighterController.dockTo(p);
+        } else {
+            crashFighter(this);
         }
     }
 }
 
-function attractFighterToStar(f, s) {
-    if (f && f.hp > 0) {
-        var r2 = Entity.getDistSquared(f, s);
+function attractToStar(s) {
+    var r2 = Entity.getDistSquared(this, s);
 
-        if (r2 < s.DIST_MIN_GRAVITY2) {
-            var dx = s.x - f.x;
-            var dy = s.y - f.y;
+    var dx = s.x - this.x;
+    var dy = s.y - this.y;
 
-            var forceFactor = M1M2_FIGHTER_STAR / Math.pow(r2, 1.5);
+    var forceFactor = M1M2_FIGHTER_STAR / Math.pow(r2, 1.5);
 
-            f.dx += dx * forceFactor;
-            f.dy += dy * forceFactor;
+    this.dx += dx * forceFactor;
+    this.dy += dy * forceFactor;
 
-            if (r2 < s.DIST_SURFACE2) {
-                crashFighter(f);
-            }
-        }
+    if (r2 < s.DIST_SURFACE2) {
+        crashFighter(this);
     }
 }
 
 function process() {
-    var star    = EntityDB.getByType('Star');
-    var planet  = EntityDB.getByType('Planet');
-    var fighter = EntityDB.getByType('Fighter');
+    var fighters = EntityDB.getByType('Fighter');
 
-    if (fighter) {
-        for (var i = 0; i < fighter.length; i++) {
-            if (fighter[i] && !fighter[i].isDocked) {
-                star.forEach(attractFighterToStar.bind(null, fighter[i]));
-                planet.forEach(attractFighterToPlanet.bind(null, fighter[i]));
+    if (fighters) {
+        for (var i = 0; i < fighters.length; i++) {
+            var fighter = fighters[i];
+
+            if (fighter && !fighter.isDocked && fighter.hp > 0) {
+
+                var stars = EntityGrid.getNearest(fighter, 'Star', Entity.DIST_MIN_STAR_GRAVITY2);
+                if(stars) {
+                    stars.forEach(attractToStar.bind(fighter));
+                }
+
+                var planets = EntityGrid.getNearest(fighter, 'Planet', Entity.DIST_MIN_PLANET_GRAVITY2);
+                if(planets) {
+                    planets.forEach(attractToPlanet.bind(fighter));
+                }
             }
         }
     }
@@ -18632,136 +18604,9 @@ function process() {
 module.exports = {
     process : process
 };
-},{"../audio":107,"../controller/fighter":109,"../controller/projectile":115,"../entity":117,"../entityDB":118}],112:[function(require,module,exports){
-var GamePad           = require('../gamepad');
-var FighterController = require('./fighter');
-var EntityDB          = require('../entityDB');
-
-var Radar = require('../radar');
-
-var focalPoint;
-
-function init() {
-    focalPoint = EntityDB.getByType('Fighter')[0];
-
-    window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('keyup', onKeyUp);
-}
-
-var keyDown = {};
-
-function onKeyUp(e) {
-    if (e.which === 37) {
-        keyDown.left_arrow = false;
-    } else if (e.which === 39) {
-        keyDown.right_arrow = false;
-    } else if (e.which === 38) {
-        keyDown.up_arrow = false;
-    } else if (e.which === 40) {
-        keyDown.down_arrow = false;
-    } else if (e.which === 70) {
-        keyDown.f = false;
-    } else if (e.which === 82) {
-        keyDown.r = false;
-    }
-}
-
-function onKeyDown(e) {
-    if (e.which === 37) {
-        // Left arrow
-        keyDown.left_arrow = true;
-
-    } else if (e.which === 39) {
-        // Right arrow
-        keyDown.right_arrow = true;
-
-    } else if (e.which === 38) {
-        // Up arrow
-        keyDown.up_arrow = true;
-
-    } else if (e.which === 40) {
-        // Down arrow
-        keyDown.down_arrow = true;
-    } else if (e.which === 82) {
-        // R
-        keyDown.r = true;
-
-    } else if (e.which === 70) {
-        // F
-        keyDown.f = true;
-    }
-
-}
-
-var DROTATION           = 0.05;
-var ACCELERATION        = 0.2;
-var DOCKED_ACCELERATION = 0.4;
-
-function process() {
-    var gamepad  = GamePad.getState();
-    var isDocked = FighterController.isDocked();
-
-    if (!isDocked) {
-        if (keyDown.left_arrow) {
-            FighterController.rotate(-DROTATION);
-        } else if (keyDown.right_arrow) {
-            FighterController.rotate(DROTATION);
-        }
-
-        if (typeof gamepad.analogAngle === 'number') {
-            var rotation        = FighterController.getRotation();
-            var desiredRotation = gamepad.analogAngle;
-
-            FighterController.rotate(desiredRotation - rotation);
-        }
-    }
-
-    if (gamepad.button3 && gamepad.button1) {
-        location.reload();
-    }
-
-    if (keyDown.f || gamepad.button0) {
-        FighterController.shoot();
-    }
-
-    // Hold button down for radar
-    Radar.isEnabled = keyDown.r || gamepad.button3;
-
-    if (keyDown.up_arrow || gamepad.button2) {
-        FighterController.undock();
-        var rotation = FighterController.getRotation();
-
-        FighterController.flameOn();
-
-        if (isDocked) {
-            FighterController.applyForce(
-                Math.cos(rotation) * DOCKED_ACCELERATION,
-                Math.sin(rotation) * DOCKED_ACCELERATION
-            );
-        } else {
-            FighterController.applyForce(
-                Math.cos(rotation) * ACCELERATION,
-                Math.sin(rotation) * ACCELERATION
-            );
-        }
-
-    } else {
-        FighterController.flameOff();
-    }
-
-}
-
-function getFocalPoint() {
-    return focalPoint;
-}
-
-module.exports = {
-    init          : init,
-    process       : process,
-    getFocalPoint : getFocalPoint
-};
-},{"../entityDB":118,"../gamepad":120,"../radar":136,"./fighter":109}],113:[function(require,module,exports){
-var EntityDB = require('../entityDB');
+},{"../audio":107,"../controller/fighter":108,"../controller/projectile":113,"../entity":116,"../entityDB":117,"../entitygrid":119}],111:[function(require,module,exports){
+var EntityDB   = require('../entityDB');
+var EntityGrid = require('../entitygrid');
 
 var D_ROTATION_ORBIT = 0.0001;
 
@@ -18771,6 +18616,8 @@ function orbitStar(planet) {
     var rotation = planet.rotation;
     planet.x     = Math.cos(rotation) * planet.orbitDistance + planet.star.x;
     planet.y     = Math.sin(rotation) * planet.orbitDistance + planet.star.y;
+
+    EntityGrid.add(planet);
 }
 
 function process() {
@@ -18783,7 +18630,7 @@ function process() {
 module.exports = {
     process : process
 };
-},{"../entityDB":118}],114:[function(require,module,exports){
+},{"../entityDB":117,"../entitygrid":119}],112:[function(require,module,exports){
 var Random   = require('../random');
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
@@ -18899,15 +18746,14 @@ module.exports = {
     init    : init,
     process : process
 };
-},{"../entity":117,"../entityDB":118,"../random":137}],115:[function(require,module,exports){
-var Entity   = require('../entity');
-var EntityDB = require('../entityDB');
-var Audio    = require('../audio');
-var Random   = require('../random');
+},{"../entity":116,"../entityDB":117,"../random":139}],113:[function(require,module,exports){
+var Entity     = require('../entity');
+var EntityDB   = require('../entityDB');
+var EntityGrid = require('../entitygrid');
+var Audio      = require('../audio');
+var Random     = require('../random');
 
 var SAT = require('sat');
-
-var HP_SHOT_NORMAL = 50;
 
 function shoot(type, muzzle, shooter, projectileSpeed) {
     var dx = Math.cos(shooter.rotation) * projectileSpeed;
@@ -18918,38 +18764,34 @@ function shoot(type, muzzle, shooter, projectileSpeed) {
         y    : muzzle.y + shooter.y,
         team : shooter.team,
         dx   : dx + (shooter.dx || 0),
-        dy   : dy + (shooter.dy || 0),
-        hp   : HP_SHOT_NORMAL
+        dy   : dy + (shooter.dy || 0)
     });
 }
 
-var SHOT_DAMAGE = {
-    ShotCannonHeavy  : 2,
-    ShotCannonNormal : 1
-};
-
 function registerHit(p, entity) {
     Audio.play(entity.AUDIO_HIT || 'hit');
-    entity.hp -= SHOT_DAMAGE[p.type];
+    entity.hp -= p.damage;
     entity.hitTime = 5;
     EntityDB.remove(p);
 }
 
 function hitTarget(p) {
-    //var freighter = EntityDB.getByType('Freighter');
-    //if (freighter && SAT.pointInPolygon(p, freighter.collision)) {
-//        registerHit(p, freighter[0]);
-//    }
+    /*
+     var freighter = EntityDB.getByType('Freighter');
+     if (freighter && SAT.pointInPolygon(p, freighter.collision)) {
+     registerHit(p, freighter[0]);
+     }
 
-    var probe = EntityDB.getByType('Probe');
-    if (probe) {
-        for (var i = 0; i < probe.length; i++) {
-            if (Entity.getDistSquared(p, probe[i]) < 49) {
-                registerHit(p, probe[i]);
-                break;
-            }
-        }
-    }
+     var probe = EntityDB.getByType('Probe');
+     if (probe) {
+     for (var i = 0; i < probe.length; i++) {
+     if (Entity.getDistSquared(p, probe[i]) < 49) {
+     registerHit(p, probe[i]);
+     break;
+     }
+     }
+     }
+     */
 }
 
 function move(p) {
@@ -18958,6 +18800,7 @@ function move(p) {
 
     if (p.hp > 0) {
         hitTarget(p);
+        EntityGrid.add(p);
         p.hp--;
     } else {
         EntityDB.remove(p);
@@ -18965,13 +18808,12 @@ function move(p) {
 }
 
 function process() {
-    var shotCannonHeavy  = EntityDB.getByType('ShotCannonHeavy');
     var shotCannonNormal = EntityDB.getByType('ShotCannonNormal');
-
     if (shotCannonNormal) {
         shotCannonNormal.forEach(move);
     }
 
+    var shotCannonHeavy  = EntityDB.getByType('ShotCannonHeavy');
     if (shotCannonHeavy) {
         shotCannonHeavy.forEach(move);
     }
@@ -18988,15 +18830,26 @@ function explode(entity, fragmentCount) {
     }
 }
 
-function getFocalPoint() {}
+module.exports = {
+    shoot   : shoot,
+    process : process,
+    explode : explode
+};
+},{"../audio":107,"../entity":116,"../entityDB":117,"../entitygrid":119,"../random":139,"sat":99}],114:[function(require,module,exports){
+var EntityDB   = require('../entityDB');
+var EntityGrid = require('../entitygrid');
+
+function process() {
+    var stars = EntityDB.getByType('Star');
+    if (stars) {
+        stars.forEach(EntityGrid.add);
+    }
+}
 
 module.exports = {
-    shoot         : shoot,
-    process       : process,
-    explode       : explode,
-    getFocalPoint : getFocalPoint
+    process : process
 };
-},{"../audio":107,"../entity":117,"../entityDB":118,"../random":137,"sat":99}],116:[function(require,module,exports){
+},{"../entityDB":117,"../entitygrid":119}],115:[function(require,module,exports){
 (function (global){
 /*!
  * pixi.js - v4.3.0
@@ -19020,7 +18873,7 @@ module.exports = {
 }],173:[function(t,e,r){"use strict";function n(t){return t&&t.__esModule?t:{default:t}}r.__esModule=!0;var i=t("./webgl/WebGLPrepare");Object.defineProperty(r,"webgl",{enumerable:!0,get:function(){return n(i).default}});var o=t("./canvas/CanvasPrepare");Object.defineProperty(r,"canvas",{enumerable:!0,get:function(){return n(o).default}});var s=t("./BasePrepare");Object.defineProperty(r,"BasePrepare",{enumerable:!0,get:function(){return n(s).default}});var a=t("./limiters/CountLimiter");Object.defineProperty(r,"CountLimiter",{enumerable:!0,get:function(){return n(a).default}});var u=t("./limiters/TimeLimiter");Object.defineProperty(r,"TimeLimiter",{enumerable:!0,get:function(){return n(u).default}})},{"./BasePrepare":171,"./canvas/CanvasPrepare":172,"./limiters/CountLimiter":174,"./limiters/TimeLimiter":175,"./webgl/WebGLPrepare":176}],174:[function(t,e,r){"use strict";function n(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}r.__esModule=!0;var i=function(){function t(e){n(this,t),this.maxItemsPerFrame=e,this.itemsLeft=0}return t.prototype.beginFrame=function(){this.itemsLeft=this.maxItemsPerFrame},t.prototype.allowedToUpload=function(){return this.itemsLeft-- >0},t}();r.default=i},{}],175:[function(t,e,r){"use strict";function n(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}r.__esModule=!0;var i=function(){function t(e){n(this,t),this.maxMilliseconds=e,this.frameStart=0}return t.prototype.beginFrame=function(){this.frameStart=Date.now()},t.prototype.allowedToUpload=function(){return Date.now()-this.frameStart<this.maxMilliseconds},t}();r.default=i},{}],176:[function(t,e,r){"use strict";function n(t){return t&&t.__esModule?t:{default:t}}function i(t){if(t&&t.__esModule)return t;var e={};if(null!=t)for(var r in t)Object.prototype.hasOwnProperty.call(t,r)&&(e[r]=t[r]);return e.default=t,e}function o(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function s(t,e){if(!t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!e||"object"!=typeof e&&"function"!=typeof e?t:e}function a(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function, not "+typeof e);t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,enumerable:!1,writable:!0,configurable:!0}}),e&&(Object.setPrototypeOf?Object.setPrototypeOf(t,e):t.__proto__=e)}function u(t,e){return e instanceof f.BaseTexture&&(e._glTextures[t.CONTEXT_UID]||t.textureManager.updateTexture(e),!0)}function h(t,e){return e instanceof f.Graphics&&((e.dirty||e.clearDirty||!e._webGL[t.plugins.graphics.CONTEXT_UID])&&t.plugins.graphics.updateGraphics(e),!0)}function l(t,e){if(t instanceof f.BaseTexture)return e.indexOf(t)===-1&&e.push(t),!0;if(t._texture&&t._texture instanceof f.Texture){var r=t._texture.baseTexture;return e.indexOf(r)===-1&&e.push(r),!0}return!1}function c(t,e){return t instanceof f.Graphics&&(e.push(t),!0)}r.__esModule=!0;var d=t("../../core"),f=i(d),p=t("../BasePrepare"),v=n(p),y=function(t){function e(r){o(this,e);var n=s(this,t.call(this,r));return n.uploadHookHelper=n.renderer,n.register(l,u).register(c,h),n}return a(e,t),e}(v.default);r.default=y,f.WebGLRenderer.registerPlugin("prepare",y)},{"../../core":61,"../BasePrepare":171}],177:[function(t,e,r){(function(e){"use strict";function n(t){if(t&&t.__esModule)return t;var e={};if(null!=t)for(var r in t)Object.prototype.hasOwnProperty.call(t,r)&&(e[r]=t[r]);return e.default=t,e}r.__esModule=!0,r.loader=r.prepare=r.particles=r.mesh=r.loaders=r.interaction=r.filters=r.extras=r.extract=r.accessibility=void 0;var i=t("./deprecation");Object.keys(i).forEach(function(t){"default"!==t&&"__esModule"!==t&&Object.defineProperty(r,t,{enumerable:!0,get:function(){return i[t]}})});var o=t("./core");Object.keys(o).forEach(function(t){"default"!==t&&"__esModule"!==t&&Object.defineProperty(r,t,{enumerable:!0,get:function(){return o[t]}})}),t("./polyfill");var s=t("./accessibility"),a=n(s),u=t("./extract"),h=n(u),l=t("./extras"),c=n(l),d=t("./filters"),f=n(d),p=t("./interaction"),v=n(p),y=t("./loaders"),g=n(y),m=t("./mesh"),_=n(m),b=t("./particles"),x=n(b),T=t("./prepare"),w=n(T);r.accessibility=a,r.extract=h,r.extras=c,r.filters=f,r.interaction=v,r.loaders=g,r.mesh=_,r.particles=x,r.prepare=w;var E=g&&g.Loader?new g.Loader:null;r.loader=E,e.PIXI=r}).call(this,"undefined"!=typeof global?global:"undefined"!=typeof self?self:"undefined"!=typeof window?window:{})},{"./accessibility":40,"./core":61,"./deprecation":120,"./extract":122,"./extras":131,"./filters":142,"./interaction":148,"./loaders":151,"./mesh":160,"./particles":163,"./polyfill":169,"./prepare":173}]},{},[177])(177)});
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],117:[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 var Graphics = require('./graphics');
 var Geometry = require('./geometry');
 var EntityDB = require('./entityDB');
@@ -19222,17 +19075,19 @@ function createPComm(options) {
     return Geometry(PComm, options);
 }
 
+/**
+ * Squared distance within which this body imparts gravitational forces something
+ * @type {number}
+ */
+var DIST_MIN_STAR_GRAVITY2   = 1000 * 1000;
+var DIST_MIN_PLANET_GRAVITY2 = 800 * 800;
+
 function create(type, options) {
     var entity;
 
     if (type === 'Star') {
         entity = Geometry(Star, options);
 
-        /**
-         * Squared distance within which this body imparts gravitational forces something
-         * @type {number}
-         */
-        entity.DIST_MIN_GRAVITY2 = 800 * 800;
         entity.DIST_SURFACE2 = 200 * 200;
 
     } else if (type === 'Planet') {
@@ -19250,15 +19105,17 @@ function create(type, options) {
     } else if (type === 'ShotCannonHeavy') {
         entity = Geometry(Shot.cannon_heavy, options);
 
-        entity.dx = options.dx || 0;
-        entity.dy = options.dy || 0;
-        entity.hp = options.hp || 50;
+        entity.dx     = options.dx || 0;
+        entity.dy     = options.dy || 0;
+        entity.hp     = options.hp || 50;
+        entity.damage = 2;
     } else if (type === 'ShotCannonNormal') {
         entity = Geometry(Shot.cannon_normal, options);
 
-        entity.dx = options.dx || 0;
-        entity.dy = options.dy || 0;
-        entity.hp = options.hp || 50;
+        entity.dx     = options.dx || 0;
+        entity.dy     = options.dy || 0;
+        entity.hp     = options.hp || 50;
+        entity.damage = 1;
     } else if (type === 'PColony') {
         entity = Geometry(PColony, options);
     } else if (type === 'PLab') {
@@ -19325,16 +19182,21 @@ function getAngleFromTo(e1, e2) {
 }
 
 module.exports = {
-    create         : create,
-    getDistSquared : getDistSquared,
-    getAngleFromTo : getAngleFromTo,
-    TEAM           : TEAM
+    create                   : create,
+    getDistSquared           : getDistSquared,
+    getAngleFromTo           : getAngleFromTo,
+    TEAM                     : TEAM,
+    DIST_MIN_STAR_GRAVITY2   : DIST_MIN_STAR_GRAVITY2,
+    DIST_MIN_PLANET_GRAVITY2 : DIST_MIN_PLANET_GRAVITY2
 };
-},{"./entityDB":118,"./geometry":121,"./geometry/Fighter.json":122,"./geometry/Freighter.json":123,"./geometry/PBase.json":124,"./geometry/PColony.json":125,"./geometry/PComm.json":126,"./geometry/PLab.json":127,"./geometry/Planet.json":128,"./geometry/PointDisplay.json":129,"./geometry/Probe.json":130,"./geometry/Shot.json":131,"./geometry/Star.json":132,"./geometry/StarPort.json":133,"./graphics":134}],118:[function(require,module,exports){
+},{"./entityDB":117,"./geometry":122,"./geometry/Fighter.json":123,"./geometry/Freighter.json":124,"./geometry/PBase.json":125,"./geometry/PColony.json":126,"./geometry/PComm.json":127,"./geometry/PLab.json":128,"./geometry/Planet.json":129,"./geometry/PointDisplay.json":130,"./geometry/Probe.json":131,"./geometry/Shot.json":132,"./geometry/Star.json":133,"./geometry/StarPort.json":134,"./graphics":135}],117:[function(require,module,exports){
 var Graphics = require('./graphics');
 
 var byType = {};
 
+/**
+ * @param {object} entity
+ */
 function add(entity) {
     var type = entity.type.toString();
 
@@ -19353,12 +19215,16 @@ function getByTeam(team) {
     return byType[team];
 }
 
+/**
+ * Remove entity from the DB
+ * @param {object} entity
+ */
 function remove(entity) {
     if (entity.hp != null) {
         entity.hp = 0;
     }
 
-    var byTypeIndex = -1;
+    var byTypeIndex      = -1;
     var byTypeCollection = byType[entity.type];
     for (var i = -1; i < byTypeCollection.length; i++) {
         if (entity === byTypeCollection[i]) {
@@ -19374,14 +19240,154 @@ function remove(entity) {
     Graphics.removeChild(entity.graphics);
 }
 
+/**
+ * @param {object} f
+ * @param {string} type
+ * @returns {object|*}
+ */
+function getAbsoluteNearestByType(f, type) {
+    var entities    = getByType(type);
+    var nearest;
+    var nearestDist = Infinity;
+
+    if (entities) {
+        entities.forEach(function (e) {
+            var dist = Entity.getDistSquared(e, f);
+            if (dist < nearestDist) {
+                nearestDist = dist;
+                nearest     = e;
+            }
+        });
+    }
+
+    return nearest;
+}
+
 module.exports = {
     add    : add,
     remove : remove,
 
     getByType : getByType,
-    getByTeam : getByTeam
+    getByTeam : getByTeam,
+
+    getAbsoluteNearestByType : getAbsoluteNearestByType
 };
-},{"./graphics":134}],119:[function(require,module,exports){
+},{"./graphics":135}],118:[function(require,module,exports){
+/**
+ * All updates to the grid are written on a per-frame basis.
+ * The nextEntityGrid becomes the current entityGrid when EntityGrid.commit() is called.
+ */
+var Entity    = require('./entity');
+var GameField = require('./gamefield');
+
+var GRID_SIZE_BIT_SHIFT = 11;
+var GRID_WIDTH          = GameField.MAX.X >> GRID_SIZE_BIT_SHIFT;
+var GRID_SIZE           = 1 << GRID_SIZE_BIT_SHIFT;
+
+// 1<<11 = 2048
+// Each cell within the entityGrid covers an area 2048x2048
+
+var entityGrid     = [];
+var nextEntityGrid = [];
+
+function commit() {
+    entityGrid     = nextEntityGrid;
+    nextEntityGrid = [];
+}
+
+/**
+ * Convert entity's game world coordinates to an index where
+ * it should reside within the `entityGrid` array, given that
+ * each index represents a GRID_SIZE x GRID_SIZE 2D area of the
+ * game field.
+ *
+ * @param {object} entity
+ * @param {number} entity.x
+ * @param {number} entity.y
+ * @param {number} [dGx]
+ * @param {number} [dGy]
+ * @returns {number}
+ */
+function getEntityToGridIndex(entity, dGx, dGy) {
+    var gX = entity.x >> GRID_SIZE_BIT_SHIFT;
+    var gY = entity.y >> GRID_SIZE_BIT_SHIFT;
+
+    gX += dGx || 0;
+    gY += dGy || 0;
+
+    return gX + gY * GRID_WIDTH;
+}
+
+/**
+ * Add this entity into the Entity Grid
+ * @param {object} entity
+ */
+function add(entity) {
+    var index = getEntityToGridIndex(entity);
+    if (nextEntityGrid[index] instanceof Array) {
+        nextEntityGrid[index].push(entity);
+    } else {
+        nextEntityGrid[index] = [entity];
+    }
+
+    return this;
+}
+
+/**
+ * @param {string} [filterType]
+ * @param {number} [minDistance2]
+ * @param {object} neighbor
+ * @returns {boolean}
+ */
+function filterNearestResult(filterType, minDistance2, neighbor) {
+    var isRelevant = true;
+
+    if (minDistance2 > 0) {
+        isRelevant = isRelevant && Entity.getDistSquared(this, neighbor) <= minDistance2;
+    }
+
+    if (filterType) {
+        isRelevant = isRelevant && neighbor.type === filterType;
+    }
+
+    return isRelevant;
+}
+
+/**
+ * Get all neighbors within 3x3 block around `entity`
+ * @param {object} entity
+ * @param {string} [filterType]
+ * @param {number} [minDistance2]
+ * @returns {Array.<*>}
+ */
+function getNearest(entity, filterType, minDistance2) {
+    var nearest = [].concat(
+        entityGrid[getEntityToGridIndex(entity, -1, -1)],
+        entityGrid[getEntityToGridIndex(entity, 0, -1)],
+        entityGrid[getEntityToGridIndex(entity, 1, -1)],
+        entityGrid[getEntityToGridIndex(entity, 0, -1)],
+        entityGrid[getEntityToGridIndex(entity, 0, 0)],
+        entityGrid[getEntityToGridIndex(entity, 0, 1)],
+        entityGrid[getEntityToGridIndex(entity, -1, 1)],
+        entityGrid[getEntityToGridIndex(entity, 0, 1)],
+        entityGrid[getEntityToGridIndex(entity, 1, 1)]
+    ).filter(Boolean);
+
+    if (filterType || minDistance2) {
+        nearest = nearest.filter(filterNearestResult.bind(entity, filterType, minDistance2));
+    }
+
+    return nearest;
+}
+
+module.exports = {
+    add        : add,
+    commit     : commit,
+    getNearest : getNearest
+};
+},{"./entity":116,"./gamefield":120}],119:[function(require,module,exports){
+arguments[4][118][0].apply(exports,arguments)
+},{"./entity":116,"./gamefield":120,"dup":118}],120:[function(require,module,exports){
 var Entity   = require('./entity');
 var EntityDB = require('./entityDB');
 var Random   = require('./random');
@@ -19390,11 +19396,6 @@ var MAX = {
     X : 1 << 15,
     Y : 1 << 15
 };
-
-var GRID_SIZE = 1 << 10;
-
-var gridX;
-var gridY;
 
 var MIN_STARS                 = 2;
 var MAX_STARS                 = 8;
@@ -19431,7 +19432,10 @@ function isStarDistantFromOtherStars(star) {
     }
 }
 
-function createGalaxy() {
+/**
+ * Create a game field with some Stars and Planets orbiting them
+ */
+function init() {
     var starPosition;
     var starCount = Random.int(MIN_STARS, MAX_STARS);
 
@@ -19457,20 +19461,11 @@ function createGalaxy() {
     }
 }
 
-function init() {
-    createGalaxy();
-}
-
-function process() {
-
-}
-
 module.exports = {
-    init    : init,
-    process : process,
-    MAX     : MAX
+    init : init,
+    MAX  : MAX
 };
-},{"./entity":117,"./entityDB":118,"./random":137}],120:[function(require,module,exports){
+},{"./entity":116,"./entityDB":117,"./random":139}],121:[function(require,module,exports){
 var NO_DATA = {};
 
 var AXES_ACTIVATION_VALUE = 0.1;
@@ -19518,9 +19513,10 @@ function getState() {
 module.exports = {
     getState : getState
 };
-},{}],121:[function(require,module,exports){
-var PIXI = require('./custom-lib/pixi.min.js');
-var SAT  = require('sat');
+},{}],122:[function(require,module,exports){
+var PIXI      = require('./custom-lib/pixi.min.js');
+var SAT       = require('sat');
+var GameField = require('./gamefield');
 
 /**
  * Alias for SAT.Vector
@@ -19543,10 +19539,22 @@ var PIPI = Math.PI * 2;
 function createMutableGeoInterface(graphics, collision) {
     return {
         set x(x) {
+            if (x < 0) {
+                x = 0;
+            } else if (x > GameField.MAX.X) {
+                x = GameField.MAX.X;
+            }
+
             this.graphics.x      = x;
             this.collision.pos.x = x;
         },
         set y(y) {
+            if (y < 0) {
+                y = 0;
+            } else if (y > GameField.MAX.Y) {
+                y = GameField.MAX.Y;
+            }
+
             this.graphics.y      = y;
             this.collision.pos.y = y;
         },
@@ -19557,7 +19565,7 @@ function createMutableGeoInterface(graphics, collision) {
                 rotation += PIPI;
             }
 
-            if(!(this.collision instanceof SAT.Circle)) {
+            if (!(this.collision instanceof SAT.Circle)) {
                 // SAT.Circle.setAngle() doesn't exist
                 this.collision.setAngle(rotation);
                 this.graphics.rotation = rotation;
@@ -19666,7 +19674,7 @@ function Geometry(geometryDef, options) {
 }
 
 module.exports = Geometry;
-},{"./custom-lib/pixi.min.js":116,"sat":99}],122:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":115,"./gamefield":120,"sat":99}],123:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "polygon",
@@ -19723,7 +19731,7 @@ module.exports={
     ]
   }
 }
-},{}],123:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
 module.exports={
   "body": {
     "type": "polygon",
@@ -19851,7 +19859,7 @@ module.exports={
   }
 }
 
-},{}],124:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 module.exports={
   "_name": "Planetary Base",
   "body": {
@@ -19926,7 +19934,7 @@ module.exports={
     ]
   }
 }
-},{}],125:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Colony",
@@ -19943,7 +19951,7 @@ module.exports={
     -30,40
   ]
 }
-},{}],126:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Communications Center",
@@ -19963,7 +19971,7 @@ module.exports={
     40,30
   ]
 }
-},{}],127:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Lab",
@@ -19980,7 +19988,7 @@ module.exports={
     0,-40
   ]
 }
-},{}],128:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "circle",
@@ -20009,7 +20017,7 @@ module.exports={
     ]
   }
 }
-},{}],129:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 module.exports={
   "type": "circle",
   "radius": 4,
@@ -20019,7 +20027,7 @@ module.exports={
     "alpha": 1
   }
 }
-},{}],130:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "polygon",
@@ -20058,7 +20066,7 @@ module.exports={
     ]
   }
 }
-},{}],131:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 module.exports={
   "cannon_normal" : {
     "type": "polygon",
@@ -20092,7 +20100,7 @@ module.exports={
     ]
   }
 }
-},{}],132:[function(require,module,exports){
+},{}],133:[function(require,module,exports){
 module.exports={
   "type": "circle",
   "radius": 200,
@@ -20106,7 +20114,7 @@ module.exports={
     "alpha": 1
   }
 }
-},{}],133:[function(require,module,exports){
+},{}],134:[function(require,module,exports){
 module.exports={
   "_name": "High Port",
   "body" : {
@@ -20272,7 +20280,7 @@ module.exports={
     ]
   }
 }
-},{}],134:[function(require,module,exports){
+},{}],135:[function(require,module,exports){
 /**
  * Graphics interface
  */
@@ -20361,20 +20369,150 @@ module.exports = {
     render      : render,
     centerOn    : centerOn
 };
-},{"./custom-lib/pixi.min.js":116,"./radar":136,"./starfield":138}],135:[function(require,module,exports){
-var Assets    = require('./assets');
-var Graphics  = require('./graphics');
-var GameField = require('./gamefield');
+},{"./custom-lib/pixi.min.js":115,"./radar":138,"./starfield":140}],136:[function(require,module,exports){
+var GamePad           = require('./gamepad');
+var FighterController = require('./controller/fighter');
+var EntityDB          = require('./entityDB');
 
-var HumanController      = require('./controller/human');
-var CollisionController  = require('./controller/collision');
+var Radar = require('./radar');
+
+var fighter;
+
+function init() {
+    fighter = EntityDB.getByType('Fighter')[0];
+
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
+}
+
+var keyDown = {};
+
+function onKeyUp(e) {
+    if (e.which === 37) {
+        keyDown.left_arrow = false;
+    } else if (e.which === 39) {
+        keyDown.right_arrow = false;
+    } else if (e.which === 38) {
+        keyDown.up_arrow = false;
+    } else if (e.which === 40) {
+        keyDown.down_arrow = false;
+    } else if (e.which === 70) {
+        keyDown.f = false;
+    } else if (e.which === 82) {
+        keyDown.r = false;
+    }
+}
+
+function onKeyDown(e) {
+    if (e.which === 37) {
+        // Left arrow
+        keyDown.left_arrow = true;
+
+    } else if (e.which === 39) {
+        // Right arrow
+        keyDown.right_arrow = true;
+
+    } else if (e.which === 38) {
+        // Up arrow
+        keyDown.up_arrow = true;
+
+    } else if (e.which === 40) {
+        // Down arrow
+        keyDown.down_arrow = true;
+    } else if (e.which === 82) {
+        // R
+        keyDown.r = true;
+
+    } else if (e.which === 70) {
+        // F
+        keyDown.f = true;
+    }
+
+}
+
+var DROTATION           = 0.05;
+var ACCELERATION        = 0.2;
+var DOCKED_ACCELERATION = 0.4;
+
+function process() {
+    var gamepad  = GamePad.getState();
+    var isDocked = FighterController.isDocked();
+
+    if (fighter.hp > 0) {
+        if (!isDocked) {
+            if (keyDown.left_arrow) {
+                FighterController.rotate(-DROTATION);
+            } else if (keyDown.right_arrow) {
+                FighterController.rotate(DROTATION);
+            }
+
+            if (typeof gamepad.analogAngle === 'number') {
+                var rotation        = FighterController.getRotation();
+                var desiredRotation = gamepad.analogAngle;
+
+                FighterController.rotate(desiredRotation - rotation);
+            }
+        }
+
+        if (keyDown.f || gamepad.button0) {
+            FighterController.shoot();
+        }
+
+        // Hold button down for radar
+        Radar.isEnabled = keyDown.r || gamepad.button3;
+
+        if (keyDown.up_arrow || gamepad.button2) {
+            FighterController.undock();
+            var rotation = FighterController.getRotation();
+
+            FighterController.flameOn();
+
+            if (isDocked) {
+                FighterController.applyForce(
+                    Math.cos(rotation) * DOCKED_ACCELERATION,
+                    Math.sin(rotation) * DOCKED_ACCELERATION
+                );
+            } else {
+                FighterController.applyForce(
+                    Math.cos(rotation) * ACCELERATION,
+                    Math.sin(rotation) * ACCELERATION
+                );
+            }
+
+        } else {
+            FighterController.flameOff();
+        }
+    }
+
+    if (gamepad.button3 && gamepad.button1) {
+        location.reload();
+    }
+}
+
+function getFocalPoint() {
+    return fighter;
+}
+
+module.exports = {
+    init          : init,
+    process       : process,
+    getFocalPoint : getFocalPoint
+};
+},{"./controller/fighter":108,"./entityDB":117,"./gamepad":121,"./radar":138}],137:[function(require,module,exports){
+var Assets     = require('./assets');
+var Graphics   = require('./graphics');
+var GameField  = require('./gamefield');
+var EntityGrid = require('./entitygrid');
+
+var HumanInterface = require('./humanInterface');
+
 var ProjectileController = require('./controller/projectile');
-
-var PlanetController    = require('./controller/planet');
-var FighterController   = require('./controller/fighter');
-var ProbeController     = require('./controller/probe');
-var FreighterController = require('./controller/freighter');
-var GravityController   = require('./controller/gravity');
+var PlanetController     = require('./controller/planet');
+var StarController       = require('./controller/star');
+var FighterController    = require('./controller/fighter');
+var ProbeController      = require('./controller/probe');
+var FreighterController  = require('./controller/freighter');
+var GravityController    = require('./controller/gravity');
 
 // // // // Game loop // // // //
 
@@ -20390,7 +20528,7 @@ function step() {
     update();
 
     if (elapsed > FPS_INTERVAL) {
-        Graphics.centerOn(HumanController.getFocalPoint());
+        Graphics.centerOn(HumanInterface.getFocalPoint());
         Graphics.render();
         then = now - (elapsed % FPS_INTERVAL);
     }
@@ -20404,35 +20542,36 @@ function start() {
 }
 
 window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
-    // assuming a fresh game start every time
-    // todo: generate based on a state
+    // This entry-point assumes a fresh game start every time
+    // todo: generate a game state based from pre-exising saved data
     Graphics.init();
     GameField.init();
 
     // Create all entities
     FighterController.init();
-    ProbeController.init();
+    //ProbeController.init();
 
-    // Initialize controllers
-    HumanController.init();
-
+    HumanInterface.init();
     Assets.init(start);
 });
 
 // // // // Game logic // // // //
 
 function update() {
+    HumanInterface.process();
+
     PlanetController.process();
-    HumanController.process();
+    StarController.process();
     FighterController.process();
     FreighterController.process();
     ProbeController.process();
     ProjectileController.process();
     GravityController.process();
-    CollisionController.process();
+
+    EntityGrid.commit();
 }
 
-},{"./assets":106,"./controller/collision":108,"./controller/fighter":109,"./controller/freighter":110,"./controller/gravity":111,"./controller/human":112,"./controller/planet":113,"./controller/probe":114,"./controller/projectile":115,"./gamefield":119,"./graphics":134}],136:[function(require,module,exports){
+},{"./assets":106,"./controller/fighter":108,"./controller/freighter":109,"./controller/gravity":110,"./controller/planet":111,"./controller/probe":112,"./controller/projectile":113,"./controller/star":114,"./entitygrid":119,"./gamefield":120,"./graphics":135,"./humanInterface":136}],138:[function(require,module,exports){
 var PIXI = require('./custom-lib/pixi.min.js');
 
 var DIAL_TRACK_ALPHA = 0.08;
@@ -20574,7 +20713,7 @@ module.exports = {
         return radarEnabled;
     }
 };
-},{"./custom-lib/pixi.min.js":116}],137:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":115}],139:[function(require,module,exports){
 /**
  * Random functions
  */
@@ -20611,7 +20750,7 @@ module.exports = {
     arrayEl : arrayEl
 };
 
-},{}],138:[function(require,module,exports){
+},{}],140:[function(require,module,exports){
 var PIXI   = require('./custom-lib/pixi.min.js');
 var Random = require('./random');
 
@@ -20727,4 +20866,4 @@ module.exports = {
     reinit  : reinit,
     process : process
 };
-},{"./custom-lib/pixi.min.js":116,"./random":137}]},{},[135]);
+},{"./custom-lib/pixi.min.js":115,"./random":139}]},{},[137]);

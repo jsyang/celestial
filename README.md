@@ -4,10 +4,8 @@ Celestial combat. Conquer the universe sector by sector.
 
 ## todo
 
-- rockets
-- homing missiles
 **filter collision testing by grids**
-- galaxy radar
+**galaxy radar**
 
 - production ability
 - flag planting
@@ -16,12 +14,17 @@ Celestial combat. Conquer the universe sector by sector.
 
 - multiple fighters
 - strategic enemy AI
-- asteroids / uninhabitable worlds
-- capital ships
 - different mission objectives
 - memoize math funcs
 - implement galcon-like gameplay now that there is a boid entity behavior
 
+## nice to haves
+
+- capital ships
+- rockets
+- homing missiles
+- asteroids / uninhabitable worlds
+- ability to destroy planets
 
 ## Custom pixijs build
 
