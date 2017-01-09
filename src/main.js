@@ -6,7 +6,6 @@ var HumanController      = require('./controller/human');
 var CollisionController  = require('./controller/collision');
 var ProjectileController = require('./controller/projectile');
 
-var AlarmController    = require('./controller/alarm');
 var PlanetController    = require('./controller/planet');
 var FighterController   = require('./controller/fighter');
 var ProbeController     = require('./controller/probe');
@@ -47,7 +46,6 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
     GameField.init();
 
     // Create all entities
-    AlarmController.init();
     FighterController.init();
     ProbeController.init();
 

@@ -222,6 +222,7 @@ function create(type, options) {
         entity.DIST_SURFACE2 = 105 * 105;
         entity.orbitDistance = options.orbitDistance;
         entity.star          = options.star;
+        entity.rotation      = options.rotation || 0;
 
     } else if (type === 'ShotCannonHeavy') {
         entity = Geometry(Shot.cannon_heavy, options);

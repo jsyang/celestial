@@ -45,7 +45,7 @@ function shoot() {
 }
 
 var DOCK_DISTANCE_PLANET = 105;
-var FIGHTER_MAX_SPEED    = 20;
+var FIGHTER_MAX_SPEED    = 40;
 var FIGHTER_MAX_SPEED2   = FIGHTER_MAX_SPEED * FIGHTER_MAX_SPEED;
 
 function limitSpeed() {

@@ -36,11 +36,11 @@ function createMutableGeoInterface(graphics, collision) {
                 rotation += PIPI;
             }
 
-            this.graphics.rotation = rotation;
-
-            // SAT.Circle.setAngle() doesn't exist
-            if(this.collision.setAngle) {
+            if(!(this.collision instanceof SAT.Circle)) {
+                // SAT.Circle.setAngle() doesn't exist
                 this.collision.setAngle(rotation);
+                this.graphics.rotation = rotation;
+
             }
         },
 

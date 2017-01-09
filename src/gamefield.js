@@ -3,8 +3,8 @@ var EntityDB = require('./entityDB');
 var Random   = require('./random');
 
 var MAX = {
-    X : 1 << 16,
-    Y : 1 << 16
+    X : 1 << 15,
+    Y : 1 << 15
 };
 
 var GRID_SIZE = 1 << 10;
@@ -14,7 +14,7 @@ var gridY;
 
 var MIN_STARS                 = 2;
 var MAX_STARS                 = 8;
-var MAX_PLANETS_PER_STAR      = 3;
+var MAX_PLANETS_PER_STAR      = 2;
 var CHANCE_STARS_HAVE_PLANETS = 1;
 
 /**
@@ -26,8 +26,8 @@ var MIN_MARGIN_STARS2 = MIN_MARGIN_STARS * MIN_MARGIN_STARS;
 
 function generateStarPosition() {
     return {
-        x : Random.int(MIN_MARGIN_STARS, MAX.X - MIN_MARGIN_STARS),
-        y : Random.int(MIN_MARGIN_STARS, MAX.X - MIN_MARGIN_STARS)
+        x : Random.float(MIN_MARGIN_STARS, MAX.X - MIN_MARGIN_STARS),
+        y : Random.float(MIN_MARGIN_STARS, MAX.X - MIN_MARGIN_STARS)
     };
 }
 
@@ -48,25 +48,24 @@ function isStarDistantFromOtherStars(star) {
 }
 
 function createGalaxy() {
-    var i;
     var starPosition;
     var starCount = Random.int(MIN_STARS, MAX_STARS);
 
-    for (i = 0; i < starCount; i++) {
+    for (var i = 0; i < starCount; i++) {
         do {
             starPosition = generateStarPosition();
-        } while(!isStarDistantFromOtherStars(starPosition));
+        } while (!isStarDistantFromOtherStars(starPosition));
 
         var star = Entity.create('Star', starPosition);
 
         if (Random.float(0, 1) < CHANCE_STARS_HAVE_PLANETS) {
             var planetCount = Random.int(1, MAX_PLANETS_PER_STAR);
-            for (i = 0; i < planetCount; i++) {
+            for (var j = 0; j < planetCount; j++) {
                 Entity.create('Planet', {
                     x             : 0,
                     y             : 0,
                     star          : star,
-                    orbitDistance : 1800 + i * 400,
+                    orbitDistance : 1600 + j * Random.int(2, 5) * 800,
                     rotation      : Random.float(-Math.PI, Math.PI)
                 });
             }

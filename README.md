@@ -6,10 +6,9 @@ Celestial combat. Conquer the universe sector by sector.
 
 - rockets
 - homing missiles
-- gamefield limit
-- filter collision testing by grids
+**filter collision testing by grids**
+- galaxy radar
 
-**gamefield generation**
 - production ability
 - flag planting
 - freighters move to colonize planets
@@ -22,7 +21,7 @@ Celestial combat. Conquer the universe sector by sector.
 - different mission objectives
 - memoize math funcs
 - implement galcon-like gameplay now that there is a boid entity behavior
-- galaxy radar
+
 
 ## Custom pixijs build
 

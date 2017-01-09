@@ -8,7 +8,6 @@ var Entity   = require('../entity');
 
 var ProjectileController = require('../controller/projectile');
 var FighterController    = require('../controller/fighter');
-var AlarmController      = require('../controller/alarm');
 
 var MASS_STAR    = 500;
 var MASS_PLANET  = 100;
@@ -29,77 +28,78 @@ function crashFighter(f) {
 var PIPI = Math.PI * 2;
 
 function attractFighterToPlanet(f, p) {
-    var r2 = Entity.getDistSquared(f, p);
+    if (f && f.hp > 0) {
+        var r2 = Entity.getDistSquared(f, p);
 
-    if (r2 < p.DIST_MIN_GRAVITY2) {
-        AlarmController.process(f, p);
+        if (r2 < p.DIST_MIN_GRAVITY2) {
 
-        var forceFactor = M1M2_FIGHTER_PLANET / Math.pow(r2, 1.5);
+            var forceFactor = M1M2_FIGHTER_PLANET / Math.pow(r2, 1.5);
 
-        var dx = p.x - f.x;
-        var dy = p.y - f.y;
+            var dx = p.x - f.x;
+            var dy = p.y - f.y;
 
-        f.dx += dx * forceFactor;
-        f.dy += dy * forceFactor;
+            f.dx += dx * forceFactor;
+            f.dy += dy * forceFactor;
 
-        if (r2 < p.DIST_SURFACE2) {
-            var landingSpeed           = f.dx * f.dx + f.dy * f.dy;
-            var fighterRotation        = f.rotation;
-            var correctLandingRotation = Entity.getAngleFromTo(p, f);
-            var landingAngleError      = Math.abs(correctLandingRotation - fighterRotation);
+            if (r2 < p.DIST_SURFACE2) {
+                var landingSpeed           = f.dx * f.dx + f.dy * f.dy;
+                var fighterRotation        = f.rotation;
+                var correctLandingRotation = Entity.getAngleFromTo(p, f);
+                var landingAngleError      = Math.abs(correctLandingRotation - fighterRotation);
 
-            // Limit fighterRotation to the open interval (-PI, PI)
-            // todo: limit all entity rotations to within (-PI, PI) vs (-2PI, 2PI)?
-            if (landingAngleError > Math.PI) {
-                if (fighterRotation > 0) {
-                    fighterRotation -= PIPI;
-                } else {
-                    fighterRotation += PIPI;
+                // Limit fighterRotation to the open interval (-PI, PI)
+                // todo: limit all entity rotations to within (-PI, PI) vs (-2PI, 2PI)?
+                if (landingAngleError > Math.PI) {
+                    if (fighterRotation > 0) {
+                        fighterRotation -= PIPI;
+                    } else {
+                        fighterRotation += PIPI;
+                    }
+
+                    landingAngleError = Math.abs(correctLandingRotation - fighterRotation);
                 }
 
-                landingAngleError = Math.abs(correctLandingRotation - fighterRotation);
-            }
+                var isSoftLanding  = landingSpeed < ERROR_MARGIN_LANDING_SPEED2;
+                var isCorrectAngle = landingAngleError < ERROR_MARGIN_LANDING_ROTATION;
 
-            var isSoftLanding  = landingSpeed < ERROR_MARGIN_LANDING_SPEED2;
-            var isCorrectAngle = landingAngleError < ERROR_MARGIN_LANDING_ROTATION;
-
-            if (isCorrectAngle && isSoftLanding) {
-                FighterController.dockTo(p);
-            } else {
-                crashFighter(f);
+                if (isCorrectAngle && isSoftLanding) {
+                    FighterController.dockTo(p);
+                } else {
+                    crashFighter(f);
+                }
             }
         }
     }
 }
 
 function attractFighterToStar(f, s) {
-    var r2 = Entity.getDistSquared(f, s);
+    if (f && f.hp > 0) {
+        var r2 = Entity.getDistSquared(f, s);
 
-    if (r2 < s.DIST_MIN_GRAVITY2) {
-        AlarmController.process(f, s);
+        if (r2 < s.DIST_MIN_GRAVITY2) {
+            var dx = s.x - f.x;
+            var dy = s.y - f.y;
 
-        var dx = s.x - f.x;
-        var dy = s.y - f.y;
+            var forceFactor = M1M2_FIGHTER_STAR / Math.pow(r2, 1.5);
 
-        var forceFactor = M1M2_FIGHTER_STAR / Math.pow(r2, 1.5);
+            f.dx += dx * forceFactor;
+            f.dy += dy * forceFactor;
 
-        f.dx += dx * forceFactor;
-        f.dy += dy * forceFactor;
-
-        if (r2 < s.DIST_SURFACE2) {
-            crashFighter(f);
+            if (r2 < s.DIST_SURFACE2) {
+                crashFighter(f);
+            }
         }
     }
 }
 
 function process() {
     var star    = EntityDB.getByType('Star');
-    var planet  = EntityDB.getByType('Star');
+    var planet  = EntityDB.getByType('Planet');
     var fighter = EntityDB.getByType('Fighter');
 
     if (fighter) {
         for (var i = 0; i < fighter.length; i++) {
-            if(!fighter[i].isDocked) {
+            if (fighter[i] && !fighter[i].isDocked) {
                 star.forEach(attractFighterToStar.bind(null, fighter[i]));
                 planet.forEach(attractFighterToPlanet.bind(null, fighter[i]));
             }
