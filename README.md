@@ -4,7 +4,6 @@ Celestial combat. Conquer the universe sector by sector.
 
 ## todo
 
-**filter collision testing by grids**
 **galaxy radar**
 
 - production ability
