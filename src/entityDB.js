@@ -60,7 +60,9 @@ function getAbsoluteNearestByType(f, type) {
 
     if (entities) {
         entities.forEach(function (e) {
-            var dist = Entity.getDistSquared(e, f);
+            var dx   = e.x - f.x;
+            var dy   = e.y - f.y;
+            var dist = dx * dx + dy * dy;
             if (dist < nearestDist) {
                 nearestDist = dist;
                 nearest     = e;

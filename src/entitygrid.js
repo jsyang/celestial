@@ -6,7 +6,7 @@ var Entity    = require('./entity');
 var GameField = require('./gamefield');
 
 var GRID_SIZE_BIT_SHIFT = 11;
-var GRID_WIDTH          = GameField.MAX.X >> GRID_SIZE_BIT_SHIFT;
+var GRID_WIDTH          = GameField.MAX_COORDINATE >> GRID_SIZE_BIT_SHIFT;
 var GRID_SIZE           = 1 << GRID_SIZE_BIT_SHIFT;
 
 // 1<<11 = 2048

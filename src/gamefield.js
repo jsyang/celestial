@@ -2,10 +2,7 @@ var Entity   = require('./entity');
 var EntityDB = require('./entityDB');
 var Random   = require('./random');
 
-var MAX = {
-    X : 1 << 15,
-    Y : 1 << 15
-};
+var MAX_COORDINATE = 1 << 15;
 
 var MIN_STARS                 = 2;
 var MAX_STARS                 = 8;
@@ -21,8 +18,8 @@ var MIN_MARGIN_STARS2 = MIN_MARGIN_STARS * MIN_MARGIN_STARS;
 
 function generateStarPosition() {
     return {
-        x : Random.float(MIN_MARGIN_STARS, MAX.X - MIN_MARGIN_STARS),
-        y : Random.float(MIN_MARGIN_STARS, MAX.X - MIN_MARGIN_STARS)
+        x : Random.float(MIN_MARGIN_STARS, MAX_COORDINATE - MIN_MARGIN_STARS),
+        y : Random.float(MIN_MARGIN_STARS, MAX_COORDINATE - MIN_MARGIN_STARS)
     };
 }
 
@@ -72,6 +69,6 @@ function init() {
 }
 
 module.exports = {
-    init : init,
-    MAX  : MAX
+    init           : init,
+    MAX_COORDINATE : MAX_COORDINATE
 };

@@ -1,7 +1,7 @@
 var PIXI = require('./custom-lib/pixi.min.js');
 
 var DIAL_TRACK_ALPHA = 0.08;
-var DEGREES          = Math.PI * 0.5 / 90;
+var DEGREES          = Math.PI / 180;
 
 var dialNearestPlanet;
 

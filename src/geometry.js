@@ -12,7 +12,8 @@ function v(x, y) {
     return new SAT.Vector(x, y);
 }
 
-var PIPI = Math.PI * 2;
+var PIPI           = Math.PI * 2;
+var MAX_COORDINATE = GameField.MAX_COORDINATE;
 
 /**
  *
@@ -25,8 +26,14 @@ function createMutableGeoInterface(graphics, collision) {
         set x(x) {
             if (x < 0) {
                 x = 0;
-            } else if (x > GameField.MAX.X) {
-                x = GameField.MAX.X;
+                if (this.dx) {
+                    this.dx = 0;
+                }
+            } else if (x > MAX_COORDINATE) {
+                x = MAX_COORDINATE;
+                if (this.dx) {
+                    this.dx = 0;
+                }
             }
 
             this.graphics.x      = x;
@@ -35,8 +42,14 @@ function createMutableGeoInterface(graphics, collision) {
         set y(y) {
             if (y < 0) {
                 y = 0;
-            } else if (y > GameField.MAX.Y) {
-                y = GameField.MAX.Y;
+                if (this.dy) {
+                    this.dy = 0;
+                }
+            } else if (y > MAX_COORDINATE) {
+                y = MAX_COORDINATE;
+                if (this.dy) {
+                    this.dy = 0;
+                }
             }
 
             this.graphics.y      = y;

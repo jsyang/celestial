@@ -48,12 +48,6 @@ function init(stage) {
     for (i = 0; i < COUNT_STARS_BRIGHT; i++) {
         stars.push(createStar(stage, STAR_BRIGHT));
     }
-
-    createStar(stage, {
-        size  : 4,
-        alpha : 1,
-        x     : 0, y : 0
-    });
 }
 
 function reinit(point) {

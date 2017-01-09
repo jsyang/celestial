@@ -19252,7 +19252,9 @@ function getAbsoluteNearestByType(f, type) {
 
     if (entities) {
         entities.forEach(function (e) {
-            var dist = Entity.getDistSquared(e, f);
+            var dx   = e.x - f.x;
+            var dy   = e.y - f.y;
+            var dist = dx * dx + dy * dy;
             if (dist < nearestDist) {
                 nearestDist = dist;
                 nearest     = e;
@@ -19281,7 +19283,7 @@ var Entity    = require('./entity');
 var GameField = require('./gamefield');
 
 var GRID_SIZE_BIT_SHIFT = 11;
-var GRID_WIDTH          = GameField.MAX.X >> GRID_SIZE_BIT_SHIFT;
+var GRID_WIDTH          = GameField.MAX_COORDINATE >> GRID_SIZE_BIT_SHIFT;
 var GRID_SIZE           = 1 << GRID_SIZE_BIT_SHIFT;
 
 // 1<<11 = 2048
@@ -19392,10 +19394,7 @@ var Entity   = require('./entity');
 var EntityDB = require('./entityDB');
 var Random   = require('./random');
 
-var MAX = {
-    X : 1 << 15,
-    Y : 1 << 15
-};
+var MAX_COORDINATE = 1 << 15;
 
 var MIN_STARS                 = 2;
 var MAX_STARS                 = 8;
@@ -19411,8 +19410,8 @@ var MIN_MARGIN_STARS2 = MIN_MARGIN_STARS * MIN_MARGIN_STARS;
 
 function generateStarPosition() {
     return {
-        x : Random.float(MIN_MARGIN_STARS, MAX.X - MIN_MARGIN_STARS),
-        y : Random.float(MIN_MARGIN_STARS, MAX.X - MIN_MARGIN_STARS)
+        x : Random.float(MIN_MARGIN_STARS, MAX_COORDINATE - MIN_MARGIN_STARS),
+        y : Random.float(MIN_MARGIN_STARS, MAX_COORDINATE - MIN_MARGIN_STARS)
     };
 }
 
@@ -19462,8 +19461,8 @@ function init() {
 }
 
 module.exports = {
-    init : init,
-    MAX  : MAX
+    init           : init,
+    MAX_COORDINATE : MAX_COORDINATE
 };
 },{"./entity":116,"./entityDB":117,"./random":139}],121:[function(require,module,exports){
 var NO_DATA = {};
@@ -19528,7 +19527,8 @@ function v(x, y) {
     return new SAT.Vector(x, y);
 }
 
-var PIPI = Math.PI * 2;
+var PIPI           = Math.PI * 2;
+var MAX_COORDINATE = GameField.MAX_COORDINATE;
 
 /**
  *
@@ -19541,8 +19541,14 @@ function createMutableGeoInterface(graphics, collision) {
         set x(x) {
             if (x < 0) {
                 x = 0;
-            } else if (x > GameField.MAX.X) {
-                x = GameField.MAX.X;
+                if (this.dx) {
+                    this.dx = 0;
+                }
+            } else if (x > MAX_COORDINATE) {
+                x = MAX_COORDINATE;
+                if (this.dx) {
+                    this.dx = 0;
+                }
             }
 
             this.graphics.x      = x;
@@ -19551,8 +19557,14 @@ function createMutableGeoInterface(graphics, collision) {
         set y(y) {
             if (y < 0) {
                 y = 0;
-            } else if (y > GameField.MAX.Y) {
-                y = GameField.MAX.Y;
+                if (this.dy) {
+                    this.dy = 0;
+                }
+            } else if (y > MAX_COORDINATE) {
+                y = MAX_COORDINATE;
+                if (this.dy) {
+                    this.dy = 0;
+                }
             }
 
             this.graphics.y      = y;
@@ -20348,7 +20360,7 @@ function centerOn(point) {
     var dx = point.x - lastX;
     var dy = point.y - lastY;
 
-    if(Radar.isEnabled) {
+    if (Radar.isEnabled) {
         Radar.setPosition(point);
     }
 
@@ -20575,7 +20587,7 @@ function update() {
 var PIXI = require('./custom-lib/pixi.min.js');
 
 var DIAL_TRACK_ALPHA = 0.08;
-var DEGREES          = Math.PI * 0.5 / 90;
+var DEGREES          = Math.PI / 180;
 
 var dialNearestPlanet;
 
@@ -20801,12 +20813,6 @@ function init(stage) {
     for (i = 0; i < COUNT_STARS_BRIGHT; i++) {
         stars.push(createStar(stage, STAR_BRIGHT));
     }
-
-    createStar(stage, {
-        size  : 4,
-        alpha : 1,
-        x     : 0, y : 0
-    });
 }
 
 function reinit(point) {

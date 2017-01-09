@@ -65,7 +65,7 @@ function centerOn(point) {
     var dx = point.x - lastX;
     var dy = point.y - lastY;
 
-    if(Radar.isEnabled) {
+    if (Radar.isEnabled) {
         Radar.setPosition(point);
     }
 
