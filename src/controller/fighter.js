@@ -6,40 +6,29 @@ var Radar      = require('../radar');
 
 var ProjectileController = require('../controller/projectile');
 
-var fighter;
+var shotType = 'ShotCannonNormal';
 
-function init() {
-    fighter = Entity.create('Fighter', {
-        x        : 2050,
-        y        : 1200,
-        team     : Entity.TEAM.MAGENTA,
-        isDocked : true
-    });
-}
-
-var TIME_BETWEEN_SHOTS = 100;
-var lastShotTime       = 0;
-
-var shotType   = 'ShotCannonNormal';
 var AUDIO_SHOT = {
     'ShotCannonHeavy'  : 'fire-heavy',
     'ShotCannonNormal' : 'fire'
 };
 
-function shoot() {
-    if (fighter.hp > 0) {
+var TIME_BETWEEN_SHOTS = 100;
+var lastShotTime       = 0;
+
+function shoot(f) {
+    if (f.hp > 0) {
         var now = Date.now();
 
         if (now - lastShotTime > TIME_BETWEEN_SHOTS) {
             ProjectileController.shoot(
                 shotType,
-                fighter.collision.calcPoints[1],
-                fighter,
+                f.collision.calcPoints[1],
+                f,
                 4
             );
 
             Audio.play(AUDIO_SHOT[shotType]);
-
             lastShotTime = now;
         }
     }
@@ -49,111 +38,120 @@ var DOCK_DISTANCE_PLANET = 105;
 var FIGHTER_MAX_SPEED    = 40;
 var FIGHTER_MAX_SPEED2   = FIGHTER_MAX_SPEED * FIGHTER_MAX_SPEED;
 
-function limitSpeed() {
-    var dx2 = fighter.dx * fighter.dx;
-    var dy2 = fighter.dy * fighter.dy;
+function limitSpeed(f) {
+    var dx2 = f.dx * f.dx;
+    var dy2 = f.dy * f.dy;
 
     var speed2 = dx2 + dy2;
     if (speed2 > FIGHTER_MAX_SPEED2) {
         var limitFactor = FIGHTER_MAX_SPEED * Math.pow(speed2, -0.5);
-        fighter.dx *= limitFactor;
-        fighter.dy *= limitFactor;
+        f.dx *= limitFactor;
+        f.dy *= limitFactor;
+    }
+}
+
+function processFighter(f) {
+    if (f.hp > 0) {
+        if (f.isDocked) {
+            if (f.dockedTo) {
+                f.x = Math.cos(f.rotation) * DOCK_DISTANCE_PLANET + f.dockedTo.x;
+                f.y = Math.sin(f.rotation) * DOCK_DISTANCE_PLANET + f.dockedTo.y;
+            }
+        } else {
+            limitSpeed(f);
+
+            f.x += f.dx;
+            f.y += f.dy;
+        }
+
+        if (Radar.isEnabled) {
+            updateRadar(f);
+        }
+
+        EntityGrid.add(f);
     }
 }
 
 function process() {
-    if (fighter.hp > 0) {
-        if (fighter.isDocked) {
-            if (fighter.dockedTo) {
-                var dock  = fighter.dockedTo;
-                fighter.x = Math.cos(fighter.rotation) * DOCK_DISTANCE_PLANET + dock.x;
-                fighter.y = Math.sin(fighter.rotation) * DOCK_DISTANCE_PLANET + dock.y;
-            }
-        } else {
-            limitSpeed();
+    var fighters = EntityDB.getByType('Fighter');
 
-            fighter.x += fighter.dx;
-            fighter.y += fighter.dy;
-        }
-
-        if (Radar.isEnabled) {
-            updateRadar();
-        }
-
-        EntityGrid.add(fighter);
+    if (fighters) {
+        fighters.forEach(processFighter);
     }
 }
 
 var RADAR_REFRESH_RATE = 10;
 var radarRefreshTime   = 10;
 
-function updateRadar() {
+function updateRadar(f) {
     radarRefreshTime++;
 
     if (radarRefreshTime > RADAR_REFRESH_RATE) {
-        var nearestPlanet = EntityDB.getAbsoluteNearestByType(fighter, 'Planet');
-        var nearestStar   = EntityDB.getAbsoluteNearestByType(fighter, 'Star');
+        var nearestPlanet = EntityDB.getAbsoluteNearestByType(f, 'Planet');
+        var nearestStar   = EntityDB.getAbsoluteNearestByType(f, 'Star');
 
         Radar.setRotations({
             nearestEnemy  : undefined,
-            nearestPlanet : nearestPlanet ? Entity.getAngleFromTo(fighter, nearestPlanet) : undefined,
-            nearestStar   : nearestStar ? Entity.getAngleFromTo(fighter, nearestStar) : undefined
+            nearestPlanet : nearestPlanet ? Entity.getAngleFromTo(f, nearestPlanet) : undefined,
+            nearestStar   : nearestStar ? Entity.getAngleFromTo(f, nearestStar) : undefined
         });
 
         radarRefreshTime = 0;
     }
 }
 
-function flameOn() {
-    fighter.flame1On();
-    fighter.flame2On();
+function flameOn(f) {
+    f.flame1On();
+    f.flame2On();
 }
 
-function flameOff() {
-    fighter.flame1Off();
-    fighter.flame2Off();
+function flameOff(f) {
+    f.flame1Off();
+    f.flame2Off();
 }
 
-function applyForce(dx, dy) {
-    fighter.dx += dx;
-    fighter.dy += dy;
+function applyForce(f, dx, dy) {
+    f.dx += dx;
+    f.dy += dy;
 }
 
-function rotate(dRotation) {
-    fighter.rotation += dRotation;
+function dockTo(f, entity) {
+    f.isDocked = true;
+    f.dockedTo = entity;
+    f.dx       = 0;
+    f.dy       = 0;
+    f.rotation = Entity.getAngleFromTo(entity, f);
+
+    if (entity.type === 'Planet') {
+        if (entity.team !== f.team) {
+            entity.setPlanetFlag(f.team);
+        }
+    }
 }
 
-function getRotation() {
-    return fighter.rotation;
+function undock(f) {
+    f.isDocked = false;
+    f.dockedTo = undefined;
 }
 
-function dockTo(entity) {
-    fighter.isDocked = true;
-    fighter.dockedTo = entity;
-    fighter.dx       = 0;
-    fighter.dy       = 0;
-    fighter.rotation = Entity.getAngleFromTo(entity, fighter);
+function isDocked(f) {
+    return f.isDocked;
 }
 
-function undock() {
-    fighter.isDocked = false;
-    fighter.dockedTo = undefined;
-}
-
-function isDocked() {
-    return fighter.isDocked;
+function crash(f) {
+    EntityDB.remove(f);
+    Audio.play('collide');
+    ProjectileController.explode(f, 6);
 }
 
 module.exports = {
-    init        : init,
-    process     : process,
-    flameOn     : flameOn,
-    flameOff    : flameOff,
-    applyForce  : applyForce,
-    rotate      : rotate,
-    getRotation : getRotation,
-    shoot       : shoot,
-    dockTo      : dockTo,
-    undock      : undock,
-    isDocked    : isDocked
+    process    : process,
+    flameOn    : flameOn,
+    flameOff   : flameOff,
+    applyForce : applyForce,
+    shoot      : shoot,
+    dockTo     : dockTo,
+    undock     : undock,
+    isDocked   : isDocked,
+    crash      : crash
 };

@@ -46,10 +46,6 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
     Graphics.init();
     GameField.init();
 
-    // Create all entities
-    FighterController.init();
-    //ProbeController.init();
-
     HumanInterface.init();
     Assets.init(start);
 });

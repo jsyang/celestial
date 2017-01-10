@@ -66,6 +66,14 @@ function init() {
             }
         }
     }
+
+    // Test fighter
+    Entity.create('Fighter', {
+        x        : 2050,
+        y        : 1200,
+        team     : Entity.TEAM.MAGENTA,
+        isDocked : true
+    });
 }
 
 module.exports = {

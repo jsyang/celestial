@@ -18302,40 +18302,29 @@ var Radar      = require('../radar');
 
 var ProjectileController = require('../controller/projectile');
 
-var fighter;
+var shotType = 'ShotCannonNormal';
 
-function init() {
-    fighter = Entity.create('Fighter', {
-        x        : 2050,
-        y        : 1200,
-        team     : Entity.TEAM.MAGENTA,
-        isDocked : true
-    });
-}
-
-var TIME_BETWEEN_SHOTS = 100;
-var lastShotTime       = 0;
-
-var shotType   = 'ShotCannonNormal';
 var AUDIO_SHOT = {
     'ShotCannonHeavy'  : 'fire-heavy',
     'ShotCannonNormal' : 'fire'
 };
 
-function shoot() {
-    if (fighter.hp > 0) {
+var TIME_BETWEEN_SHOTS = 100;
+var lastShotTime       = 0;
+
+function shoot(f) {
+    if (f.hp > 0) {
         var now = Date.now();
 
         if (now - lastShotTime > TIME_BETWEEN_SHOTS) {
             ProjectileController.shoot(
                 shotType,
-                fighter.collision.calcPoints[1],
-                fighter,
+                f.collision.calcPoints[1],
+                f,
                 4
             );
 
             Audio.play(AUDIO_SHOT[shotType]);
-
             lastShotTime = now;
         }
     }
@@ -18345,113 +18334,122 @@ var DOCK_DISTANCE_PLANET = 105;
 var FIGHTER_MAX_SPEED    = 40;
 var FIGHTER_MAX_SPEED2   = FIGHTER_MAX_SPEED * FIGHTER_MAX_SPEED;
 
-function limitSpeed() {
-    var dx2 = fighter.dx * fighter.dx;
-    var dy2 = fighter.dy * fighter.dy;
+function limitSpeed(f) {
+    var dx2 = f.dx * f.dx;
+    var dy2 = f.dy * f.dy;
 
     var speed2 = dx2 + dy2;
     if (speed2 > FIGHTER_MAX_SPEED2) {
         var limitFactor = FIGHTER_MAX_SPEED * Math.pow(speed2, -0.5);
-        fighter.dx *= limitFactor;
-        fighter.dy *= limitFactor;
+        f.dx *= limitFactor;
+        f.dy *= limitFactor;
+    }
+}
+
+function processFighter(f) {
+    if (f.hp > 0) {
+        if (f.isDocked) {
+            if (f.dockedTo) {
+                f.x = Math.cos(f.rotation) * DOCK_DISTANCE_PLANET + f.dockedTo.x;
+                f.y = Math.sin(f.rotation) * DOCK_DISTANCE_PLANET + f.dockedTo.y;
+            }
+        } else {
+            limitSpeed(f);
+
+            f.x += f.dx;
+            f.y += f.dy;
+        }
+
+        if (Radar.isEnabled) {
+            updateRadar(f);
+        }
+
+        EntityGrid.add(f);
     }
 }
 
 function process() {
-    if (fighter.hp > 0) {
-        if (fighter.isDocked) {
-            if (fighter.dockedTo) {
-                var dock  = fighter.dockedTo;
-                fighter.x = Math.cos(fighter.rotation) * DOCK_DISTANCE_PLANET + dock.x;
-                fighter.y = Math.sin(fighter.rotation) * DOCK_DISTANCE_PLANET + dock.y;
-            }
-        } else {
-            limitSpeed();
+    var fighters = EntityDB.getByType('Fighter');
 
-            fighter.x += fighter.dx;
-            fighter.y += fighter.dy;
-        }
-
-        if (Radar.isEnabled) {
-            updateRadar();
-        }
-
-        EntityGrid.add(fighter);
+    if (fighters) {
+        fighters.forEach(processFighter);
     }
 }
 
 var RADAR_REFRESH_RATE = 10;
 var radarRefreshTime   = 10;
 
-function updateRadar() {
+function updateRadar(f) {
     radarRefreshTime++;
 
     if (radarRefreshTime > RADAR_REFRESH_RATE) {
-        var nearestPlanet = EntityDB.getAbsoluteNearestByType(fighter, 'Planet');
-        var nearestStar   = EntityDB.getAbsoluteNearestByType(fighter, 'Star');
+        var nearestPlanet = EntityDB.getAbsoluteNearestByType(f, 'Planet');
+        var nearestStar   = EntityDB.getAbsoluteNearestByType(f, 'Star');
 
         Radar.setRotations({
             nearestEnemy  : undefined,
-            nearestPlanet : nearestPlanet ? Entity.getAngleFromTo(fighter, nearestPlanet) : undefined,
-            nearestStar   : nearestStar ? Entity.getAngleFromTo(fighter, nearestStar) : undefined
+            nearestPlanet : nearestPlanet ? Entity.getAngleFromTo(f, nearestPlanet) : undefined,
+            nearestStar   : nearestStar ? Entity.getAngleFromTo(f, nearestStar) : undefined
         });
 
         radarRefreshTime = 0;
     }
 }
 
-function flameOn() {
-    fighter.flame1On();
-    fighter.flame2On();
+function flameOn(f) {
+    f.flame1On();
+    f.flame2On();
 }
 
-function flameOff() {
-    fighter.flame1Off();
-    fighter.flame2Off();
+function flameOff(f) {
+    f.flame1Off();
+    f.flame2Off();
 }
 
-function applyForce(dx, dy) {
-    fighter.dx += dx;
-    fighter.dy += dy;
+function applyForce(f, dx, dy) {
+    f.dx += dx;
+    f.dy += dy;
 }
 
-function rotate(dRotation) {
-    fighter.rotation += dRotation;
+function dockTo(f, entity) {
+    f.isDocked = true;
+    f.dockedTo = entity;
+    f.dx       = 0;
+    f.dy       = 0;
+    f.rotation = Entity.getAngleFromTo(entity, f);
+
+    if (entity.type === 'Planet') {
+        if (entity.team !== f.team) {
+            entity.setPlanetFlag(f.team);
+        }
+    }
 }
 
-function getRotation() {
-    return fighter.rotation;
+function undock(f) {
+    f.isDocked = false;
+    f.dockedTo = undefined;
 }
 
-function dockTo(entity) {
-    fighter.isDocked = true;
-    fighter.dockedTo = entity;
-    fighter.dx       = 0;
-    fighter.dy       = 0;
-    fighter.rotation = Entity.getAngleFromTo(entity, fighter);
+function isDocked(f) {
+    return f.isDocked;
 }
 
-function undock() {
-    fighter.isDocked = false;
-    fighter.dockedTo = undefined;
-}
-
-function isDocked() {
-    return fighter.isDocked;
+function crash(f) {
+    EntityDB.remove(f);
+    Audio.play('collide');
+    ProjectileController.explode(f, 6);
 }
 
 module.exports = {
-    init        : init,
-    process     : process,
-    flameOn     : flameOn,
-    flameOff    : flameOff,
-    applyForce  : applyForce,
-    rotate      : rotate,
-    getRotation : getRotation,
-    shoot       : shoot,
-    dockTo      : dockTo,
-    undock      : undock,
-    isDocked    : isDocked
+    process    : process,
+    flameOn    : flameOn,
+    flameOff   : flameOff,
+    applyForce : applyForce,
+    shoot      : shoot,
+    dockTo     : dockTo,
+    undock     : undock,
+    isDocked   : isDocked,
+    crash      : crash
 };
 },{"../audio":107,"../controller/projectile":113,"../entity":116,"../entityDB":117,"../entityGrid":118,"../radar":138}],109:[function(require,module,exports){
 var Audio    = require('../audio');
@@ -18496,36 +18494,21 @@ module.exports = {
  * todo: move this into fighter and some of the constants into entity
  */
 
-var Audio      = require('../audio');
 var EntityDB   = require('../entityDB');
 var Entity     = require('../entity');
 var EntityGrid = require('../entitygrid');
 
-var ProjectileController = require('../controller/projectile');
-var FighterController    = require('../controller/fighter');
-
-var MASS_STAR    = 500;
-var MASS_PLANET  = 100;
-var MASS_FIGHTER = 10;
-
-var M1M2_FIGHTER_PLANET = MASS_FIGHTER * MASS_PLANET;
-var M1M2_FIGHTER_STAR   = MASS_FIGHTER * MASS_STAR;
+var FighterController = require('../controller/fighter');
 
 var ERROR_MARGIN_LANDING_ROTATION = Math.PI / 4;
 var ERROR_MARGIN_LANDING_SPEED2   = 2.1 * 2.1;
-
-function crashFighter(f) {
-    EntityDB.remove(f);
-    Audio.play('collide');
-    ProjectileController.explode(f, 6);
-}
 
 var PIPI = Math.PI * 2;
 
 function attractToPlanet(p) {
     var r2 = Entity.getDistSquared(this, p);
 
-    var forceFactor = M1M2_FIGHTER_PLANET / Math.pow(r2, 1.5);
+    var forceFactor = this.MASS * p.MASS / Math.pow(r2, 1.5);
 
     var dx = p.x - this.x;
     var dy = p.y - this.y;
@@ -18557,7 +18540,7 @@ function attractToPlanet(p) {
         if (isCorrectAngle && isSoftLanding) {
             FighterController.dockTo(p);
         } else {
-            crashFighter(this);
+            FighterController.crash(this);
         }
     }
 }
@@ -18568,13 +18551,13 @@ function attractToStar(s) {
     var dx = s.x - this.x;
     var dy = s.y - this.y;
 
-    var forceFactor = M1M2_FIGHTER_STAR / Math.pow(r2, 1.5);
+    var forceFactor = this.MASS * s.MASS / Math.pow(r2, 1.5);
 
     this.dx += dx * forceFactor;
     this.dy += dy * forceFactor;
 
     if (r2 < s.DIST_SURFACE2) {
-        crashFighter(this);
+        FighterController.crash(this);
     }
 }
 
@@ -18588,12 +18571,12 @@ function process() {
             if (fighter && !fighter.isDocked && fighter.hp > 0) {
 
                 var stars = EntityGrid.getNearest(fighter, 'Star', Entity.DIST_MIN_STAR_GRAVITY2);
-                if(stars) {
+                if (stars.length > 0) {
                     stars.forEach(attractToStar.bind(fighter));
                 }
 
                 var planets = EntityGrid.getNearest(fighter, 'Planet', Entity.DIST_MIN_PLANET_GRAVITY2);
-                if(planets) {
+                if (planets.length > 0) {
                     planets.forEach(attractToPlanet.bind(fighter));
                 }
             }
@@ -18604,7 +18587,7 @@ function process() {
 module.exports = {
     process : process
 };
-},{"../audio":107,"../controller/fighter":108,"../controller/projectile":113,"../entity":116,"../entityDB":117,"../entitygrid":119}],111:[function(require,module,exports){
+},{"../controller/fighter":108,"../entity":116,"../entityDB":117,"../entitygrid":119}],111:[function(require,module,exports){
 var EntityDB   = require('../entityDB');
 var EntityGrid = require('../entitygrid');
 
@@ -18941,11 +18924,22 @@ function createPointDisplay(options) {
     return Geometry(PointDisplay, options);
 }
 
+function setPlanetFlag(team) {
+    var flag = this.graphics.children[0];
+    if (team === TEAM.NONE) {
+        flag.visible = false;
+    } else {
+        flag.visible                   = true;
+        flag.graphicsData[0].fillColor = COLOR_TEAM[team];
+    }
+}
+
 function createPlanet(options) {
     var planet = Geometry(Planet.body, options);
     var flag   = Geometry(Planet.flag);
-
     planet.graphics.addChild(flag.graphics);
+    planet.setPlanetFlag = setPlanetFlag;
+    planet.setPlanetFlag(TEAM.NONE);
 
     return planet;
 }
@@ -19088,6 +19082,7 @@ function create(type, options) {
     if (type === 'Star') {
         entity = Geometry(Star, options);
 
+        entity.MASS          = 500;
         entity.DIST_SURFACE2 = 200 * 200;
 
     } else if (type === 'Planet') {
@@ -19096,11 +19091,12 @@ function create(type, options) {
          * Squared distance within which this body imparts gravitational forces something
          * @type {number}
          */
+        entity.MASS = 100;
         entity.DIST_MIN_GRAVITY2 = 600 * 600;
-        entity.DIST_SURFACE2 = 105 * 105;
-        entity.orbitDistance = options.orbitDistance;
-        entity.star          = options.star;
-        entity.rotation      = options.rotation || 0;
+        entity.DIST_SURFACE2     = 105 * 105;
+        entity.orbitDistance     = options.orbitDistance;
+        entity.star              = options.star;
+        entity.rotation          = options.rotation || 0;
 
     } else if (type === 'ShotCannonHeavy') {
         entity = Geometry(Shot.cannon_heavy, options);
@@ -19126,6 +19122,8 @@ function create(type, options) {
         entity = createPointDisplay(options);
     } else if (type === 'Fighter') {
         entity = createFighter(options);
+
+        entity.MASS = 10;
 
         entity.hp       = 6;
         entity.isDocked = options.isDocked || false;
@@ -19458,6 +19456,14 @@ function init() {
             }
         }
     }
+
+    // Test fighter
+    Entity.create('Fighter', {
+        x        : 2050,
+        y        : 1200,
+        team     : Entity.TEAM.MAGENTA,
+        isDocked : true
+    });
 }
 
 module.exports = {
@@ -20448,51 +20454,50 @@ var DOCKED_ACCELERATION = 0.4;
 
 function process() {
     var gamepad  = GamePad.getState();
-    var isDocked = FighterController.isDocked();
+    var isDocked = FighterController.isDocked(fighter);
 
     if (fighter.hp > 0) {
         if (!isDocked) {
             if (keyDown.left_arrow) {
-                FighterController.rotate(-DROTATION);
+                fighter.rotation -= DROTATION;
             } else if (keyDown.right_arrow) {
-                FighterController.rotate(DROTATION);
+                fighter.rotation += DROTATION;
             }
 
             if (typeof gamepad.analogAngle === 'number') {
-                var rotation        = FighterController.getRotation();
-                var desiredRotation = gamepad.analogAngle;
-
-                FighterController.rotate(desiredRotation - rotation);
+                fighter.rotation = gamepad.analogAngle;
             }
         }
 
         if (keyDown.f || gamepad.button0) {
-            FighterController.shoot();
+            FighterController.shoot(fighter);
         }
 
         // Hold button down for radar
         Radar.isEnabled = keyDown.r || gamepad.button3;
 
         if (keyDown.up_arrow || gamepad.button2) {
-            FighterController.undock();
-            var rotation = FighterController.getRotation();
+            FighterController.undock(fighter);
+            var rotation = fighter.rotation;
 
-            FighterController.flameOn();
+            FighterController.flameOn(fighter);
 
             if (isDocked) {
                 FighterController.applyForce(
+                    fighter,
                     Math.cos(rotation) * DOCKED_ACCELERATION,
                     Math.sin(rotation) * DOCKED_ACCELERATION
                 );
             } else {
                 FighterController.applyForce(
+                    fighter,
                     Math.cos(rotation) * ACCELERATION,
                     Math.sin(rotation) * ACCELERATION
                 );
             }
 
         } else {
-            FighterController.flameOff();
+            FighterController.flameOff(fighter);
         }
     }
 
@@ -20558,10 +20563,6 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
     // todo: generate a game state based from pre-exising saved data
     Graphics.init();
     GameField.init();
-
-    // Create all entities
-    FighterController.init();
-    //ProbeController.init();
 
     HumanInterface.init();
     Assets.init(start);

@@ -65,11 +65,22 @@ function createPointDisplay(options) {
     return Geometry(PointDisplay, options);
 }
 
+function setPlanetFlag(team) {
+    var flag = this.graphics.children[0];
+    if (team === TEAM.NONE) {
+        flag.visible = false;
+    } else {
+        flag.visible                   = true;
+        flag.graphicsData[0].fillColor = COLOR_TEAM[team];
+    }
+}
+
 function createPlanet(options) {
     var planet = Geometry(Planet.body, options);
     var flag   = Geometry(Planet.flag);
-
     planet.graphics.addChild(flag.graphics);
+    planet.setPlanetFlag = setPlanetFlag;
+    planet.setPlanetFlag(TEAM.NONE);
 
     return planet;
 }
@@ -212,6 +223,7 @@ function create(type, options) {
     if (type === 'Star') {
         entity = Geometry(Star, options);
 
+        entity.MASS          = 500;
         entity.DIST_SURFACE2 = 200 * 200;
 
     } else if (type === 'Planet') {
@@ -220,11 +232,12 @@ function create(type, options) {
          * Squared distance within which this body imparts gravitational forces something
          * @type {number}
          */
+        entity.MASS = 100;
         entity.DIST_MIN_GRAVITY2 = 600 * 600;
-        entity.DIST_SURFACE2 = 105 * 105;
-        entity.orbitDistance = options.orbitDistance;
-        entity.star          = options.star;
-        entity.rotation      = options.rotation || 0;
+        entity.DIST_SURFACE2     = 105 * 105;
+        entity.orbitDistance     = options.orbitDistance;
+        entity.star              = options.star;
+        entity.rotation          = options.rotation || 0;
 
     } else if (type === 'ShotCannonHeavy') {
         entity = Geometry(Shot.cannon_heavy, options);
@@ -250,6 +263,8 @@ function create(type, options) {
         entity = createPointDisplay(options);
     } else if (type === 'Fighter') {
         entity = createFighter(options);
+
+        entity.MASS = 10;
 
         entity.hp       = 6;
         entity.isDocked = options.isDocked || false;

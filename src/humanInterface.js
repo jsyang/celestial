@@ -64,51 +64,50 @@ var DOCKED_ACCELERATION = 0.4;
 
 function process() {
     var gamepad  = GamePad.getState();
-    var isDocked = FighterController.isDocked();
+    var isDocked = FighterController.isDocked(fighter);
 
     if (fighter.hp > 0) {
         if (!isDocked) {
             if (keyDown.left_arrow) {
-                FighterController.rotate(-DROTATION);
+                fighter.rotation -= DROTATION;
             } else if (keyDown.right_arrow) {
-                FighterController.rotate(DROTATION);
+                fighter.rotation += DROTATION;
             }
 
             if (typeof gamepad.analogAngle === 'number') {
-                var rotation        = FighterController.getRotation();
-                var desiredRotation = gamepad.analogAngle;
-
-                FighterController.rotate(desiredRotation - rotation);
+                fighter.rotation = gamepad.analogAngle;
             }
         }
 
         if (keyDown.f || gamepad.button0) {
-            FighterController.shoot();
+            FighterController.shoot(fighter);
         }
 
         // Hold button down for radar
         Radar.isEnabled = keyDown.r || gamepad.button3;
 
         if (keyDown.up_arrow || gamepad.button2) {
-            FighterController.undock();
-            var rotation = FighterController.getRotation();
+            FighterController.undock(fighter);
+            var rotation = fighter.rotation;
 
-            FighterController.flameOn();
+            FighterController.flameOn(fighter);
 
             if (isDocked) {
                 FighterController.applyForce(
+                    fighter,
                     Math.cos(rotation) * DOCKED_ACCELERATION,
                     Math.sin(rotation) * DOCKED_ACCELERATION
                 );
             } else {
                 FighterController.applyForce(
+                    fighter,
                     Math.cos(rotation) * ACCELERATION,
                     Math.sin(rotation) * ACCELERATION
                 );
             }
 
         } else {
-            FighterController.flameOff();
+            FighterController.flameOff(fighter);
         }
     }
 
