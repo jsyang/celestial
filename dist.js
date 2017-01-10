@@ -18538,7 +18538,7 @@ function attractToPlanet(p) {
         var isCorrectAngle = landingAngleError < ERROR_MARGIN_LANDING_ROTATION;
 
         if (isCorrectAngle && isSoftLanding) {
-            FighterController.dockTo(p);
+            FighterController.dockTo(this, p);
         } else {
             FighterController.crash(this);
         }
@@ -18594,9 +18594,9 @@ var EntityGrid = require('../entitygrid');
 var D_ROTATION_ORBIT = 0.0001;
 
 function orbitStar(planet) {
-    planet.rotation += D_ROTATION_ORBIT;
+    planet.orbitRotation += D_ROTATION_ORBIT;
 
-    var rotation = planet.rotation;
+    var rotation = planet.orbitRotation;
     planet.x     = Math.cos(rotation) * planet.orbitDistance + planet.star.x;
     planet.y     = Math.sin(rotation) * planet.orbitDistance + planet.star.y;
 
@@ -19096,7 +19096,7 @@ function create(type, options) {
         entity.DIST_SURFACE2     = 105 * 105;
         entity.orbitDistance     = options.orbitDistance;
         entity.star              = options.star;
-        entity.rotation          = options.rotation || 0;
+        entity.orbitRotation     = options.orbitRotation || 0;
 
     } else if (type === 'ShotCannonHeavy') {
         entity = Geometry(Shot.cannon_heavy, options);
@@ -19179,10 +19179,15 @@ function getAngleFromTo(e1, e2) {
     return Math.atan2(dy, dx);
 }
 
+function getTeamColor(team) {
+    return COLOR_TEAM[team];
+}
+
 module.exports = {
     create                   : create,
     getDistSquared           : getDistSquared,
     getAngleFromTo           : getAngleFromTo,
+    getTeamColor             : getTeamColor,
     TEAM                     : TEAM,
     DIST_MIN_STAR_GRAVITY2   : DIST_MIN_STAR_GRAVITY2,
     DIST_MIN_PLANET_GRAVITY2 : DIST_MIN_PLANET_GRAVITY2
@@ -19395,15 +19400,15 @@ var Random   = require('./random');
 var MAX_COORDINATE = 1 << 15;
 
 var MIN_STARS                 = 2;
-var MAX_STARS                 = 8;
+var MAX_STARS                 = 5;
 var MAX_PLANETS_PER_STAR      = 2;
-var CHANCE_STARS_HAVE_PLANETS = 1;
+var CHANCE_STARS_HAVE_PLANETS = 0.8;
 
 /**
  * How far stars MUST be away from each other
  * @number
  */
-var MIN_MARGIN_STARS  = 4800;
+var MIN_MARGIN_STARS  = 6000;
 var MIN_MARGIN_STARS2 = MIN_MARGIN_STARS * MIN_MARGIN_STARS;
 
 function generateStarPosition() {
@@ -19451,7 +19456,7 @@ function init() {
                     y             : 0,
                     star          : star,
                     orbitDistance : 1600 + j * Random.int(2, 5) * 800,
-                    rotation      : Random.float(-Math.PI, Math.PI)
+                    orbitRotation : Random.float(-Math.PI, Math.PI)
                 });
             }
         }
@@ -19534,7 +19539,6 @@ function v(x, y) {
 }
 
 var PIPI           = Math.PI * 2;
-var MAX_COORDINATE = GameField.MAX_COORDINATE;
 
 /**
  *
@@ -19550,8 +19554,8 @@ function createMutableGeoInterface(graphics, collision) {
                 if (this.dx) {
                     this.dx = 0;
                 }
-            } else if (x > MAX_COORDINATE) {
-                x = MAX_COORDINATE;
+            } else if (x > 32768) { // GameField.MAX_COORDINATE
+                x = 32768;
                 if (this.dx) {
                     this.dx = 0;
                 }
@@ -19566,8 +19570,8 @@ function createMutableGeoInterface(graphics, collision) {
                 if (this.dy) {
                     this.dy = 0;
                 }
-            } else if (y > MAX_COORDINATE) {
-                y = MAX_COORDINATE;
+            } else if (y > 32768) { // GameField.MAX_COORDINATE
+                y = 32768;
                 if (this.dy) {
                     this.dy = 0;
                 }
@@ -20310,8 +20314,9 @@ PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 var StarField = require('./starfield');
 var Radar     = require('./radar');
 
-var stage;
 var renderer;
+var scene;
+var stage;
 
 var width, width2;
 var height, height2;
@@ -20319,11 +20324,14 @@ var height, height2;
 function init() {
     updateDimensions();
 
+    scene    = new PIXI.Container();
     stage    = new PIXI.Container();
     renderer = new PIXI.WebGLRenderer(width, height);
 
     StarField.init(stage);
     Radar.init(stage);
+
+    scene.addChild(stage);
 
     document.body.appendChild(renderer.view);
     window.addEventListener('resize', onResize);
@@ -20344,6 +20352,10 @@ function onResize() {
     updateDimensions();
 }
 
+function addChildToHUD() {
+    scene.addChild.apply(scene, arguments);
+}
+
 function addChild() {
     stage.addChild.apply(stage, arguments);
 }
@@ -20353,7 +20365,7 @@ function removeChild() {
 }
 
 function render() {
-    renderer.render(stage);
+    renderer.render(scene);
 }
 
 var lastX;
@@ -20381,13 +20393,14 @@ function centerOn(point) {
 }
 
 module.exports = {
-    init        : init,
-    addChild    : addChild,
-    removeChild : removeChild,
-    render      : render,
-    centerOn    : centerOn
+    init          : init,
+    addChild      : addChild,
+    removeChild   : removeChild,
+    render        : render,
+    centerOn      : centerOn,
+    addChildToHUD : addChildToHUD
 };
-},{"./custom-lib/pixi.min.js":115,"./radar":138,"./starfield":140}],136:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":115,"./radar":138,"./starfield":141}],136:[function(require,module,exports){
 var GamePad           = require('./gamepad');
 var FighterController = require('./controller/fighter');
 var EntityDB          = require('./entityDB');
@@ -20520,6 +20533,7 @@ var Assets     = require('./assets');
 var Graphics   = require('./graphics');
 var GameField  = require('./gamefield');
 var EntityGrid = require('./entitygrid');
+var Scanner    = require('./scanner');
 
 var HumanInterface = require('./humanInterface');
 
@@ -20563,6 +20577,7 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
     // todo: generate a game state based from pre-exising saved data
     Graphics.init();
     GameField.init();
+    Scanner.init();
 
     HumanInterface.init();
     Assets.init(start);
@@ -20581,10 +20596,11 @@ function update() {
     ProjectileController.process();
     GravityController.process();
 
+    Scanner.update();
     EntityGrid.commit();
 }
 
-},{"./assets":106,"./controller/fighter":108,"./controller/freighter":109,"./controller/gravity":110,"./controller/planet":111,"./controller/probe":112,"./controller/projectile":113,"./controller/star":114,"./entitygrid":119,"./gamefield":120,"./graphics":135,"./humanInterface":136}],138:[function(require,module,exports){
+},{"./assets":106,"./controller/fighter":108,"./controller/freighter":109,"./controller/gravity":110,"./controller/planet":111,"./controller/probe":112,"./controller/projectile":113,"./controller/star":114,"./entitygrid":119,"./gamefield":120,"./graphics":135,"./humanInterface":136,"./scanner":140}],138:[function(require,module,exports){
 var PIXI = require('./custom-lib/pixi.min.js');
 
 var DIAL_TRACK_ALPHA = 0.08;
@@ -20749,21 +20765,105 @@ function float(min, max) {
     return min + Math.random() * (max - min);
 }
 
-/**
- * @param {Array} a
- * @returns {any}
- */
-function arrayEl(a) {
-    return a[Math.floor(a.length * Math.random())];
-}
-
 module.exports = {
     int     : int,
-    float   : float,
-    arrayEl : arrayEl
+    float   : float
 };
 
 },{}],140:[function(require,module,exports){
+/**
+ * Galactic scanner
+ */
+var PIXI      = require('./custom-lib/pixi.min.js');
+var Entity    = require('./entity');
+var EntityDB  = require('./entityDB');
+var GameField = require('./gamefield');
+var Graphics  = require('./graphics');
+
+var ALPHA_SCANNER_BORDER = 0.8;
+
+var SIZE        = 100;
+var MARGIN_EDGE = 4;
+
+var scanner;
+
+function init() {
+    scanner = new PIXI.Graphics();
+    scanner.beginFill(0, 0);
+    scanner.lineStyle(1, 0xffffff, ALPHA_SCANNER_BORDER);
+    scanner.drawRect(0, 0, SIZE, SIZE);
+    scanner.endFill();
+
+    scanner.x = MARGIN_EDGE;
+    scanner.y = MARGIN_EDGE;
+
+    Graphics.addChildToHUD(scanner);
+}
+
+var markerStar    = [];
+var markerPlanet  = [];
+var markerFighter = [];
+
+var COORDINATE_TO_SCANNER_FACTOR = SIZE / GameField.MAX_COORDINATE;
+
+function createMarker(color, size) {
+    var marker = new PIXI.Graphics();
+    marker.beginFill(0, 0);
+    marker.lineStyle(1, color, 1);
+    marker.drawRect(-size, -size, size, size);
+    marker.endFill();
+    scanner.addChild(marker);
+
+    return marker;
+}
+
+function drawMarker(markers, color, size, s, i) {
+    var marker = markers[i];
+    if (!marker) {
+        marker     = createMarker(color, size);
+        markers[i] = marker;
+    }
+
+    marker.x = s.x * COORDINATE_TO_SCANNER_FACTOR;
+    marker.y = s.y * COORDINATE_TO_SCANNER_FACTOR;
+}
+
+var COLOR_MARKER_STAR   = 0xffff00;
+var COLOR_MARKER_PLANET = 0x00ff00;
+
+var lastUpdateTime = 0;
+var TIME_UPDATE    = 500;
+
+function update() {
+    var now = Date.now();
+
+    if (now - lastUpdateTime > TIME_UPDATE) {
+        var stars = EntityDB.getByType('Star');
+        if (stars) {
+            stars.forEach(drawMarker.bind(null, markerStar, COLOR_MARKER_STAR, 2));
+        }
+
+        var planets = EntityDB.getByType('Planet');
+        if (planets) {
+            planets.forEach(drawMarker.bind(null, markerPlanet, COLOR_MARKER_PLANET, 2));
+        }
+
+        var fighters = EntityDB.getByType('Fighter');
+        if (fighters) {
+            fighters.forEach(function (f, i) {
+                drawMarker(markerFighter, Entity.getTeamColor(f.team), 1, f, i);
+            });
+        }
+
+        lastUpdateTime = now;
+    }
+}
+
+module.exports = {
+    init   : init,
+    update : update
+};
+},{"./custom-lib/pixi.min.js":115,"./entity":116,"./entityDB":117,"./gamefield":120,"./graphics":135}],141:[function(require,module,exports){
 var PIXI   = require('./custom-lib/pixi.min.js');
 var Random = require('./random');
 

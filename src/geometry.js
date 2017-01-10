@@ -13,7 +13,6 @@ function v(x, y) {
 }
 
 var PIPI           = Math.PI * 2;
-var MAX_COORDINATE = GameField.MAX_COORDINATE;
 
 /**
  *
@@ -29,8 +28,8 @@ function createMutableGeoInterface(graphics, collision) {
                 if (this.dx) {
                     this.dx = 0;
                 }
-            } else if (x > MAX_COORDINATE) {
-                x = MAX_COORDINATE;
+            } else if (x > 32768) { // GameField.MAX_COORDINATE
+                x = 32768;
                 if (this.dx) {
                     this.dx = 0;
                 }
@@ -45,8 +44,8 @@ function createMutableGeoInterface(graphics, collision) {
                 if (this.dy) {
                     this.dy = 0;
                 }
-            } else if (y > MAX_COORDINATE) {
-                y = MAX_COORDINATE;
+            } else if (y > 32768) { // GameField.MAX_COORDINATE
+                y = 32768;
                 if (this.dy) {
                     this.dy = 0;
                 }

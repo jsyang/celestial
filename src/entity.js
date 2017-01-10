@@ -237,7 +237,7 @@ function create(type, options) {
         entity.DIST_SURFACE2     = 105 * 105;
         entity.orbitDistance     = options.orbitDistance;
         entity.star              = options.star;
-        entity.rotation          = options.rotation || 0;
+        entity.orbitRotation     = options.orbitRotation || 0;
 
     } else if (type === 'ShotCannonHeavy') {
         entity = Geometry(Shot.cannon_heavy, options);
@@ -320,10 +320,15 @@ function getAngleFromTo(e1, e2) {
     return Math.atan2(dy, dx);
 }
 
+function getTeamColor(team) {
+    return COLOR_TEAM[team];
+}
+
 module.exports = {
     create                   : create,
     getDistSquared           : getDistSquared,
     getAngleFromTo           : getAngleFromTo,
+    getTeamColor             : getTeamColor,
     TEAM                     : TEAM,
     DIST_MIN_STAR_GRAVITY2   : DIST_MIN_STAR_GRAVITY2,
     DIST_MIN_PLANET_GRAVITY2 : DIST_MIN_PLANET_GRAVITY2

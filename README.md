@@ -4,8 +4,6 @@ Celestial combat. Conquer the universe sector by sector.
 
 ## todo
 
-**galaxy radar**
-
 - production ability
 - flag planting
 - freighters move to colonize planets

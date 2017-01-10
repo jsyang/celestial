@@ -9,8 +9,9 @@ PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 var StarField = require('./starfield');
 var Radar     = require('./radar');
 
-var stage;
 var renderer;
+var scene;
+var stage;
 
 var width, width2;
 var height, height2;
@@ -18,11 +19,14 @@ var height, height2;
 function init() {
     updateDimensions();
 
+    scene    = new PIXI.Container();
     stage    = new PIXI.Container();
     renderer = new PIXI.WebGLRenderer(width, height);
 
     StarField.init(stage);
     Radar.init(stage);
+
+    scene.addChild(stage);
 
     document.body.appendChild(renderer.view);
     window.addEventListener('resize', onResize);
@@ -43,6 +47,10 @@ function onResize() {
     updateDimensions();
 }
 
+function addChildToHUD() {
+    scene.addChild.apply(scene, arguments);
+}
+
 function addChild() {
     stage.addChild.apply(stage, arguments);
 }
@@ -52,7 +60,7 @@ function removeChild() {
 }
 
 function render() {
-    renderer.render(stage);
+    renderer.render(scene);
 }
 
 var lastX;
@@ -80,9 +88,10 @@ function centerOn(point) {
 }
 
 module.exports = {
-    init        : init,
-    addChild    : addChild,
-    removeChild : removeChild,
-    render      : render,
-    centerOn    : centerOn
+    init          : init,
+    addChild      : addChild,
+    removeChild   : removeChild,
+    render        : render,
+    centerOn      : centerOn,
+    addChildToHUD : addChildToHUD
 };

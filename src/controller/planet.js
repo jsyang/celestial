@@ -4,9 +4,9 @@ var EntityGrid = require('../entitygrid');
 var D_ROTATION_ORBIT = 0.0001;
 
 function orbitStar(planet) {
-    planet.rotation += D_ROTATION_ORBIT;
+    planet.orbitRotation += D_ROTATION_ORBIT;
 
-    var rotation = planet.rotation;
+    var rotation = planet.orbitRotation;
     planet.x     = Math.cos(rotation) * planet.orbitDistance + planet.star.x;
     planet.y     = Math.sin(rotation) * planet.orbitDistance + planet.star.y;
 

@@ -5,15 +5,15 @@ var Random   = require('./random');
 var MAX_COORDINATE = 1 << 15;
 
 var MIN_STARS                 = 2;
-var MAX_STARS                 = 8;
+var MAX_STARS                 = 5;
 var MAX_PLANETS_PER_STAR      = 2;
-var CHANCE_STARS_HAVE_PLANETS = 1;
+var CHANCE_STARS_HAVE_PLANETS = 0.8;
 
 /**
  * How far stars MUST be away from each other
  * @number
  */
-var MIN_MARGIN_STARS  = 4800;
+var MIN_MARGIN_STARS  = 6000;
 var MIN_MARGIN_STARS2 = MIN_MARGIN_STARS * MIN_MARGIN_STARS;
 
 function generateStarPosition() {
@@ -61,7 +61,7 @@ function init() {
                     y             : 0,
                     star          : star,
                     orbitDistance : 1600 + j * Random.int(2, 5) * 800,
-                    rotation      : Random.float(-Math.PI, Math.PI)
+                    orbitRotation : Random.float(-Math.PI, Math.PI)
                 });
             }
         }

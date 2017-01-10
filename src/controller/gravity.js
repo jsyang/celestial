@@ -47,7 +47,7 @@ function attractToPlanet(p) {
         var isCorrectAngle = landingAngleError < ERROR_MARGIN_LANDING_ROTATION;
 
         if (isCorrectAngle && isSoftLanding) {
-            FighterController.dockTo(p);
+            FighterController.dockTo(this, p);
         } else {
             FighterController.crash(this);
         }

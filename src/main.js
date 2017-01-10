@@ -2,6 +2,7 @@ var Assets     = require('./assets');
 var Graphics   = require('./graphics');
 var GameField  = require('./gamefield');
 var EntityGrid = require('./entitygrid');
+var Scanner    = require('./scanner');
 
 var HumanInterface = require('./humanInterface');
 
@@ -45,6 +46,7 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
     // todo: generate a game state based from pre-exising saved data
     Graphics.init();
     GameField.init();
+    Scanner.init();
 
     HumanInterface.init();
     Assets.init(start);
@@ -63,5 +65,6 @@ function update() {
     ProjectileController.process();
     GravityController.process();
 
+    Scanner.update();
     EntityGrid.commit();
 }
