@@ -4,7 +4,7 @@ var EntityDB   = require('../entityDB');
 var EntityGrid = require('../entityGrid');
 var Radar      = require('../radar');
 
-var ProjectileController = require('../controller/projectile');
+var Projectile = require('../entity/projectile');
 
 var shotType = 'ShotCannonNormal';
 
@@ -21,7 +21,7 @@ function shoot(f) {
         var now = Date.now();
 
         if (now - lastShotTime > TIME_BETWEEN_SHOTS) {
-            ProjectileController.shoot(
+            Projectile.shoot(
                 shotType,
                 f.collision.calcPoints[1],
                 f,
@@ -141,7 +141,7 @@ function isDocked(f) {
 function crash(f) {
     EntityDB.remove(f);
     Audio.play('collide');
-    ProjectileController.explode(f, 6);
+    Projectile.explode(f, 6);
 }
 
 module.exports = {

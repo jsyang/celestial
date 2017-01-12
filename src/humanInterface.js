@@ -1,6 +1,6 @@
-var GamePad           = require('./gamepad');
-var FighterController = require('./controller/fighter');
-var EntityDB          = require('./entityDB');
+var GamePad  = require('./gamepad');
+var Fighter  = require('./entity/fighter');
+var EntityDB = require('./entityDB');
 
 var Radar = require('./radar');
 
@@ -64,7 +64,7 @@ var DOCKED_ACCELERATION = 0.4;
 
 function process() {
     var gamepad  = GamePad.getState();
-    var isDocked = FighterController.isDocked(fighter);
+    var isDocked = Fighter.isDocked(fighter);
 
     if (fighter.hp > 0) {
         if (!isDocked) {
@@ -80,26 +80,26 @@ function process() {
         }
 
         if (keyDown.f || gamepad.button0) {
-            FighterController.shoot(fighter);
+            Fighter.shoot(fighter);
         }
 
         // Hold button down for radar
         Radar.isEnabled = keyDown.r || gamepad.button3;
 
         if (keyDown.up_arrow || gamepad.button2) {
-            FighterController.undock(fighter);
+            Fighter.undock(fighter);
             var rotation = fighter.rotation;
 
-            FighterController.flameOn(fighter);
+            Fighter.flameOn(fighter);
 
             if (isDocked) {
-                FighterController.applyForce(
+                Fighter.applyForce(
                     fighter,
                     Math.cos(rotation) * DOCKED_ACCELERATION,
                     Math.sin(rotation) * DOCKED_ACCELERATION
                 );
             } else {
-                FighterController.applyForce(
+                Fighter.applyForce(
                     fighter,
                     Math.cos(rotation) * ACCELERATION,
                     Math.sin(rotation) * ACCELERATION
@@ -107,7 +107,7 @@ function process() {
             }
 
         } else {
-            FighterController.flameOff(fighter);
+            Fighter.flameOff(fighter);
         }
     }
 

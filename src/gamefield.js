@@ -67,7 +67,7 @@ function init() {
         }
     }
 
-    // Test fighter
+    // Test entities
     Entity.create('Fighter', {
         x        : 2050,
         y        : 1200,

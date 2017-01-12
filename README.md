@@ -4,16 +4,17 @@ Celestial combat. Conquer the universe sector by sector.
 
 ## todo
 
-- production ability
-- flag planting
 - freighters move to colonize planets
+- production ability
 - planet base defences
+- planet automated build tree
 
 - multiple fighters
 - strategic enemy AI
 - different mission objectives
 - memoize math funcs
 - implement galcon-like gameplay now that there is a boid entity behavior
+- generate a game state based from pre-exising saved data
 
 ## nice to haves
 

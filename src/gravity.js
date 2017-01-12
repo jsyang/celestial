@@ -3,11 +3,11 @@
  * todo: move this into fighter and some of the constants into entity
  */
 
-var EntityDB   = require('../entityDB');
-var Entity     = require('../entity');
-var EntityGrid = require('../entitygrid');
+var EntityDB   = require('./entityDB');
+var Entity     = require('./entity');
+var EntityGrid = require('./entitygrid');
 
-var FighterController = require('../controller/fighter');
+var Fighter = require('./entity/fighter');
 
 var ERROR_MARGIN_LANDING_ROTATION = Math.PI / 4;
 var ERROR_MARGIN_LANDING_SPEED2   = 2.1 * 2.1;
@@ -47,9 +47,9 @@ function attractToPlanet(p) {
         var isCorrectAngle = landingAngleError < ERROR_MARGIN_LANDING_ROTATION;
 
         if (isCorrectAngle && isSoftLanding) {
-            FighterController.dockTo(this, p);
+            Fighter.dockTo(this, p);
         } else {
-            FighterController.crash(this);
+            Fighter.crash(this);
         }
     }
 }
@@ -66,11 +66,11 @@ function attractToStar(s) {
     this.dy += dy * forceFactor;
 
     if (r2 < s.DIST_SURFACE2) {
-        FighterController.crash(this);
+        Fighter.crash(this);
     }
 }
 
-function process() {
+function update() {
     var fighters = EntityDB.getByType('Fighter');
 
     if (fighters) {
@@ -94,5 +94,5 @@ function process() {
 }
 
 module.exports = {
-    process : process
+    update : update
 };

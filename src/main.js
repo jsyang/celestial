@@ -3,16 +3,16 @@ var Graphics   = require('./graphics');
 var GameField  = require('./gamefield');
 var EntityGrid = require('./entitygrid');
 var Scanner    = require('./scanner');
+var Gravity    = require('./gravity');
 
 var HumanInterface = require('./humanInterface');
 
-var ProjectileController = require('./controller/projectile');
-var PlanetController     = require('./controller/planet');
-var StarController       = require('./controller/star');
-var FighterController    = require('./controller/fighter');
-var ProbeController      = require('./controller/probe');
-var FreighterController  = require('./controller/freighter');
-var GravityController    = require('./controller/gravity');
+var Projectile = require('./entity/projectile');
+var Planet     = require('./entity/planet');
+var Star       = require('./entity/star');
+var Fighter    = require('./entity/fighter');
+var Probe      = require('./entity/probe');
+var Freighter  = require('./entity/freighter');
 
 // // // // Game loop // // // //
 
@@ -42,8 +42,6 @@ function start() {
 }
 
 window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
-    // This entry-point assumes a fresh game start every time
-    // todo: generate a game state based from pre-exising saved data
     Graphics.init();
     GameField.init();
     Scanner.init();
@@ -57,14 +55,15 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
 function update() {
     HumanInterface.process();
 
-    PlanetController.process();
-    StarController.process();
-    FighterController.process();
-    FreighterController.process();
-    ProbeController.process();
-    ProjectileController.process();
-    GravityController.process();
+    Planet.process();
+    Star.process();
+    Fighter.process();
+    Freighter.process();
+    Probe.process();
+    Projectile.process();
 
+    Gravity.update();
     Scanner.update();
+
     EntityGrid.commit();
 }

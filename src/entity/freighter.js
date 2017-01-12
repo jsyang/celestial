@@ -1,7 +1,7 @@
 var Audio    = require('../audio');
 var EntityDB = require('../entityDB');
 
-var ProjectileController = require('../controller/projectile');
+var Projectile = require('../entity/projectile');
 
 var freighter;
 
@@ -25,7 +25,7 @@ function process() {
             EntityDB.remove(freighter);
             Audio.play('collide');
 
-            ProjectileController.explode(freighter, 6);
+            Projectile.explode(freighter, 6);
             freighter = undefined;
         }
     }
