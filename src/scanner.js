@@ -27,9 +27,10 @@ function init() {
     Graphics.addChildToHUD(scanner);
 }
 
-var markerStar    = [];
-var markerPlanet  = [];
-var markerFighter = [];
+var markerStar      = [];
+var markerPlanet    = [];
+var markerFighter   = [];
+var markerFreighter = [];
 
 var COORDINATE_TO_SCANNER_FACTOR = SIZE / GameField.MAX_COORDINATE;
 
@@ -55,11 +56,16 @@ function drawMarker(markers, color, size, s, i) {
     marker.y = s.y * COORDINATE_TO_SCANNER_FACTOR;
 }
 
-var COLOR_MARKER_STAR   = 0xffff00;
-var COLOR_MARKER_PLANET = 0x00ff00;
+var COLOR_MARKER_STAR      = 0xffff00;
+var COLOR_MARKER_PLANET    = 0x00ff00;
+var COLOR_MARKER_FREIGHTER = 0xaaaaaa;
 
 var lastUpdateTime = 0;
 var TIME_UPDATE    = 500;
+
+var FUNC_DRAW_PLANET_MARKER    = drawMarker.bind(null, markerPlanet, COLOR_MARKER_PLANET, 2);
+var FUNC_DRAW_STAR_MARKER      = drawMarker.bind(null, markerStar, COLOR_MARKER_STAR, 2);
+var FUNC_DRAW_FREIGHTER_MARKER = drawMarker.bind(null, markerFreighter, COLOR_MARKER_FREIGHTER, 1);
 
 function update() {
     var now = Date.now();
@@ -67,12 +73,12 @@ function update() {
     if (now - lastUpdateTime > TIME_UPDATE) {
         var stars = EntityDB.getByType('Star');
         if (stars) {
-            stars.forEach(drawMarker.bind(null, markerStar, COLOR_MARKER_STAR, 2));
+            stars.forEach(FUNC_DRAW_STAR_MARKER);
         }
 
         var planets = EntityDB.getByType('Planet');
         if (planets) {
-            planets.forEach(drawMarker.bind(null, markerPlanet, COLOR_MARKER_PLANET, 2));
+            planets.forEach(FUNC_DRAW_PLANET_MARKER);
         }
 
         var fighters = EntityDB.getByType('Fighter');
@@ -80,6 +86,11 @@ function update() {
             fighters.forEach(function (f, i) {
                 drawMarker(markerFighter, Entity.getTeamColor(f.team), 1, f, i);
             });
+        }
+
+        var freighters = EntityDB.getByType('Freighter');
+        if (freighters) {
+            freighters.forEach(FUNC_DRAW_FREIGHTER_MARKER);
         }
 
         lastUpdateTime = now;

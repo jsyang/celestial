@@ -45,6 +45,8 @@ function updateDimensions() {
 
 function onResize() {
     updateDimensions();
+    lastX = undefined;
+    lastY = undefined;
 }
 
 function addChildToHUD() {

@@ -17,39 +17,41 @@ var PIPI = Math.PI * 2;
 function attractToPlanet(p) {
     var r2 = Entity.getDistSquared(this, p);
 
-    var forceFactor = this.MASS * p.MASS / Math.pow(r2, 1.5);
+    if (r2 < Entity.DIST_MIN_PLANET_GRAVITY2) {
+        var forceFactor = this.MASS * p.MASS / Math.pow(r2, 1.5);
 
-    var dx = p.x - this.x;
-    var dy = p.y - this.y;
+        var dx = p.x - this.x;
+        var dy = p.y - this.y;
 
-    this.dx += dx * forceFactor;
-    this.dy += dy * forceFactor;
+        this.dx += dx * forceFactor;
+        this.dy += dy * forceFactor;
 
-    if (r2 < p.DIST_SURFACE2) {
-        var landingSpeed           = this.dx * this.dx + this.dy * this.dy;
-        var fighterRotation        = this.rotation;
-        var correctLandingRotation = Entity.getAngleFromTo(p, this);
-        var landingAngleError      = Math.abs(correctLandingRotation - fighterRotation);
+        if (r2 < p.DIST_SURFACE2) {
+            var landingSpeed           = this.dx * this.dx + this.dy * this.dy;
+            var fighterRotation        = this.rotation;
+            var correctLandingRotation = Entity.getAngleFromTo(p, this);
+            var landingAngleError      = Math.abs(correctLandingRotation - fighterRotation);
 
-        // Limit fighterRotation to the open interval (-PI, PI)
-        // todo: limit all entity rotations to within (-PI, PI) vs (-2PI, 2PI)?
-        if (landingAngleError > Math.PI) {
-            if (fighterRotation > 0) {
-                fighterRotation -= PIPI;
-            } else {
-                fighterRotation += PIPI;
+            // Limit fighterRotation to the open interval (-PI, PI)
+            // todo: limit all entity rotations to within (-PI, PI) vs (-2PI, 2PI)?
+            if (landingAngleError > Math.PI) {
+                if (fighterRotation > 0) {
+                    fighterRotation -= PIPI;
+                } else {
+                    fighterRotation += PIPI;
+                }
+
+                landingAngleError = Math.abs(correctLandingRotation - fighterRotation);
             }
 
-            landingAngleError = Math.abs(correctLandingRotation - fighterRotation);
-        }
+            var isSoftLanding  = landingSpeed < ERROR_MARGIN_LANDING_SPEED2;
+            var isCorrectAngle = landingAngleError < ERROR_MARGIN_LANDING_ROTATION;
 
-        var isSoftLanding  = landingSpeed < ERROR_MARGIN_LANDING_SPEED2;
-        var isCorrectAngle = landingAngleError < ERROR_MARGIN_LANDING_ROTATION;
-
-        if (isCorrectAngle && isSoftLanding) {
-            Fighter.dockTo(this, p);
-        } else {
-            Fighter.crash(this);
+            if (isCorrectAngle && isSoftLanding) {
+                Fighter.dockTo(this, p);
+            } else {
+                Fighter.crash(this);
+            }
         }
     }
 }
@@ -57,16 +59,33 @@ function attractToPlanet(p) {
 function attractToStar(s) {
     var r2 = Entity.getDistSquared(this, s);
 
-    var dx = s.x - this.x;
-    var dy = s.y - this.y;
+    if (r2 < Entity.DIST_MIN_STAR_GRAVITY2) {
+        var dx = s.x - this.x;
+        var dy = s.y - this.y;
 
-    var forceFactor = this.MASS * s.MASS / Math.pow(r2, 1.5);
+        var forceFactor = this.MASS * s.MASS / Math.pow(r2, 1.5);
 
-    this.dx += dx * forceFactor;
-    this.dy += dy * forceFactor;
+        this.dx += dx * forceFactor;
+        this.dy += dy * forceFactor;
 
-    if (r2 < s.DIST_SURFACE2) {
-        Fighter.crash(this);
+        if (r2 < s.DIST_SURFACE2) {
+            Fighter.crash(this);
+        }
+    }
+}
+
+function attractFighterToStarOrPlanet(entity) {
+    if (entity.type === 'Star') {
+        attractToStar.call(this, entity);
+    } else if (entity.type === 'Planet') {
+        attractToPlanet.call(this, entity);
+    }
+}
+
+function updateFighter(fighter) {
+    if (fighter && !fighter.isDocked && fighter.hp > 0) {
+        EntityGrid.getNearest(fighter)
+            .forEach(attractFighterToStarOrPlanet.bind(fighter));
     }
 }
 
@@ -74,22 +93,7 @@ function update() {
     var fighters = EntityDB.getByType('Fighter');
 
     if (fighters) {
-        for (var i = 0; i < fighters.length; i++) {
-            var fighter = fighters[i];
-
-            if (fighter && !fighter.isDocked && fighter.hp > 0) {
-
-                var stars = EntityGrid.getNearest(fighter, 'Star', Entity.DIST_MIN_STAR_GRAVITY2);
-                if (stars.length > 0) {
-                    stars.forEach(attractToStar.bind(fighter));
-                }
-
-                var planets = EntityGrid.getNearest(fighter, 'Planet', Entity.DIST_MIN_PLANET_GRAVITY2);
-                if (planets.length > 0) {
-                    planets.forEach(attractToPlanet.bind(fighter));
-                }
-            }
-        }
+        fighters.forEach(updateFighter);
     }
 }
 

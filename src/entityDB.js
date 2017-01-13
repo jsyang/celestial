@@ -19,22 +19,20 @@ function getByType(type) {
     return byType[type];
 }
 
-function getByTeam(team) {
-    return byType[team];
-}
-
 /**
  * Remove entity from the DB
  * @param {object} entity
  */
 function remove(entity) {
+    var i;
+
     if (entity.hp != null) {
         entity.hp = 0;
     }
 
     var byTypeIndex      = -1;
     var byTypeCollection = byType[entity.type];
-    for (var i = -1; i < byTypeCollection.length; i++) {
+    for (i = byTypeCollection.length - 1; i >= 0; i--) {
         if (entity === byTypeCollection[i]) {
             byTypeIndex = i;
             break;
@@ -78,7 +76,6 @@ module.exports = {
     remove : remove,
 
     getByType : getByType,
-    getByTeam : getByTeam,
 
     getAbsoluteNearestByType : getAbsoluteNearestByType
 };

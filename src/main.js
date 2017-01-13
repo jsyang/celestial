@@ -4,6 +4,7 @@ var GameField  = require('./gamefield');
 var EntityGrid = require('./entitygrid');
 var Scanner    = require('./scanner');
 var Gravity    = require('./gravity');
+var Team       = require('./system/team');
 
 var HumanInterface = require('./humanInterface');
 
@@ -13,6 +14,7 @@ var Star       = require('./entity/star');
 var Fighter    = require('./entity/fighter');
 var Probe      = require('./entity/probe');
 var Freighter  = require('./entity/freighter');
+var PBase      = require('./entity/pbase');
 
 // // // // Game loop // // // //
 
@@ -53,9 +55,11 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
 // // // // Game logic // // // //
 
 function update() {
+    Team.process();
     HumanInterface.process();
 
     Planet.process();
+    PBase.process();
     Star.process();
     Fighter.process();
     Freighter.process();

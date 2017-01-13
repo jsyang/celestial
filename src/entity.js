@@ -73,6 +73,8 @@ function setPlanetFlag(team) {
         flag.visible                   = true;
         flag.graphicsData[0].fillColor = COLOR_TEAM[team];
     }
+
+    this.team = team;
 }
 
 function createPlanet(options) {
@@ -161,7 +163,10 @@ function createStarPort(options) {
 }
 
 function createPBase(options) {
-    var pbase   = Geometry(PBase.body, options);
+    var pbase = Geometry(PBase.body, options);
+
+    assignTeamColor(pbase, options.team);
+
     var turret1 = Geometry(PBase.turret1);
     var turret2 = Geometry(PBase.turret2);
     var turret3 = Geometry(PBase.turret3);
@@ -185,6 +190,8 @@ function createFreighter(options) {
     var turret2   = Geometry(Freighter.turret2);
     var flag      = Geometry(Freighter.flag);
     var flame     = Geometry(Freighter.flame);
+
+    assignTeamColor(flag, options.team);
 
     freighter.graphics
         .addChild(
@@ -216,6 +223,7 @@ function createPComm(options) {
  */
 var DIST_MIN_STAR_GRAVITY2   = 1000 * 1000;
 var DIST_MIN_PLANET_GRAVITY2 = 800 * 800;
+var DIST_PLANET_ORBIT2       = 200 * 200;
 
 function create(type, options) {
     var entity;
@@ -233,11 +241,13 @@ function create(type, options) {
          * @type {number}
          */
         entity.MASS = 100;
-        entity.DIST_MIN_GRAVITY2 = 600 * 600;
-        entity.DIST_SURFACE2     = 105 * 105;
-        entity.orbitDistance     = options.orbitDistance;
-        entity.star              = options.star;
-        entity.orbitRotation     = options.orbitRotation || 0;
+        entity.DIST_SURFACE2 = 105 * 105;
+        entity.orbitDistance = options.orbitDistance;
+        entity.star          = options.star;
+        entity.orbitRotation = options.orbitRotation || 0;
+
+        // Reference to resident PBase entity
+        entity.base = options.base;
 
     } else if (type === 'ShotCannonHeavy') {
         entity = Geometry(Shot.cannon_heavy, options);
@@ -284,7 +294,10 @@ function create(type, options) {
     } else if (type === 'StarPort') {
         entity = createStarPort(options);
     } else if (type === 'PBase') {
-        entity = createPBase(options);
+        entity        = createPBase(options);
+        entity.hp       = 20;
+        entity.planet = options.planet;
+
     } else if (type === 'Freighter') {
         entity          = createFreighter(options);
         entity.hitTime  = -1;
@@ -331,5 +344,6 @@ module.exports = {
     getTeamColor             : getTeamColor,
     TEAM                     : TEAM,
     DIST_MIN_STAR_GRAVITY2   : DIST_MIN_STAR_GRAVITY2,
-    DIST_MIN_PLANET_GRAVITY2 : DIST_MIN_PLANET_GRAVITY2
+    DIST_MIN_PLANET_GRAVITY2 : DIST_MIN_PLANET_GRAVITY2,
+    DIST_PLANET_ORBIT2       : DIST_PLANET_ORBIT2
 };

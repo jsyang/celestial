@@ -18393,6 +18393,8 @@ function setPlanetFlag(team) {
         flag.visible                   = true;
         flag.graphicsData[0].fillColor = COLOR_TEAM[team];
     }
+
+    this.team = team;
 }
 
 function createPlanet(options) {
@@ -18481,7 +18483,10 @@ function createStarPort(options) {
 }
 
 function createPBase(options) {
-    var pbase   = Geometry(PBase.body, options);
+    var pbase = Geometry(PBase.body, options);
+
+    assignTeamColor(pbase, options.team);
+
     var turret1 = Geometry(PBase.turret1);
     var turret2 = Geometry(PBase.turret2);
     var turret3 = Geometry(PBase.turret3);
@@ -18505,6 +18510,8 @@ function createFreighter(options) {
     var turret2   = Geometry(Freighter.turret2);
     var flag      = Geometry(Freighter.flag);
     var flame     = Geometry(Freighter.flame);
+
+    assignTeamColor(flag, options.team);
 
     freighter.graphics
         .addChild(
@@ -18536,6 +18543,7 @@ function createPComm(options) {
  */
 var DIST_MIN_STAR_GRAVITY2   = 1000 * 1000;
 var DIST_MIN_PLANET_GRAVITY2 = 800 * 800;
+var DIST_PLANET_ORBIT2       = 200 * 200;
 
 function create(type, options) {
     var entity;
@@ -18553,11 +18561,13 @@ function create(type, options) {
          * @type {number}
          */
         entity.MASS = 100;
-        entity.DIST_MIN_GRAVITY2 = 600 * 600;
-        entity.DIST_SURFACE2     = 105 * 105;
-        entity.orbitDistance     = options.orbitDistance;
-        entity.star              = options.star;
-        entity.orbitRotation     = options.orbitRotation || 0;
+        entity.DIST_SURFACE2 = 105 * 105;
+        entity.orbitDistance = options.orbitDistance;
+        entity.star          = options.star;
+        entity.orbitRotation = options.orbitRotation || 0;
+
+        // Reference to resident PBase entity
+        entity.base = options.base;
 
     } else if (type === 'ShotCannonHeavy') {
         entity = Geometry(Shot.cannon_heavy, options);
@@ -18604,7 +18614,10 @@ function create(type, options) {
     } else if (type === 'StarPort') {
         entity = createStarPort(options);
     } else if (type === 'PBase') {
-        entity = createPBase(options);
+        entity        = createPBase(options);
+        entity.hp       = 20;
+        entity.planet = options.planet;
+
     } else if (type === 'Freighter') {
         entity          = createFreighter(options);
         entity.hitTime  = -1;
@@ -18651,9 +18664,10 @@ module.exports = {
     getTeamColor             : getTeamColor,
     TEAM                     : TEAM,
     DIST_MIN_STAR_GRAVITY2   : DIST_MIN_STAR_GRAVITY2,
-    DIST_MIN_PLANET_GRAVITY2 : DIST_MIN_PLANET_GRAVITY2
+    DIST_MIN_PLANET_GRAVITY2 : DIST_MIN_PLANET_GRAVITY2,
+    DIST_PLANET_ORBIT2       : DIST_PLANET_ORBIT2
 };
-},{"./entityDB":116,"./geometry":121,"./geometry/Fighter.json":122,"./geometry/Freighter.json":123,"./geometry/PBase.json":124,"./geometry/PColony.json":125,"./geometry/PComm.json":126,"./geometry/PLab.json":127,"./geometry/Planet.json":128,"./geometry/PointDisplay.json":129,"./geometry/Probe.json":130,"./geometry/Shot.json":131,"./geometry/Star.json":132,"./geometry/StarPort.json":133,"./graphics":134}],110:[function(require,module,exports){
+},{"./entityDB":117,"./geometry":122,"./geometry/Fighter.json":123,"./geometry/Freighter.json":124,"./geometry/PBase.json":125,"./geometry/PColony.json":126,"./geometry/PComm.json":127,"./geometry/PLab.json":128,"./geometry/Planet.json":129,"./geometry/PointDisplay.json":130,"./geometry/Probe.json":131,"./geometry/Shot.json":132,"./geometry/Star.json":133,"./geometry/StarPort.json":134,"./graphics":135}],110:[function(require,module,exports){
 var Audio      = require('../audio');
 var Entity     = require('../entity');
 var EntityDB   = require('../entityDB');
@@ -18811,44 +18825,163 @@ module.exports = {
     isDocked   : isDocked,
     crash      : crash
 };
-},{"../audio":107,"../entity":109,"../entity/projectile":114,"../entityDB":116,"../entityGrid":117,"../radar":138}],111:[function(require,module,exports){
+},{"../audio":107,"../entity":109,"../entity/projectile":115,"../entityDB":117,"../entityGrid":118,"../radar":139}],111:[function(require,module,exports){
 var Audio    = require('../audio');
 var EntityDB = require('../entityDB');
+var Entity   = require('../entity');
 
 var Projectile = require('../entity/projectile');
 
-var freighter;
-
 var DEGREES90 = Math.PI * 0.5;
+
+var TURN_RATE = 0.07;
+var SPEED     = 10;//1.5;
+
+function move(freighter) {
+    var r2 = Entity.getDistSquared(freighter, freighter.target);
+    if (r2 > Entity.DIST_PLANET_ORBIT2) {
+        var rotation        = freighter.rotation;
+        var desiredRotation = Entity.getAngleFromTo(freighter, freighter.target);
+
+        var turnMagnitude = Math.abs(desiredRotation - rotation);
+        if (turnMagnitude > Math.PI) {
+            if (rotation > 0) {
+                freighter.rotation += TURN_RATE;
+            } else {
+                freighter.rotation -= TURN_RATE;
+            }
+        } else {
+            if (turnMagnitude > TURN_RATE) {
+                if (rotation > desiredRotation) {
+                    freighter.rotation -= TURN_RATE;
+                } else {
+                    freighter.rotation += TURN_RATE;
+                }
+            } else {
+                freighter.rotation = desiredRotation;
+            }
+        }
+
+        rotation = freighter.rotation;
+
+        freighter.x += Math.cos(rotation) * SPEED;
+        freighter.y += Math.sin(rotation) * SPEED;
+        freighter.flameOn();
+    } else {
+        freighter.planet   = freighter.target;
+        freighter.target   = undefined;
+        freighter.rotation = Entity.getAngleFromTo(freighter.planet, freighter) + DEGREES90;
+        freighter.flameOff();
+    }
+
+}
 
 var ORBIT_ROTATION = 0.00025;
 var ORBIT_DISTANCE = 200;
 
-function process() {
+function orbit(freighter) {
+    var px = freighter.planet.x;
+    var py = freighter.planet.y;
+
+    freighter.rotation += ORBIT_ROTATION;
+    freighter.x = px + Math.cos(freighter.rotation - DEGREES90) * ORBIT_DISTANCE;
+    freighter.y = py + Math.sin(freighter.rotation - DEGREES90) * ORBIT_DISTANCE;
+}
+
+function explode(freighter) {
+    EntityDB.remove(freighter);
+    Audio.play('collide');
+
+    Projectile.explode(freighter, 6);
+}
+
+function createPBase(freighter) {
+    var planet = freighter.planet;
+
+    Audio.play('nav');
+
+    planet.base = Entity.create('PBase', {
+        x      : planet.x,
+        y      : planet.y,
+        planet : planet,
+        team   : freighter.team
+    });
+
+    EntityDB.remove(freighter);
+}
+
+/** How long it takes before cargo can be used after reaching orbit **/
+var TIME_OFFLOAD_SUPPLY = 200;
+
+function supply(freighter) {
+    if (freighter.supplyTime === undefined) {
+        freighter.supplyTime = TIME_OFFLOAD_SUPPLY;
+    } else if (freighter.supplyTime > 0) {
+        freighter.supplyTime--;
+    } else if (freighter.supplyTime === 0) {
+        createPBase(freighter);
+    }
+}
+
+function processFreighter(freighter) {
     if (freighter) {
-        var px = freighter.planet.x;
-        var py = freighter.planet.y;
-
-        freighter.rotation += ORBIT_ROTATION;
-        freighter.x = px + Math.cos(freighter.rotation - DEGREES90) * ORBIT_DISTANCE;
-        freighter.y = py + Math.sin(freighter.rotation - DEGREES90) * ORBIT_DISTANCE;
-
         if (freighter.hp > 0) {
             freighter.renderHit();
-        } else {
-            EntityDB.remove(freighter);
-            Audio.play('collide');
 
-            Projectile.explode(freighter, 6);
-            freighter = undefined;
+            if (freighter.target) {
+                move(freighter);
+            } else if (freighter.planet) {
+                orbit(freighter);
+
+                if (!freighter.planet.base) {
+                    supply(freighter);
+                }
+            }
+        } else {
+            explode(freighter);
         }
+    }
+}
+
+function process() {
+    EntityDB.getByType('Freighter')
+        .forEach(processFreighter);
+
+}
+
+module.exports = {
+    process : process
+};
+},{"../audio":107,"../entity":109,"../entity/projectile":115,"../entityDB":117}],112:[function(require,module,exports){
+var Audio      = require('../audio');
+var EntityDB   = require('../entityDB');
+var EntityGrid = require('../entitygrid');
+
+var Projectile = require('../entity/projectile');
+
+function processPBase(pbase) {
+    if (pbase.hp > 0) {
+        pbase.x = pbase.planet.x;
+        pbase.y = pbase.planet.y;
+        EntityGrid.add(pbase);
+    } else {
+        Audio.play('collide');
+        Projectile.explode(pbase, 6);
+        EntityDB.remove(pbase);
+    }
+}
+
+function process() {
+    var pbases = EntityDB.getByType('PBase');
+    if (pbases) {
+        pbases.forEach(processPBase);
     }
 }
 
 module.exports = {
     process : process
 };
-},{"../audio":107,"../entity/projectile":114,"../entityDB":116}],112:[function(require,module,exports){
+},{"../audio":107,"../entity/projectile":115,"../entityDB":117,"../entitygrid":119}],113:[function(require,module,exports){
 var EntityDB   = require('../entityDB');
 var EntityGrid = require('../entitygrid');
 
@@ -18874,7 +19007,7 @@ function process() {
 module.exports = {
     process : process
 };
-},{"../entityDB":116,"../entitygrid":118}],113:[function(require,module,exports){
+},{"../entityDB":117,"../entitygrid":119}],114:[function(require,module,exports){
 var Random   = require('../random');
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
@@ -18990,7 +19123,7 @@ module.exports = {
     init    : init,
     process : process
 };
-},{"../entity":109,"../entityDB":116,"../random":139}],114:[function(require,module,exports){
+},{"../entity":109,"../entityDB":117,"../random":140}],115:[function(require,module,exports){
 var Entity     = require('../entity');
 var EntityDB   = require('../entityDB');
 var EntityGrid = require('../entitygrid');
@@ -19079,7 +19212,7 @@ module.exports = {
     process : process,
     explode : explode
 };
-},{"../audio":107,"../entity":109,"../entityDB":116,"../entitygrid":118,"../random":139,"sat":99}],115:[function(require,module,exports){
+},{"../audio":107,"../entity":109,"../entityDB":117,"../entitygrid":119,"../random":140,"sat":99}],116:[function(require,module,exports){
 var EntityDB   = require('../entityDB');
 var EntityGrid = require('../entitygrid');
 
@@ -19093,7 +19226,7 @@ function process() {
 module.exports = {
     process : process
 };
-},{"../entityDB":116,"../entitygrid":118}],116:[function(require,module,exports){
+},{"../entityDB":117,"../entitygrid":119}],117:[function(require,module,exports){
 var Graphics = require('./graphics');
 
 var byType = {};
@@ -19115,22 +19248,20 @@ function getByType(type) {
     return byType[type];
 }
 
-function getByTeam(team) {
-    return byType[team];
-}
-
 /**
  * Remove entity from the DB
  * @param {object} entity
  */
 function remove(entity) {
+    var i;
+
     if (entity.hp != null) {
         entity.hp = 0;
     }
 
     var byTypeIndex      = -1;
     var byTypeCollection = byType[entity.type];
-    for (var i = -1; i < byTypeCollection.length; i++) {
+    for (i = byTypeCollection.length - 1; i >= 0; i--) {
         if (entity === byTypeCollection[i]) {
             byTypeIndex = i;
             break;
@@ -19174,11 +19305,10 @@ module.exports = {
     remove : remove,
 
     getByType : getByType,
-    getByTeam : getByTeam,
 
     getAbsoluteNearestByType : getAbsoluteNearestByType
 };
-},{"./graphics":134}],117:[function(require,module,exports){
+},{"./graphics":135}],118:[function(require,module,exports){
 /**
  * All updates to the grid are written on a per-frame basis.
  * The nextEntityGrid becomes the current entityGrid when EntityGrid.commit() is called.
@@ -19291,9 +19421,9 @@ module.exports = {
     commit     : commit,
     getNearest : getNearest
 };
-},{"./entity":109,"./gamefield":119}],118:[function(require,module,exports){
-arguments[4][117][0].apply(exports,arguments)
-},{"./entity":109,"./gamefield":119,"dup":117}],119:[function(require,module,exports){
+},{"./entity":109,"./gamefield":120}],119:[function(require,module,exports){
+arguments[4][118][0].apply(exports,arguments)
+},{"./entity":109,"./gamefield":120,"dup":118}],120:[function(require,module,exports){
 var Entity   = require('./entity');
 var EntityDB = require('./entityDB');
 var Random   = require('./random');
@@ -19365,8 +19495,27 @@ function init() {
 
     // Test entities
     Entity.create('Fighter', {
-        x        : 2050,
-        y        : 1200,
+        x        : Random.int(0, MAX_COORDINATE),
+        y        : Random.int(0, MAX_COORDINATE),
+        team     : Entity.TEAM.MAGENTA,
+        isDocked : true
+    });
+
+    Entity.create('Freighter', {
+        x        : Random.int(0, MAX_COORDINATE),
+        y        : Random.int(0, MAX_COORDINATE),
+        team     : Entity.TEAM.MAGENTA,
+        isDocked : true
+    });
+    Entity.create('Freighter', {
+        x        : Random.int(0, MAX_COORDINATE),
+        y        : Random.int(0, MAX_COORDINATE),
+        team     : Entity.TEAM.MAGENTA,
+        isDocked : true
+    });
+    Entity.create('Freighter', {
+        x        : Random.int(0, MAX_COORDINATE),
+        y        : Random.int(0, MAX_COORDINATE),
         team     : Entity.TEAM.MAGENTA,
         isDocked : true
     });
@@ -19376,7 +19525,7 @@ module.exports = {
     init           : init,
     MAX_COORDINATE : MAX_COORDINATE
 };
-},{"./entity":109,"./entityDB":116,"./random":139}],120:[function(require,module,exports){
+},{"./entity":109,"./entityDB":117,"./random":140}],121:[function(require,module,exports){
 var NO_DATA = {};
 
 var AXES_ACTIVATION_VALUE = 0.1;
@@ -19424,7 +19573,7 @@ function getState() {
 module.exports = {
     getState : getState
 };
-},{}],121:[function(require,module,exports){
+},{}],122:[function(require,module,exports){
 var PIXI      = require('./custom-lib/pixi.min.js');
 var SAT       = require('sat');
 var GameField = require('./gamefield');
@@ -19597,7 +19746,7 @@ function Geometry(geometryDef, options) {
 }
 
 module.exports = Geometry;
-},{"./custom-lib/pixi.min.js":108,"./gamefield":119,"sat":99}],122:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":108,"./gamefield":120,"sat":99}],123:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "polygon",
@@ -19654,13 +19803,13 @@ module.exports={
     ]
   }
 }
-},{}],123:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
 module.exports={
   "body": {
     "type": "polygon",
     "lineStyle": {
       "width": 1,
-      "color": 16777215,
+      "color": 15658734,
       "alpha": 1
     },
     "collisionPath" : [
@@ -19695,7 +19844,7 @@ module.exports={
     "type": "polygon",
     "lineStyle": {
       "width": 1,
-      "color": 16777215,
+      "color": 15658734,
       "alpha": 1
     },
     "path": [
@@ -19713,7 +19862,7 @@ module.exports={
     "type": "polygon",
     "lineStyle": {
       "width": 1,
-      "color": 16777215,
+      "color": 15658734,
       "alpha": 1
     },
     "path": [
@@ -19782,7 +19931,7 @@ module.exports={
   }
 }
 
-},{}],124:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 module.exports={
   "_name": "Planetary Base",
   "body": {
@@ -19857,7 +20006,7 @@ module.exports={
     ]
   }
 }
-},{}],125:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Colony",
@@ -19874,7 +20023,7 @@ module.exports={
     -30,40
   ]
 }
-},{}],126:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Communications Center",
@@ -19894,7 +20043,7 @@ module.exports={
     40,30
   ]
 }
-},{}],127:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Lab",
@@ -19911,7 +20060,7 @@ module.exports={
     0,-40
   ]
 }
-},{}],128:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "circle",
@@ -19940,7 +20089,7 @@ module.exports={
     ]
   }
 }
-},{}],129:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 module.exports={
   "type": "circle",
   "radius": 4,
@@ -19950,7 +20099,7 @@ module.exports={
     "alpha": 1
   }
 }
-},{}],130:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "polygon",
@@ -19989,7 +20138,7 @@ module.exports={
     ]
   }
 }
-},{}],131:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 module.exports={
   "cannon_normal" : {
     "type": "polygon",
@@ -20023,7 +20172,7 @@ module.exports={
     ]
   }
 }
-},{}],132:[function(require,module,exports){
+},{}],133:[function(require,module,exports){
 module.exports={
   "type": "circle",
   "radius": 200,
@@ -20037,7 +20186,7 @@ module.exports={
     "alpha": 1
   }
 }
-},{}],133:[function(require,module,exports){
+},{}],134:[function(require,module,exports){
 module.exports={
   "_name": "High Port",
   "body" : {
@@ -20203,7 +20352,7 @@ module.exports={
     ]
   }
 }
-},{}],134:[function(require,module,exports){
+},{}],135:[function(require,module,exports){
 /**
  * Graphics interface
  */
@@ -20251,6 +20400,8 @@ function updateDimensions() {
 
 function onResize() {
     updateDimensions();
+    lastX = undefined;
+    lastY = undefined;
 }
 
 function addChildToHUD() {
@@ -20301,7 +20452,7 @@ module.exports = {
     centerOn      : centerOn,
     addChildToHUD : addChildToHUD
 };
-},{"./custom-lib/pixi.min.js":108,"./radar":138,"./starfield":141}],135:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":108,"./radar":139,"./starfield":142}],136:[function(require,module,exports){
 /**
  * Gravity and related collisions
  * todo: move this into fighter and some of the constants into entity
@@ -20321,39 +20472,41 @@ var PIPI = Math.PI * 2;
 function attractToPlanet(p) {
     var r2 = Entity.getDistSquared(this, p);
 
-    var forceFactor = this.MASS * p.MASS / Math.pow(r2, 1.5);
+    if (r2 < Entity.DIST_MIN_PLANET_GRAVITY2) {
+        var forceFactor = this.MASS * p.MASS / Math.pow(r2, 1.5);
 
-    var dx = p.x - this.x;
-    var dy = p.y - this.y;
+        var dx = p.x - this.x;
+        var dy = p.y - this.y;
 
-    this.dx += dx * forceFactor;
-    this.dy += dy * forceFactor;
+        this.dx += dx * forceFactor;
+        this.dy += dy * forceFactor;
 
-    if (r2 < p.DIST_SURFACE2) {
-        var landingSpeed           = this.dx * this.dx + this.dy * this.dy;
-        var fighterRotation        = this.rotation;
-        var correctLandingRotation = Entity.getAngleFromTo(p, this);
-        var landingAngleError      = Math.abs(correctLandingRotation - fighterRotation);
+        if (r2 < p.DIST_SURFACE2) {
+            var landingSpeed           = this.dx * this.dx + this.dy * this.dy;
+            var fighterRotation        = this.rotation;
+            var correctLandingRotation = Entity.getAngleFromTo(p, this);
+            var landingAngleError      = Math.abs(correctLandingRotation - fighterRotation);
 
-        // Limit fighterRotation to the open interval (-PI, PI)
-        // todo: limit all entity rotations to within (-PI, PI) vs (-2PI, 2PI)?
-        if (landingAngleError > Math.PI) {
-            if (fighterRotation > 0) {
-                fighterRotation -= PIPI;
-            } else {
-                fighterRotation += PIPI;
+            // Limit fighterRotation to the open interval (-PI, PI)
+            // todo: limit all entity rotations to within (-PI, PI) vs (-2PI, 2PI)?
+            if (landingAngleError > Math.PI) {
+                if (fighterRotation > 0) {
+                    fighterRotation -= PIPI;
+                } else {
+                    fighterRotation += PIPI;
+                }
+
+                landingAngleError = Math.abs(correctLandingRotation - fighterRotation);
             }
 
-            landingAngleError = Math.abs(correctLandingRotation - fighterRotation);
-        }
+            var isSoftLanding  = landingSpeed < ERROR_MARGIN_LANDING_SPEED2;
+            var isCorrectAngle = landingAngleError < ERROR_MARGIN_LANDING_ROTATION;
 
-        var isSoftLanding  = landingSpeed < ERROR_MARGIN_LANDING_SPEED2;
-        var isCorrectAngle = landingAngleError < ERROR_MARGIN_LANDING_ROTATION;
-
-        if (isCorrectAngle && isSoftLanding) {
-            Fighter.dockTo(this, p);
-        } else {
-            Fighter.crash(this);
+            if (isCorrectAngle && isSoftLanding) {
+                Fighter.dockTo(this, p);
+            } else {
+                Fighter.crash(this);
+            }
         }
     }
 }
@@ -20361,16 +20514,33 @@ function attractToPlanet(p) {
 function attractToStar(s) {
     var r2 = Entity.getDistSquared(this, s);
 
-    var dx = s.x - this.x;
-    var dy = s.y - this.y;
+    if (r2 < Entity.DIST_MIN_STAR_GRAVITY2) {
+        var dx = s.x - this.x;
+        var dy = s.y - this.y;
 
-    var forceFactor = this.MASS * s.MASS / Math.pow(r2, 1.5);
+        var forceFactor = this.MASS * s.MASS / Math.pow(r2, 1.5);
 
-    this.dx += dx * forceFactor;
-    this.dy += dy * forceFactor;
+        this.dx += dx * forceFactor;
+        this.dy += dy * forceFactor;
 
-    if (r2 < s.DIST_SURFACE2) {
-        Fighter.crash(this);
+        if (r2 < s.DIST_SURFACE2) {
+            Fighter.crash(this);
+        }
+    }
+}
+
+function attractFighterToStarOrPlanet(entity) {
+    if (entity.type === 'Star') {
+        attractToStar.call(this, entity);
+    } else if (entity.type === 'Planet') {
+        attractToPlanet.call(this, entity);
+    }
+}
+
+function updateFighter(fighter) {
+    if (fighter && !fighter.isDocked && fighter.hp > 0) {
+        EntityGrid.getNearest(fighter)
+            .forEach(attractFighterToStarOrPlanet.bind(fighter));
     }
 }
 
@@ -20378,29 +20548,14 @@ function update() {
     var fighters = EntityDB.getByType('Fighter');
 
     if (fighters) {
-        for (var i = 0; i < fighters.length; i++) {
-            var fighter = fighters[i];
-
-            if (fighter && !fighter.isDocked && fighter.hp > 0) {
-
-                var stars = EntityGrid.getNearest(fighter, 'Star', Entity.DIST_MIN_STAR_GRAVITY2);
-                if (stars.length > 0) {
-                    stars.forEach(attractToStar.bind(fighter));
-                }
-
-                var planets = EntityGrid.getNearest(fighter, 'Planet', Entity.DIST_MIN_PLANET_GRAVITY2);
-                if (planets.length > 0) {
-                    planets.forEach(attractToPlanet.bind(fighter));
-                }
-            }
-        }
+        fighters.forEach(updateFighter);
     }
 }
 
 module.exports = {
     update : update
 };
-},{"./entity":109,"./entity/fighter":110,"./entityDB":116,"./entitygrid":118}],136:[function(require,module,exports){
+},{"./entity":109,"./entity/fighter":110,"./entityDB":117,"./entitygrid":119}],137:[function(require,module,exports){
 var GamePad  = require('./gamepad');
 var Fighter  = require('./entity/fighter');
 var EntityDB = require('./entityDB');
@@ -20528,13 +20683,14 @@ module.exports = {
     process       : process,
     getFocalPoint : getFocalPoint
 };
-},{"./entity/fighter":110,"./entityDB":116,"./gamepad":120,"./radar":138}],137:[function(require,module,exports){
+},{"./entity/fighter":110,"./entityDB":117,"./gamepad":121,"./radar":139}],138:[function(require,module,exports){
 var Assets     = require('./assets');
 var Graphics   = require('./graphics');
 var GameField  = require('./gamefield');
 var EntityGrid = require('./entitygrid');
 var Scanner    = require('./scanner');
 var Gravity    = require('./gravity');
+var Team       = require('./system/team');
 
 var HumanInterface = require('./humanInterface');
 
@@ -20544,6 +20700,7 @@ var Star       = require('./entity/star');
 var Fighter    = require('./entity/fighter');
 var Probe      = require('./entity/probe');
 var Freighter  = require('./entity/freighter');
+var PBase      = require('./entity/pbase');
 
 // // // // Game loop // // // //
 
@@ -20584,9 +20741,11 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
 // // // // Game logic // // // //
 
 function update() {
+    Team.process();
     HumanInterface.process();
 
     Planet.process();
+    PBase.process();
     Star.process();
     Fighter.process();
     Freighter.process();
@@ -20599,7 +20758,7 @@ function update() {
     EntityGrid.commit();
 }
 
-},{"./assets":106,"./entity/fighter":110,"./entity/freighter":111,"./entity/planet":112,"./entity/probe":113,"./entity/projectile":114,"./entity/star":115,"./entitygrid":118,"./gamefield":119,"./graphics":134,"./gravity":135,"./humanInterface":136,"./scanner":140}],138:[function(require,module,exports){
+},{"./assets":106,"./entity/fighter":110,"./entity/freighter":111,"./entity/pbase":112,"./entity/planet":113,"./entity/probe":114,"./entity/projectile":115,"./entity/star":116,"./entitygrid":119,"./gamefield":120,"./graphics":135,"./gravity":136,"./humanInterface":137,"./scanner":141,"./system/team":143}],139:[function(require,module,exports){
 var PIXI = require('./custom-lib/pixi.min.js');
 
 var DIAL_TRACK_ALPHA = 0.08;
@@ -20741,7 +20900,7 @@ module.exports = {
         return radarEnabled;
     }
 };
-},{"./custom-lib/pixi.min.js":108}],139:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":108}],140:[function(require,module,exports){
 /**
  * Random functions
  */
@@ -20769,7 +20928,7 @@ module.exports = {
     float   : float
 };
 
-},{}],140:[function(require,module,exports){
+},{}],141:[function(require,module,exports){
 /**
  * Galactic scanner
  */
@@ -20799,9 +20958,10 @@ function init() {
     Graphics.addChildToHUD(scanner);
 }
 
-var markerStar    = [];
-var markerPlanet  = [];
-var markerFighter = [];
+var markerStar      = [];
+var markerPlanet    = [];
+var markerFighter   = [];
+var markerFreighter = [];
 
 var COORDINATE_TO_SCANNER_FACTOR = SIZE / GameField.MAX_COORDINATE;
 
@@ -20827,11 +20987,16 @@ function drawMarker(markers, color, size, s, i) {
     marker.y = s.y * COORDINATE_TO_SCANNER_FACTOR;
 }
 
-var COLOR_MARKER_STAR   = 0xffff00;
-var COLOR_MARKER_PLANET = 0x00ff00;
+var COLOR_MARKER_STAR      = 0xffff00;
+var COLOR_MARKER_PLANET    = 0x00ff00;
+var COLOR_MARKER_FREIGHTER = 0xaaaaaa;
 
 var lastUpdateTime = 0;
 var TIME_UPDATE    = 500;
+
+var FUNC_DRAW_PLANET_MARKER    = drawMarker.bind(null, markerPlanet, COLOR_MARKER_PLANET, 2);
+var FUNC_DRAW_STAR_MARKER      = drawMarker.bind(null, markerStar, COLOR_MARKER_STAR, 2);
+var FUNC_DRAW_FREIGHTER_MARKER = drawMarker.bind(null, markerFreighter, COLOR_MARKER_FREIGHTER, 1);
 
 function update() {
     var now = Date.now();
@@ -20839,12 +21004,12 @@ function update() {
     if (now - lastUpdateTime > TIME_UPDATE) {
         var stars = EntityDB.getByType('Star');
         if (stars) {
-            stars.forEach(drawMarker.bind(null, markerStar, COLOR_MARKER_STAR, 2));
+            stars.forEach(FUNC_DRAW_STAR_MARKER);
         }
 
         var planets = EntityDB.getByType('Planet');
         if (planets) {
-            planets.forEach(drawMarker.bind(null, markerPlanet, COLOR_MARKER_PLANET, 2));
+            planets.forEach(FUNC_DRAW_PLANET_MARKER);
         }
 
         var fighters = EntityDB.getByType('Fighter');
@@ -20852,6 +21017,11 @@ function update() {
             fighters.forEach(function (f, i) {
                 drawMarker(markerFighter, Entity.getTeamColor(f.team), 1, f, i);
             });
+        }
+
+        var freighters = EntityDB.getByType('Freighter');
+        if (freighters) {
+            freighters.forEach(FUNC_DRAW_FREIGHTER_MARKER);
         }
 
         lastUpdateTime = now;
@@ -20862,7 +21032,7 @@ module.exports = {
     init   : init,
     update : update
 };
-},{"./custom-lib/pixi.min.js":108,"./entity":109,"./entityDB":116,"./gamefield":119,"./graphics":134}],141:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":108,"./entity":109,"./entityDB":117,"./gamefield":120,"./graphics":135}],142:[function(require,module,exports){
 var PIXI   = require('./custom-lib/pixi.min.js');
 var Random = require('./random');
 
@@ -20972,4 +21142,46 @@ module.exports = {
     reinit  : reinit,
     process : process
 };
-},{"./custom-lib/pixi.min.js":108,"./random":139}]},{},[137]);
+},{"./custom-lib/pixi.min.js":108,"./random":140}],143:[function(require,module,exports){
+var Entity   = require('../entity');
+var EntityDB = require('../entityDB');
+
+function assignFreightersToPlanet(team, planet) {
+    var freighters = EntityDB.getByType('Freighter');
+    if (freighters) {
+        for (var i = freighters.length - 1; i >= 0; i--) {
+            var freighter = freighters[i];
+            if (freighter.team === team && !freighter.target) {
+                freighter.target = planet;
+                freighter.planet = undefined;
+            }
+        }
+    }
+}
+
+function filterPlanetByTeamAndNoBase(team, planet) {
+    return planet.team === team && !planet.base;
+}
+
+function processTeam(team) {
+    var planets = EntityDB.getByType('Planet');
+    planets
+        .filter(filterPlanetByTeamAndNoBase.bind(null, team))
+        .forEach(assignFreightersToPlanet.bind(null, team));
+}
+
+var STRATEGY_UPDATE_TIMEOUT    = 2000;
+var lastTeamStrategyUpdateTime = 0;
+
+function process() {
+    var now = Date.now();
+    if (now - lastTeamStrategyUpdateTime > STRATEGY_UPDATE_TIMEOUT) {
+        processTeam(Entity.TEAM.MAGENTA);
+        lastTeamStrategyUpdateTime = now;
+    }
+}
+
+module.exports = {
+    process : process
+};
+},{"../entity":109,"../entityDB":117}]},{},[138]);
