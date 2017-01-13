@@ -15,6 +15,9 @@ var Fighter    = require('./entity/fighter');
 var Probe      = require('./entity/probe');
 var Freighter  = require('./entity/freighter');
 var PBase      = require('./entity/pbase');
+var PColony    = require('./entity/pcolony');
+var PLab       = require('./entity/plab');
+var PComm      = require('./entity/pcomm');
 
 // // // // Game loop // // // //
 
@@ -60,6 +63,9 @@ function update() {
 
     Planet.process();
     PBase.process();
+    PColony.process();
+    PComm.process();
+    PLab.process();
     Star.process();
     Fighter.process();
     Freighter.process();

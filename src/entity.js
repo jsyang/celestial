@@ -2,18 +2,17 @@ var Graphics = require('./graphics');
 var Geometry = require('./geometry');
 var EntityDB = require('./entityDB');
 
-var Planet       = require('./geometry/Planet.json');
-var PBase        = require('./geometry/PBase.json');
-var PComm        = require('./geometry/PComm.json');
-var PColony      = require('./geometry/PColony.json');
-var PLab         = require('./geometry/PLab.json');
-var StarPort     = require('./geometry/StarPort.json');
-var Star         = require('./geometry/Star.json');
-var Shot         = require('./geometry/Shot.json');
-var Fighter      = require('./geometry/Fighter.json');
-var Freighter    = require('./geometry/Freighter.json');
-var Probe        = require('./geometry/Probe.json');
-var PointDisplay = require('./geometry/PointDisplay.json');
+var Planet    = require('./geometry/Planet.json');
+var PBase     = require('./geometry/PBase.json');
+var PComm     = require('./geometry/PComm.json');
+var PColony   = require('./geometry/PColony.json');
+var PLab      = require('./geometry/PLab.json');
+var StarPort  = require('./geometry/StarPort.json');
+var Star      = require('./geometry/Star.json');
+var Shot      = require('./geometry/Shot.json');
+var Fighter   = require('./geometry/Fighter.json');
+var Freighter = require('./geometry/Freighter.json');
+var Probe     = require('./geometry/Probe.json');
 
 /**
  * Set child DisplayObject visibility.
@@ -60,10 +59,6 @@ function renderHit() {
  * multiple hit polygons and segments / conditionally
  * rendered parts.
  */
-
-function createPointDisplay(options) {
-    return Geometry(PointDisplay, options);
-}
 
 function setPlanetFlag(team) {
     var flag = this.graphics.children[0];
@@ -203,6 +198,16 @@ function createFreighter(options) {
             turret2.graphics
         );
 
+    freighter.loadSupply = function loadSupply() {
+        setVisible.call(this, 2, true);
+        setVisible.call(this, 3, true);
+    };
+
+    freighter.unloadSupply = function unloadSupply() {
+        setVisible.call(this, 2, false);
+        setVisible.call(this, 3, false);
+    };
+
     freighter.flameOn   = setVisible.bind(freighter, 0, true);
     freighter.flameOff  = setVisible.bind(freighter, 0, false);
     freighter.renderHit = renderHit;
@@ -213,8 +218,26 @@ function createFreighter(options) {
 }
 
 function createPComm(options) {
-    // todo: collisionPath should be a convex polygon
-    return Geometry(PComm, options);
+    var pcomm = Geometry(PComm, options);
+
+    assignTeamColor(pcomm, options.team);
+
+    return pcomm;
+}
+
+function createPColony(options) {
+    var pcolony = Geometry(PColony, options);
+
+    assignTeamColor(pcolony, options.team);
+
+    return pcolony;
+}
+function createPLab(options) {
+    var plab = Geometry(PLab, options);
+
+    assignTeamColor(plab, options.team);
+
+    return plab;
 }
 
 /**
@@ -246,8 +269,11 @@ function create(type, options) {
         entity.star          = options.star;
         entity.orbitRotation = options.orbitRotation || 0;
 
-        // Reference to resident PBase entity
-        entity.base = options.base;
+        // Reference to resident entities
+        entity.pbase   = options.pbase;
+        entity.plab    = options.plab;
+        entity.pcolony = options.pcolony;
+        entity.pcomm   = options.pcomm;
 
     } else if (type === 'ShotCannonHeavy') {
         entity = Geometry(Shot.cannon_heavy, options);
@@ -264,13 +290,37 @@ function create(type, options) {
         entity.hp     = options.hp || 50;
         entity.damage = 1;
     } else if (type === 'PColony') {
-        entity = Geometry(PColony, options);
+        entity = createPColony(options);
+
+        entity.hp     = options.hp || 20;
+        entity.maxHp  = options.maxHp || 20;
+        entity.planet = options.planet;
+
     } else if (type === 'PLab') {
-        entity = Geometry(PLab, options);
+        entity = createPLab(options);
+
+        entity.hp     = options.hp || 20;
+        entity.maxHp  = options.maxHp || 20;
+        entity.planet = options.planet;
     } else if (type === 'PComm') {
         entity = createPComm(options);
-    } else if (type === 'PointDisplay') {
-        entity = createPointDisplay(options);
+
+        entity.hp     = options.hp || 20;
+        entity.maxHp  = options.maxHp || 20;
+        entity.planet = options.planet;
+
+    } else if (type === 'PBase') {
+        entity        = createPBase(options);
+        entity.hp     = options.hp || 20;
+        entity.maxHp  = options.maxHp || 20;
+        entity.planet = options.planet;
+
+        entity.repairTime         = options.repairTime || 0;
+        entity.supplyTimeRaw      = options.supplyTimeRaw || 0;
+        entity.supplyTimeFinished = options.supplyTimeFinished || 0;
+        entity.materialsRaw       = options.materialsRaw || 0;
+        entity.materialsFinished  = options.materialsFinished || 100;
+
     } else if (type === 'Fighter') {
         entity = createFighter(options);
 
@@ -293,15 +343,16 @@ function create(type, options) {
         entity.rotation    = options.rotation || 0;
     } else if (type === 'StarPort') {
         entity = createStarPort(options);
-    } else if (type === 'PBase') {
-        entity        = createPBase(options);
-        entity.hp       = 20;
-        entity.planet = options.planet;
-
     } else if (type === 'Freighter') {
-        entity          = createFreighter(options);
-        entity.hitTime  = -1;
-        entity.hp       = 10;
+        entity         = createFreighter(options);
+        entity.hitTime = -1;
+        entity.hp      = options.hp || 10;
+        entity.maxHp   = options.maxHp || 10;
+
+        entity.target            = options.target;
+        entity.planet            = options.planet;
+        entity.materialsFinished = options.materialsFinished || 500;
+
         entity.dx       = options.dx || 0;
         entity.dy       = options.dy || 0;
         entity.rotation = options.rotation || 0;

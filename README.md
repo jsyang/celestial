@@ -4,8 +4,7 @@ Celestial combat. Conquer the universe sector by sector.
 
 ## todo
 
-- freighters move to colonize planets
-- production ability
+- implement rest of the economic model
 - planet base defences
 - planet automated build tree
 

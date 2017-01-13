@@ -14,14 +14,14 @@ function assignFreightersToPlanet(team, planet) {
     }
 }
 
-function filterPlanetByTeamAndNoBase(team, planet) {
-    return planet.team === team && !planet.base;
+function filterPlanetByTeamAndNoPBase(team, planet) {
+    return planet.team === team && !planet.pbase;
 }
 
 function processTeam(team) {
     var planets = EntityDB.getByType('Planet');
     planets
-        .filter(filterPlanetByTeamAndNoBase.bind(null, team))
+        .filter(filterPlanetByTeamAndNoPBase.bind(null, team))
         .forEach(assignFreightersToPlanet.bind(null, team));
 }
 

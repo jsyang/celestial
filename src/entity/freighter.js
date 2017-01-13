@@ -72,7 +72,7 @@ function createPBase(freighter) {
 
     Audio.play('nav');
 
-    planet.base = Entity.create('PBase', {
+    planet.pbase = Entity.create('PBase', {
         x      : planet.x,
         y      : planet.y,
         planet : planet,
@@ -82,16 +82,45 @@ function createPBase(freighter) {
     EntityDB.remove(freighter);
 }
 
+function createPColony(freighter) {
+    var planet = freighter.planet;
+
+    Audio.play('nav');
+
+    planet.pcolony = Entity.create('PColony', {
+        x      : planet.x,
+        y      : planet.y,
+        planet : planet,
+        team   : freighter.team
+    });
+
+    EntityDB.remove(freighter);
+}
+
+function dumpSupply(freighter) {
+    freighter.planet.materialsFinished = freighter.materialsFinished;
+    freighter.materialsFinished        = 0;
+    freighter.unloadSupply();
+}
+
 /** How long it takes before cargo can be used after reaching orbit **/
 var TIME_OFFLOAD_SUPPLY = 200;
 
 function supply(freighter) {
-    if (freighter.supplyTime === undefined) {
-        freighter.supplyTime = TIME_OFFLOAD_SUPPLY;
-    } else if (freighter.supplyTime > 0) {
-        freighter.supplyTime--;
-    } else if (freighter.supplyTime === 0) {
-        createPBase(freighter);
+    if (freighter.materialsFinished > 0) {
+        if (freighter.supplyTime === undefined) {
+            freighter.supplyTime = TIME_OFFLOAD_SUPPLY;
+        } else if (freighter.supplyTime > 0) {
+            freighter.supplyTime--;
+        } else if (freighter.supplyTime === 0) {
+            if (!freighter.planet.pbase) {
+                createPBase(freighter);
+            } else if (!freighter.planet.pcolony) {
+                createPColony(freighter);
+            } else {
+                dumpSupply(freighter);
+            }
+        }
     }
 }
 
@@ -105,9 +134,8 @@ function processFreighter(freighter) {
             } else if (freighter.planet) {
                 orbit(freighter);
 
-                if (!freighter.planet.base) {
-                    supply(freighter);
-                }
+                supply(freighter);
+
             }
         } else {
             explode(freighter);
