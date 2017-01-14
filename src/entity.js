@@ -2,13 +2,18 @@ var Graphics = require('./graphics');
 var Geometry = require('./geometry');
 var EntityDB = require('./entityDB');
 
+var Star      = require('./geometry/Star.json');
 var Planet    = require('./geometry/Planet.json');
+
 var PBase     = require('./geometry/PBase.json');
 var PComm     = require('./geometry/PComm.json');
 var PColony   = require('./geometry/PColony.json');
 var PLab      = require('./geometry/PLab.json');
-var StarPort  = require('./geometry/StarPort.json');
-var Star      = require('./geometry/Star.json');
+var SpacePort = require('./geometry/SpacePort.json');
+var SpaceDock = require('./geometry/SpaceDock.json');
+var SensorArray = require('./geometry/SensorArray.json');
+
+
 var Shot      = require('./geometry/Shot.json');
 var Fighter   = require('./geometry/Fighter.json');
 var Freighter = require('./geometry/Freighter.json');
@@ -123,22 +128,22 @@ function createProbe(options) {
     return probe;
 }
 
-function createStarPort(options) {
-    var starport = Geometry(StarPort.body, options);
-    var flame1   = Geometry(StarPort.flame1);
-    var flame2   = Geometry(StarPort.flame2);
-    var flame3   = Geometry(StarPort.flame3);
-    var flame4   = Geometry(StarPort.flame4);
+function createSpacePort(options) {
+    var spacePort = Geometry(SpacePort.body, options);
+    var flame1    = Geometry(SpacePort.flame1);
+    var flame2    = Geometry(SpacePort.flame2);
+    var flame3    = Geometry(SpacePort.flame3);
+    var flame4    = Geometry(SpacePort.flame4);
 
-    var shipyard = Geometry(StarPort.shipyard);
-    var sensors  = Geometry(StarPort.sensors);
+    var shipyard = Geometry(SpacePort.shipyard);
+    var sensors  = Geometry(SpacePort.sensors);
 
-    var turret1 = Geometry(StarPort.turret1);
-    var turret2 = Geometry(StarPort.turret2);
-    var turret3 = Geometry(StarPort.turret3);
-    var turret4 = Geometry(StarPort.turret4);
+    var turret1 = Geometry(SpacePort.turret1);
+    var turret2 = Geometry(SpacePort.turret2);
+    var turret3 = Geometry(SpacePort.turret3);
+    var turret4 = Geometry(SpacePort.turret4);
 
-    starport.graphics
+    spacePort.graphics
         .addChild(
             flame1.graphics,
             flame2.graphics,
@@ -154,7 +159,7 @@ function createStarPort(options) {
             shipyard.graphics
         );
 
-    return starport;
+    return spacePort;
 }
 
 function createPBase(options) {
@@ -324,17 +329,23 @@ function create(type, options) {
         entity.repairTime = options.repairTime || 0;
 
     } else if (type === 'PBase') {
-        entity        = createPBase(options);
-        entity.hp     = options.hp || 20;
-        entity.maxHp  = options.maxHp || 20;
+        entity = createPBase(options);
+
+        entity.hp    = options.hp || 20;
+        entity.maxHp = options.maxHp || 20;
+
         entity.planet = options.planet;
 
-        entity.constructionTime   = options.constructionTime || 0;
-        entity.repairTime         = options.repairTime || 0;
-        entity.supplyTimeRaw      = options.supplyTimeRaw || 0;
-        entity.supplyTimeFinished = options.supplyTimeFinished || 0;
-        entity.materialsRaw       = options.materialsRaw || 0;
-        entity.materialsFinished  = options.materialsFinished || 0;
+        entity.canExplode      = true;
+        entity.canHarvest      = true;
+        entity.canRepair       = true;
+        entity.canRefine       = true;
+        entity.canConstruct    = true;
+        entity.canOccupyPlanet = true;
+
+        entity.canStoreMaterial  = true;
+        entity.materialsRaw      = options.materialsRaw || 0;
+        entity.materialsFinished = options.materialsFinished || 0;
 
     } else if (type === 'Fighter') {
         entity = createFighter(options);
@@ -356,8 +367,30 @@ function create(type, options) {
         entity.hitTime     = -1;
         entity.patrolIndex = 0;
         entity.rotation    = options.rotation || 0;
-    } else if (type === 'StarPort') {
-        entity = createStarPort(options);
+    } else if (type === 'SpacePort') {
+        entity = createSpacePort(options);
+
+        entity.hp         = options.hp || 20;
+        entity.maxHp      = options.maxHp || 20;
+        entity.planet     = options.planet;
+        entity.repairTime = options.repairTime || 0;
+
+    } else if (type === 'SpaceDock') {
+        entity = createSpaceDock(options);
+
+        entity.hp         = options.hp || 20;
+        entity.maxHp      = options.maxHp || 20;
+        entity.planet     = options.planet;
+        entity.repairTime = options.repairTime || 0;
+
+    } else if (type === 'SensorArray') {
+        entity = createSensorArray(options);
+
+        entity.hp         = options.hp || 20;
+        entity.maxHp      = options.maxHp || 20;
+        entity.planet     = options.planet;
+        entity.repairTime = options.repairTime || 0;
+
     } else if (type === 'Freighter') {
         entity         = createFreighter(options);
         entity.hitTime = -1;
@@ -403,11 +436,18 @@ function getTeamColor(team) {
     return COLOR_TEAM[team];
 }
 
+function update() {
+    // todo: update all entities here?
+}
+
 module.exports = {
-    create                   : create,
-    getDistSquared           : getDistSquared,
-    getAngleFromTo           : getAngleFromTo,
-    getTeamColor             : getTeamColor,
+    create : create,
+    update : update,
+
+    getDistSquared : getDistSquared,
+    getAngleFromTo : getAngleFromTo,
+    getTeamColor   : getTeamColor,
+
     TEAM                     : TEAM,
     DIST_MIN_STAR_GRAVITY2   : DIST_MIN_STAR_GRAVITY2,
     DIST_MIN_PLANET_GRAVITY2 : DIST_MIN_PLANET_GRAVITY2,

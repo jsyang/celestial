@@ -18294,6 +18294,285 @@ module.exports = {
     play   : play
 };
 },{}],108:[function(require,module,exports){
+/**
+ * All component flags start with the prefix `can`:
+ * e.g. canStoreMaterials, canSupply, canShoot, canMove
+ */
+
+var EntityDB   = require('./entityDB');
+var EntityGrid = require('./entitygrid');
+
+var HarvestComponent       = require('./component/harvest');
+var StoreMaterialComponent = require('./component/storeMaterials');
+var RepairComponent        = require('./component/repair');
+var RefineComponent        = require('./component/refine');
+var ConstructComponent     = require('./component/construct');
+var ExplodeComponent       = require('./component/explode');
+var OccupyPlanetComponent  = require('./component/occupyPlanet');
+
+/**
+ * @param entity
+ * @param defaults
+ */
+function assume(entity, defaults) {
+    if (defaults) {
+        for (var k in defaults) {
+            if (defaults.hasOwnProperty(k) && typeof entity[k] === 'undefined') {
+                entity[k] = defaults[k];
+            }
+        }
+    }
+}
+
+/**
+ * Set default values for components if the entity has them
+ * @param entity
+ */
+function init(entity) {
+    entity.canStoreMaterial && assume(entity, StoreMaterialComponent.DEFAULTS);
+    entity.canHarvest && assume(entity, HarvestComponent.DEFAULTS);
+    entity.canRepair && assume(entity, RepairComponent.DEFAULTS);
+    entity.canRefine && assume(entity, RefineComponent.DEFAULTS);
+    entity.canConstruct && assume(entity, ConstructComponent.DEFAULTS);
+    entity.canExplode && assume(entity, ExplodeComponent.DEFAULTS);
+    entity.canOccupyPlanet && assume(entity, OccupyPlanetComponent.DEFAULTS);
+
+    entity.isInitialized = true;
+}
+
+/**
+ * Apply component behaviors
+ * @param entity
+ */
+function process(entity) {
+    if (!entity.isInitialized) {
+        init(entity);
+    }
+
+    if (entity.hp > 0) {
+        entity.canOccupyPlanet && OccupyPlanetComponent.process(entity);
+
+        entity.canStoreMaterial && StoreMaterialComponent.process(entity);
+        entity.canHarvest && HarvestComponent.process(entity);
+        entity.canRepair && RepairComponent.process(entity);
+        entity.canRefine && RefineComponent.process(entity);
+        entity.canConstruct && ConstructComponent.process(entity);
+
+        EntityGrid.add(entity);
+    } else {
+
+        entity.canExplode && ExplodeComponent.process(entity);
+        EntityDB.remove(entity);
+    }
+
+}
+
+module.exports = {
+    process : process
+};
+},{"./component/construct":109,"./component/explode":110,"./component/harvest":111,"./component/occupyPlanet":112,"./component/refine":113,"./component/repair":114,"./component/storeMaterials":115,"./entityDB":130,"./entitygrid":132}],109:[function(require,module,exports){
+var Entity = require('../entity');
+
+var DEFAULTS = {
+    CONSTRUCTION_TIME : 200
+};
+
+// "Build tree"
+var SEQUENCE_BUILD_PRIORITY = [
+    { type : 'PLab', cost : 100 },
+    { type : 'PComm', cost : 200 }
+];
+
+function build(construction) {
+    if (this.constructionTime > 0) {
+        this.constructionTime--;
+    } else {
+        var planetEntityType = construction.type.toLowerCase();
+        if (!this.planet[planetEntityType] && this.materialsFinished >= construction.cost) {
+            this.planet[planetEntityType] = Entity.create(construction.type, {
+                planet : this.planet,
+                team   : this.team
+            });
+
+            this.materialsFinished -= construction.cost;
+            this.constructionTime = this.CONSTRUCTION_TIME;
+        }
+    }
+}
+
+/**
+ *
+ * @param {object} entity
+ */
+function process(entity) {
+    if (entity.materialsFinished > 0) {
+        SEQUENCE_BUILD_PRIORITY.forEach(build.bind(entity));
+    }
+}
+
+module.exports = {
+    DEFAULTS : DEFAULTS,
+    process  : process
+};
+},{"../entity":117}],110:[function(require,module,exports){
+var Audio      = require('../audio');
+var Projectile = require('../entity/projectile');
+
+var DEFAULTS = {
+    EXPLOSION_FRAGMENTS : 6,
+    EXPLOSION_SOUND     : 'collide'
+};
+
+/**
+ * Explodes when dead
+ * @param {object} entity
+ */
+function process(entity) {
+    Audio.play(entity.EXPLOSION_SOUND);
+    Projectile.explode(entity, entity.EXPLOSION_FRAGMENTS);
+}
+
+module.exports = {
+    DEFAULTS : DEFAULTS,
+    process  : process
+};
+},{"../audio":107,"../entity/projectile":126}],111:[function(require,module,exports){
+var DEFAULTS = {
+    HARVEST_RATE_RAW      : 35,
+    HARVEST_RATE_FINISHED : 25,
+    HARVEST_TIME          : 10,
+    harvestTime           : 0
+};
+
+/**
+ * Harvest materials present on planet to put in its own stores
+ * @param {object} entity
+ */
+function process(entity) {
+    if (entity.harvestTime > 0) {
+        entity.harvestTime--;
+    } else {
+        entity.harvestTime = entity.HARVEST_TIME;
+
+        if (entity.planet.materialsRaw > 0 && entity.materialsRaw < entity.MAX_RAW_MATERIALS) {
+
+            if (entity.MAX_RAW_MATERIALS - entity.materialsRaw < entity.HARVEST_RATE_RAW) {
+                entity.planet.materialsRaw = 0;
+                entity.materialsRaw += entity.MAX_RAW_MATERIALS - entity.materialsRaw;
+            } else {
+                entity.planet.materialsRaw -= entity.HARVEST_RATE_RAW;
+                entity.materialsRaw += entity.HARVEST_RATE_RAW;
+            }
+        }
+
+        if (entity.planet.materialsFinished > 0 && entity.materialsFinished < entity.MAX_FINISHED_MATERIALS) {
+
+            if (entity.MAX_FINISHED_MATERIALS - entity.materialsFinished < entity.HARVEST_RATE_FINISHED) {
+                entity.planet.materialsFinished = 0;
+                entity.materialsFinished += entity.MAX_FINISHED_MATERIALS - entity.materialsFinished;
+            } else {
+                entity.planet.materialsFinished -= entity.HARVEST_RATE_FINISHED;
+                entity.materialsFinished += entity.HARVEST_RATE_FINISHED;
+            }
+        }
+    }
+}
+
+module.exports = {
+    DEFAULTS : DEFAULTS,
+    process  : process
+};
+},{}],112:[function(require,module,exports){
+/**
+ * Takes on occupied planet's position
+ * @param entity
+ */
+function process(entity) {
+    entity.x = entity.planet.x;
+    entity.y = entity.planet.y;
+}
+
+module.exports = {
+    process  : process
+};
+},{}],113:[function(require,module,exports){
+var DEFAULTS = {
+    REFINE_RATE_RAW_TO_FINISHED : 25
+};
+
+/**
+ * Refines finished materials from raw materials
+ * @param entity
+ */
+function process(entity) {
+    if (entity.materialsFinished < entity.MAX_FINISHED_MATERIALS) {
+        if (entity.materialsRaw > 0) {
+            entity.materialsFinished += entity.REFINE_RATE_RAW_TO_FINISHED;
+            if (entity.materialsFinished > entity.MAX_FINISHED_MATERIALS) {
+                entity.planet.materialsFinished += entity.materialsFinished - entity.MAX_FINISHED_MATERIALS;
+                entity.materialsFinished = entity.MAX_FINISHED_MATERIALS;
+            }
+            entity.materialsRaw--;
+        }
+    } else {
+        if (entity.materialsRaw > 0) {
+            entity.planet.materialsFinished += entity.REFINE_RATE_RAW_TO_FINISHED;
+            entity.materialsRaw--;
+        }
+    }
+}
+
+module.exports = {
+    DEFAULTS : DEFAULTS,
+    process  : process
+};
+},{}],114:[function(require,module,exports){
+var DEFAULTS = {
+    REPAIR_COST_FINISHED : 25,
+    REPAIR_TIME          : 30,
+    repairTime           : 0
+};
+
+/**
+ * Repairs itself if damaged
+ * @param entity
+ */
+function process(entity) {
+    var needsRepair =
+            entity.hp < entity.maxHp &&
+            entity.materialsFinished > Entity.REPAIR_COST_FINISHED &&
+            entity.materialsFinished > 0;
+
+    if (needsRepair) {
+        if (entity.repairTime > 0) {
+            entity.repairTime--;
+        } else {
+            entity.hp++;
+            entity.materialsFinished -= Entity.REPAIR_COST_FINISHED;
+            entity.repairTime = Entity.REPAIR_TIME;
+        }
+    }
+}
+
+module.exports = {
+    DEFAULTS : DEFAULTS,
+    process  : process
+};
+},{}],115:[function(require,module,exports){
+var DEFAULTS = {
+    MAX_RAW_MATERIALS      : 3000,
+    MAX_FINISHED_MATERIALS : 2000,
+    materialsRaw           : 0,
+    materialsFinished      : 0
+};
+
+function process() {}
+
+module.exports = {
+    DEFAULTS : DEFAULTS,
+    process  : process
+};
+},{}],116:[function(require,module,exports){
 (function (global){
 /*!
  * pixi.js - v4.3.0
@@ -18317,18 +18596,23 @@ module.exports = {
 }],173:[function(t,e,r){"use strict";function n(t){return t&&t.__esModule?t:{default:t}}r.__esModule=!0;var i=t("./webgl/WebGLPrepare");Object.defineProperty(r,"webgl",{enumerable:!0,get:function(){return n(i).default}});var o=t("./canvas/CanvasPrepare");Object.defineProperty(r,"canvas",{enumerable:!0,get:function(){return n(o).default}});var s=t("./BasePrepare");Object.defineProperty(r,"BasePrepare",{enumerable:!0,get:function(){return n(s).default}});var a=t("./limiters/CountLimiter");Object.defineProperty(r,"CountLimiter",{enumerable:!0,get:function(){return n(a).default}});var u=t("./limiters/TimeLimiter");Object.defineProperty(r,"TimeLimiter",{enumerable:!0,get:function(){return n(u).default}})},{"./BasePrepare":171,"./canvas/CanvasPrepare":172,"./limiters/CountLimiter":174,"./limiters/TimeLimiter":175,"./webgl/WebGLPrepare":176}],174:[function(t,e,r){"use strict";function n(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}r.__esModule=!0;var i=function(){function t(e){n(this,t),this.maxItemsPerFrame=e,this.itemsLeft=0}return t.prototype.beginFrame=function(){this.itemsLeft=this.maxItemsPerFrame},t.prototype.allowedToUpload=function(){return this.itemsLeft-- >0},t}();r.default=i},{}],175:[function(t,e,r){"use strict";function n(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}r.__esModule=!0;var i=function(){function t(e){n(this,t),this.maxMilliseconds=e,this.frameStart=0}return t.prototype.beginFrame=function(){this.frameStart=Date.now()},t.prototype.allowedToUpload=function(){return Date.now()-this.frameStart<this.maxMilliseconds},t}();r.default=i},{}],176:[function(t,e,r){"use strict";function n(t){return t&&t.__esModule?t:{default:t}}function i(t){if(t&&t.__esModule)return t;var e={};if(null!=t)for(var r in t)Object.prototype.hasOwnProperty.call(t,r)&&(e[r]=t[r]);return e.default=t,e}function o(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function s(t,e){if(!t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!e||"object"!=typeof e&&"function"!=typeof e?t:e}function a(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function, not "+typeof e);t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,enumerable:!1,writable:!0,configurable:!0}}),e&&(Object.setPrototypeOf?Object.setPrototypeOf(t,e):t.__proto__=e)}function u(t,e){return e instanceof f.BaseTexture&&(e._glTextures[t.CONTEXT_UID]||t.textureManager.updateTexture(e),!0)}function h(t,e){return e instanceof f.Graphics&&((e.dirty||e.clearDirty||!e._webGL[t.plugins.graphics.CONTEXT_UID])&&t.plugins.graphics.updateGraphics(e),!0)}function l(t,e){if(t instanceof f.BaseTexture)return e.indexOf(t)===-1&&e.push(t),!0;if(t._texture&&t._texture instanceof f.Texture){var r=t._texture.baseTexture;return e.indexOf(r)===-1&&e.push(r),!0}return!1}function c(t,e){return t instanceof f.Graphics&&(e.push(t),!0)}r.__esModule=!0;var d=t("../../core"),f=i(d),p=t("../BasePrepare"),v=n(p),y=function(t){function e(r){o(this,e);var n=s(this,t.call(this,r));return n.uploadHookHelper=n.renderer,n.register(l,u).register(c,h),n}return a(e,t),e}(v.default);r.default=y,f.WebGLRenderer.registerPlugin("prepare",y)},{"../../core":61,"../BasePrepare":171}],177:[function(t,e,r){(function(e){"use strict";function n(t){if(t&&t.__esModule)return t;var e={};if(null!=t)for(var r in t)Object.prototype.hasOwnProperty.call(t,r)&&(e[r]=t[r]);return e.default=t,e}r.__esModule=!0,r.loader=r.prepare=r.particles=r.mesh=r.loaders=r.interaction=r.filters=r.extras=r.extract=r.accessibility=void 0;var i=t("./deprecation");Object.keys(i).forEach(function(t){"default"!==t&&"__esModule"!==t&&Object.defineProperty(r,t,{enumerable:!0,get:function(){return i[t]}})});var o=t("./core");Object.keys(o).forEach(function(t){"default"!==t&&"__esModule"!==t&&Object.defineProperty(r,t,{enumerable:!0,get:function(){return o[t]}})}),t("./polyfill");var s=t("./accessibility"),a=n(s),u=t("./extract"),h=n(u),l=t("./extras"),c=n(l),d=t("./filters"),f=n(d),p=t("./interaction"),v=n(p),y=t("./loaders"),g=n(y),m=t("./mesh"),_=n(m),b=t("./particles"),x=n(b),T=t("./prepare"),w=n(T);r.accessibility=a,r.extract=h,r.extras=c,r.filters=f,r.interaction=v,r.loaders=g,r.mesh=_,r.particles=x,r.prepare=w;var E=g&&g.Loader?new g.Loader:null;r.loader=E,e.PIXI=r}).call(this,"undefined"!=typeof global?global:"undefined"!=typeof self?self:"undefined"!=typeof window?window:{})},{"./accessibility":40,"./core":61,"./deprecation":120,"./extract":122,"./extras":131,"./filters":142,"./interaction":148,"./loaders":151,"./mesh":160,"./particles":163,"./polyfill":169,"./prepare":173}]},{},[177])(177)});
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],109:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 var Graphics = require('./graphics');
 var Geometry = require('./geometry');
 var EntityDB = require('./entityDB');
 
+var Star      = require('./geometry/Star.json');
 var Planet    = require('./geometry/Planet.json');
+
 var PBase     = require('./geometry/PBase.json');
 var PComm     = require('./geometry/PComm.json');
 var PColony   = require('./geometry/PColony.json');
 var PLab      = require('./geometry/PLab.json');
-var StarPort  = require('./geometry/StarPort.json');
-var Star      = require('./geometry/Star.json');
+var SpacePort = require('./geometry/SpacePort.json');
+var SpaceDock = require('./geometry/SpaceDock.json');
+var SensorArray = require('./geometry/SensorArray.json');
+
+
 var Shot      = require('./geometry/Shot.json');
 var Fighter   = require('./geometry/Fighter.json');
 var Freighter = require('./geometry/Freighter.json');
@@ -18443,22 +18727,22 @@ function createProbe(options) {
     return probe;
 }
 
-function createStarPort(options) {
-    var starport = Geometry(StarPort.body, options);
-    var flame1   = Geometry(StarPort.flame1);
-    var flame2   = Geometry(StarPort.flame2);
-    var flame3   = Geometry(StarPort.flame3);
-    var flame4   = Geometry(StarPort.flame4);
+function createSpacePort(options) {
+    var spacePort = Geometry(SpacePort.body, options);
+    var flame1    = Geometry(SpacePort.flame1);
+    var flame2    = Geometry(SpacePort.flame2);
+    var flame3    = Geometry(SpacePort.flame3);
+    var flame4    = Geometry(SpacePort.flame4);
 
-    var shipyard = Geometry(StarPort.shipyard);
-    var sensors  = Geometry(StarPort.sensors);
+    var shipyard = Geometry(SpacePort.shipyard);
+    var sensors  = Geometry(SpacePort.sensors);
 
-    var turret1 = Geometry(StarPort.turret1);
-    var turret2 = Geometry(StarPort.turret2);
-    var turret3 = Geometry(StarPort.turret3);
-    var turret4 = Geometry(StarPort.turret4);
+    var turret1 = Geometry(SpacePort.turret1);
+    var turret2 = Geometry(SpacePort.turret2);
+    var turret3 = Geometry(SpacePort.turret3);
+    var turret4 = Geometry(SpacePort.turret4);
 
-    starport.graphics
+    spacePort.graphics
         .addChild(
             flame1.graphics,
             flame2.graphics,
@@ -18474,7 +18758,7 @@ function createStarPort(options) {
             shipyard.graphics
         );
 
-    return starport;
+    return spacePort;
 }
 
 function createPBase(options) {
@@ -18644,17 +18928,23 @@ function create(type, options) {
         entity.repairTime = options.repairTime || 0;
 
     } else if (type === 'PBase') {
-        entity        = createPBase(options);
-        entity.hp     = options.hp || 20;
-        entity.maxHp  = options.maxHp || 20;
+        entity = createPBase(options);
+
+        entity.hp    = options.hp || 20;
+        entity.maxHp = options.maxHp || 20;
+
         entity.planet = options.planet;
 
-        entity.constructionTime   = options.constructionTime || 0;
-        entity.repairTime         = options.repairTime || 0;
-        entity.supplyTimeRaw      = options.supplyTimeRaw || 0;
-        entity.supplyTimeFinished = options.supplyTimeFinished || 0;
-        entity.materialsRaw       = options.materialsRaw || 0;
-        entity.materialsFinished  = options.materialsFinished || 0;
+        entity.canExplode      = true;
+        entity.canHarvest      = true;
+        entity.canRepair       = true;
+        entity.canRefine       = true;
+        entity.canConstruct    = true;
+        entity.canOccupyPlanet = true;
+
+        entity.canStoreMaterial  = true;
+        entity.materialsRaw      = options.materialsRaw || 0;
+        entity.materialsFinished = options.materialsFinished || 0;
 
     } else if (type === 'Fighter') {
         entity = createFighter(options);
@@ -18676,8 +18966,30 @@ function create(type, options) {
         entity.hitTime     = -1;
         entity.patrolIndex = 0;
         entity.rotation    = options.rotation || 0;
-    } else if (type === 'StarPort') {
-        entity = createStarPort(options);
+    } else if (type === 'SpacePort') {
+        entity = createSpacePort(options);
+
+        entity.hp         = options.hp || 20;
+        entity.maxHp      = options.maxHp || 20;
+        entity.planet     = options.planet;
+        entity.repairTime = options.repairTime || 0;
+
+    } else if (type === 'SpaceDock') {
+        entity = createSpaceDock(options);
+
+        entity.hp         = options.hp || 20;
+        entity.maxHp      = options.maxHp || 20;
+        entity.planet     = options.planet;
+        entity.repairTime = options.repairTime || 0;
+
+    } else if (type === 'SensorArray') {
+        entity = createSensorArray(options);
+
+        entity.hp         = options.hp || 20;
+        entity.maxHp      = options.maxHp || 20;
+        entity.planet     = options.planet;
+        entity.repairTime = options.repairTime || 0;
+
     } else if (type === 'Freighter') {
         entity         = createFreighter(options);
         entity.hitTime = -1;
@@ -18723,17 +19035,24 @@ function getTeamColor(team) {
     return COLOR_TEAM[team];
 }
 
+function update() {
+    // todo: update all entities here?
+}
+
 module.exports = {
-    create                   : create,
-    getDistSquared           : getDistSquared,
-    getAngleFromTo           : getAngleFromTo,
-    getTeamColor             : getTeamColor,
+    create : create,
+    update : update,
+
+    getDistSquared : getDistSquared,
+    getAngleFromTo : getAngleFromTo,
+    getTeamColor   : getTeamColor,
+
     TEAM                     : TEAM,
     DIST_MIN_STAR_GRAVITY2   : DIST_MIN_STAR_GRAVITY2,
     DIST_MIN_PLANET_GRAVITY2 : DIST_MIN_PLANET_GRAVITY2,
     DIST_PLANET_ORBIT2       : DIST_PLANET_ORBIT2
 };
-},{"./entityDB":120,"./geometry":125,"./geometry/Fighter.json":126,"./geometry/Freighter.json":127,"./geometry/PBase.json":128,"./geometry/PColony.json":129,"./geometry/PComm.json":130,"./geometry/PLab.json":131,"./geometry/Planet.json":132,"./geometry/Probe.json":133,"./geometry/Shot.json":134,"./geometry/Star.json":135,"./geometry/StarPort.json":136,"./graphics":137}],110:[function(require,module,exports){
+},{"./entityDB":130,"./geometry":135,"./geometry/Fighter.json":136,"./geometry/Freighter.json":137,"./geometry/PBase.json":138,"./geometry/PColony.json":139,"./geometry/PComm.json":140,"./geometry/PLab.json":141,"./geometry/Planet.json":142,"./geometry/Probe.json":143,"./geometry/SensorArray.json":144,"./geometry/Shot.json":145,"./geometry/SpaceDock.json":146,"./geometry/SpacePort.json":147,"./geometry/Star.json":148,"./graphics":149}],118:[function(require,module,exports){
 var Audio      = require('../audio');
 var Entity     = require('../entity');
 var EntityDB   = require('../entityDB');
@@ -18891,7 +19210,7 @@ module.exports = {
     isDocked   : isDocked,
     crash      : crash
 };
-},{"../audio":107,"../entity":109,"../entity/projectile":118,"../entityDB":120,"../entityGrid":121,"../radar":141}],111:[function(require,module,exports){
+},{"../audio":107,"../entity":117,"../entity/projectile":126,"../entityDB":130,"../entityGrid":131,"../radar":153}],119:[function(require,module,exports){
 var Audio      = require('../audio');
 var EntityDB   = require('../entityDB');
 var Entity     = require('../entity');
@@ -19128,167 +19447,21 @@ module.exports = {
     process : process,
     dockTo  : dockTo
 };
-},{"../audio":107,"../entity":109,"../entity/pbase":112,"../entity/projectile":118,"../entityDB":120,"../entitygrid":122}],112:[function(require,module,exports){
-var Audio      = require('../audio');
-var Entity     = require('../entity');
-var EntityDB   = require('../entityDB');
-var EntityGrid = require('../entitygrid');
-
-var Projectile = require('../entity/projectile');
-
-var PRODUCTION_RATE_RAW_TO_FINISHED = 0.5;
-var MAX_FINISHED_MATERIALS          = 3000;
-var MAX_RAW_MATERIALS               = 1500;
-
-// "Build tree"
-var SEQUENCE_BUILD_PRIORITY = [
-    { type : 'PLab', cost : 100 },
-    { type : 'PComm', cost : 200 }
-];
-
-var CONSTRUCTION_TIME = 60;
-
-function construct(construction) {
-    if (this.constructionTime > 0) {
-        this.constructionTime--;
-    } else {
-        var planetEntityType = construction.type.toLowerCase();
-        if (!this.planet[planetEntityType] && this.materialsFinished >= construction.cost) {
-            this.planet[planetEntityType] = Entity.create(construction.type, {
-                planet : this.planet,
-                team   : this.team
-            });
-
-            this.materialsFinished -= construction.cost;
-            this.constructionTime = CONSTRUCTION_TIME;
-        }
-    }
-}
-
-function build(pbase) {
-    if (pbase.materialsFinished > 0) {
-        SEQUENCE_BUILD_PRIORITY.forEach(construct.bind(pbase));
-    }
-}
-
-var REPAIR_COST_FINISHED = 25;
-var REPAIR_TIME          = 30;
-
-/**
- * Repairs itself if damaged
- * @param pbase
- */
-function repair(pbase) {
-    var needsRepair =
-            pbase.hp < pbase.maxHp &&
-            pbase.materialsFinished > REPAIR_COST_FINISHED &&
-            pbase.materialsFinished > 0;
-
-    if (needsRepair) {
-        if (pbase.repairTime > 0) {
-            pbase.repairTime--;
-        } else {
-            pbase.hp++;
-            pbase.materialsFinished -= REPAIR_COST_FINISHED;
-            pbase.repairTime = REPAIR_TIME;
-        }
-    }
-}
-
-/**
- * Manufactures finished materials from raw materials
- * @param pbase
- */
-function manufacture(pbase) {
-    if (pbase.materialsFinished < MAX_FINISHED_MATERIALS) {
-        if (pbase.materialsRaw > 0) {
-            pbase.materialsFinished += PRODUCTION_RATE_RAW_TO_FINISHED;
-            if (pbase.materialsFinished > MAX_FINISHED_MATERIALS) {
-                pbase.planet.materialsFinished += pbase.materialsFinished - MAX_FINISHED_MATERIALS;
-                pbase.materialsFinished = MAX_FINISHED_MATERIALS;
-            }
-            pbase.materialsRaw--;
-        }
-    } else {
-        if (pbase.materialsRaw > 0) {
-            pbase.planet.materialsFinished += PRODUCTION_RATE_RAW_TO_FINISHED;
-            pbase.materialsRaw--;
-        }
-    }
-}
-
-var SUPPLY_RATE_RAW      = 35;
-var SUPPLY_RATE_FINISHED = 25;
-var SUPPLY_TIME          = 5;
-
-/**
- * Gather supplies dropped on planet
- * @param {object} pbase
- */
-function supply(pbase) {
-    if (pbase.planet.materialsRaw > 0 && pbase.materialsRaw < MAX_RAW_MATERIALS) {
-        if (pbase.supplyTimeRaw > 0) {
-            pbase.supplyTimeRaw--;
-        } else {
-            pbase.supplyTimeRaw = SUPPLY_TIME;
-
-            if (MAX_RAW_MATERIALS - pbase.materialsRaw < SUPPLY_RATE_RAW) {
-                pbase.planet.materialsRaw = 0;
-                pbase.materialsRaw += MAX_RAW_MATERIALS - pbase.materialsRaw;
-            } else {
-                pbase.planet.materialsRaw -= SUPPLY_RATE_RAW;
-                pbase.materialsRaw += SUPPLY_RATE_RAW;
-            }
-        }
-    }
-
-    if (pbase.planet.materialsFinished > 0 && pbase.materialsFinished < MAX_FINISHED_MATERIALS) {
-        if (pbase.supplyTimeFinished > 0) {
-            pbase.supplyTimeFinished--;
-        } else {
-            pbase.supplyTimeFinished = SUPPLY_TIME;
-
-            if (MAX_FINISHED_MATERIALS - pbase.materialsFinished < SUPPLY_RATE_FINISHED) {
-                pbase.planet.materialsFinished = 0;
-                pbase.materialsFinished += MAX_FINISHED_MATERIALS - pbase.materialsFinished;
-            } else {
-                pbase.planet.materialsFinished -= SUPPLY_RATE_FINISHED;
-                pbase.materialsFinished += SUPPLY_RATE_FINISHED;
-            }
-        }
-    }
-}
-
-function processPBase(pbase) {
-    if (pbase.hp > 0) {
-        pbase.x = pbase.planet.x;
-        pbase.y = pbase.planet.y;
-
-        supply(pbase);
-        manufacture(pbase);
-        repair(pbase);
-        build(pbase);
-
-        EntityGrid.add(pbase);
-    } else {
-        Audio.play('collide');
-        Projectile.explode(pbase, 6);
-        EntityDB.remove(pbase);
-    }
-}
+},{"../audio":107,"../entity":117,"../entity/pbase":120,"../entity/projectile":126,"../entityDB":130,"../entitygrid":132}],120:[function(require,module,exports){
+var EntityDB  = require('../entityDB');
+var Component = require('../component');
 
 function process() {
     var pbase = EntityDB.getByType('PBase');
     if (pbase) {
-        pbase.forEach(processPBase);
+        pbase.forEach(Component.process);
     }
 }
 
 module.exports = {
-    process                : process,
-    MAX_FINISHED_MATERIALS : MAX_FINISHED_MATERIALS
+    process : process
 };
-},{"../audio":107,"../entity":109,"../entity/projectile":118,"../entityDB":120,"../entitygrid":122}],113:[function(require,module,exports){
+},{"../component":108,"../entityDB":130}],121:[function(require,module,exports){
 var Audio      = require('../audio');
 var EntityDB   = require('../entityDB');
 var EntityGrid = require('../entitygrid');
@@ -19361,7 +19534,7 @@ function process() {
 module.exports = {
     process : process
 };
-},{"../audio":107,"../entity/projectile":118,"../entityDB":120,"../entitygrid":122}],114:[function(require,module,exports){
+},{"../audio":107,"../entity/projectile":126,"../entityDB":130,"../entitygrid":132}],122:[function(require,module,exports){
 var Audio      = require('../audio');
 var EntityDB   = require('../entityDB');
 var EntityGrid = require('../entitygrid');
@@ -19417,7 +19590,7 @@ function process() {
 module.exports = {
     process : process
 };
-},{"../audio":107,"../entity/projectile":118,"../entityDB":120,"../entitygrid":122}],115:[function(require,module,exports){
+},{"../audio":107,"../entity/projectile":126,"../entityDB":130,"../entitygrid":132}],123:[function(require,module,exports){
 var Audio      = require('../audio');
 var EntityDB   = require('../entityDB');
 var EntityGrid = require('../entitygrid');
@@ -19523,7 +19696,7 @@ module.exports = {
     process           : process,
     orderConstruction : orderConstruction
 };
-},{"../audio":107,"../entity":109,"../entity/fighter":110,"../entity/freighter":111,"../entity/projectile":118,"../entityDB":120,"../entitygrid":122,"../random":142}],116:[function(require,module,exports){
+},{"../audio":107,"../entity":117,"../entity/fighter":118,"../entity/freighter":119,"../entity/projectile":126,"../entityDB":130,"../entitygrid":132,"../random":154}],124:[function(require,module,exports){
 var EntityDB   = require('../entityDB');
 var EntityGrid = require('../entitygrid');
 
@@ -19549,7 +19722,7 @@ function process() {
 module.exports = {
     process : process
 };
-},{"../entityDB":120,"../entitygrid":122}],117:[function(require,module,exports){
+},{"../entityDB":130,"../entitygrid":132}],125:[function(require,module,exports){
 var Random   = require('../random');
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
@@ -19665,7 +19838,7 @@ module.exports = {
     init    : init,
     process : process
 };
-},{"../entity":109,"../entityDB":120,"../random":142}],118:[function(require,module,exports){
+},{"../entity":117,"../entityDB":130,"../random":154}],126:[function(require,module,exports){
 var Entity     = require('../entity');
 var EntityDB   = require('../entityDB');
 var EntityGrid = require('../entitygrid');
@@ -19754,7 +19927,219 @@ module.exports = {
     process : process,
     explode : explode
 };
-},{"../audio":107,"../entity":109,"../entityDB":120,"../entitygrid":122,"../random":142,"sat":99}],119:[function(require,module,exports){
+},{"../audio":107,"../entity":117,"../entityDB":130,"../entitygrid":132,"../random":154,"sat":99}],127:[function(require,module,exports){
+var Audio      = require('../audio');
+var EntityDB   = require('../entityDB');
+var EntityGrid = require('../entitygrid');
+var Random     = require('../random');
+var Entity     = require('../entity');
+
+var Fighter    = require('../entity/fighter');
+var Freighter  = require('../entity/freighter');
+var Projectile = require('../entity/projectile');
+
+var REPAIR_COST_FINISHED = 5;
+var REPAIR_TIME          = 10;
+
+/**
+ * Repairs itself if damaged
+ * @param spaceport
+ */
+function repair(spaceport) {
+    var needsRepair =
+            spaceport.hp < spaceport.maxHp &&
+            spaceport.planet.pbase &&
+            spaceport.planet.pbase.materialsFinished > REPAIR_COST_FINISHED;
+
+    if (needsRepair) {
+        if (spaceport.repairTime > 0) {
+            spaceport.repairTime--;
+        } else {
+            spaceport.hp++;
+            spaceport.planet.pbase.materialsFinished -= REPAIR_COST_FINISHED;
+            spaceport.repairTime = REPAIR_TIME;
+        }
+    }
+}
+
+var CONSTRUCTION = {
+    Freighter : { cost : 300, time : 70 },
+    Fighter   : { cost : 500, time : 60 },
+    Probe     : { cost : 15, time : 10 }
+};
+
+function construct(plab) {
+    if (plab.isConstructing) {
+        var canConstruct =
+                plab.planet.pbase &&
+                plab.planet.pbase.materialsFinished >= CONSTRUCTION[plab.constructionType].cost;
+
+        if (canConstruct) {
+            if (plab.constructionTime > 0) {
+                plab.constructionTime--;
+            } else {
+                var entityOptions = {
+                    x : plab.x + Random.float(-1, 1),
+                    y : plab.y + Random.float(-1, 1),
+                    team : plab.team
+                };
+
+                var entity = Entity.create(plab.constructionType, entityOptions);
+
+                if (plab.constructionType === 'Fighter') {
+                    Fighter.dockTo(entity, plab.planet);
+                } else if (plab.constructionType === 'Freighter') {
+                    Freighter.dockTo(entity, plab.planet);
+                }
+
+                plab.isConstructing   = false;
+                plab.constructionType = undefined;
+            }
+        }
+    }
+}
+
+function orderConstruction(plab, type) {
+    plab.isConstructing   = true;
+    plab.constructionTime = CONSTRUCTION[type].time;
+    plab.constructionType = type;
+
+}
+
+function processPLab(plab) {
+    if (plab.hp > 0) {
+        plab.x = plab.planet.x;
+        plab.y = plab.planet.y;
+
+        repair(plab);
+        construct(plab);
+
+        EntityGrid.add(plab);
+    } else {
+        Audio.play('collide');
+        Projectile.explode(plab, 6);
+        EntityDB.remove(plab);
+    }
+}
+
+function process() {
+    var plab = EntityDB.getByType('PLab');
+    if (plab) {
+        plab.forEach(processPLab);
+    }
+}
+
+module.exports = {
+    process           : process,
+    orderConstruction : orderConstruction
+};
+},{"../audio":107,"../entity":117,"../entity/fighter":118,"../entity/freighter":119,"../entity/projectile":126,"../entityDB":130,"../entitygrid":132,"../random":154}],128:[function(require,module,exports){
+var Audio      = require('../audio');
+var EntityDB   = require('../entityDB');
+var EntityGrid = require('../entitygrid');
+var Random     = require('../random');
+var Entity     = require('../entity');
+
+var Fighter    = require('../entity/fighter');
+var Freighter  = require('../entity/freighter');
+var Projectile = require('../entity/projectile');
+
+var REPAIR_COST_FINISHED = 5;
+var REPAIR_TIME          = 10;
+
+/**
+ * Repairs itself if damaged
+ * @param spaceport
+ */
+function repair(spaceport) {
+    var needsRepair =
+            spaceport.hp < spaceport.maxHp &&
+            spaceport.planet.pbase &&
+            spaceport.planet.pbase.materialsFinished > REPAIR_COST_FINISHED;
+
+    if (needsRepair) {
+        if (spaceport.repairTime > 0) {
+            spaceport.repairTime--;
+        } else {
+            spaceport.hp++;
+            spaceport.planet.pbase.materialsFinished -= REPAIR_COST_FINISHED;
+            spaceport.repairTime = REPAIR_TIME;
+        }
+    }
+}
+
+var CONSTRUCTION = {
+    Fighter : { cost : 200, time : 40 },
+    Probe   : { cost : 5, time : 10 }
+};
+
+function construct(spaceport) {
+    if (spaceport.isConstructing) {
+        var canConstruct =
+                spaceport.planet.pbase &&
+                spaceport.planet.pbase.materialsFinished >= CONSTRUCTION[spaceport.constructionType].cost;
+
+        if (canConstruct) {
+            if (spaceport.constructionTime > 0) {
+                spaceport.constructionTime--;
+            } else {
+                var entityOptions = {
+                    x    : spaceport.x + Random.float(-1, 1),
+                    y    : spaceport.y + Random.float(-1, 1),
+                    team : spaceport.team
+                };
+
+                var entity = Entity.create(spaceport.constructionType, entityOptions);
+
+                if (spaceport.constructionType === 'Fighter') {
+                    Fighter.dockTo(entity, spaceport.planet);
+                } else if (spaceport.constructionType === 'Freighter') {
+                    Freighter.dockTo(entity, spaceport.planet);
+                }
+
+                spaceport.isConstructing   = false;
+                spaceport.constructionType = undefined;
+            }
+        }
+    }
+}
+
+
+function orderConstruction(plab, type) {
+    plab.isConstructing   = true;
+    plab.constructionTime = CONSTRUCTION[type].time;
+    plab.constructionType = type;
+
+}
+
+function processPLab(plab) {
+    if (plab.hp > 0) {
+        plab.x = plab.planet.x;
+        plab.y = plab.planet.y;
+
+        repair(plab);
+        construct(plab);
+
+        EntityGrid.add(plab);
+    } else {
+        Audio.play('collide');
+        Projectile.explode(plab, 6);
+        EntityDB.remove(plab);
+    }
+}
+
+function process() {
+    var plab = EntityDB.getByType('PLab');
+    if (plab) {
+        plab.forEach(processPLab);
+    }
+}
+
+module.exports = {
+    process           : process,
+    orderConstruction : orderConstruction
+};
+},{"../audio":107,"../entity":117,"../entity/fighter":118,"../entity/freighter":119,"../entity/projectile":126,"../entityDB":130,"../entitygrid":132,"../random":154}],129:[function(require,module,exports){
 var EntityDB   = require('../entityDB');
 var EntityGrid = require('../entitygrid');
 
@@ -19768,7 +20153,7 @@ function process() {
 module.exports = {
     process : process
 };
-},{"../entityDB":120,"../entitygrid":122}],120:[function(require,module,exports){
+},{"../entityDB":130,"../entitygrid":132}],130:[function(require,module,exports){
 var Graphics = require('./graphics');
 
 var byType = {};
@@ -19858,7 +20243,7 @@ module.exports = {
 
     getAbsoluteNearestByType : getAbsoluteNearestByType
 };
-},{"./graphics":137}],121:[function(require,module,exports){
+},{"./graphics":149}],131:[function(require,module,exports){
 /**
  * All updates to the grid are written on a per-frame basis.
  * The nextEntityGrid becomes the current entityGrid when EntityGrid.commit() is called.
@@ -19973,9 +20358,9 @@ module.exports = {
     commit     : commit,
     getNearest : getNearest
 };
-},{"./entity":109,"./gamefield":123}],122:[function(require,module,exports){
-arguments[4][121][0].apply(exports,arguments)
-},{"./entity":109,"./gamefield":123,"dup":121}],123:[function(require,module,exports){
+},{"./entity":117,"./gamefield":133}],132:[function(require,module,exports){
+arguments[4][131][0].apply(exports,arguments)
+},{"./entity":117,"./gamefield":133,"dup":131}],133:[function(require,module,exports){
 var Entity   = require('./entity');
 var EntityDB = require('./entityDB');
 var Random   = require('./random');
@@ -20073,7 +20458,7 @@ module.exports = {
     init           : init,
     MAX_COORDINATE : MAX_COORDINATE
 };
-},{"./entity":109,"./entityDB":120,"./random":142}],124:[function(require,module,exports){
+},{"./entity":117,"./entityDB":130,"./random":154}],134:[function(require,module,exports){
 var NO_DATA = {};
 
 var AXES_ACTIVATION_VALUE = 0.1;
@@ -20121,7 +20506,7 @@ function getState() {
 module.exports = {
     getState : getState
 };
-},{}],125:[function(require,module,exports){
+},{}],135:[function(require,module,exports){
 var PIXI      = require('./custom-lib/pixi.min.js');
 var SAT       = require('sat');
 var GameField = require('./gamefield');
@@ -20294,7 +20679,7 @@ function Geometry(geometryDef, options) {
 }
 
 module.exports = Geometry;
-},{"./custom-lib/pixi.min.js":108,"./gamefield":123,"sat":99}],126:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":116,"./gamefield":133,"sat":99}],136:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "polygon",
@@ -20351,7 +20736,7 @@ module.exports={
     ]
   }
 }
-},{}],127:[function(require,module,exports){
+},{}],137:[function(require,module,exports){
 module.exports={
   "body": {
     "type": "polygon",
@@ -20479,7 +20864,7 @@ module.exports={
   }
 }
 
-},{}],128:[function(require,module,exports){
+},{}],138:[function(require,module,exports){
 module.exports={
   "_name": "Planetary Base",
   "body": {
@@ -20554,7 +20939,7 @@ module.exports={
     ]
   }
 }
-},{}],129:[function(require,module,exports){
+},{}],139:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Colony",
@@ -20571,7 +20956,7 @@ module.exports={
     -30,40
   ]
 }
-},{}],130:[function(require,module,exports){
+},{}],140:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Communications Center",
@@ -20591,7 +20976,7 @@ module.exports={
     40,30
   ]
 }
-},{}],131:[function(require,module,exports){
+},{}],141:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Lab",
@@ -20608,7 +20993,7 @@ module.exports={
     0,-40
   ]
 }
-},{}],132:[function(require,module,exports){
+},{}],142:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "circle",
@@ -20637,7 +21022,7 @@ module.exports={
     ]
   }
 }
-},{}],133:[function(require,module,exports){
+},{}],143:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "polygon",
@@ -20676,7 +21061,26 @@ module.exports={
     ]
   }
 }
-},{}],134:[function(require,module,exports){
+},{}],144:[function(require,module,exports){
+module.exports={
+  "_name": "Orbital Sensor Array",
+  "type": "polygon",
+  "lineStyle": {
+    "width": 1,
+    "color": 255,
+    "alpha": 1
+  },
+  "path": [
+    6,26,
+    12,28,
+    12,40,
+    18,46,
+    18,34,
+    12,40,
+    6,42
+  ]
+}
+},{}],145:[function(require,module,exports){
 module.exports={
   "cannon_normal" : {
     "type": "polygon",
@@ -20710,23 +21114,26 @@ module.exports={
     ]
   }
 }
-},{}],135:[function(require,module,exports){
+},{}],146:[function(require,module,exports){
 module.exports={
-  "type": "circle",
-  "radius": 200,
-  "fill": {
-    "color": 0,
-    "alpha": 1
-  },
+  "_name": "Space Dock",
+  "type": "polygon",
   "lineStyle": {
     "width": 1,
-    "color": 16776960,
+    "color": 255,
     "alpha": 1
-  }
+  },
+  "path": [
+    6,-42,
+    20,-42,
+    20,-22,
+    14,-26,
+    6,-26
+  ]
 }
-},{}],136:[function(require,module,exports){
+},{}],147:[function(require,module,exports){
 module.exports={
-  "_name": "High Port",
+  "_name": "Space Port",
   "body" : {
     "type": "polygon",
     "lineStyle": {
@@ -20749,38 +21156,6 @@ module.exports={
       -6,36,
       -6,20,
       -2,0
-    ]
-  },
-  "shipyard":{
-    "type": "polygon",
-    "lineStyle": {
-      "width": 1,
-      "color": 255,
-      "alpha": 1
-    },
-    "path": [
-      6,-42,
-      20,-42,
-      20,-22,
-      14,-26,
-      6,-26
-    ]
-  },
-  "sensors":{
-    "type": "polygon",
-    "lineStyle": {
-      "width": 1,
-      "color": 255,
-      "alpha": 1
-    },
-    "path": [
-      6,26,
-      12,28,
-      12,40,
-      18,46,
-      18,34,
-      12,40,
-      6,42
     ]
   },
   "turret1" : {
@@ -20890,7 +21265,21 @@ module.exports={
     ]
   }
 }
-},{}],137:[function(require,module,exports){
+},{}],148:[function(require,module,exports){
+module.exports={
+  "type": "circle",
+  "radius": 200,
+  "fill": {
+    "color": 0,
+    "alpha": 1
+  },
+  "lineStyle": {
+    "width": 1,
+    "color": 16776960,
+    "alpha": 1
+  }
+}
+},{}],149:[function(require,module,exports){
 /**
  * Graphics interface
  */
@@ -20995,7 +21384,7 @@ module.exports = {
     centerOn      : centerOn,
     addChildToHUD : addChildToHUD
 };
-},{"./custom-lib/pixi.min.js":108,"./radar":141,"./starfield":144}],138:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":116,"./radar":153,"./starfield":156}],150:[function(require,module,exports){
 /**
  * Gravity and related collisions
  * todo: move this into fighter and some of the constants into entity
@@ -21098,7 +21487,7 @@ function update() {
 module.exports = {
     update : update
 };
-},{"./entity":109,"./entity/fighter":110,"./entityDB":120,"./entitygrid":122}],139:[function(require,module,exports){
+},{"./entity":117,"./entity/fighter":118,"./entityDB":130,"./entitygrid":132}],151:[function(require,module,exports){
 var GamePad  = require('./gamepad');
 var Fighter  = require('./entity/fighter');
 var EntityDB = require('./entityDB');
@@ -21234,7 +21623,7 @@ module.exports = {
     getFocalPoint : getFocalPoint,
     setFocalPoint : setFocalPoint
 };
-},{"./entity/fighter":110,"./entityDB":120,"./gamepad":124,"./radar":141}],140:[function(require,module,exports){
+},{"./entity/fighter":118,"./entityDB":130,"./gamepad":134,"./radar":153}],152:[function(require,module,exports){
 var Assets     = require('./assets');
 var Graphics   = require('./graphics');
 var GameField  = require('./gamefield');
@@ -21249,12 +21638,17 @@ var Projectile = require('./entity/projectile');
 var Planet     = require('./entity/planet');
 var Star       = require('./entity/star');
 var Fighter    = require('./entity/fighter');
-var Probe      = require('./entity/probe');
 var Freighter  = require('./entity/freighter');
-var PBase      = require('./entity/pbase');
-var PColony    = require('./entity/pcolony');
-var PLab       = require('./entity/plab');
-var PComm      = require('./entity/pcomm');
+var Probe      = require('./entity/probe');
+
+var PBase   = require('./entity/pbase');
+var PColony = require('./entity/pcolony');
+var PLab    = require('./entity/plab');
+var PComm   = require('./entity/pcomm');
+
+var SpacePort = require('./entity/spaceport');
+var SpaceDock = require('./entity/spacedock');
+var Sensor = require('./entity/spacedock');
 
 // // // // Game loop // // // //
 
@@ -21315,7 +21709,7 @@ function update() {
     EntityGrid.commit();
 }
 
-},{"./assets":106,"./entity/fighter":110,"./entity/freighter":111,"./entity/pbase":112,"./entity/pcolony":113,"./entity/pcomm":114,"./entity/plab":115,"./entity/planet":116,"./entity/probe":117,"./entity/projectile":118,"./entity/star":119,"./entitygrid":122,"./gamefield":123,"./graphics":137,"./gravity":138,"./humanInterface":139,"./scanner":143,"./system/team":145}],141:[function(require,module,exports){
+},{"./assets":106,"./entity/fighter":118,"./entity/freighter":119,"./entity/pbase":120,"./entity/pcolony":121,"./entity/pcomm":122,"./entity/plab":123,"./entity/planet":124,"./entity/probe":125,"./entity/projectile":126,"./entity/spacedock":127,"./entity/spaceport":128,"./entity/star":129,"./entitygrid":132,"./gamefield":133,"./graphics":149,"./gravity":150,"./humanInterface":151,"./scanner":155,"./system/team":157}],153:[function(require,module,exports){
 var PIXI = require('./custom-lib/pixi.min.js');
 
 var DIAL_TRACK_ALPHA = 0.08;
@@ -21457,7 +21851,7 @@ module.exports = {
         return radarEnabled;
     }
 };
-},{"./custom-lib/pixi.min.js":108}],142:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":116}],154:[function(require,module,exports){
 /**
  * Random functions
  */
@@ -21480,12 +21874,21 @@ function float(min, max) {
     return min + Math.random() * (max - min);
 }
 
+/**
+ * @param {Array} a
+ * @returns {any}
+ */
+function arrayElement(a) {
+    return a[int(0, a.length - 1)];
+}
+
 module.exports = {
-    int     : int,
-    float   : float
+    int          : int,
+    float        : float,
+    arrayElement : arrayElement
 };
 
-},{}],143:[function(require,module,exports){
+},{}],155:[function(require,module,exports){
 /**
  * Galactic scanner
  */
@@ -21602,7 +22005,7 @@ module.exports = {
     init   : init,
     update : update
 };
-},{"./custom-lib/pixi.min.js":108,"./entity":109,"./entityDB":120,"./gamefield":123,"./graphics":137}],144:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":116,"./entity":117,"./entityDB":130,"./gamefield":133,"./graphics":149}],156:[function(require,module,exports){
 var PIXI   = require('./custom-lib/pixi.min.js');
 var Random = require('./random');
 
@@ -21712,15 +22115,16 @@ module.exports = {
     reinit  : reinit,
     process : process
 };
-},{"./custom-lib/pixi.min.js":108,"./random":142}],145:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":116,"./random":154}],157:[function(require,module,exports){
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
+var Random   = require('../random');
 
 var PLab = require('../entity/plab');
 
 var HumanInterface = require('../humanInterface');
 
-function assignFreightersToPlanet(team, freighters, planet) {
+function assignFreightersToPlanet(freighters, planet) {
     if (freighters) {
         for (var i = freighters.length - 1; i >= 0; i--) {
             var freighter = freighters[i];
@@ -21746,6 +22150,15 @@ function filterByIdlePLab(entity) {
     return entity.pcolony && entity.plab && !entity.plab.isConstructing;
 }
 
+function constructOnRandomPlanet(idleTeamPlanet, type) {
+    if (idleTeamPlanet) {
+        PLab.orderConstruction(
+            Random.arrayElement(idleTeamPlanet).plab,
+            type
+        );
+    }
+}
+
 function processTeam(team) {
     var teamPlanet    = EntityDB.getByType('Planet');
     var teamFighter   = EntityDB.getByType('Fighter');
@@ -21762,19 +22175,13 @@ function processTeam(team) {
 
         teamPlanet
             .filter(filterByNoPBaseOrPColony)
-            .forEach(assignFreightersToPlanet.bind(null, team, teamFreighter));
+            .forEach(assignFreightersToPlanet.bind(null, teamFreighter));
 
         idleTeamPlanet = teamPlanet.filter(filterByIdlePLab);
         idleTeamPlanet = idleTeamPlanet.length > 0 ? idleTeamPlanet : undefined;
 
-        if (teamFreighter && teamPlanet.length !== teamFreighter.length) {
-
-            if (idleTeamPlanet) {
-                PLab.orderConstruction(
-                    idleTeamPlanet[0].plab,
-                    'Freighter'
-                );
-            }
+        if (teamFreighter && teamPlanet.length > teamFreighter.length) {
+            constructOnRandomPlanet(idleTeamPlanet, 'Freighter');
         }
     }
 
@@ -21787,12 +22194,7 @@ function processTeam(team) {
         if (teamFighter.length > 0) {
             HumanInterface.setFocalPoint(teamFighter[0]);
         } else {
-            if (idleTeamPlanet) {
-                PLab.orderConstruction(
-                    idleTeamPlanet[0].plab,
-                    'Fighter'
-                );
-            }
+            constructOnRandomPlanet(idleTeamPlanet, 'Fighter');
         }
     }
 }
@@ -21812,4 +22214,4 @@ function process() {
 module.exports = {
     process : process
 };
-},{"../entity":109,"../entity/plab":115,"../entityDB":120,"../humanInterface":139}]},{},[140]);
+},{"../entity":117,"../entity/plab":123,"../entityDB":130,"../humanInterface":151,"../random":154}]},{},[152]);

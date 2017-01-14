@@ -12,12 +12,17 @@ var Projectile = require('./entity/projectile');
 var Planet     = require('./entity/planet');
 var Star       = require('./entity/star');
 var Fighter    = require('./entity/fighter');
-var Probe      = require('./entity/probe');
 var Freighter  = require('./entity/freighter');
-var PBase      = require('./entity/pbase');
-var PColony    = require('./entity/pcolony');
-var PLab       = require('./entity/plab');
-var PComm      = require('./entity/pcomm');
+var Probe      = require('./entity/probe');
+
+var PBase   = require('./entity/pbase');
+var PColony = require('./entity/pcolony');
+var PLab    = require('./entity/plab');
+var PComm   = require('./entity/pcomm');
+
+var SpacePort = require('./entity/spaceport');
+var SpaceDock = require('./entity/spacedock');
+var Sensor = require('./entity/spacedock');
 
 // // // // Game loop // // // //
 

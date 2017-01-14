@@ -1,11 +1,12 @@
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
+var Random   = require('../random');
 
 var PLab = require('../entity/plab');
 
 var HumanInterface = require('../humanInterface');
 
-function assignFreightersToPlanet(team, freighters, planet) {
+function assignFreightersToPlanet(freighters, planet) {
     if (freighters) {
         for (var i = freighters.length - 1; i >= 0; i--) {
             var freighter = freighters[i];
@@ -31,6 +32,15 @@ function filterByIdlePLab(entity) {
     return entity.pcolony && entity.plab && !entity.plab.isConstructing;
 }
 
+function constructOnRandomPlanet(idleTeamPlanet, type) {
+    if (idleTeamPlanet) {
+        PLab.orderConstruction(
+            Random.arrayElement(idleTeamPlanet).plab,
+            type
+        );
+    }
+}
+
 function processTeam(team) {
     var teamPlanet    = EntityDB.getByType('Planet');
     var teamFighter   = EntityDB.getByType('Fighter');
@@ -47,19 +57,13 @@ function processTeam(team) {
 
         teamPlanet
             .filter(filterByNoPBaseOrPColony)
-            .forEach(assignFreightersToPlanet.bind(null, team, teamFreighter));
+            .forEach(assignFreightersToPlanet.bind(null, teamFreighter));
 
         idleTeamPlanet = teamPlanet.filter(filterByIdlePLab);
         idleTeamPlanet = idleTeamPlanet.length > 0 ? idleTeamPlanet : undefined;
 
-        if (teamFreighter && teamPlanet.length !== teamFreighter.length) {
-
-            if (idleTeamPlanet) {
-                PLab.orderConstruction(
-                    idleTeamPlanet[0].plab,
-                    'Freighter'
-                );
-            }
+        if (teamFreighter && teamPlanet.length > teamFreighter.length) {
+            constructOnRandomPlanet(idleTeamPlanet, 'Freighter');
         }
     }
 
@@ -72,12 +76,7 @@ function processTeam(team) {
         if (teamFighter.length > 0) {
             HumanInterface.setFocalPoint(teamFighter[0]);
         } else {
-            if (idleTeamPlanet) {
-                PLab.orderConstruction(
-                    idleTeamPlanet[0].plab,
-                    'Fighter'
-                );
-            }
+            constructOnRandomPlanet(idleTeamPlanet, 'Fighter');
         }
     }
 }
