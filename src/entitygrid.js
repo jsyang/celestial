@@ -44,15 +44,17 @@ function getEntityToGridIndex(entity, dGx, dGy) {
 }
 
 /**
- * Add this entity into the Entity Grid
+ * Add this entity into the Entity Grid only if required
  * @param {object} entity
  */
 function add(entity) {
-    var index = getEntityToGridIndex(entity);
-    if (nextEntityGrid[index] instanceof Array) {
-        nextEntityGrid[index].push(entity);
-    } else {
-        nextEntityGrid[index] = [entity];
+    if (entity.hp > 0) {
+        var index = getEntityToGridIndex(entity);
+        if (nextEntityGrid[index] instanceof Array) {
+            nextEntityGrid[index].push(entity);
+        } else {
+            nextEntityGrid[index] = [entity];
+        }
     }
 
     return this;

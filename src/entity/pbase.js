@@ -6,8 +6,8 @@ var EntityGrid = require('../entitygrid');
 var Projectile = require('../entity/projectile');
 
 var PRODUCTION_RATE_RAW_TO_FINISHED = 0.5;
-var MAX_FINISHED_MATERIALS          = 500;
-var MAX_RAW_MATERIALS               = 1000;
+var MAX_FINISHED_MATERIALS          = 3000;
+var MAX_RAW_MATERIALS               = 1500;
 
 // "Build tree"
 var SEQUENCE_BUILD_PRIORITY = [
@@ -15,15 +15,22 @@ var SEQUENCE_BUILD_PRIORITY = [
     { type : 'PComm', cost : 200 }
 ];
 
-function construct(construction) {
-    var planetEntityType = construction.type.toLowerCase();
-    if (!this.planet[planetEntityType] && this.materialsFinished >= construction.cost) {
-        this.planet[planetEntityType] = Entity.create(construction.type, {
-            planet : this.planet,
-            team   : this.team
-        });
+var CONSTRUCTION_TIME = 60;
 
-        this.materialsFinished -= construction.cost;
+function construct(construction) {
+    if (this.constructionTime > 0) {
+        this.constructionTime--;
+    } else {
+        var planetEntityType = construction.type.toLowerCase();
+        if (!this.planet[planetEntityType] && this.materialsFinished >= construction.cost) {
+            this.planet[planetEntityType] = Entity.create(construction.type, {
+                planet : this.planet,
+                team   : this.team
+            });
+
+            this.materialsFinished -= construction.cost;
+            this.constructionTime = CONSTRUCTION_TIME;
+        }
     }
 }
 
@@ -65,14 +72,23 @@ function manufacture(pbase) {
     if (pbase.materialsFinished < MAX_FINISHED_MATERIALS) {
         if (pbase.materialsRaw > 0) {
             pbase.materialsFinished += PRODUCTION_RATE_RAW_TO_FINISHED;
+            if (pbase.materialsFinished > MAX_FINISHED_MATERIALS) {
+                pbase.planet.materialsFinished += pbase.materialsFinished - MAX_FINISHED_MATERIALS;
+                pbase.materialsFinished = MAX_FINISHED_MATERIALS;
+            }
+            pbase.materialsRaw--;
+        }
+    } else {
+        if (pbase.materialsRaw > 0) {
+            pbase.planet.materialsFinished += PRODUCTION_RATE_RAW_TO_FINISHED;
             pbase.materialsRaw--;
         }
     }
 }
 
-var SUPPLY_RATE_RAW      = 50;
+var SUPPLY_RATE_RAW      = 35;
 var SUPPLY_RATE_FINISHED = 25;
-var SUPPLY_TIME          = 10;
+var SUPPLY_TIME          = 5;
 
 /**
  * Gather supplies dropped on planet
@@ -101,12 +117,12 @@ function supply(pbase) {
         } else {
             pbase.supplyTimeFinished = SUPPLY_TIME;
 
-            if (MAX_RAW_MATERIALS - pbase.materialsRaw < SUPPLY_RATE_FINISHED) {
-                pbase.planet.materialsRaw = 0;
-                pbase.materialsRaw += MAX_RAW_MATERIALS - pbase.materialsRaw;
+            if (MAX_FINISHED_MATERIALS - pbase.materialsFinished < SUPPLY_RATE_FINISHED) {
+                pbase.planet.materialsFinished = 0;
+                pbase.materialsFinished += MAX_FINISHED_MATERIALS - pbase.materialsFinished;
             } else {
-                pbase.planet.materialsRaw -= SUPPLY_RATE_FINISHED;
-                pbase.materialsRaw += SUPPLY_RATE_FINISHED;
+                pbase.planet.materialsFinished -= SUPPLY_RATE_FINISHED;
+                pbase.materialsFinished += SUPPLY_RATE_FINISHED;
             }
         }
     }
@@ -138,5 +154,6 @@ function process() {
 }
 
 module.exports = {
-    process : process
+    process                : process,
+    MAX_FINISHED_MATERIALS : MAX_FINISHED_MATERIALS
 };

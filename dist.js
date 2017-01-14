@@ -18576,6 +18576,7 @@ function create(type, options) {
 
         entity.MASS          = 500;
         entity.DIST_SURFACE2 = 200 * 200;
+        entity.hp            = 10000;
 
     } else if (type === 'Planet') {
         entity = createPlanet(options);
@@ -18588,12 +18589,16 @@ function create(type, options) {
         entity.orbitDistance = options.orbitDistance;
         entity.star          = options.star;
         entity.orbitRotation = options.orbitRotation || 0;
+        entity.hp            = 2000;
 
         // Reference to resident entities
         entity.pbase   = options.pbase;
         entity.plab    = options.plab;
         entity.pcolony = options.pcolony;
         entity.pcomm   = options.pcomm;
+
+        entity.materialsRaw      = options.materialsRaw || 100;
+        entity.materialsFinished = options.materialsFinished || 0;
 
     } else if (type === 'ShotCannonHeavy') {
         entity = Geometry(Shot.cannon_heavy, options);
@@ -18612,22 +18617,31 @@ function create(type, options) {
     } else if (type === 'PColony') {
         entity = createPColony(options);
 
-        entity.hp     = options.hp || 20;
-        entity.maxHp  = options.maxHp || 20;
+        entity.hp     = options.hp || 30;
+        entity.maxHp  = options.maxHp || 30;
         entity.planet = options.planet;
+
+        entity.harvestTime = options.harvestTime || 0;
+        entity.repairTime  = options.repairTime || 0;
 
     } else if (type === 'PLab') {
         entity = createPLab(options);
 
-        entity.hp     = options.hp || 20;
-        entity.maxHp  = options.maxHp || 20;
-        entity.planet = options.planet;
+        entity.hp               = options.hp || 20;
+        entity.maxHp            = options.maxHp || 20;
+        entity.planet           = options.planet;
+        entity.repairTime       = options.repairTime || 0;
+        entity.isConstructing   = options.isConstructing || false;
+        entity.constructionType = options.constructionType;
+        entity.constructionTime = options.constructionTime || 0;
+
     } else if (type === 'PComm') {
         entity = createPComm(options);
 
-        entity.hp     = options.hp || 20;
-        entity.maxHp  = options.maxHp || 20;
-        entity.planet = options.planet;
+        entity.hp         = options.hp || 20;
+        entity.maxHp      = options.maxHp || 20;
+        entity.planet     = options.planet;
+        entity.repairTime = options.repairTime || 0;
 
     } else if (type === 'PBase') {
         entity        = createPBase(options);
@@ -18635,11 +18649,12 @@ function create(type, options) {
         entity.maxHp  = options.maxHp || 20;
         entity.planet = options.planet;
 
+        entity.constructionTime   = options.constructionTime || 0;
         entity.repairTime         = options.repairTime || 0;
         entity.supplyTimeRaw      = options.supplyTimeRaw || 0;
         entity.supplyTimeFinished = options.supplyTimeFinished || 0;
         entity.materialsRaw       = options.materialsRaw || 0;
-        entity.materialsFinished  = options.materialsFinished || 100;
+        entity.materialsFinished  = options.materialsFinished || 0;
 
     } else if (type === 'Fighter') {
         entity = createFighter(options);
@@ -18877,16 +18892,18 @@ module.exports = {
     crash      : crash
 };
 },{"../audio":107,"../entity":109,"../entity/projectile":118,"../entityDB":120,"../entityGrid":121,"../radar":141}],111:[function(require,module,exports){
-var Audio    = require('../audio');
-var EntityDB = require('../entityDB');
-var Entity   = require('../entity');
+var Audio      = require('../audio');
+var EntityDB   = require('../entityDB');
+var Entity     = require('../entity');
+var EntityGrid = require('../entitygrid');
 
 var Projectile = require('../entity/projectile');
+var PBase      = require('../entity/pbase');
 
 var DEGREES90 = Math.PI * 0.5;
 
 var TURN_RATE = 0.07;
-var SPEED     = 10;//1.5;
+var SPEED     = 2.5;
 
 function move(freighter) {
     var r2 = Entity.getDistSquared(freighter, freighter.target);
@@ -18917,14 +18934,49 @@ function move(freighter) {
 
         freighter.x += Math.cos(rotation) * SPEED;
         freighter.y += Math.sin(rotation) * SPEED;
-        freighter.flameOn();
+        undock(freighter);
     } else {
-        freighter.planet   = freighter.target;
-        freighter.target   = undefined;
+        dockTo(freighter, freighter.target);
         freighter.rotation = Entity.getAngleFromTo(freighter.planet, freighter) + DEGREES90;
+    }
+}
+
+var DIST_FOLLOW2 = 80 * 80;
+
+function follow(freighter) {
+    var r2 = Entity.getDistSquared(freighter, freighter.target);
+
+    if (r2 > DIST_FOLLOW2) {
+        var rotation        = freighter.rotation;
+        var desiredRotation = Entity.getAngleFromTo(freighter, freighter.target);
+
+        var turnMagnitude = Math.abs(desiredRotation - rotation);
+        if (turnMagnitude > Math.PI) {
+            if (rotation > 0) {
+                freighter.rotation += TURN_RATE;
+            } else {
+                freighter.rotation -= TURN_RATE;
+            }
+        } else {
+            if (turnMagnitude > TURN_RATE) {
+                if (rotation > desiredRotation) {
+                    freighter.rotation -= TURN_RATE;
+                } else {
+                    freighter.rotation += TURN_RATE;
+                }
+            } else {
+                freighter.rotation = desiredRotation;
+            }
+        }
+
+        rotation = freighter.rotation;
+
+        freighter.x += Math.cos(rotation) * SPEED;
+        freighter.y += Math.sin(rotation) * SPEED;
+        undock(freighter);
+    } else {
         freighter.flameOff();
     }
-
 }
 
 var ORBIT_ROTATION = 0.00025;
@@ -18976,10 +19028,37 @@ function createPColony(freighter) {
     EntityDB.remove(freighter);
 }
 
-function dumpSupply(freighter) {
-    freighter.planet.materialsFinished = freighter.materialsFinished;
-    freighter.materialsFinished        = 0;
-    freighter.unloadSupply();
+var MAX_MATERIALS_FINISHED = 500;
+
+function loadOrDumpSupply(freighter) {
+    var pbase = freighter.planet.pbase;
+
+    if (pbase.materialsFinished === 0) {
+        pbase.materialsFinished += freighter.materialsFinished;
+        freighter.materialsFinished = 0;
+
+        var diffMaterials = 0;
+        if (pbase.materialsFinished > PBase.MAX_FINISHED_MATERIALS) {
+            diffMaterials               = pbase.materialsFinished - PBase.MAX_FINISHED_MATERIALS;
+            pbase.materialsFinished     = PBase.MAX_MATERIALS_FINISHED;
+            freighter.materialsFinished = diffMaterials;
+            freighter.unloadSupply();
+        } else {
+            EntityDB.remove(freighter);
+        }
+
+    } else if (freighter.planet.materialsFinished > 0 && freighter.materialsFinished < MAX_MATERIALS_FINISHED) {
+        var materialsToLoad = MAX_MATERIALS_FINISHED - freighter.materialsFinished;
+        if (materialsToLoad >= freighter.planet.materialsFinished) {
+            freighter.materialsFinished += freighter.planet.materialsFinished;
+            freighter.planet.materialsFinished = 0;
+        } else {
+            freighter.materialsFinished += materialsToLoad;
+            freighter.planet.materialsFinished -= materialsToLoad;
+        }
+
+        freighter.loadSupply();
+    }
 }
 
 /** How long it takes before cargo can be used after reaching orbit **/
@@ -18997,10 +19076,20 @@ function supply(freighter) {
             } else if (!freighter.planet.pcolony) {
                 createPColony(freighter);
             } else {
-                dumpSupply(freighter);
+                loadOrDumpSupply(freighter);
             }
         }
     }
+}
+
+function undock(freighter) {
+    freighter.flameOn();
+}
+
+function dockTo(freighter, planet) {
+    freighter.planet = planet;
+    freighter.target = undefined;
+    freighter.flameOff();
 }
 
 function processFreighter(freighter) {
@@ -19009,13 +19098,18 @@ function processFreighter(freighter) {
             freighter.renderHit();
 
             if (freighter.target) {
-                move(freighter);
+                if (freighter.target.type === 'Planet') {
+                    move(freighter);
+                } else {
+                    follow(freighter);
+                }
+
             } else if (freighter.planet) {
                 orbit(freighter);
-
                 supply(freighter);
-
             }
+
+            EntityGrid.add(freighter);
         } else {
             explode(freighter);
         }
@@ -19023,15 +19117,18 @@ function processFreighter(freighter) {
 }
 
 function process() {
-    EntityDB.getByType('Freighter')
-        .forEach(processFreighter);
+    var freighter = EntityDB.getByType('Freighter');
+    if (freighter) {
+        freighter.forEach(processFreighter);
+    }
 
 }
 
 module.exports = {
-    process : process
+    process : process,
+    dockTo  : dockTo
 };
-},{"../audio":107,"../entity":109,"../entity/projectile":118,"../entityDB":120}],112:[function(require,module,exports){
+},{"../audio":107,"../entity":109,"../entity/pbase":112,"../entity/projectile":118,"../entityDB":120,"../entitygrid":122}],112:[function(require,module,exports){
 var Audio      = require('../audio');
 var Entity     = require('../entity');
 var EntityDB   = require('../entityDB');
@@ -19040,8 +19137,8 @@ var EntityGrid = require('../entitygrid');
 var Projectile = require('../entity/projectile');
 
 var PRODUCTION_RATE_RAW_TO_FINISHED = 0.5;
-var MAX_FINISHED_MATERIALS          = 500;
-var MAX_RAW_MATERIALS               = 1000;
+var MAX_FINISHED_MATERIALS          = 3000;
+var MAX_RAW_MATERIALS               = 1500;
 
 // "Build tree"
 var SEQUENCE_BUILD_PRIORITY = [
@@ -19049,15 +19146,22 @@ var SEQUENCE_BUILD_PRIORITY = [
     { type : 'PComm', cost : 200 }
 ];
 
-function construct(construction) {
-    var planetEntityType = construction.type.toLowerCase();
-    if (!this.planet[planetEntityType] && this.materialsFinished >= construction.cost) {
-        this.planet[planetEntityType] = Entity.create(construction.type, {
-            planet : this.planet,
-            team   : this.team
-        });
+var CONSTRUCTION_TIME = 60;
 
-        this.materialsFinished -= construction.cost;
+function construct(construction) {
+    if (this.constructionTime > 0) {
+        this.constructionTime--;
+    } else {
+        var planetEntityType = construction.type.toLowerCase();
+        if (!this.planet[planetEntityType] && this.materialsFinished >= construction.cost) {
+            this.planet[planetEntityType] = Entity.create(construction.type, {
+                planet : this.planet,
+                team   : this.team
+            });
+
+            this.materialsFinished -= construction.cost;
+            this.constructionTime = CONSTRUCTION_TIME;
+        }
     }
 }
 
@@ -19099,14 +19203,23 @@ function manufacture(pbase) {
     if (pbase.materialsFinished < MAX_FINISHED_MATERIALS) {
         if (pbase.materialsRaw > 0) {
             pbase.materialsFinished += PRODUCTION_RATE_RAW_TO_FINISHED;
+            if (pbase.materialsFinished > MAX_FINISHED_MATERIALS) {
+                pbase.planet.materialsFinished += pbase.materialsFinished - MAX_FINISHED_MATERIALS;
+                pbase.materialsFinished = MAX_FINISHED_MATERIALS;
+            }
+            pbase.materialsRaw--;
+        }
+    } else {
+        if (pbase.materialsRaw > 0) {
+            pbase.planet.materialsFinished += PRODUCTION_RATE_RAW_TO_FINISHED;
             pbase.materialsRaw--;
         }
     }
 }
 
-var SUPPLY_RATE_RAW      = 50;
+var SUPPLY_RATE_RAW      = 35;
 var SUPPLY_RATE_FINISHED = 25;
-var SUPPLY_TIME          = 10;
+var SUPPLY_TIME          = 5;
 
 /**
  * Gather supplies dropped on planet
@@ -19135,12 +19248,12 @@ function supply(pbase) {
         } else {
             pbase.supplyTimeFinished = SUPPLY_TIME;
 
-            if (MAX_RAW_MATERIALS - pbase.materialsRaw < SUPPLY_RATE_FINISHED) {
-                pbase.planet.materialsRaw = 0;
-                pbase.materialsRaw += MAX_RAW_MATERIALS - pbase.materialsRaw;
+            if (MAX_FINISHED_MATERIALS - pbase.materialsFinished < SUPPLY_RATE_FINISHED) {
+                pbase.planet.materialsFinished = 0;
+                pbase.materialsFinished += MAX_FINISHED_MATERIALS - pbase.materialsFinished;
             } else {
-                pbase.planet.materialsRaw -= SUPPLY_RATE_FINISHED;
-                pbase.materialsRaw += SUPPLY_RATE_FINISHED;
+                pbase.planet.materialsFinished -= SUPPLY_RATE_FINISHED;
+                pbase.materialsFinished += SUPPLY_RATE_FINISHED;
             }
         }
     }
@@ -19172,7 +19285,8 @@ function process() {
 }
 
 module.exports = {
-    process : process
+    process                : process,
+    MAX_FINISHED_MATERIALS : MAX_FINISHED_MATERIALS
 };
 },{"../audio":107,"../entity":109,"../entity/projectile":118,"../entityDB":120,"../entitygrid":122}],113:[function(require,module,exports){
 var Audio      = require('../audio');
@@ -19181,10 +19295,53 @@ var EntityGrid = require('../entitygrid');
 
 var Projectile = require('../entity/projectile');
 
+var HARVEST_RATE_RAW = 50;
+var HARVEST_TIME     = 20;
+
+/**
+ * Harvest raw materials on the planet
+ * @param {object} pcolony
+ */
+function harvest(pcolony) {
+    if (pcolony.harvestTime > 0) {
+        pcolony.harvestTime--;
+    } else {
+        pcolony.harvestTime = HARVEST_TIME;
+        pcolony.planet.materialsRaw += HARVEST_RATE_RAW;
+    }
+}
+
+var REPAIR_COST_FINISHED = 10;
+var REPAIR_TIME          = 20;
+
+/**
+ * Repairs itself if damaged
+ * @param pcolony
+ */
+function repair(pcolony) {
+    var needsRepair =
+            pcolony.hp < pcolony.maxHp &&
+            pcolony.planet.pbase &&
+            pcolony.planet.pbase.materialsFinished > REPAIR_COST_FINISHED;
+
+    if (needsRepair) {
+        if (pcolony.repairTime > 0) {
+            pcolony.repairTime--;
+        } else {
+            pcolony.hp++;
+            pcolony.planet.pbase.materialsFinished -= REPAIR_COST_FINISHED;
+            pcolony.repairTime = REPAIR_TIME;
+        }
+    }
+}
+
 function processPColony(pcolony) {
     if (pcolony.hp > 0) {
         pcolony.x = pcolony.planet.x;
         pcolony.y = pcolony.planet.y;
+
+        harvest(pcolony);
+        repair(pcolony);
 
         EntityGrid.add(pcolony);
     } else {
@@ -19211,15 +19368,41 @@ var EntityGrid = require('../entitygrid');
 
 var Projectile = require('../entity/projectile');
 
+var REPAIR_COST_FINISHED = 2;
+var REPAIR_TIME          = 10;
+
+/**
+ * Repairs itself if damaged
+ * @param pcomm
+ */
+function repair(pcomm) {
+    var needsRepair =
+            pcomm.hp < pcomm.maxHp &&
+            pcomm.planet.pbase &&
+            pcomm.planet.pbase.materialsFinished > REPAIR_COST_FINISHED;
+
+    if (needsRepair) {
+        if (pcomm.repairTime > 0) {
+            pcomm.repairTime--;
+        } else {
+            pcomm.hp++;
+            pcomm.planet.pbase.materialsFinished -= REPAIR_COST_FINISHED;
+            pcomm.repairTime = REPAIR_TIME;
+        }
+    }
+}
+
 function processPComm(pcomm) {
     if (pcomm.hp > 0) {
         pcomm.x = pcomm.planet.x;
         pcomm.y = pcomm.planet.y;
 
+        repair(pcomm);
+
         EntityGrid.add(pcomm);
     } else {
         Audio.play('collide');
-        Projectile.explode(pcomm, 6);
+        Projectile.explode(pcomm, 4);
         EntityDB.remove(pcomm);
     }
 }
@@ -19238,13 +19421,88 @@ module.exports = {
 var Audio      = require('../audio');
 var EntityDB   = require('../entityDB');
 var EntityGrid = require('../entitygrid');
+var Random     = require('../random');
+var Entity     = require('../entity');
 
+var Fighter    = require('../entity/fighter');
+var Freighter  = require('../entity/freighter');
 var Projectile = require('../entity/projectile');
+
+var REPAIR_COST_FINISHED = 5;
+var REPAIR_TIME          = 10;
+
+/**
+ * Repairs itself if damaged
+ * @param plab
+ */
+function repair(plab) {
+    var needsRepair =
+            plab.hp < plab.maxHp &&
+            plab.planet.pbase &&
+            plab.planet.pbase.materialsFinished > REPAIR_COST_FINISHED;
+
+    if (needsRepair) {
+        if (plab.repairTime > 0) {
+            plab.repairTime--;
+        } else {
+            plab.hp++;
+            plab.planet.pbase.materialsFinished -= REPAIR_COST_FINISHED;
+            plab.repairTime = REPAIR_TIME;
+        }
+    }
+}
+
+var CONSTRUCTION = {
+    Freighter : { cost : 300, time : 70 },
+    Fighter   : { cost : 500, time : 60 },
+    Probe     : { cost : 15, time : 10 }
+};
+
+function construct(plab) {
+    if (plab.isConstructing) {
+        var canConstruct =
+                plab.planet.pbase &&
+                plab.planet.pbase.materialsFinished >= CONSTRUCTION[plab.constructionType].cost;
+
+        if (canConstruct) {
+            if (plab.constructionTime > 0) {
+                plab.constructionTime--;
+            } else {
+                var entityOptions = {
+                    x : plab.x + Random.float(-1, 1),
+                    y : plab.y + Random.float(-1, 1),
+                    team : plab.team
+                };
+
+                var entity = Entity.create(plab.constructionType, entityOptions);
+
+                if (plab.constructionType === 'Fighter') {
+                    Fighter.dockTo(entity, plab.planet);
+                } else if (plab.constructionType === 'Freighter') {
+                    Freighter.dockTo(entity, plab.planet);
+                }
+
+                plab.isConstructing   = false;
+                plab.constructionType = undefined;
+            }
+        }
+    }
+}
+
+function orderConstruction(plab, type) {
+    plab.isConstructing   = true;
+    plab.constructionTime = CONSTRUCTION[type].time;
+    plab.constructionType = type;
+
+}
 
 function processPLab(plab) {
     if (plab.hp > 0) {
         plab.x = plab.planet.x;
         plab.y = plab.planet.y;
+
+        repair(plab);
+        construct(plab);
 
         EntityGrid.add(plab);
     } else {
@@ -19262,9 +19520,10 @@ function process() {
 }
 
 module.exports = {
-    process : process
+    process           : process,
+    orderConstruction : orderConstruction
 };
-},{"../audio":107,"../entity/projectile":118,"../entityDB":120,"../entitygrid":122}],116:[function(require,module,exports){
+},{"../audio":107,"../entity":109,"../entity/fighter":110,"../entity/freighter":111,"../entity/projectile":118,"../entityDB":120,"../entitygrid":122,"../random":142}],116:[function(require,module,exports){
 var EntityDB   = require('../entityDB');
 var EntityGrid = require('../entitygrid');
 
@@ -19415,14 +19674,14 @@ var Random     = require('../random');
 
 var SAT = require('sat');
 
-function shoot(type, muzzle, shooter, projectileSpeed) {
+function shoot(type, muzzle, shooter, projectileSpeed, isExplosion) {
     var dx = Math.cos(shooter.rotation) * projectileSpeed;
     var dy = Math.sin(shooter.rotation) * projectileSpeed;
 
     Entity.create(type, {
         x    : muzzle.x + shooter.x,
         y    : muzzle.y + shooter.y,
-        team : shooter.team,
+        team : isExplosion ? Entity.TEAM.NONE : shooter.team,
         dx   : dx + (shooter.dx || 0),
         dy   : dy + (shooter.dy || 0)
     });
@@ -19473,7 +19732,7 @@ function process() {
         shotCannonNormal.forEach(move);
     }
 
-    var shotCannonHeavy  = EntityDB.getByType('ShotCannonHeavy');
+    var shotCannonHeavy = EntityDB.getByType('ShotCannonHeavy');
     if (shotCannonHeavy) {
         shotCannonHeavy.forEach(move);
     }
@@ -19486,7 +19745,7 @@ function explode(entity, fragmentCount) {
             x : Random.float(-10, 10),
             y : Random.float(-10, 10)
         };
-        shoot('ShotCannonNormal', muzzle, entity, Random.float(0, 2));
+        shoot('ShotCannonNormal', muzzle, entity, Random.float(0, 2), true);
     }
 }
 
@@ -19540,6 +19799,14 @@ function remove(entity) {
 
     if (entity.hp != null) {
         entity.hp = 0;
+    }
+
+    if (entity.planet) {
+        entity.planet[entity.type.toLowerCase()] = undefined;
+    }
+
+    if (entity.target) {
+        entity.target = undefined;
     }
 
     var byTypeIndex      = -1;
@@ -19638,15 +19905,17 @@ function getEntityToGridIndex(entity, dGx, dGy) {
 }
 
 /**
- * Add this entity into the Entity Grid
+ * Add this entity into the Entity Grid only if required
  * @param {object} entity
  */
 function add(entity) {
-    var index = getEntityToGridIndex(entity);
-    if (nextEntityGrid[index] instanceof Array) {
-        nextEntityGrid[index].push(entity);
-    } else {
-        nextEntityGrid[index] = [entity];
+    if (entity.hp > 0) {
+        var index = getEntityToGridIndex(entity);
+        if (nextEntityGrid[index] instanceof Array) {
+            nextEntityGrid[index].push(entity);
+        } else {
+            nextEntityGrid[index] = [entity];
+        }
     }
 
     return this;
@@ -19777,7 +20046,7 @@ function init() {
     }
 
     // Test entities
-    Entity.create('Fighter', {
+    var fighter = Entity.create('Fighter', {
         x        : Random.int(0, MAX_COORDINATE),
         y        : Random.int(0, MAX_COORDINATE),
         team     : Entity.TEAM.MAGENTA,
@@ -19785,20 +20054,16 @@ function init() {
     });
 
     Entity.create('Freighter', {
-        x        : Random.int(0, MAX_COORDINATE),
-        y        : Random.int(0, MAX_COORDINATE),
+        x        : fighter.x + Random.int(-100, 100),
+        y        : fighter.y + Random.int(-100, 100),
+        target   : fighter,
         team     : Entity.TEAM.MAGENTA,
         isDocked : true
     });
     Entity.create('Freighter', {
-        x        : Random.int(0, MAX_COORDINATE),
-        y        : Random.int(0, MAX_COORDINATE),
-        team     : Entity.TEAM.MAGENTA,
-        isDocked : true
-    });
-    Entity.create('Freighter', {
-        x        : Random.int(0, MAX_COORDINATE),
-        y        : Random.int(0, MAX_COORDINATE),
+        x        : fighter.x + Random.int(-100, 100),
+        y        : fighter.y + Random.int(-100, 100),
+        target   : fighter,
         team     : Entity.TEAM.MAGENTA,
         isDocked : true
     });
@@ -20697,24 +20962,29 @@ var lastX;
 var lastY;
 
 function centerOn(point) {
-    stage.x = width2 - point.x;
-    stage.y = height2 - point.y;
+    if(point) {
+        stage.x = width2 - point.x;
+        stage.y = height2 - point.y;
 
-    var dx = point.x - lastX;
-    var dy = point.y - lastY;
+        var dx = point.x - lastX;
+        var dy = point.y - lastY;
 
-    if (Radar.isEnabled) {
-        Radar.setPosition(point);
-    }
+        if (Radar.isEnabled) {
+            Radar.setPosition(point);
+        }
 
-    if (lastX === undefined && lastY === undefined) {
-        StarField.reinit(point);
+        if (lastX === undefined && lastY === undefined) {
+            StarField.reinit(point);
+        } else {
+            StarField.process(point, dx, dy);
+        }
+
+        lastX = point.x;
+        lastY = point.y;
     } else {
-        StarField.process(point, dx, dy);
+        lastX = undefined;
+        lastY = undefined;
     }
-
-    lastX = point.x;
-    lastY = point.y;
 }
 
 module.exports = {
@@ -20838,8 +21108,6 @@ var Radar = require('./radar');
 var fighter;
 
 function init() {
-    fighter = EntityDB.getByType('Fighter')[0];
-
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
 }
@@ -20895,50 +21163,55 @@ var DOCKED_ACCELERATION = 0.4;
 
 function process() {
     var gamepad  = GamePad.getState();
-    var isDocked = Fighter.isDocked(fighter);
 
-    if (fighter.hp > 0) {
-        if (!isDocked) {
-            if (keyDown.left_arrow) {
-                fighter.rotation -= DROTATION;
-            } else if (keyDown.right_arrow) {
-                fighter.rotation += DROTATION;
+    if (fighter) {
+        var isDocked = Fighter.isDocked(fighter);
+
+        if (fighter.hp > 0) {
+            if (!isDocked) {
+                if (keyDown.left_arrow) {
+                    fighter.rotation -= DROTATION;
+                } else if (keyDown.right_arrow) {
+                    fighter.rotation += DROTATION;
+                }
+
+                if (typeof gamepad.analogAngle === 'number') {
+                    fighter.rotation = gamepad.analogAngle;
+                }
             }
 
-            if (typeof gamepad.analogAngle === 'number') {
-                fighter.rotation = gamepad.analogAngle;
+            if (keyDown.f || gamepad.button0) {
+                Fighter.shoot(fighter);
             }
-        }
 
-        if (keyDown.f || gamepad.button0) {
-            Fighter.shoot(fighter);
-        }
+            // Hold button down for radar
+            Radar.isEnabled = keyDown.r || gamepad.button3;
 
-        // Hold button down for radar
-        Radar.isEnabled = keyDown.r || gamepad.button3;
+            if (keyDown.up_arrow || gamepad.button2) {
+                Fighter.undock(fighter);
+                var rotation = fighter.rotation;
 
-        if (keyDown.up_arrow || gamepad.button2) {
-            Fighter.undock(fighter);
-            var rotation = fighter.rotation;
+                Fighter.flameOn(fighter);
 
-            Fighter.flameOn(fighter);
+                if (isDocked) {
+                    Fighter.applyForce(
+                        fighter,
+                        Math.cos(rotation) * DOCKED_ACCELERATION,
+                        Math.sin(rotation) * DOCKED_ACCELERATION
+                    );
+                } else {
+                    Fighter.applyForce(
+                        fighter,
+                        Math.cos(rotation) * ACCELERATION,
+                        Math.sin(rotation) * ACCELERATION
+                    );
+                }
 
-            if (isDocked) {
-                Fighter.applyForce(
-                    fighter,
-                    Math.cos(rotation) * DOCKED_ACCELERATION,
-                    Math.sin(rotation) * DOCKED_ACCELERATION
-                );
             } else {
-                Fighter.applyForce(
-                    fighter,
-                    Math.cos(rotation) * ACCELERATION,
-                    Math.sin(rotation) * ACCELERATION
-                );
+                Fighter.flameOff(fighter);
             }
-
         } else {
-            Fighter.flameOff(fighter);
+            fighter = undefined;
         }
     }
 
@@ -20951,10 +21224,15 @@ function getFocalPoint() {
     return fighter;
 }
 
+function setFocalPoint(entity) {
+    fighter = entity;
+}
+
 module.exports = {
     init          : init,
     process       : process,
-    getFocalPoint : getFocalPoint
+    getFocalPoint : getFocalPoint,
+    setFocalPoint : setFocalPoint
 };
 },{"./entity/fighter":110,"./entityDB":120,"./gamepad":124,"./radar":141}],140:[function(require,module,exports){
 var Assets     = require('./assets');
@@ -21283,16 +21561,26 @@ function update() {
     if (now - lastUpdateTime > TIME_UPDATE) {
         var stars = EntityDB.getByType('Star');
         if (stars) {
+            // todo: correct implementation of this
+            if (stars.length != markerStar.length) {
+                markerStar = markerStar.slice(0, stars.length - 1);
+            }
             stars.forEach(FUNC_DRAW_STAR_MARKER);
         }
 
         var planets = EntityDB.getByType('Planet');
         if (planets) {
+            if (planets.length != markerPlanet.length) {
+                markerPlanet = markerPlanet.slice(0, planets.length - 1);
+            }
             planets.forEach(FUNC_DRAW_PLANET_MARKER);
         }
 
         var fighters = EntityDB.getByType('Fighter');
         if (fighters) {
+            if (fighters.length != markerFighter.length) {
+                markerFighter = markerFighter.slice(0, fighters.length - 1);
+            }
             fighters.forEach(function (f, i) {
                 drawMarker(markerFighter, Entity.getTeamColor(f.team), 1, f, i);
             });
@@ -21300,6 +21588,9 @@ function update() {
 
         var freighters = EntityDB.getByType('Freighter');
         if (freighters) {
+            if (freighters.length != markerFreighter.length) {
+                markerFreighter = markerFreighter.slice(0, freighters.length - 1);
+            }
             freighters.forEach(FUNC_DRAW_FREIGHTER_MARKER);
         }
 
@@ -21425,36 +21716,94 @@ module.exports = {
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
 
-function assignFreightersToPlanet(team, planet) {
-    var freighters = EntityDB.getByType('Freighter');
+var PLab = require('../entity/plab');
+
+var HumanInterface = require('../humanInterface');
+
+function assignFreightersToPlanet(team, freighters, planet) {
     if (freighters) {
         for (var i = freighters.length - 1; i >= 0; i--) {
             var freighter = freighters[i];
-            if (freighter.team === team && !freighter.target) {
+            var isIdle    = !freighter.target || (freighter.target && freighter.target.type !== 'Planet');
+            if (isIdle) {
                 freighter.target = planet;
                 freighter.planet = undefined;
+                break;
             }
         }
     }
 }
 
-function filterPlanetByTeamAndNoPBase(team, planet) {
-    return planet.team === team && !planet.pbase;
+function filterByNoPBaseOrPColony(entity) {
+    return !entity.pbase || !entity.pcolony;
+}
+
+function filterByTeam(team, entity) {
+    return entity.team === team;
+}
+
+function filterByIdlePLab(entity) {
+    return entity.pcolony && entity.plab && !entity.plab.isConstructing;
 }
 
 function processTeam(team) {
-    var planets = EntityDB.getByType('Planet');
-    planets
-        .filter(filterPlanetByTeamAndNoPBase.bind(null, team))
-        .forEach(assignFreightersToPlanet.bind(null, team));
+    var teamPlanet    = EntityDB.getByType('Planet');
+    var teamFighter   = EntityDB.getByType('Fighter');
+    var teamFreighter = EntityDB.getByType('Freighter');
+
+    var idleTeamPlanet;
+
+    if (teamFreighter) {
+        teamFreighter = teamFreighter.filter(filterByTeam.bind(null, team));
+    }
+
+    if (teamPlanet) {
+        teamPlanet = teamPlanet.filter(filterByTeam.bind(null, team));
+
+        teamPlanet
+            .filter(filterByNoPBaseOrPColony)
+            .forEach(assignFreightersToPlanet.bind(null, team, teamFreighter));
+
+        idleTeamPlanet = teamPlanet.filter(filterByIdlePLab);
+        idleTeamPlanet = idleTeamPlanet.length > 0 ? idleTeamPlanet : undefined;
+
+        if (teamFreighter && teamPlanet.length !== teamFreighter.length) {
+
+            if (idleTeamPlanet) {
+                PLab.orderConstruction(
+                    idleTeamPlanet[0].plab,
+                    'Freighter'
+                );
+            }
+        }
+    }
+
+    if (teamFighter) {
+        teamFighter = teamFighter.filter(filterByTeam.bind(null, team));
+    }
+
+    if (!HumanInterface.getFocalPoint()) {
+
+        if (teamFighter.length > 0) {
+            HumanInterface.setFocalPoint(teamFighter[0]);
+        } else {
+            if (idleTeamPlanet) {
+                PLab.orderConstruction(
+                    idleTeamPlanet[0].plab,
+                    'Fighter'
+                );
+            }
+        }
+    }
 }
 
-var STRATEGY_UPDATE_TIMEOUT    = 2000;
+var STRATEGY_UPDATE_TIMEOUT    = 3000;
 var lastTeamStrategyUpdateTime = 0;
 
 function process() {
     var now = Date.now();
     if (now - lastTeamStrategyUpdateTime > STRATEGY_UPDATE_TIMEOUT) {
+        // only process 1 team for now: human magenta
         processTeam(Entity.TEAM.MAGENTA);
         lastTeamStrategyUpdateTime = now;
     }
@@ -21463,4 +21812,4 @@ function process() {
 module.exports = {
     process : process
 };
-},{"../entity":109,"../entityDB":120}]},{},[140]);
+},{"../entity":109,"../entity/plab":115,"../entityDB":120,"../humanInterface":139}]},{},[140]);

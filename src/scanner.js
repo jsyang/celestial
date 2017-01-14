@@ -73,16 +73,26 @@ function update() {
     if (now - lastUpdateTime > TIME_UPDATE) {
         var stars = EntityDB.getByType('Star');
         if (stars) {
+            // todo: correct implementation of this
+            if (stars.length != markerStar.length) {
+                markerStar = markerStar.slice(0, stars.length - 1);
+            }
             stars.forEach(FUNC_DRAW_STAR_MARKER);
         }
 
         var planets = EntityDB.getByType('Planet');
         if (planets) {
+            if (planets.length != markerPlanet.length) {
+                markerPlanet = markerPlanet.slice(0, planets.length - 1);
+            }
             planets.forEach(FUNC_DRAW_PLANET_MARKER);
         }
 
         var fighters = EntityDB.getByType('Fighter');
         if (fighters) {
+            if (fighters.length != markerFighter.length) {
+                markerFighter = markerFighter.slice(0, fighters.length - 1);
+            }
             fighters.forEach(function (f, i) {
                 drawMarker(markerFighter, Entity.getTeamColor(f.team), 1, f, i);
             });
@@ -90,6 +100,9 @@ function update() {
 
         var freighters = EntityDB.getByType('Freighter');
         if (freighters) {
+            if (freighters.length != markerFreighter.length) {
+                markerFreighter = markerFreighter.slice(0, freighters.length - 1);
+            }
             freighters.forEach(FUNC_DRAW_FREIGHTER_MARKER);
         }
 

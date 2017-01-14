@@ -1,13 +1,15 @@
-var Audio    = require('../audio');
-var EntityDB = require('../entityDB');
-var Entity   = require('../entity');
+var Audio      = require('../audio');
+var EntityDB   = require('../entityDB');
+var Entity     = require('../entity');
+var EntityGrid = require('../entitygrid');
 
 var Projectile = require('../entity/projectile');
+var PBase      = require('../entity/pbase');
 
 var DEGREES90 = Math.PI * 0.5;
 
 var TURN_RATE = 0.07;
-var SPEED     = 10;//1.5;
+var SPEED     = 2.5;
 
 function move(freighter) {
     var r2 = Entity.getDistSquared(freighter, freighter.target);
@@ -38,14 +40,49 @@ function move(freighter) {
 
         freighter.x += Math.cos(rotation) * SPEED;
         freighter.y += Math.sin(rotation) * SPEED;
-        freighter.flameOn();
+        undock(freighter);
     } else {
-        freighter.planet   = freighter.target;
-        freighter.target   = undefined;
+        dockTo(freighter, freighter.target);
         freighter.rotation = Entity.getAngleFromTo(freighter.planet, freighter) + DEGREES90;
+    }
+}
+
+var DIST_FOLLOW2 = 80 * 80;
+
+function follow(freighter) {
+    var r2 = Entity.getDistSquared(freighter, freighter.target);
+
+    if (r2 > DIST_FOLLOW2) {
+        var rotation        = freighter.rotation;
+        var desiredRotation = Entity.getAngleFromTo(freighter, freighter.target);
+
+        var turnMagnitude = Math.abs(desiredRotation - rotation);
+        if (turnMagnitude > Math.PI) {
+            if (rotation > 0) {
+                freighter.rotation += TURN_RATE;
+            } else {
+                freighter.rotation -= TURN_RATE;
+            }
+        } else {
+            if (turnMagnitude > TURN_RATE) {
+                if (rotation > desiredRotation) {
+                    freighter.rotation -= TURN_RATE;
+                } else {
+                    freighter.rotation += TURN_RATE;
+                }
+            } else {
+                freighter.rotation = desiredRotation;
+            }
+        }
+
+        rotation = freighter.rotation;
+
+        freighter.x += Math.cos(rotation) * SPEED;
+        freighter.y += Math.sin(rotation) * SPEED;
+        undock(freighter);
+    } else {
         freighter.flameOff();
     }
-
 }
 
 var ORBIT_ROTATION = 0.00025;
@@ -97,10 +134,37 @@ function createPColony(freighter) {
     EntityDB.remove(freighter);
 }
 
-function dumpSupply(freighter) {
-    freighter.planet.materialsFinished = freighter.materialsFinished;
-    freighter.materialsFinished        = 0;
-    freighter.unloadSupply();
+var MAX_MATERIALS_FINISHED = 500;
+
+function loadOrDumpSupply(freighter) {
+    var pbase = freighter.planet.pbase;
+
+    if (pbase.materialsFinished === 0) {
+        pbase.materialsFinished += freighter.materialsFinished;
+        freighter.materialsFinished = 0;
+
+        var diffMaterials = 0;
+        if (pbase.materialsFinished > PBase.MAX_FINISHED_MATERIALS) {
+            diffMaterials               = pbase.materialsFinished - PBase.MAX_FINISHED_MATERIALS;
+            pbase.materialsFinished     = PBase.MAX_MATERIALS_FINISHED;
+            freighter.materialsFinished = diffMaterials;
+            freighter.unloadSupply();
+        } else {
+            EntityDB.remove(freighter);
+        }
+
+    } else if (freighter.planet.materialsFinished > 0 && freighter.materialsFinished < MAX_MATERIALS_FINISHED) {
+        var materialsToLoad = MAX_MATERIALS_FINISHED - freighter.materialsFinished;
+        if (materialsToLoad >= freighter.planet.materialsFinished) {
+            freighter.materialsFinished += freighter.planet.materialsFinished;
+            freighter.planet.materialsFinished = 0;
+        } else {
+            freighter.materialsFinished += materialsToLoad;
+            freighter.planet.materialsFinished -= materialsToLoad;
+        }
+
+        freighter.loadSupply();
+    }
 }
 
 /** How long it takes before cargo can be used after reaching orbit **/
@@ -118,10 +182,20 @@ function supply(freighter) {
             } else if (!freighter.planet.pcolony) {
                 createPColony(freighter);
             } else {
-                dumpSupply(freighter);
+                loadOrDumpSupply(freighter);
             }
         }
     }
+}
+
+function undock(freighter) {
+    freighter.flameOn();
+}
+
+function dockTo(freighter, planet) {
+    freighter.planet = planet;
+    freighter.target = undefined;
+    freighter.flameOff();
 }
 
 function processFreighter(freighter) {
@@ -130,13 +204,18 @@ function processFreighter(freighter) {
             freighter.renderHit();
 
             if (freighter.target) {
-                move(freighter);
+                if (freighter.target.type === 'Planet') {
+                    move(freighter);
+                } else {
+                    follow(freighter);
+                }
+
             } else if (freighter.planet) {
                 orbit(freighter);
-
                 supply(freighter);
-
             }
+
+            EntityGrid.add(freighter);
         } else {
             explode(freighter);
         }
@@ -144,11 +223,14 @@ function processFreighter(freighter) {
 }
 
 function process() {
-    EntityDB.getByType('Freighter')
-        .forEach(processFreighter);
+    var freighter = EntityDB.getByType('Freighter');
+    if (freighter) {
+        freighter.forEach(processFreighter);
+    }
 
 }
 
 module.exports = {
-    process : process
+    process : process,
+    dockTo  : dockTo
 };

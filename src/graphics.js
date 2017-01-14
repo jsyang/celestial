@@ -69,24 +69,29 @@ var lastX;
 var lastY;
 
 function centerOn(point) {
-    stage.x = width2 - point.x;
-    stage.y = height2 - point.y;
+    if(point) {
+        stage.x = width2 - point.x;
+        stage.y = height2 - point.y;
 
-    var dx = point.x - lastX;
-    var dy = point.y - lastY;
+        var dx = point.x - lastX;
+        var dy = point.y - lastY;
 
-    if (Radar.isEnabled) {
-        Radar.setPosition(point);
-    }
+        if (Radar.isEnabled) {
+            Radar.setPosition(point);
+        }
 
-    if (lastX === undefined && lastY === undefined) {
-        StarField.reinit(point);
+        if (lastX === undefined && lastY === undefined) {
+            StarField.reinit(point);
+        } else {
+            StarField.process(point, dx, dy);
+        }
+
+        lastX = point.x;
+        lastY = point.y;
     } else {
-        StarField.process(point, dx, dy);
+        lastX = undefined;
+        lastY = undefined;
     }
-
-    lastX = point.x;
-    lastY = point.y;
 }
 
 module.exports = {

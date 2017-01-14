@@ -256,6 +256,7 @@ function create(type, options) {
 
         entity.MASS          = 500;
         entity.DIST_SURFACE2 = 200 * 200;
+        entity.hp            = 10000;
 
     } else if (type === 'Planet') {
         entity = createPlanet(options);
@@ -268,12 +269,16 @@ function create(type, options) {
         entity.orbitDistance = options.orbitDistance;
         entity.star          = options.star;
         entity.orbitRotation = options.orbitRotation || 0;
+        entity.hp            = 2000;
 
         // Reference to resident entities
         entity.pbase   = options.pbase;
         entity.plab    = options.plab;
         entity.pcolony = options.pcolony;
         entity.pcomm   = options.pcomm;
+
+        entity.materialsRaw      = options.materialsRaw || 100;
+        entity.materialsFinished = options.materialsFinished || 0;
 
     } else if (type === 'ShotCannonHeavy') {
         entity = Geometry(Shot.cannon_heavy, options);
@@ -292,22 +297,31 @@ function create(type, options) {
     } else if (type === 'PColony') {
         entity = createPColony(options);
 
-        entity.hp     = options.hp || 20;
-        entity.maxHp  = options.maxHp || 20;
+        entity.hp     = options.hp || 30;
+        entity.maxHp  = options.maxHp || 30;
         entity.planet = options.planet;
+
+        entity.harvestTime = options.harvestTime || 0;
+        entity.repairTime  = options.repairTime || 0;
 
     } else if (type === 'PLab') {
         entity = createPLab(options);
 
-        entity.hp     = options.hp || 20;
-        entity.maxHp  = options.maxHp || 20;
-        entity.planet = options.planet;
+        entity.hp               = options.hp || 20;
+        entity.maxHp            = options.maxHp || 20;
+        entity.planet           = options.planet;
+        entity.repairTime       = options.repairTime || 0;
+        entity.isConstructing   = options.isConstructing || false;
+        entity.constructionType = options.constructionType;
+        entity.constructionTime = options.constructionTime || 0;
+
     } else if (type === 'PComm') {
         entity = createPComm(options);
 
-        entity.hp     = options.hp || 20;
-        entity.maxHp  = options.maxHp || 20;
-        entity.planet = options.planet;
+        entity.hp         = options.hp || 20;
+        entity.maxHp      = options.maxHp || 20;
+        entity.planet     = options.planet;
+        entity.repairTime = options.repairTime || 0;
 
     } else if (type === 'PBase') {
         entity        = createPBase(options);
@@ -315,11 +329,12 @@ function create(type, options) {
         entity.maxHp  = options.maxHp || 20;
         entity.planet = options.planet;
 
+        entity.constructionTime   = options.constructionTime || 0;
         entity.repairTime         = options.repairTime || 0;
         entity.supplyTimeRaw      = options.supplyTimeRaw || 0;
         entity.supplyTimeFinished = options.supplyTimeFinished || 0;
         entity.materialsRaw       = options.materialsRaw || 0;
-        entity.materialsFinished  = options.materialsFinished || 100;
+        entity.materialsFinished  = options.materialsFinished || 0;
 
     } else if (type === 'Fighter') {
         entity = createFighter(options);

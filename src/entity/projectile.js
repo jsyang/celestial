@@ -6,14 +6,14 @@ var Random     = require('../random');
 
 var SAT = require('sat');
 
-function shoot(type, muzzle, shooter, projectileSpeed) {
+function shoot(type, muzzle, shooter, projectileSpeed, isExplosion) {
     var dx = Math.cos(shooter.rotation) * projectileSpeed;
     var dy = Math.sin(shooter.rotation) * projectileSpeed;
 
     Entity.create(type, {
         x    : muzzle.x + shooter.x,
         y    : muzzle.y + shooter.y,
-        team : shooter.team,
+        team : isExplosion ? Entity.TEAM.NONE : shooter.team,
         dx   : dx + (shooter.dx || 0),
         dy   : dy + (shooter.dy || 0)
     });
@@ -64,7 +64,7 @@ function process() {
         shotCannonNormal.forEach(move);
     }
 
-    var shotCannonHeavy  = EntityDB.getByType('ShotCannonHeavy');
+    var shotCannonHeavy = EntityDB.getByType('ShotCannonHeavy');
     if (shotCannonHeavy) {
         shotCannonHeavy.forEach(move);
     }
@@ -77,7 +77,7 @@ function explode(entity, fragmentCount) {
             x : Random.float(-10, 10),
             y : Random.float(-10, 10)
         };
-        shoot('ShotCannonNormal', muzzle, entity, Random.float(0, 2));
+        shoot('ShotCannonNormal', muzzle, entity, Random.float(0, 2), true);
     }
 }
 

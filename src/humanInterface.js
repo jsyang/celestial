@@ -7,8 +7,6 @@ var Radar = require('./radar');
 var fighter;
 
 function init() {
-    fighter = EntityDB.getByType('Fighter')[0];
-
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
 }
@@ -64,50 +62,55 @@ var DOCKED_ACCELERATION = 0.4;
 
 function process() {
     var gamepad  = GamePad.getState();
-    var isDocked = Fighter.isDocked(fighter);
 
-    if (fighter.hp > 0) {
-        if (!isDocked) {
-            if (keyDown.left_arrow) {
-                fighter.rotation -= DROTATION;
-            } else if (keyDown.right_arrow) {
-                fighter.rotation += DROTATION;
+    if (fighter) {
+        var isDocked = Fighter.isDocked(fighter);
+
+        if (fighter.hp > 0) {
+            if (!isDocked) {
+                if (keyDown.left_arrow) {
+                    fighter.rotation -= DROTATION;
+                } else if (keyDown.right_arrow) {
+                    fighter.rotation += DROTATION;
+                }
+
+                if (typeof gamepad.analogAngle === 'number') {
+                    fighter.rotation = gamepad.analogAngle;
+                }
             }
 
-            if (typeof gamepad.analogAngle === 'number') {
-                fighter.rotation = gamepad.analogAngle;
+            if (keyDown.f || gamepad.button0) {
+                Fighter.shoot(fighter);
             }
-        }
 
-        if (keyDown.f || gamepad.button0) {
-            Fighter.shoot(fighter);
-        }
+            // Hold button down for radar
+            Radar.isEnabled = keyDown.r || gamepad.button3;
 
-        // Hold button down for radar
-        Radar.isEnabled = keyDown.r || gamepad.button3;
+            if (keyDown.up_arrow || gamepad.button2) {
+                Fighter.undock(fighter);
+                var rotation = fighter.rotation;
 
-        if (keyDown.up_arrow || gamepad.button2) {
-            Fighter.undock(fighter);
-            var rotation = fighter.rotation;
+                Fighter.flameOn(fighter);
 
-            Fighter.flameOn(fighter);
+                if (isDocked) {
+                    Fighter.applyForce(
+                        fighter,
+                        Math.cos(rotation) * DOCKED_ACCELERATION,
+                        Math.sin(rotation) * DOCKED_ACCELERATION
+                    );
+                } else {
+                    Fighter.applyForce(
+                        fighter,
+                        Math.cos(rotation) * ACCELERATION,
+                        Math.sin(rotation) * ACCELERATION
+                    );
+                }
 
-            if (isDocked) {
-                Fighter.applyForce(
-                    fighter,
-                    Math.cos(rotation) * DOCKED_ACCELERATION,
-                    Math.sin(rotation) * DOCKED_ACCELERATION
-                );
             } else {
-                Fighter.applyForce(
-                    fighter,
-                    Math.cos(rotation) * ACCELERATION,
-                    Math.sin(rotation) * ACCELERATION
-                );
+                Fighter.flameOff(fighter);
             }
-
         } else {
-            Fighter.flameOff(fighter);
+            fighter = undefined;
         }
     }
 
@@ -120,8 +123,13 @@ function getFocalPoint() {
     return fighter;
 }
 
+function setFocalPoint(entity) {
+    fighter = entity;
+}
+
 module.exports = {
     init          : init,
     process       : process,
-    getFocalPoint : getFocalPoint
+    getFocalPoint : getFocalPoint,
+    setFocalPoint : setFocalPoint
 };

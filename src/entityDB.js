@@ -30,6 +30,14 @@ function remove(entity) {
         entity.hp = 0;
     }
 
+    if (entity.planet) {
+        entity.planet[entity.type.toLowerCase()] = undefined;
+    }
+
+    if (entity.target) {
+        entity.target = undefined;
+    }
+
     var byTypeIndex      = -1;
     var byTypeCollection = byType[entity.type];
     for (i = byTypeCollection.length - 1; i >= 0; i--) {
