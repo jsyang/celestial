@@ -28,7 +28,7 @@ function build(construction) {
 }
 
 /**
- *
+ * Constructs structures that occupy planet surface or orbit
  * @param {object} entity
  */
 function process(entity) {

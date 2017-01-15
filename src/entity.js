@@ -2,17 +2,16 @@ var Graphics = require('./graphics');
 var Geometry = require('./geometry');
 var EntityDB = require('./entityDB');
 
-var Star      = require('./geometry/Star.json');
-var Planet    = require('./geometry/Planet.json');
+var Star   = require('./geometry/Star.json');
+var Planet = require('./geometry/Planet.json');
 
-var PBase     = require('./geometry/PBase.json');
-var PComm     = require('./geometry/PComm.json');
-var PColony   = require('./geometry/PColony.json');
-var PLab      = require('./geometry/PLab.json');
-var SpacePort = require('./geometry/SpacePort.json');
-var SpaceDock = require('./geometry/SpaceDock.json');
+var PBase       = require('./geometry/PBase.json');
+var PComm       = require('./geometry/PComm.json');
+var PColony     = require('./geometry/PColony.json');
+var PLab        = require('./geometry/PLab.json');
+var SpacePort   = require('./geometry/SpacePort.json');
+var SpaceDock   = require('./geometry/SpaceDock.json');
 var SensorArray = require('./geometry/SensorArray.json');
-
 
 var Shot      = require('./geometry/Shot.json');
 var Fighter   = require('./geometry/Fighter.json');
@@ -259,22 +258,25 @@ function create(type, options) {
     if (type === 'Star') {
         entity = Geometry(Star, options);
 
+        entity.hp            = 10000;
         entity.MASS          = 500;
         entity.DIST_SURFACE2 = 200 * 200;
-        entity.hp            = 10000;
 
     } else if (type === 'Planet') {
         entity = createPlanet(options);
-        /**
-         * Squared distance within which this body imparts gravitational forces something
-         * @type {number}
-         */
-        entity.MASS = 100;
-        entity.DIST_SURFACE2 = 105 * 105;
-        entity.orbitDistance = options.orbitDistance;
-        entity.star          = options.star;
-        entity.orbitRotation = options.orbitRotation || 0;
+
         entity.hp            = 2000;
+        entity.MASS          = 100;
+        entity.DIST_SURFACE2 = 105 * 105;
+
+        entity.canOrbitStar  = true;
+        entity.star          = options.star;
+        entity.orbitDistance = options.orbitDistance;
+        entity.orbitRotation = options.orbitRotation;
+
+        entity.canStoreMaterial  = true;
+        entity.materialsRaw      = options.materialsRaw || 100;
+        entity.materialsFinished = options.materialsFinished;
 
         // Reference to resident entities
         entity.pbase   = options.pbase;
@@ -282,23 +284,30 @@ function create(type, options) {
         entity.pcolony = options.pcolony;
         entity.pcomm   = options.pcomm;
 
-        entity.materialsRaw      = options.materialsRaw || 100;
-        entity.materialsFinished = options.materialsFinished || 0;
-
     } else if (type === 'ShotCannonHeavy') {
         entity = Geometry(Shot.cannon_heavy, options);
 
-        entity.dx     = options.dx || 0;
-        entity.dy     = options.dy || 0;
-        entity.hp     = options.hp || 50;
-        entity.damage = 2;
+        entity.hp = options.hp || 50;
+
+        entity.canMoveLinearly = true;
+        entity.dx              = options.dx;
+        entity.dy              = options.dy;
+
+        entity.canDamage = true;
+        entity.damageHp  = 2;
+
+        entity.canMetabolize = true;
     } else if (type === 'ShotCannonNormal') {
         entity = Geometry(Shot.cannon_normal, options);
 
-        entity.dx     = options.dx || 0;
-        entity.dy     = options.dy || 0;
-        entity.hp     = options.hp || 50;
-        entity.damage = 1;
+        entity.hp = options.hp || 50;
+
+        entity.canMoveLinearly = true;
+        entity.dx              = options.dx;
+        entity.dy              = options.dy;
+
+        entity.canDamage     = true;
+        entity.canMetabolize = true;
     } else if (type === 'PColony') {
         entity = createPColony(options);
 
@@ -306,28 +315,38 @@ function create(type, options) {
         entity.maxHp  = options.maxHp || 30;
         entity.planet = options.planet;
 
-        entity.harvestTime = options.harvestTime || 0;
-        entity.repairTime  = options.repairTime || 0;
+        entity.canMine         = true;
+        entity.canExplode      = true;
+        entity.canOccupyPlanet = true;
+
+        entity.canRepair            = true;
+        entity.REPAIR_COST_FINISHED = 10;
+        entity.REPAIR_TIME          = 20;
 
     } else if (type === 'PLab') {
         entity = createPLab(options);
 
-        entity.hp               = options.hp || 20;
-        entity.maxHp            = options.maxHp || 20;
-        entity.planet           = options.planet;
-        entity.repairTime       = options.repairTime || 0;
-        entity.isConstructing   = options.isConstructing || false;
-        entity.constructionType = options.constructionType;
-        entity.constructionTime = options.constructionTime || 0;
+        entity.hp     = options.hp || 20;
+        entity.maxHp  = options.maxHp || 20;
+        entity.planet = options.planet;
+
+        entity.canExplode      = true;
+        entity.canOccupyPlanet = true;
+        entity.canManufacture  = true;
 
     } else if (type === 'PComm') {
         entity = createPComm(options);
 
-        entity.hp         = options.hp || 20;
-        entity.maxHp      = options.maxHp || 20;
-        entity.planet     = options.planet;
-        entity.repairTime = options.repairTime || 0;
+        entity.hp     = options.hp || 20;
+        entity.maxHp  = options.maxHp || 20;
+        entity.planet = options.planet;
 
+        entity.canExplode      = true;
+        entity.canRepair       = true;
+        entity.canOccupyPlanet = true;
+
+        entity.REPAIR_COST_FINISHED = 2;
+        entity.REPAIR_TIME          = 10;
     } else if (type === 'PBase') {
         entity = createPBase(options);
 
@@ -347,33 +366,23 @@ function create(type, options) {
         entity.materialsRaw      = options.materialsRaw || 0;
         entity.materialsFinished = options.materialsFinished || 0;
 
-    } else if (type === 'Fighter') {
-        entity = createFighter(options);
-
-        entity.MASS = 10;
-
-        entity.hp       = 6;
-        entity.isDocked = options.isDocked || false;
-        entity.dockedTo = options.dockedTo;
-        entity.dx       = options.dx || 0;
-        entity.dy       = options.dy || 0;
-        entity.rotation = options.rotation || 0;
-    } else if (type === 'Probe') {
-        entity = createProbe(options);
-
-        entity.AUDIO_HIT   = 'hit2';
-        entity.hp          = options.hp || 2;
-        entity.hasDied     = false;
-        entity.hitTime     = -1;
-        entity.patrolIndex = 0;
-        entity.rotation    = options.rotation || 0;
     } else if (type === 'SpacePort') {
         entity = createSpacePort(options);
 
-        entity.hp         = options.hp || 20;
-        entity.maxHp      = options.maxHp || 20;
-        entity.planet     = options.planet;
-        entity.repairTime = options.repairTime || 0;
+        entity.hp     = options.hp || 20;
+        entity.maxHp  = options.maxHp || 20;
+        entity.planet = options.planet;
+
+        entity.canOrbitPlanet = true;
+        entity.canManufacture = true;
+        // todo
+
+        entity.canExplode          = true;
+        entity.EXPLOSION_FRAGMENTS = 12;
+
+        entity.canStoreMaterial  = true;
+        entity.materialsRaw      = options.materialsRaw || 0;
+        entity.materialsFinished = options.materialsFinished || 0;
 
     } else if (type === 'SpaceDock') {
         entity = createSpaceDock(options);
@@ -391,11 +400,37 @@ function create(type, options) {
         entity.planet     = options.planet;
         entity.repairTime = options.repairTime || 0;
 
+    } else if (type === 'Fighter') {
+        entity = createFighter(options);
+
+        entity.MASS = 10;
+
+        entity.hp       = 6;
+        entity.isDocked = options.isDocked || false;
+        entity.dockedTo = options.dockedTo;
+        entity.dx       = options.dx || 0;
+        entity.dy       = options.dy || 0;
+        entity.rotation = options.rotation || 0;
+
+        entity.canExplode = true;
+        
+    } else if (type === 'Probe') {
+        entity = createProbe(options);
+
+        entity.AUDIO_HIT   = 'hit2';
+        entity.hp          = options.hp || 2;
+        entity.hasDied     = false;
+        entity.hitTime     = -1;
+        entity.patrolIndex = 0;
+        entity.rotation    = options.rotation || 0;
+
     } else if (type === 'Freighter') {
         entity         = createFreighter(options);
         entity.hitTime = -1;
         entity.hp      = options.hp || 10;
         entity.maxHp   = options.maxHp || 10;
+
+        entity.canExplode = true;
 
         entity.target            = options.target;
         entity.planet            = options.planet;

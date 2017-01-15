@@ -1,28 +1,19 @@
 var Assets     = require('./assets');
 var Graphics   = require('./graphics');
 var GameField  = require('./gamefield');
+var EntityDB   = require('./entityDB');
 var EntityGrid = require('./entitygrid');
-var Scanner    = require('./scanner');
-var Gravity    = require('./gravity');
-var Team       = require('./system/team');
+
+var Scanner = require('./scanner');
+var Gravity = require('./gravity');
 
 var HumanInterface = require('./humanInterface');
+var Component      = require('./component');
+var Team           = require('./system/team');
 
-var Projectile = require('./entity/projectile');
-var Planet     = require('./entity/planet');
-var Star       = require('./entity/star');
 var Fighter    = require('./entity/fighter');
 var Freighter  = require('./entity/freighter');
 var Probe      = require('./entity/probe');
-
-var PBase   = require('./entity/pbase');
-var PColony = require('./entity/pcolony');
-var PLab    = require('./entity/plab');
-var PComm   = require('./entity/pcomm');
-
-var SpacePort = require('./entity/spaceport');
-var SpaceDock = require('./entity/spacedock');
-var Sensor = require('./entity/spacedock');
 
 // // // // Game loop // // // //
 
@@ -62,20 +53,39 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
 
 // // // // Game logic // // // //
 
+function applyComponentBehaviors(type) {
+    var entity = EntityDB.getByType(type);
+    if (entity) {
+        entity.forEach(Component.process);
+    }
+}
+
+var SEQUENCE_ENTITY_UPDATE = [
+    'Star',
+    'Planet',
+    'PBase',
+    'PColony',
+    'PComm',
+    'PLab',
+
+//    'Fighter',
+//    'Freighter',
+//    'Probe',
+
+    'ShotCannonNormal',
+    'ShotCannonHeavy'
+];
+
 function update() {
     Team.process();
     HumanInterface.process();
 
-    Planet.process();
-    PBase.process();
-    PColony.process();
-    PComm.process();
-    PLab.process();
-    Star.process();
+    SEQUENCE_ENTITY_UPDATE
+        .forEach(applyComponentBehaviors);
+
     Fighter.process();
     Freighter.process();
     Probe.process();
-    Projectile.process();
 
     Gravity.update();
     Scanner.update();

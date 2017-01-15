@@ -4,8 +4,6 @@ var EntityDB   = require('../entityDB');
 var EntityGrid = require('../entityGrid');
 var Radar      = require('../radar');
 
-var Projectile = require('../entity/projectile');
-
 var shotType = 'ShotCannonNormal';
 
 var AUDIO_SHOT = {
@@ -16,12 +14,26 @@ var AUDIO_SHOT = {
 var TIME_BETWEEN_SHOTS = 100;
 var lastShotTime       = 0;
 
+function _shoot(type, muzzle, shooter, projectileSpeed) {
+    var dx = Math.cos(shooter.rotation) * projectileSpeed;
+    var dy = Math.sin(shooter.rotation) * projectileSpeed;
+
+    Entity.create(type, {
+        x    : muzzle.x + shooter.x,
+        y    : muzzle.y + shooter.y,
+        team : shooter.team,
+        dx   : dx + (shooter.dx || 0),
+        dy   : dy + (shooter.dy || 0)
+    });
+}
+
 function shoot(f) {
     if (f.hp > 0) {
         var now = Date.now();
 
         if (now - lastShotTime > TIME_BETWEEN_SHOTS) {
-            Projectile.shoot(
+
+            _shoot(
                 shotType,
                 f.collision.calcPoints[1],
                 f,
@@ -141,7 +153,6 @@ function isDocked(f) {
 function crash(f) {
     EntityDB.remove(f);
     Audio.play('collide');
-    Projectile.explode(f, 6);
 }
 
 module.exports = {

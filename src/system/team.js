@@ -2,8 +2,6 @@ var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
 var Random   = require('../random');
 
-var PLab = require('../entity/plab');
-
 var HumanInterface = require('../humanInterface');
 
 function assignFreightersToPlanet(freighters, planet) {
@@ -29,15 +27,15 @@ function filterByTeam(team, entity) {
 }
 
 function filterByIdlePLab(entity) {
-    return entity.pcolony && entity.plab && !entity.plab.isConstructing;
+    return entity.pcolony && entity.plab && !entity.plab.isManufacturing;
 }
 
 function constructOnRandomPlanet(idleTeamPlanet, type) {
     if (idleTeamPlanet) {
-        PLab.orderConstruction(
-            Random.arrayElement(idleTeamPlanet).plab,
-            type
-        );
+        var plab = Random.arrayElement(idleTeamPlanet).plab;
+        if (plab) {
+            plab.orderManufacture(type);
+        }
     }
 }
 

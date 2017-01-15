@@ -3,9 +3,6 @@ var EntityDB   = require('../entityDB');
 var Entity     = require('../entity');
 var EntityGrid = require('../entitygrid');
 
-var Projectile = require('../entity/projectile');
-var PBase      = require('../entity/pbase');
-
 var DEGREES90 = Math.PI * 0.5;
 
 var TURN_RATE = 0.07;
@@ -100,8 +97,6 @@ function orbit(freighter) {
 function explode(freighter) {
     EntityDB.remove(freighter);
     Audio.play('collide');
-
-    Projectile.explode(freighter, 6);
 }
 
 function createPBase(freighter) {

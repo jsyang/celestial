@@ -19,11 +19,8 @@ Works well with game pads:
 
 ## todo
 
-- implement starport
-- implement sensor array
 - implement structure status displays
 - add unit tests
-- planet base defences
 
 - multiple fighters
 - strategic enemy AI
