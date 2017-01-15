@@ -25,8 +25,8 @@ function createStar(stage, options) {
 }
 
 var STAR_BRIGHT = {
-    size  : 1,
-    alpha : 0.92,
+    size  : 2,
+    alpha : 0.8,
     x     : 0,
     y     : 0
 };

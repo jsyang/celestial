@@ -102,10 +102,15 @@ function createFighter(options) {
     flame1.graphics.visible = false;
     flame2.graphics.visible = false;
 
-    fighter.flame1On  = setVisible.bind(fighter, 0, true);
-    fighter.flame1Off = setVisible.bind(fighter, 0, false);
-    fighter.flame2On  = setVisible.bind(fighter, 1, true);
-    fighter.flame2Off = setVisible.bind(fighter, 1, false);
+    fighter.flameOn = function () {
+        setVisible.call(this, 0, true);
+        setVisible.call(this, 1, true);
+    };
+
+    fighter.flameOff = function () {
+        setVisible.call(this, 0, false);
+        setVisible.call(this, 1, false);
+    };
 
     return fighter;
 }
@@ -403,17 +408,28 @@ function create(type, options) {
     } else if (type === 'Fighter') {
         entity = createFighter(options);
 
-        entity.MASS = 10;
+        entity.hp    = entity.hp || 6;
+        entity.maxHp = entity.maxHp || 6;
+        entity.MASS  = 10;
 
-        entity.hp       = 6;
-        entity.isDocked = options.isDocked || false;
-        entity.dockedTo = options.dockedTo;
+        entity.canExplode = true;
+
+        entity.canShootCannon       = true;
+        entity.cannonGetMuzzleFuncs = [
+            function getFighterMuzzle(f) {
+                return f.collision.calcPoints[1];
+            }
+        ];
+
+        entity.canLimitSpeed   = true;
+        entity.canMoveLinearly = true;
+        entity.canAccelerate   = true;
+        entity.canDockPlanet   = true;
+
         entity.dx       = options.dx || 0;
         entity.dy       = options.dy || 0;
         entity.rotation = options.rotation || 0;
 
-        entity.canExplode = true;
-        
     } else if (type === 'Probe') {
         entity = createProbe(options);
 

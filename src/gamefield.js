@@ -69,25 +69,22 @@ function init() {
 
     // Test entities
     var fighter = Entity.create('Fighter', {
-        x        : Random.int(0, MAX_COORDINATE),
-        y        : Random.int(0, MAX_COORDINATE),
-        team     : Entity.TEAM.MAGENTA,
-        isDocked : true
+        x    : Random.int(0, MAX_COORDINATE),
+        y    : Random.int(0, MAX_COORDINATE),
+        team : Entity.TEAM.MAGENTA
     });
 
     Entity.create('Freighter', {
-        x        : fighter.x + Random.int(-100, 100),
-        y        : fighter.y + Random.int(-100, 100),
-        target   : fighter,
-        team     : Entity.TEAM.MAGENTA,
-        isDocked : true
+        x      : fighter.x + Random.int(-100, 100),
+        y      : fighter.y + Random.int(-100, 100),
+        target : fighter,
+        team   : Entity.TEAM.MAGENTA
     });
     Entity.create('Freighter', {
-        x        : fighter.x + Random.int(-100, 100),
-        y        : fighter.y + Random.int(-100, 100),
-        target   : fighter,
-        team     : Entity.TEAM.MAGENTA,
-        isDocked : true
+        x      : fighter.x + Random.int(-100, 100),
+        y      : fighter.y + Random.int(-100, 100),
+        target : fighter,
+        team   : Entity.TEAM.MAGENTA
     });
 }
 

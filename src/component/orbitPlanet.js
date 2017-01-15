@@ -1,6 +1,6 @@
 var DEFAULTS = {
     D_ROTATION    : 0.0001,
-    orbitDistance : 1800,
+    orbitDistance : 105,
     orbitRotation : 0
 };
 

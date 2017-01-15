@@ -1,18 +1,20 @@
 /**
  * Gravity and related collisions
- * todo: move this into fighter and some of the constants into entity
  */
 
 var EntityDB   = require('./entityDB');
 var Entity     = require('./entity');
 var EntityGrid = require('./entitygrid');
 
-var Fighter = require('./entity/fighter');
-
 var ERROR_MARGIN_LANDING_ROTATION = Math.PI / 4;
 var ERROR_MARGIN_LANDING_SPEED2   = 2.1 * 2.1;
 
 var PIPI = Math.PI * 2;
+
+function crash(entity) {
+    entity.explode();
+    EntityDB.remove(entity);
+}
 
 function attractToPlanet(p) {
     var r2 = Entity.getDistSquared(this, p);
@@ -48,9 +50,9 @@ function attractToPlanet(p) {
             var isCorrectAngle = landingAngleError < ERROR_MARGIN_LANDING_ROTATION;
 
             if (isCorrectAngle && isSoftLanding) {
-                Fighter.dockTo(this, p);
+                this.dockPlanet(p);
             } else {
-                Fighter.crash(this);
+                crash(this);
             }
         }
     }
@@ -69,7 +71,7 @@ function attractToStar(s) {
         this.dy += dy * forceFactor;
 
         if (r2 < s.DIST_SURFACE2) {
-            Fighter.crash(this);
+            crash(this);
         }
     }
 }
@@ -83,7 +85,7 @@ function attractFighterToStarOrPlanet(entity) {
 }
 
 function updateFighter(fighter) {
-    if (fighter && !fighter.isDocked && fighter.hp > 0) {
+    if (fighter && !fighter.isDockedPlanet && fighter.hp > 0) {
         EntityGrid.getNearest(fighter)
             .forEach(attractFighterToStarOrPlanet.bind(fighter));
     }

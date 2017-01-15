@@ -5,15 +5,15 @@ var EntityDB   = require('./entityDB');
 var EntityGrid = require('./entitygrid');
 
 var Scanner = require('./scanner');
+var Radar   = require('./radar');
 var Gravity = require('./gravity');
 
 var HumanInterface = require('./humanInterface');
 var Component      = require('./component');
 var Team           = require('./system/team');
 
-var Fighter    = require('./entity/fighter');
-var Freighter  = require('./entity/freighter');
-var Probe      = require('./entity/probe');
+var Freighter = require('./entity/freighter');
+var Probe     = require('./entity/probe');
 
 // // // // Game loop // // // //
 
@@ -29,8 +29,12 @@ function step() {
     update();
 
     if (elapsed > FPS_INTERVAL) {
-        Graphics.centerOn(HumanInterface.getFocalPoint());
+        var focus = HumanInterface.getFocalPoint();
+
+        Radar.setOrigin(focus);
+        Graphics.centerOn(focus);
         Graphics.render();
+
         then = now - (elapsed % FPS_INTERVAL);
     }
 
@@ -46,6 +50,7 @@ window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
     Graphics.init();
     GameField.init();
     Scanner.init();
+    Radar.init();
 
     HumanInterface.init();
     Assets.init(start);
@@ -68,7 +73,7 @@ var SEQUENCE_ENTITY_UPDATE = [
     'PComm',
     'PLab',
 
-//    'Fighter',
+    'Fighter',
 //    'Freighter',
 //    'Probe',
 
@@ -83,12 +88,12 @@ function update() {
     SEQUENCE_ENTITY_UPDATE
         .forEach(applyComponentBehaviors);
 
-    Fighter.process();
     Freighter.process();
     Probe.process();
 
     Gravity.update();
     Scanner.update();
+    Radar.update();
 
     EntityGrid.commit();
 }

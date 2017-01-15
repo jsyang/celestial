@@ -7,7 +7,6 @@ var PIXI = require('./custom-lib/pixi.min.js');
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 var StarField = require('./starfield');
-var Radar     = require('./radar');
 
 var renderer;
 var scene;
@@ -24,7 +23,6 @@ function init() {
     renderer = new PIXI.WebGLRenderer(width, height);
 
     StarField.init(stage);
-    Radar.init(stage);
 
     scene.addChild(stage);
 
@@ -75,10 +73,6 @@ function centerOn(point) {
 
         var dx = point.x - lastX;
         var dy = point.y - lastY;
-
-        if (Radar.isEnabled) {
-            Radar.setPosition(point);
-        }
 
         if (lastX === undefined && lastY === undefined) {
             StarField.reinit(point);

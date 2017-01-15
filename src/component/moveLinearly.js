@@ -8,8 +8,10 @@ var DEFAULTS = {
  * @param entity
  */
 function process(entity) {
-    entity.x += entity.dx;
-    entity.y += entity.dy;
+    if (!entity.isDockedPlanet) {
+        entity.x += entity.dx;
+        entity.y += entity.dy;
+    }
 }
 
 module.exports = {

@@ -1,14 +1,18 @@
-var GamePad  = require('./gamepad');
-var Fighter  = require('./entity/fighter');
-var EntityDB = require('./entityDB');
-
-var Radar = require('./radar');
-
-var fighter;
+var GamePad = require('./gamepad');
 
 function init() {
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
+}
+
+var focus;
+
+function getFocalPoint() {
+    return focus;
+}
+
+function setFocalPoint(entity) {
+    focus = entity;
 }
 
 var keyDown = {};
@@ -58,73 +62,47 @@ function onKeyDown(e) {
 
 var DROTATION           = 0.05;
 var ACCELERATION        = 0.2;
-var DOCKED_ACCELERATION = 0.4;
 
 function process() {
-    var gamepad  = GamePad.getState();
+    var gamepad = GamePad.getState();
 
-    if (fighter) {
-        var isDocked = Fighter.isDocked(fighter);
+    if (focus && focus.type === 'Fighter') {
+        var isDocked = focus.isDockedPlanet;
 
-        if (fighter.hp > 0) {
+        if (focus.hp > 0) {
             if (!isDocked) {
                 if (keyDown.left_arrow) {
-                    fighter.rotation -= DROTATION;
+                    focus.rotation -= DROTATION;
                 } else if (keyDown.right_arrow) {
-                    fighter.rotation += DROTATION;
+                    focus.rotation += DROTATION;
                 }
 
                 if (typeof gamepad.analogAngle === 'number') {
-                    fighter.rotation = gamepad.analogAngle;
+                    focus.rotation = gamepad.analogAngle;
                 }
             }
 
-            if (keyDown.f || gamepad.button0) {
-                Fighter.shoot(fighter);
-            }
-
-            // Hold button down for radar
-            Radar.isEnabled = keyDown.r || gamepad.button3;
+            focus.isShooting = keyDown.f || gamepad.button0;
 
             if (keyDown.up_arrow || gamepad.button2) {
-                Fighter.undock(fighter);
-                var rotation = fighter.rotation;
-
-                Fighter.flameOn(fighter);
-
-                if (isDocked) {
-                    Fighter.applyForce(
-                        fighter,
-                        Math.cos(rotation) * DOCKED_ACCELERATION,
-                        Math.sin(rotation) * DOCKED_ACCELERATION
-                    );
-                } else {
-                    Fighter.applyForce(
-                        fighter,
-                        Math.cos(rotation) * ACCELERATION,
-                        Math.sin(rotation) * ACCELERATION
-                    );
+                if(isDocked){
+                    focus.undockPlanet();
                 }
 
+                focus.flameOn();
+                focus.accelerate(ACCELERATION);
+
             } else {
-                Fighter.flameOff(fighter);
+                focus.flameOff();
             }
         } else {
-            fighter = undefined;
+            focus = undefined;
         }
     }
 
     if (gamepad.button3 && gamepad.button1) {
         location.reload();
     }
-}
-
-function getFocalPoint() {
-    return fighter;
-}
-
-function setFocalPoint(entity) {
-    fighter = entity;
 }
 
 module.exports = {

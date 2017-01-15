@@ -20,6 +20,10 @@ var OccupyPlanetComponent  = require('./component/occupyPlanet');
 var OrbitStarComponent     = require('./component/orbitStar');
 var OrbitPlanetComponent   = require('./component/orbitPlanet');
 var DamageComponent        = require('./component/damage');
+var ShootCannonComponent   = require('./component/shootCannon');
+var LimitSpeedComponent    = require('./component/limitSpeed');
+var AccelerateComponent    = require('./component/accelerate');
+var DockPlanetComponent    = require('./component/dockPlanet');
 
 /**
  * @param entity
@@ -44,7 +48,8 @@ function init(entity) {
     entity.canMine && assume(entity, MineComponent.DEFAULTS);
     entity.canMoveLinearly && assume(entity, MoveLinearlyComponent.DEFAULTS);
     entity.canOrbitStar && assume(entity, OrbitStarComponent.DEFAULTS);
-    entity.canOrbitPlanet && assume(entity, OccupyPlanetComponent.DEFAULTS);
+    entity.canOrbitPlanet && assume(entity, OrbitPlanetComponent.DEFAULTS);
+    entity.canLimitSpeed && assume(entity, LimitSpeedComponent.DEFAULTS);
     entity.canMetabolize && assume(entity, MetabolizeComponent.DEFAULTS);
     entity.canStoreMaterial && assume(entity, StoreMaterialComponent.DEFAULTS);
     entity.canHarvest && assume(entity, HarvestComponent.DEFAULTS);
@@ -54,6 +59,9 @@ function init(entity) {
     entity.canExplode && assume(entity, ExplodeComponent.DEFAULTS);
     entity.canOccupyPlanet && assume(entity, OccupyPlanetComponent.DEFAULTS);
     entity.canManufacture && assume(entity, ManufactureComponent.DEFAULTS);
+    entity.canShootCannon && assume(entity, ShootCannonComponent.DEFAULTS);
+    entity.canAccelerate && assume(entity, AccelerateComponent.DEFAULTS);
+    entity.canDockPlanet && assume(entity, DockPlanetComponent.DEFAULTS);
 
     entity.isInitialized = true;
 }
@@ -68,11 +76,16 @@ function process(entity) {
     }
 
     if (entity.hp > 0) {
+        // Change position
         entity.canOccupyPlanet && OccupyPlanetComponent.process(entity);
         entity.canMoveLinearly && MoveLinearlyComponent.process(entity);
         entity.canOrbitStar && OrbitStarComponent.process(entity);
         entity.canOrbitPlanet && OrbitPlanetComponent.process(entity);
+        entity.canLimitSpeed && LimitSpeedComponent.process(entity);
+        entity.canAccelerate && AccelerateComponent.process(entity);
+        entity.canDockPlanet && DockPlanetComponent.process(entity);
 
+        // Affect other entities
         entity.canDamage && DamageComponent.process(entity);
         entity.canStoreMaterial && StoreMaterialComponent.process(entity);
         entity.canHarvest && HarvestComponent.process(entity);
@@ -81,7 +94,9 @@ function process(entity) {
         entity.canRefine && RefineComponent.process(entity);
         entity.canConstruct && ConstructComponent.process(entity);
         entity.canManufacture && ManufactureComponent.process(entity);
+        entity.canShootCannon && ShootCannonComponent.process(entity);
 
+        // Metabolize
         entity.canMetabolize && MetabolizeComponent.process(entity);
 
         EntityGrid.add(entity);
@@ -94,5 +109,6 @@ function process(entity) {
 }
 
 module.exports = {
+    init    : init,
     process : process
 };
