@@ -6,7 +6,6 @@ Celestial combat. Conquer the universe sector by sector.
 
 - Arrow keys to thrust and move
 - F to shoot
-- R for tactical radar
 
 Reload if you lost your only Fighter without planetary Fighter production capabilities.
 
@@ -21,6 +20,7 @@ Works well with game pads:
 
 - implement structure status displays
 - add unit tests
+- projectiles damage enemy entities
 
 - multiple fighters
 - strategic enemy AI

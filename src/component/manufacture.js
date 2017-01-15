@@ -6,22 +6,22 @@ var DockPlanetComponent = require('../component/dockPlanet');
 var Freighter = require('../entity/freighter');
 var Probe     = require('../entity/probe');
 
+var PRODUCT = {
+    Freighter : { cost : 300, time : 120 },
+    Fighter   : { cost : 500, time : 90 }
+};
+
 var DEFAULTS = {
+    PRODUCT          : PRODUCT,
     orderManufacture : orderManufacture,
     isManufacturing  : false,
     manufactureTime  : 0,
     manufactureType  : undefined
 };
 
-var PRODUCT = {
-    Freighter : { cost : 300, time : 70 },
-    Fighter   : { cost : 500, time : 60 },
-    Probe     : { cost : 15, time : 10 }
-};
-
 function orderManufacture(type) {
     this.isManufacturing = true;
-    this.manufactureTime = PRODUCT[type].time;
+    this.manufactureTime = this.PRODUCT[type].time;
     this.manufactureType = type;
 }
 
@@ -34,7 +34,7 @@ function process(entity) {
 
         var shouldManufacture =
                 entity.planet.pbase &&
-                entity.planet.pbase.materialsFinished >= PRODUCT[entity.manufactureType].cost;
+                entity.planet.pbase.materialsFinished >= entity.PRODUCT[entity.manufactureType].cost;
 
         if (shouldManufacture) {
             if (entity.manufactureTime > 0) {
@@ -49,8 +49,15 @@ function process(entity) {
                 var product = Entity.create(entity.manufactureType, productOptions);
 
                 if (entity.manufactureType === 'Fighter') {
-                    DockPlanetComponent.DEFAULTS
-                        .dockPlanet.call(product, entity.planet);
+                    if(entity.type === 'SpacePort') {
+                        // todo: Dock in SpacePort
+                        DockPlanetComponent.DEFAULTS
+                            .dockPlanet.call(product, entity.planet);
+                    } else {
+                        DockPlanetComponent.DEFAULTS
+                            .dockPlanet.call(product, entity.planet);
+                    }
+
                 } else if (entity.manufactureType === 'Freighter') {
                     Freighter.dockTo(product, entity.planet);
                 }

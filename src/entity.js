@@ -132,15 +132,31 @@ function createProbe(options) {
     return probe;
 }
 
+function createSpaceDock(options) {
+    var spaceDock = Geometry(SpaceDock, options);
+
+    assignTeamColor(spaceDock, options.team);
+
+    return spaceDock;
+}
+
+function createSensorArray(options) {
+    var sensorArray = Geometry(SensorArray, options);
+
+    assignTeamColor(sensorArray, options.team);
+
+    return sensorArray;
+}
+
 function createSpacePort(options) {
     var spacePort = Geometry(SpacePort.body, options);
-    var flame1    = Geometry(SpacePort.flame1);
-    var flame2    = Geometry(SpacePort.flame2);
-    var flame3    = Geometry(SpacePort.flame3);
-    var flame4    = Geometry(SpacePort.flame4);
 
-    var shipyard = Geometry(SpacePort.shipyard);
-    var sensors  = Geometry(SpacePort.sensors);
+    assignTeamColor(spacePort, options.team);
+
+    var flame1 = Geometry(SpacePort.flame1);
+    var flame2 = Geometry(SpacePort.flame2);
+    var flame3 = Geometry(SpacePort.flame3);
+    var flame4 = Geometry(SpacePort.flame4);
 
     var turret1 = Geometry(SpacePort.turret1);
     var turret2 = Geometry(SpacePort.turret2);
@@ -157,10 +173,7 @@ function createSpacePort(options) {
             turret1.graphics,
             turret2.graphics,
             turret3.graphics,
-            turret4.graphics,
-
-            sensors.graphics,
-            shipyard.graphics
+            turret4.graphics
         );
 
     return spacePort;
@@ -280,14 +293,17 @@ function create(type, options) {
         entity.orbitRotation = options.orbitRotation;
 
         entity.canStoreMaterial  = true;
-        entity.materialsRaw      = options.materialsRaw || 100;
+        entity.materialsRaw      = options.materialsRaw;
         entity.materialsFinished = options.materialsFinished;
 
         // Reference to resident entities
-        entity.pbase   = options.pbase;
-        entity.plab    = options.plab;
-        entity.pcolony = options.pcolony;
-        entity.pcomm   = options.pcomm;
+        entity.pbase       = options.pbase;
+        entity.plab        = options.plab;
+        entity.pcolony     = options.pcolony;
+        entity.pcomm       = options.pcomm;
+        entity.spacedock   = options.spacedock;
+        entity.sensorarray = options.sensorarray;
+        entity.spaceport   = options.spaceport;
 
     } else if (type === 'ShotCannonHeavy') {
         entity = Geometry(Shot.cannon_heavy, options);
@@ -338,6 +354,10 @@ function create(type, options) {
         entity.canExplode      = true;
         entity.canOccupyPlanet = true;
         entity.canManufacture  = true;
+        entity.PRODUCT         = {
+            Freighter : { cost : 300, time : 120 },
+            Fighter   : { cost : 500, time : 90 }
+        };
 
     } else if (type === 'PComm') {
         entity = createPComm(options);
@@ -368,19 +388,21 @@ function create(type, options) {
         entity.canOccupyPlanet = true;
 
         entity.canStoreMaterial  = true;
-        entity.materialsRaw      = options.materialsRaw || 0;
-        entity.materialsFinished = options.materialsFinished || 0;
+        entity.materialsRaw      = options.materialsRaw;
+        entity.materialsFinished = options.materialsFinished;
 
     } else if (type === 'SpacePort') {
         entity = createSpacePort(options);
 
-        entity.hp     = options.hp || 20;
-        entity.maxHp  = options.maxHp || 20;
+        entity.hp     = options.hp || 30;
+        entity.maxHp  = options.maxHp || 30;
         entity.planet = options.planet;
 
+        entity.canRepair = true;
+        entity.canRefine = true;
+
         entity.canOrbitPlanet = true;
-        entity.canManufacture = true;
-        // todo
+        entity.orbitDistance  = 205;
 
         entity.canExplode          = true;
         entity.EXPLOSION_FRAGMENTS = 12;
@@ -392,18 +414,28 @@ function create(type, options) {
     } else if (type === 'SpaceDock') {
         entity = createSpaceDock(options);
 
-        entity.hp         = options.hp || 20;
-        entity.maxHp      = options.maxHp || 20;
-        entity.planet     = options.planet;
-        entity.repairTime = options.repairTime || 0;
+        entity.hp     = options.hp || 8;
+        entity.maxHp  = options.maxHp || 8;
+        entity.planet = options.planet;
+
+        entity.canRepair          = true;
+        entity.canManufacture     = true;
+        entity.PRODUCT            = {
+            Fighter : { cost : 200, time : 60 },
+            Probe   : { cost : 15, time : 10 }
+        };
+        entity.canOccupySpacePort = true;
+        entity.spaceport          = options.spaceport;
 
     } else if (type === 'SensorArray') {
         entity = createSensorArray(options);
 
-        entity.hp         = options.hp || 20;
-        entity.maxHp      = options.maxHp || 20;
-        entity.planet     = options.planet;
-        entity.repairTime = options.repairTime || 0;
+        entity.hp                 = options.hp || 5;
+        entity.maxHp              = options.maxHp || 5;
+        entity.planet             = options.planet;
+        entity.canRepair          = true;
+        entity.canOccupySpacePort = true;
+        entity.spaceport          = options.spaceport;
 
     } else if (type === 'Fighter') {
         entity = createFighter(options);
@@ -487,13 +519,8 @@ function getTeamColor(team) {
     return COLOR_TEAM[team];
 }
 
-function update() {
-    // todo: update all entities here?
-}
-
 module.exports = {
     create : create,
-    update : update,
 
     getDistSquared : getDistSquared,
     getAngleFromTo : getAngleFromTo,

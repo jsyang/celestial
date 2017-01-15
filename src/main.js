@@ -72,6 +72,9 @@ var SEQUENCE_ENTITY_UPDATE = [
     'PColony',
     'PComm',
     'PLab',
+    'SpacePort',
+    'SpaceDock',
+    'SensorArray',
 
     'Fighter',
 //    'Freighter',

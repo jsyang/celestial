@@ -6,24 +6,25 @@
 var EntityDB   = require('./entityDB');
 var EntityGrid = require('./entitygrid');
 
-var ManufactureComponent   = require('./component/manufacture');
-var MineComponent          = require('./component/mine');
-var MetabolizeComponent    = require('./component/metabolize');
-var MoveLinearlyComponent  = require('./component/moveLinearly');
-var HarvestComponent       = require('./component/harvest');
-var StoreMaterialComponent = require('./component/storeMaterials');
-var RepairComponent        = require('./component/repair');
-var RefineComponent        = require('./component/refine');
-var ConstructComponent     = require('./component/construct');
-var ExplodeComponent       = require('./component/explode');
-var OccupyPlanetComponent  = require('./component/occupyPlanet');
-var OrbitStarComponent     = require('./component/orbitStar');
-var OrbitPlanetComponent   = require('./component/orbitPlanet');
-var DamageComponent        = require('./component/damage');
-var ShootCannonComponent   = require('./component/shootCannon');
-var LimitSpeedComponent    = require('./component/limitSpeed');
-var AccelerateComponent    = require('./component/accelerate');
-var DockPlanetComponent    = require('./component/dockPlanet');
+var ManufactureComponent     = require('./component/manufacture');
+var MineComponent            = require('./component/mine');
+var MetabolizeComponent      = require('./component/metabolize');
+var MoveLinearlyComponent    = require('./component/moveLinearly');
+var HarvestComponent         = require('./component/harvest');
+var StoreMaterialComponent   = require('./component/storeMaterials');
+var RepairComponent          = require('./component/repair');
+var RefineComponent          = require('./component/refine');
+var ConstructComponent       = require('./component/construct');
+var ExplodeComponent         = require('./component/explode');
+var OccupyPlanetComponent    = require('./component/occupyPlanet');
+var OccupySpacePortComponent = require('./component/occupySpacePort');
+var OrbitStarComponent       = require('./component/orbitStar');
+var OrbitPlanetComponent     = require('./component/orbitPlanet');
+var DamageComponent          = require('./component/damage');
+var ShootCannonComponent     = require('./component/shootCannon');
+var LimitSpeedComponent      = require('./component/limitSpeed');
+var AccelerateComponent      = require('./component/accelerate');
+var DockPlanetComponent      = require('./component/dockPlanet');
 
 /**
  * @param entity
@@ -58,6 +59,7 @@ function init(entity) {
     entity.canConstruct && assume(entity, ConstructComponent.DEFAULTS);
     entity.canExplode && assume(entity, ExplodeComponent.DEFAULTS);
     entity.canOccupyPlanet && assume(entity, OccupyPlanetComponent.DEFAULTS);
+    entity.canOccupySpacePort && assume(entity, OccupySpacePortComponent.DEFAULTS);
     entity.canManufacture && assume(entity, ManufactureComponent.DEFAULTS);
     entity.canShootCannon && assume(entity, ShootCannonComponent.DEFAULTS);
     entity.canAccelerate && assume(entity, AccelerateComponent.DEFAULTS);
@@ -78,6 +80,7 @@ function process(entity) {
     if (entity.hp > 0) {
         // Change position
         entity.canOccupyPlanet && OccupyPlanetComponent.process(entity);
+        entity.canOccupySpacePort && OccupySpacePortComponent.process(entity);
         entity.canMoveLinearly && MoveLinearlyComponent.process(entity);
         entity.canOrbitStar && OrbitStarComponent.process(entity);
         entity.canOrbitPlanet && OrbitPlanetComponent.process(entity);

@@ -1,7 +1,7 @@
 var DEFAULTS = {
-    MINE_RATE : 50,
+    MINE_RATE : 25,
     MINE_TIME : 20,
-    mineTime  : 0
+    mineTime  : 20
 };
 
 /**

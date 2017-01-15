@@ -139,9 +139,9 @@ function loadOrDumpSupply(freighter) {
         freighter.materialsFinished = 0;
 
         var diffMaterials = 0;
-        if (pbase.materialsFinished > PBase.MAX_FINISHED_MATERIALS) {
-            diffMaterials               = pbase.materialsFinished - PBase.MAX_FINISHED_MATERIALS;
-            pbase.materialsFinished     = PBase.MAX_MATERIALS_FINISHED;
+        if (pbase.materialsFinished > pbase.MAX_FINISHED_MATERIALS) {
+            diffMaterials               = pbase.materialsFinished - pbase.MAX_FINISHED_MATERIALS;
+            pbase.materialsFinished     = pbase.MAX_MATERIALS_FINISHED;
             freighter.materialsFinished = diffMaterials;
             freighter.unloadSupply();
         } else {
