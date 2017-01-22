@@ -8,7 +8,7 @@ function assignFreightersToPlanet(freighters, planet) {
     if (freighters) {
         for (var i = freighters.length - 1; i >= 0; i--) {
             var freighter = freighters[i];
-            var isIdle    = !freighter.target || (freighter.target && freighter.target.type !== 'Planet');
+            var isIdle    = (!freighter.isOrbitingPlanet && !freighter.target) || (freighter.target && freighter.target.type !== 'Planet');
             if (isIdle) {
                 freighter.target = planet;
                 freighter.planet = undefined;

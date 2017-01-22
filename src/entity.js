@@ -474,21 +474,26 @@ function create(type, options) {
 
     } else if (type === 'Freighter') {
         entity         = createFreighter(options);
-        entity.hitTime = -1;
+        
         entity.hp      = options.hp || 10;
         entity.maxHp   = options.maxHp || 10;
+        
+        entity.canDisplayHit    = true;
+        entity.canOrbitPlanet   = true;
+        entity.isOrbitingPlanet = false;
+        entity.orbitDistance    = 205;
 
         entity.canExplode = true;
 
-        entity.target            = options.target;
+        entity.canColonizePlanet = true;
         entity.planet            = options.planet;
-        entity.materialsFinished = options.materialsFinished || 500;
 
-        entity.dx       = options.dx || 0;
-        entity.dy       = options.dy || 0;
-        entity.rotation = options.rotation || 0;
-        entity.isDocked = options.isDocked || false;
-        entity.dockedTo = options.dockedTo;
+        entity.canMoveToTarget   = true;
+        entity.target            = options.target;
+
+        entity.canStoreMaterial  = true;
+        entity.materialsRaw      = options.materialsRaw || 0;
+        entity.materialsFinished = options.materialsFinished || 0;
     }
 
     if (entity) {

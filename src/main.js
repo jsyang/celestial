@@ -12,7 +12,6 @@ var HumanInterface = require('./humanInterface');
 var Component      = require('./component');
 var Team           = require('./system/team');
 
-var Freighter = require('./entity/freighter');
 var Probe     = require('./entity/probe');
 
 // // // // Game loop // // // //
@@ -77,8 +76,8 @@ var SEQUENCE_ENTITY_UPDATE = [
     'SensorArray',
 
     'Fighter',
-//    'Freighter',
-//    'Probe',
+    'Freighter',
+//    'Probe', 
 
     'ShotCannonNormal',
     'ShotCannonHeavy'
@@ -91,7 +90,6 @@ function update() {
     SEQUENCE_ENTITY_UPDATE
         .forEach(applyComponentBehaviors);
 
-    Freighter.process();
     Probe.process();
 
     Gravity.update();

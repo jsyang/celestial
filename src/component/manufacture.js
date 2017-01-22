@@ -2,8 +2,8 @@ var Random = require('../random');
 var Entity = require('../entity');
 
 var DockPlanetComponent = require('../component/dockPlanet');
+var OrbitPlanetComponent = require('../component/orbitPlanet');
 
-var Freighter = require('../entity/freighter');
 var Probe     = require('../entity/probe');
 
 var PRODUCT = {
@@ -59,7 +59,8 @@ function process(entity) {
                     }
 
                 } else if (entity.manufactureType === 'Freighter') {
-                    Freighter.dockTo(product, entity.planet);
+                    OrbitPlanetComponent.DEFAULTS
+                        .enterPlanetOrbit.call(product, entity.planet);
                 }
 
                 entity.isManufacturing = false;

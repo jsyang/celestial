@@ -16,6 +16,10 @@ Works well with game pads:
 - Button 2 for thrust
 - Button 1 AND Button 3 together to reload the game
 
+## Bugs
+
+- cannon shots are not correctly affected by shooter's dx/dy
+
 ## TODOs
 
 - title screen

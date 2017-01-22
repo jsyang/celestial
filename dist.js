@@ -18306,6 +18306,7 @@ var ManufactureComponent     = require('./component/manufacture');
 var MineComponent            = require('./component/mine');
 var MetabolizeComponent      = require('./component/metabolize');
 var MoveLinearlyComponent    = require('./component/moveLinearly');
+var MoveToTargetComponent    = require('./component/moveToTarget');
 var HarvestComponent         = require('./component/harvest');
 var StoreMaterialComponent   = require('./component/storeMaterials');
 var RepairComponent          = require('./component/repair');
@@ -18320,7 +18321,9 @@ var DamageComponent          = require('./component/damage');
 var ShootCannonComponent     = require('./component/shootCannon');
 var LimitSpeedComponent      = require('./component/limitSpeed');
 var AccelerateComponent      = require('./component/accelerate');
+var DisplayHitComponent      = require('./component/displayHit');
 var DockPlanetComponent      = require('./component/dockPlanet');
+var ColonizePlanetComponent  = require('./component/colonizePlanet');
 
 /**
  * @param entity
@@ -18344,6 +18347,7 @@ function init(entity) {
     entity.canDamage && assume(entity, DamageComponent.DEFAULTS);
     entity.canMine && assume(entity, MineComponent.DEFAULTS);
     entity.canMoveLinearly && assume(entity, MoveLinearlyComponent.DEFAULTS);
+    entity.canMoveToTarget && assume(entity, MoveToTargetComponent.DEFAULTS);
     entity.canOrbitStar && assume(entity, OrbitStarComponent.DEFAULTS);
     entity.canOrbitPlanet && assume(entity, OrbitPlanetComponent.DEFAULTS);
     entity.canLimitSpeed && assume(entity, LimitSpeedComponent.DEFAULTS);
@@ -18360,6 +18364,8 @@ function init(entity) {
     entity.canShootCannon && assume(entity, ShootCannonComponent.DEFAULTS);
     entity.canAccelerate && assume(entity, AccelerateComponent.DEFAULTS);
     entity.canDockPlanet && assume(entity, DockPlanetComponent.DEFAULTS);
+    entity.canDisplayHit && assume(entity, DisplayHitComponent.DEFAULTS);
+    entity.canColonizePlanet && assume(entity, ColonizePlanetComponent.DEFAULTS);
 
     entity.isInitialized = true;
 }
@@ -18378,6 +18384,7 @@ function process(entity) {
         entity.canOccupyPlanet && OccupyPlanetComponent.process(entity);
         entity.canOccupySpacePort && OccupySpacePortComponent.process(entity);
         entity.canMoveLinearly && MoveLinearlyComponent.process(entity);
+        entity.canMoveToTarget && MoveToTargetComponent.process(entity);
         entity.canOrbitStar && OrbitStarComponent.process(entity);
         entity.canOrbitPlanet && OrbitPlanetComponent.process(entity);
         entity.canLimitSpeed && LimitSpeedComponent.process(entity);
@@ -18394,9 +18401,11 @@ function process(entity) {
         entity.canConstruct && ConstructComponent.process(entity);
         entity.canManufacture && ManufactureComponent.process(entity);
         entity.canShootCannon && ShootCannonComponent.process(entity);
+        entity.canColonizePlanet && ColonizePlanetComponent.process(entity);
 
         // Metabolize
         entity.canMetabolize && MetabolizeComponent.process(entity);
+        entity.canDisplayHit && DisplayHitComponent.process(entity);
 
         EntityGrid.add(entity);
     } else {
@@ -18411,7 +18420,7 @@ module.exports = {
     init    : init,
     process : process
 };
-},{"./component/accelerate":109,"./component/construct":110,"./component/damage":111,"./component/dockPlanet":112,"./component/explode":113,"./component/harvest":114,"./component/limitSpeed":115,"./component/manufacture":116,"./component/metabolize":117,"./component/mine":118,"./component/moveLinearly":119,"./component/occupyPlanet":120,"./component/occupySpacePort":121,"./component/orbitPlanet":122,"./component/orbitStar":123,"./component/refine":124,"./component/repair":125,"./component/shootCannon":126,"./component/storeMaterials":127,"./entityDB":132,"./entitygrid":133}],109:[function(require,module,exports){
+},{"./component/accelerate":109,"./component/colonizePlanet":110,"./component/construct":111,"./component/damage":112,"./component/displayHit":113,"./component/dockPlanet":114,"./component/explode":115,"./component/harvest":116,"./component/limitSpeed":117,"./component/manufacture":118,"./component/metabolize":119,"./component/mine":120,"./component/moveLinearly":121,"./component/moveToTarget":122,"./component/occupyPlanet":123,"./component/occupySpacePort":124,"./component/orbitPlanet":125,"./component/orbitStar":126,"./component/refine":127,"./component/repair":128,"./component/shootCannon":129,"./component/storeMaterials":130,"./entityDB":134,"./entitygrid":135}],109:[function(require,module,exports){
 function accelerate(acceleration) {
     this.dx += Math.cos(this.rotation) * acceleration;
     this.dy += Math.sin(this.rotation) * acceleration;
@@ -18429,6 +18438,110 @@ module.exports = {
     process  : process
 };
 },{}],110:[function(require,module,exports){
+var Entity      = require('../entity');
+var EntityDB    = require('../entityDB');
+var Audio       = require('../audio');
+
+function createPBase() {
+    var planet = this.planet;
+
+    Audio.play('nav');
+
+    planet.pbase = Entity.create('PBase', {
+        x      : planet.x,
+        y      : planet.y,
+        planet : planet,
+        team   : this.team
+    });
+
+    EntityDB.remove(this);
+}
+
+function createPColony() {
+    var planet = this.planet;
+
+    Audio.play('nav');
+
+    planet.pcolony = Entity.create('PColony', {
+        x      : planet.x,
+        y      : planet.y,
+        planet : planet,
+        team   : this.team
+    });
+
+    EntityDB.remove(this);
+}
+
+var DEFAULTS = {
+    /** How long it takes before cargo can be used after reaching orbit **/
+    TIME_OFFLOAD_SUPPLY     : 200,
+    MAX_MATERIALS_FINISHED  : 500,
+    createPBase             : createPBase,
+    createPColony           : createPColony,
+    loadOrDumpSupply        : loadOrDumpSupply
+};
+
+function loadOrDumpSupply() {
+    var pbase = this.planet.pbase;
+
+    if (pbase.materialsFinished === 0) {
+        pbase.materialsFinished += this.materialsFinished;
+        this.materialsFinished = 0;
+
+        var diffMaterials = 0;
+        if (pbase.materialsFinished > pbase.MAX_FINISHED_MATERIALS) {
+            diffMaterials               = pbase.materialsFinished - pbase.MAX_FINISHED_MATERIALS;
+            pbase.materialsFinished     = pbase.MAX_MATERIALS_FINISHED;
+            this.materialsFinished = diffMaterials;
+            this.unloadSupply();
+        } else {
+            EntityDB.remove(this);
+        }
+
+    } else if (this.planet.materialsFinished > 0 && this.materialsFinished < this.MAX_MATERIALS_FINISHED) {
+        var materialsToLoad = this.MAX_MATERIALS_FINISHED - this.materialsFinished;
+        if (materialsToLoad >= this.planet.materialsFinished) {
+            this.materialsFinished += this.planet.materialsFinished;
+            this.planet.materialsFinished = 0;
+        } else {
+            this.materialsFinished += materialsToLoad;
+            this.planet.materialsFinished -= materialsToLoad;
+        }
+
+        this.loadSupply();
+    }
+}
+
+/**
+ * Constructs PBase and PColony on friendly planet if neither exists
+ * Supplies friendly planet with finished materials if no construction required
+ * @param entity
+ */
+function process(entity) {
+    if (entity.canOrbitPlanet && entity.isOrbitingPlanet) {
+        if (entity.materialsFinished > 0) {
+            if (entity.supplyTime === undefined) {
+                entity.supplyTime = entity.TIME_OFFLOAD_SUPPLY;
+            } else if (entity.supplyTime > 0) {
+                entity.supplyTime--;
+            } else if (entity.supplyTime === 0) {
+                if (!entity.planet.pbase) {
+                    entity.createPBase();
+                } else if (!entity.planet.pcolony) {
+                    entity.createPColony();
+                } else {
+                    entity.loadOrDumpSupply();
+                }
+            }
+        }
+    }
+}
+
+module.exports = {
+    DEFAULTS : DEFAULTS,
+    process  : process
+};
+},{"../audio":107,"../entity":132,"../entityDB":134}],111:[function(require,module,exports){
 var Entity = require('../entity');
 
 var DEFAULTS = {
@@ -18494,7 +18607,7 @@ module.exports = {
     DEFAULTS : DEFAULTS,
     process  : process
 };
-},{"../entity":129}],111:[function(require,module,exports){
+},{"../entity":132}],112:[function(require,module,exports){
 var Audio      = require('../audio');
 var EntityDB   = require('../entityDB');
 var EntityGrid = require('../entitygrid');
@@ -18528,7 +18641,26 @@ module.exports = {
     DEFAULTS : DEFAULTS,
     process  : process
 };
-},{"../audio":107,"../entityDB":132,"../entitygrid":133}],112:[function(require,module,exports){
+},{"../audio":107,"../entityDB":134,"../entitygrid":135}],113:[function(require,module,exports){
+var DEFAULTS = {
+    hitTime : -1
+};
+
+/**
+ * Display hits on the owner entity
+ * @param entity
+ */
+function process(entity) {
+    if(entity.renderHit) {
+        entity.renderHit();
+    }
+}
+
+module.exports = {
+    DEFAULTS : DEFAULTS,
+    process  : process
+};
+},{}],114:[function(require,module,exports){
 var Entity = require('../entity');
 
 function dockPlanet(planet) {
@@ -18569,7 +18701,7 @@ module.exports = {
     DEFAULTS : DEFAULTS,
     process  : process
 };
-},{"../entity":129}],113:[function(require,module,exports){
+},{"../entity":132}],115:[function(require,module,exports){
 var Entity = require('../entity');
 var Random = require('../random');
 var Audio  = require('../audio');
@@ -18606,7 +18738,7 @@ module.exports = {
     DEFAULTS : DEFAULTS,
     process  : process
 };
-},{"../audio":107,"../entity":129,"../random":155}],114:[function(require,module,exports){
+},{"../audio":107,"../entity":132,"../random":157}],116:[function(require,module,exports){
 var DEFAULTS = {
     HARVEST_RATE_RAW      : 35,
     HARVEST_RATE_FINISHED : 25,
@@ -18652,7 +18784,7 @@ module.exports = {
     DEFAULTS : DEFAULTS,
     process  : process
 };
-},{}],115:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 var DEFAULTS = {
     MAX_SPEED  : 40,
     MAX_SPEED2 : 40 * 40
@@ -18678,13 +18810,13 @@ module.exports = {
     DEFAULTS : DEFAULTS,
     process  : process
 };
-},{}],116:[function(require,module,exports){
+},{}],118:[function(require,module,exports){
 var Random = require('../random');
 var Entity = require('../entity');
 
 var DockPlanetComponent = require('../component/dockPlanet');
+var OrbitPlanetComponent = require('../component/orbitPlanet');
 
-var Freighter = require('../entity/freighter');
 var Probe     = require('../entity/probe');
 
 var PRODUCT = {
@@ -18740,7 +18872,8 @@ function process(entity) {
                     }
 
                 } else if (entity.manufactureType === 'Freighter') {
-                    Freighter.dockTo(product, entity.planet);
+                    OrbitPlanetComponent.DEFAULTS
+                        .enterPlanetOrbit.call(product, entity.planet);
                 }
 
                 entity.isManufacturing = false;
@@ -18754,7 +18887,7 @@ module.exports = {
     DEFAULTS : DEFAULTS,
     process  : process
 };
-},{"../component/dockPlanet":112,"../entity":129,"../entity/freighter":130,"../entity/probe":131,"../random":155}],117:[function(require,module,exports){
+},{"../component/dockPlanet":114,"../component/orbitPlanet":125,"../entity":132,"../entity/probe":133,"../random":157}],119:[function(require,module,exports){
 /**
  * Sheds HP constantly
  * @param entity
@@ -18766,7 +18899,7 @@ function process(entity) {
 module.exports = {
     process : process
 };
-},{}],118:[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 var DEFAULTS = {
     MINE_RATE : 25,
     MINE_TIME : 20,
@@ -18790,7 +18923,7 @@ module.exports = {
     DEFAULTS : DEFAULTS,
     process  : process
 };
-},{}],119:[function(require,module,exports){
+},{}],121:[function(require,module,exports){
 var DEFAULTS = {
     dx : 0,
     dy : 0
@@ -18811,7 +18944,85 @@ module.exports = {
     DEFAULTS : DEFAULTS,
     process  : process
 };
-},{}],120:[function(require,module,exports){
+},{}],122:[function(require,module,exports){
+var Entity = require('../entity');
+
+var DEFAULTS = {
+    TURN_RATE : 0.07,
+    SPEED : 2.5,
+    DIST_HALT2 : 80 * 80
+};
+
+function rotateToFaceTarget(entity, target) {
+    var rotation        = entity.rotation;
+    var desiredRotation = Entity.getAngleFromTo(entity, target);
+
+    var turnMagnitude = Math.abs(desiredRotation - rotation);
+    if (turnMagnitude > Math.PI) {
+        if (rotation > 0) {
+            entity.rotation += entity.TURN_RATE;
+        } else {
+            entity.rotation -= entity.TURN_RATE;
+        }
+    } else {
+        if (turnMagnitude > entity.TURN_RATE) {
+            if (rotation > desiredRotation) {
+                entity.rotation -= entity.TURN_RATE;
+            } else {
+                entity.rotation += entity.TURN_RATE;
+            }
+        } else {
+            entity.rotation = desiredRotation;
+        }
+    }
+
+    rotation = entity.rotation;
+    return rotation;
+}
+
+/**
+ * Moves to target
+ * @param entity
+ */
+function process(entity) {
+    var target = entity.target;
+
+    if(target) {
+        var r2 = Entity.getDistSquared(entity, target);
+        var DIST_HALT2 = entity.DIST_HALT2;
+
+        if(target.type === 'Planet') {
+            DIST_HALT2 = Entity.DIST_PLANET_ORBIT2;
+        }
+
+        if (r2 > DIST_HALT2) {
+            var rotation = rotateToFaceTarget(entity, target);
+
+            entity.x += Math.cos(rotation) * entity.SPEED;
+            entity.y += Math.sin(rotation) * entity.SPEED;
+            
+            if(entity.flameOn) {
+                entity.flameOn();
+            }
+        } else {
+            if(target.type === 'Planet') {
+                if(entity.canOrbitPlanet) {
+                    entity.enterPlanetOrbit(target);
+                }
+            }
+
+            if(entity.flameOff) {
+                entity.flameOff();
+            }
+        }
+    }
+}
+
+module.exports = {
+    DEFAULTS : DEFAULTS,
+    process  : process
+};
+},{"../entity":132}],123:[function(require,module,exports){
 /**
  * Takes on occupied planet's position
  * @param entity
@@ -18824,7 +19035,7 @@ function process(entity) {
 module.exports = {
     process  : process
 };
-},{}],121:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
 /**
  * Takes on occupied space port's position and rotation
  * @param entity
@@ -18838,34 +19049,62 @@ function process(entity) {
 module.exports = {
     process : process
 };
-},{}],122:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 var Entity = require('../entity');
 
+function enterPlanetOrbit(planet) {
+    this.isOrbitingPlanet = true;
+    this.dx             = 0;
+    this.dy             = 0;
+    this.orbitRotation  = Entity.getAngleFromTo(planet, this);
+    this.rotation       = this.orbitRotation + DEGREES90;
+    this.planet         = planet;
+    this.target         = undefined;
+    
+    this.flameOff && this.flameOff();
+}
+
+function exitPlanetOrbit() {
+    this.isOrbitingPlanet = false;
+    this.planet         = undefined;
+    
+    this.flameOn && this.flameOn();
+}
+
 var DEFAULTS = {
+    enterPlanetOrbit : enterPlanetOrbit,
+    exitPlanetOrbit : exitPlanetOrbit,
+    isOrbitingPlanet : true,
     D_ROTATION    : 0.0001,
     orbitDistance : 105,
     orbitRotation : 0
 };
+
+var DEGREES90 = Math.PI * 0.5;
 
 /**
  * Orbits planet
  * @param entity
  */
 function process(entity) {
-    if (entity.type === 'SpacePort') {
-        entity.rotation = Entity.getAngleFromTo(entity.planet, entity);
-    }
+    if(entity.isOrbitingPlanet && entity.planet) {
+        if (entity.type === 'SpacePort') {
+            entity.rotation = Entity.getAngleFromTo(entity.planet, entity);
+        } else if(entity.type === 'Freighter') {
+            entity.rotation += entity.D_ROTATION;
+        }
 
-    entity.orbitRotation += entity.D_ROTATION;
-    entity.x = Math.cos(entity.orbitRotation) * entity.orbitDistance + entity.planet.x;
-    entity.y = Math.sin(entity.orbitRotation) * entity.orbitDistance + entity.planet.y;
+        entity.orbitRotation += entity.D_ROTATION;
+        entity.x = Math.cos(entity.orbitRotation) * entity.orbitDistance + entity.planet.x;
+        entity.y = Math.sin(entity.orbitRotation) * entity.orbitDistance + entity.planet.y;
+    }    
 }
 
 module.exports = {
     DEFAULTS : DEFAULTS,
     process  : process
 };
-},{"../entity":129}],123:[function(require,module,exports){
+},{"../entity":132}],126:[function(require,module,exports){
 var DEFAULTS = {
     D_ROTATION    : 0.0001,
     orbitDistance : 1800,
@@ -18886,7 +19125,7 @@ module.exports = {
     DEFAULTS : DEFAULTS,
     process  : process
 };
-},{}],124:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 var DEFAULTS = {
     REFINE_RATE_RAW_TO_FINISHED : 0.5
 };
@@ -18917,7 +19156,7 @@ module.exports = {
     DEFAULTS : DEFAULTS,
     process  : process
 };
-},{}],125:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 var DEFAULTS = {
     REPAIR_COST_FINISHED : 25,
     REPAIR_TIME          : 30,
@@ -18949,7 +19188,7 @@ module.exports = {
     DEFAULTS : DEFAULTS,
     process  : process
 };
-},{}],126:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 var Entity = require('../entity');
 var Random = require('../random');
 var Audio  = require('../audio');
@@ -19017,7 +19256,7 @@ module.exports = {
     DEFAULTS : DEFAULTS,
     process  : process
 };
-},{"../audio":107,"../entity":129,"../random":155}],127:[function(require,module,exports){
+},{"../audio":107,"../entity":132,"../random":157}],130:[function(require,module,exports){
 var DEFAULTS = {
     MAX_RAW_MATERIALS      : 3000,
     MAX_FINISHED_MATERIALS : 2000,
@@ -19031,7 +19270,7 @@ module.exports = {
     DEFAULTS : DEFAULTS,
     process  : process
 };
-},{}],128:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 (function (global){
 /*!
  * pixi.js - v4.3.0
@@ -19055,7 +19294,7 @@ module.exports = {
 }],173:[function(t,e,r){"use strict";function n(t){return t&&t.__esModule?t:{default:t}}r.__esModule=!0;var i=t("./webgl/WebGLPrepare");Object.defineProperty(r,"webgl",{enumerable:!0,get:function(){return n(i).default}});var o=t("./canvas/CanvasPrepare");Object.defineProperty(r,"canvas",{enumerable:!0,get:function(){return n(o).default}});var s=t("./BasePrepare");Object.defineProperty(r,"BasePrepare",{enumerable:!0,get:function(){return n(s).default}});var a=t("./limiters/CountLimiter");Object.defineProperty(r,"CountLimiter",{enumerable:!0,get:function(){return n(a).default}});var u=t("./limiters/TimeLimiter");Object.defineProperty(r,"TimeLimiter",{enumerable:!0,get:function(){return n(u).default}})},{"./BasePrepare":171,"./canvas/CanvasPrepare":172,"./limiters/CountLimiter":174,"./limiters/TimeLimiter":175,"./webgl/WebGLPrepare":176}],174:[function(t,e,r){"use strict";function n(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}r.__esModule=!0;var i=function(){function t(e){n(this,t),this.maxItemsPerFrame=e,this.itemsLeft=0}return t.prototype.beginFrame=function(){this.itemsLeft=this.maxItemsPerFrame},t.prototype.allowedToUpload=function(){return this.itemsLeft-- >0},t}();r.default=i},{}],175:[function(t,e,r){"use strict";function n(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}r.__esModule=!0;var i=function(){function t(e){n(this,t),this.maxMilliseconds=e,this.frameStart=0}return t.prototype.beginFrame=function(){this.frameStart=Date.now()},t.prototype.allowedToUpload=function(){return Date.now()-this.frameStart<this.maxMilliseconds},t}();r.default=i},{}],176:[function(t,e,r){"use strict";function n(t){return t&&t.__esModule?t:{default:t}}function i(t){if(t&&t.__esModule)return t;var e={};if(null!=t)for(var r in t)Object.prototype.hasOwnProperty.call(t,r)&&(e[r]=t[r]);return e.default=t,e}function o(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function s(t,e){if(!t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!e||"object"!=typeof e&&"function"!=typeof e?t:e}function a(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function, not "+typeof e);t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,enumerable:!1,writable:!0,configurable:!0}}),e&&(Object.setPrototypeOf?Object.setPrototypeOf(t,e):t.__proto__=e)}function u(t,e){return e instanceof f.BaseTexture&&(e._glTextures[t.CONTEXT_UID]||t.textureManager.updateTexture(e),!0)}function h(t,e){return e instanceof f.Graphics&&((e.dirty||e.clearDirty||!e._webGL[t.plugins.graphics.CONTEXT_UID])&&t.plugins.graphics.updateGraphics(e),!0)}function l(t,e){if(t instanceof f.BaseTexture)return e.indexOf(t)===-1&&e.push(t),!0;if(t._texture&&t._texture instanceof f.Texture){var r=t._texture.baseTexture;return e.indexOf(r)===-1&&e.push(r),!0}return!1}function c(t,e){return t instanceof f.Graphics&&(e.push(t),!0)}r.__esModule=!0;var d=t("../../core"),f=i(d),p=t("../BasePrepare"),v=n(p),y=function(t){function e(r){o(this,e);var n=s(this,t.call(this,r));return n.uploadHookHelper=n.renderer,n.register(l,u).register(c,h),n}return a(e,t),e}(v.default);r.default=y,f.WebGLRenderer.registerPlugin("prepare",y)},{"../../core":61,"../BasePrepare":171}],177:[function(t,e,r){(function(e){"use strict";function n(t){if(t&&t.__esModule)return t;var e={};if(null!=t)for(var r in t)Object.prototype.hasOwnProperty.call(t,r)&&(e[r]=t[r]);return e.default=t,e}r.__esModule=!0,r.loader=r.prepare=r.particles=r.mesh=r.loaders=r.interaction=r.filters=r.extras=r.extract=r.accessibility=void 0;var i=t("./deprecation");Object.keys(i).forEach(function(t){"default"!==t&&"__esModule"!==t&&Object.defineProperty(r,t,{enumerable:!0,get:function(){return i[t]}})});var o=t("./core");Object.keys(o).forEach(function(t){"default"!==t&&"__esModule"!==t&&Object.defineProperty(r,t,{enumerable:!0,get:function(){return o[t]}})}),t("./polyfill");var s=t("./accessibility"),a=n(s),u=t("./extract"),h=n(u),l=t("./extras"),c=n(l),d=t("./filters"),f=n(d),p=t("./interaction"),v=n(p),y=t("./loaders"),g=n(y),m=t("./mesh"),_=n(m),b=t("./particles"),x=n(b),T=t("./prepare"),w=n(T);r.accessibility=a,r.extract=h,r.extras=c,r.filters=f,r.interaction=v,r.loaders=g,r.mesh=_,r.particles=x,r.prepare=w;var E=g&&g.Loader?new g.Loader:null;r.loader=E,e.PIXI=r}).call(this,"undefined"!=typeof global?global:"undefined"!=typeof self?self:"undefined"!=typeof window?window:{})},{"./accessibility":40,"./core":61,"./deprecation":120,"./extract":122,"./extras":131,"./filters":142,"./interaction":148,"./loaders":151,"./mesh":160,"./particles":163,"./polyfill":169,"./prepare":173}]},{},[177])(177)});
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],129:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 var Graphics = require('./graphics');
 var Geometry = require('./geometry');
 var EntityDB = require('./entityDB');
@@ -19532,21 +19771,26 @@ function create(type, options) {
 
     } else if (type === 'Freighter') {
         entity         = createFreighter(options);
-        entity.hitTime = -1;
+        
         entity.hp      = options.hp || 10;
         entity.maxHp   = options.maxHp || 10;
+        
+        entity.canDisplayHit    = true;
+        entity.canOrbitPlanet   = true;
+        entity.isOrbitingPlanet = false;
+        entity.orbitDistance    = 205;
 
         entity.canExplode = true;
 
-        entity.target            = options.target;
+        entity.canColonizePlanet = true;
         entity.planet            = options.planet;
-        entity.materialsFinished = options.materialsFinished || 500;
 
-        entity.dx       = options.dx || 0;
-        entity.dy       = options.dy || 0;
-        entity.rotation = options.rotation || 0;
-        entity.isDocked = options.isDocked || false;
-        entity.dockedTo = options.dockedTo;
+        entity.canMoveToTarget   = true;
+        entity.target            = options.target;
+
+        entity.canStoreMaterial  = true;
+        entity.materialsRaw      = options.materialsRaw || 0;
+        entity.materialsFinished = options.materialsFinished || 0;
     }
 
     if (entity) {
@@ -19589,239 +19833,7 @@ module.exports = {
     DIST_MIN_PLANET_GRAVITY2 : DIST_MIN_PLANET_GRAVITY2,
     DIST_PLANET_ORBIT2       : DIST_PLANET_ORBIT2
 };
-},{"./entityDB":132,"./geometry":136,"./geometry/Fighter.json":137,"./geometry/Freighter.json":138,"./geometry/PBase.json":139,"./geometry/PColony.json":140,"./geometry/PComm.json":141,"./geometry/PLab.json":142,"./geometry/Planet.json":143,"./geometry/Probe.json":144,"./geometry/SensorArray.json":145,"./geometry/Shot.json":146,"./geometry/SpaceDock.json":147,"./geometry/SpacePort.json":148,"./geometry/Star.json":149,"./graphics":150}],130:[function(require,module,exports){
-var Audio      = require('../audio');
-var EntityDB   = require('../entityDB');
-var Entity     = require('../entity');
-var EntityGrid = require('../entitygrid');
-
-var DEGREES90 = Math.PI * 0.5;
-
-var TURN_RATE = 0.07;
-var SPEED     = 2.5;
-
-function move(freighter) {
-    var r2 = Entity.getDistSquared(freighter, freighter.target);
-    if (r2 > Entity.DIST_PLANET_ORBIT2) {
-        var rotation        = freighter.rotation;
-        var desiredRotation = Entity.getAngleFromTo(freighter, freighter.target);
-
-        var turnMagnitude = Math.abs(desiredRotation - rotation);
-        if (turnMagnitude > Math.PI) {
-            if (rotation > 0) {
-                freighter.rotation += TURN_RATE;
-            } else {
-                freighter.rotation -= TURN_RATE;
-            }
-        } else {
-            if (turnMagnitude > TURN_RATE) {
-                if (rotation > desiredRotation) {
-                    freighter.rotation -= TURN_RATE;
-                } else {
-                    freighter.rotation += TURN_RATE;
-                }
-            } else {
-                freighter.rotation = desiredRotation;
-            }
-        }
-
-        rotation = freighter.rotation;
-
-        freighter.x += Math.cos(rotation) * SPEED;
-        freighter.y += Math.sin(rotation) * SPEED;
-        undock(freighter);
-    } else {
-        dockTo(freighter, freighter.target);
-        freighter.rotation = Entity.getAngleFromTo(freighter.planet, freighter) + DEGREES90;
-    }
-}
-
-var DIST_FOLLOW2 = 80 * 80;
-
-function follow(freighter) {
-    var r2 = Entity.getDistSquared(freighter, freighter.target);
-
-    if (r2 > DIST_FOLLOW2) {
-        var rotation        = freighter.rotation;
-        var desiredRotation = Entity.getAngleFromTo(freighter, freighter.target);
-
-        var turnMagnitude = Math.abs(desiredRotation - rotation);
-        if (turnMagnitude > Math.PI) {
-            if (rotation > 0) {
-                freighter.rotation += TURN_RATE;
-            } else {
-                freighter.rotation -= TURN_RATE;
-            }
-        } else {
-            if (turnMagnitude > TURN_RATE) {
-                if (rotation > desiredRotation) {
-                    freighter.rotation -= TURN_RATE;
-                } else {
-                    freighter.rotation += TURN_RATE;
-                }
-            } else {
-                freighter.rotation = desiredRotation;
-            }
-        }
-
-        rotation = freighter.rotation;
-
-        freighter.x += Math.cos(rotation) * SPEED;
-        freighter.y += Math.sin(rotation) * SPEED;
-        undock(freighter);
-    } else {
-        freighter.flameOff();
-    }
-}
-
-var ORBIT_ROTATION = 0.00025;
-var ORBIT_DISTANCE = 200;
-
-function orbit(freighter) {
-    var px = freighter.planet.x;
-    var py = freighter.planet.y;
-
-    freighter.rotation += ORBIT_ROTATION;
-    freighter.x = px + Math.cos(freighter.rotation - DEGREES90) * ORBIT_DISTANCE;
-    freighter.y = py + Math.sin(freighter.rotation - DEGREES90) * ORBIT_DISTANCE;
-}
-
-function explode(freighter) {
-    EntityDB.remove(freighter);
-    Audio.play('collide');
-}
-
-function createPBase(freighter) {
-    var planet = freighter.planet;
-
-    Audio.play('nav');
-
-    planet.pbase = Entity.create('PBase', {
-        x      : planet.x,
-        y      : planet.y,
-        planet : planet,
-        team   : freighter.team
-    });
-
-    EntityDB.remove(freighter);
-}
-
-function createPColony(freighter) {
-    var planet = freighter.planet;
-
-    Audio.play('nav');
-
-    planet.pcolony = Entity.create('PColony', {
-        x      : planet.x,
-        y      : planet.y,
-        planet : planet,
-        team   : freighter.team
-    });
-
-    EntityDB.remove(freighter);
-}
-
-var MAX_MATERIALS_FINISHED = 500;
-
-function loadOrDumpSupply(freighter) {
-    var pbase = freighter.planet.pbase;
-
-    if (pbase.materialsFinished === 0) {
-        pbase.materialsFinished += freighter.materialsFinished;
-        freighter.materialsFinished = 0;
-
-        var diffMaterials = 0;
-        if (pbase.materialsFinished > pbase.MAX_FINISHED_MATERIALS) {
-            diffMaterials               = pbase.materialsFinished - pbase.MAX_FINISHED_MATERIALS;
-            pbase.materialsFinished     = pbase.MAX_MATERIALS_FINISHED;
-            freighter.materialsFinished = diffMaterials;
-            freighter.unloadSupply();
-        } else {
-            EntityDB.remove(freighter);
-        }
-
-    } else if (freighter.planet.materialsFinished > 0 && freighter.materialsFinished < MAX_MATERIALS_FINISHED) {
-        var materialsToLoad = MAX_MATERIALS_FINISHED - freighter.materialsFinished;
-        if (materialsToLoad >= freighter.planet.materialsFinished) {
-            freighter.materialsFinished += freighter.planet.materialsFinished;
-            freighter.planet.materialsFinished = 0;
-        } else {
-            freighter.materialsFinished += materialsToLoad;
-            freighter.planet.materialsFinished -= materialsToLoad;
-        }
-
-        freighter.loadSupply();
-    }
-}
-
-/** How long it takes before cargo can be used after reaching orbit **/
-var TIME_OFFLOAD_SUPPLY = 200;
-
-function supply(freighter) {
-    if (freighter.materialsFinished > 0) {
-        if (freighter.supplyTime === undefined) {
-            freighter.supplyTime = TIME_OFFLOAD_SUPPLY;
-        } else if (freighter.supplyTime > 0) {
-            freighter.supplyTime--;
-        } else if (freighter.supplyTime === 0) {
-            if (!freighter.planet.pbase) {
-                createPBase(freighter);
-            } else if (!freighter.planet.pcolony) {
-                createPColony(freighter);
-            } else {
-                loadOrDumpSupply(freighter);
-            }
-        }
-    }
-}
-
-function undock(freighter) {
-    freighter.flameOn();
-}
-
-function dockTo(freighter, planet) {
-    freighter.planet = planet;
-    freighter.target = undefined;
-    freighter.flameOff();
-}
-
-function processFreighter(freighter) {
-    if (freighter) {
-        if (freighter.hp > 0) {
-            freighter.renderHit();
-
-            if (freighter.target) {
-                if (freighter.target.type === 'Planet') {
-                    move(freighter);
-                } else {
-                    follow(freighter);
-                }
-
-            } else if (freighter.planet) {
-                orbit(freighter);
-                supply(freighter);
-            }
-
-            EntityGrid.add(freighter);
-        } else {
-            explode(freighter);
-        }
-    }
-}
-
-function process() {
-    var freighter = EntityDB.getByType('Freighter');
-    if (freighter) {
-        freighter.forEach(processFreighter);
-    }
-
-}
-
-module.exports = {
-    process : process,
-    dockTo  : dockTo
-};
-},{"../audio":107,"../entity":129,"../entityDB":132,"../entitygrid":133}],131:[function(require,module,exports){
+},{"./entityDB":134,"./geometry":138,"./geometry/Fighter.json":139,"./geometry/Freighter.json":140,"./geometry/PBase.json":141,"./geometry/PColony.json":142,"./geometry/PComm.json":143,"./geometry/PLab.json":144,"./geometry/Planet.json":145,"./geometry/Probe.json":146,"./geometry/SensorArray.json":147,"./geometry/Shot.json":148,"./geometry/SpaceDock.json":149,"./geometry/SpacePort.json":150,"./geometry/Star.json":151,"./graphics":152}],133:[function(require,module,exports){
 var Random   = require('../random');
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
@@ -19937,7 +19949,7 @@ module.exports = {
     init    : init,
     process : process
 };
-},{"../entity":129,"../entityDB":132,"../random":155}],132:[function(require,module,exports){
+},{"../entity":132,"../entityDB":134,"../random":157}],134:[function(require,module,exports){
 var Graphics = require('./graphics');
 
 var byType = {};
@@ -20027,7 +20039,7 @@ module.exports = {
 
     getAbsoluteNearestByType : getAbsoluteNearestByType
 };
-},{"./graphics":150}],133:[function(require,module,exports){
+},{"./graphics":152}],135:[function(require,module,exports){
 /**
  * All updates to the grid are written on a per-frame basis.
  * The nextEntityGrid becomes the current entityGrid when EntityGrid.commit() is called.
@@ -20142,7 +20154,7 @@ module.exports = {
     commit     : commit,
     getNearest : getNearest
 };
-},{"./entity":129,"./gamefield":134}],134:[function(require,module,exports){
+},{"./entity":132,"./gamefield":136}],136:[function(require,module,exports){
 var Entity   = require('./entity');
 var EntityDB = require('./entityDB');
 var Random   = require('./random');
@@ -20223,13 +20235,17 @@ function init() {
         x      : fighter.x + Random.int(-100, 100),
         y      : fighter.y + Random.int(-100, 100),
         target : fighter,
-        team   : Entity.TEAM.MAGENTA
+        team   : Entity.TEAM.MAGENTA,
+        isOrbitingPlanet: false,
+        materialsFinished : 500
     });
     Entity.create('Freighter', {
         x      : fighter.x + Random.int(-100, 100),
         y      : fighter.y + Random.int(-100, 100),
         target : fighter,
-        team   : Entity.TEAM.MAGENTA
+        team   : Entity.TEAM.MAGENTA,
+        isOrbitingPlanet: false,
+        materialsFinished : 500
     });
 }
 
@@ -20237,7 +20253,7 @@ module.exports = {
     init           : init,
     MAX_COORDINATE : MAX_COORDINATE
 };
-},{"./entity":129,"./entityDB":132,"./random":155}],135:[function(require,module,exports){
+},{"./entity":132,"./entityDB":134,"./random":157}],137:[function(require,module,exports){
 var NO_DATA = {};
 
 var AXES_ACTIVATION_VALUE = 0.1;
@@ -20285,7 +20301,7 @@ function getState() {
 module.exports = {
     getState : getState
 };
-},{}],136:[function(require,module,exports){
+},{}],138:[function(require,module,exports){
 var PIXI      = require('./custom-lib/pixi.min.js');
 var SAT       = require('sat');
 var GameField = require('./gamefield');
@@ -20458,7 +20474,7 @@ function Geometry(geometryDef, options) {
 }
 
 module.exports = Geometry;
-},{"./custom-lib/pixi.min.js":128,"./gamefield":134,"sat":99}],137:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":131,"./gamefield":136,"sat":99}],139:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "polygon",
@@ -20515,7 +20531,7 @@ module.exports={
     ]
   }
 }
-},{}],138:[function(require,module,exports){
+},{}],140:[function(require,module,exports){
 module.exports={
   "body": {
     "type": "polygon",
@@ -20643,7 +20659,7 @@ module.exports={
   }
 }
 
-},{}],139:[function(require,module,exports){
+},{}],141:[function(require,module,exports){
 module.exports={
   "_name": "Planetary Base",
   "body": {
@@ -20718,7 +20734,7 @@ module.exports={
     ]
   }
 }
-},{}],140:[function(require,module,exports){
+},{}],142:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Colony",
@@ -20735,7 +20751,7 @@ module.exports={
     -30,40
   ]
 }
-},{}],141:[function(require,module,exports){
+},{}],143:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Communications Center",
@@ -20755,7 +20771,7 @@ module.exports={
     40,30
   ]
 }
-},{}],142:[function(require,module,exports){
+},{}],144:[function(require,module,exports){
 module.exports={
   "type": "polygon",
   "_name": "Planetary Lab",
@@ -20772,7 +20788,7 @@ module.exports={
     0,-40
   ]
 }
-},{}],143:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "circle",
@@ -20801,7 +20817,7 @@ module.exports={
     ]
   }
 }
-},{}],144:[function(require,module,exports){
+},{}],146:[function(require,module,exports){
 module.exports={
   "body" :{
     "type": "polygon",
@@ -20840,7 +20856,7 @@ module.exports={
     ]
   }
 }
-},{}],145:[function(require,module,exports){
+},{}],147:[function(require,module,exports){
 module.exports={
   "_name": "Orbital Sensor Array",
   "type": "polygon",
@@ -20859,7 +20875,7 @@ module.exports={
     6,42
   ]
 }
-},{}],146:[function(require,module,exports){
+},{}],148:[function(require,module,exports){
 module.exports={
   "cannon_normal" : {
     "type": "polygon",
@@ -20893,7 +20909,7 @@ module.exports={
     ]
   }
 }
-},{}],147:[function(require,module,exports){
+},{}],149:[function(require,module,exports){
 module.exports={
   "_name": "Space Dock",
   "type": "polygon",
@@ -20910,7 +20926,7 @@ module.exports={
     6,-26
   ]
 }
-},{}],148:[function(require,module,exports){
+},{}],150:[function(require,module,exports){
 module.exports={
   "_name": "Space Port",
   "body" : {
@@ -21044,7 +21060,7 @@ module.exports={
     ]
   }
 }
-},{}],149:[function(require,module,exports){
+},{}],151:[function(require,module,exports){
 module.exports={
   "type": "circle",
   "radius": 200,
@@ -21058,7 +21074,7 @@ module.exports={
     "alpha": 1
   }
 }
-},{}],150:[function(require,module,exports){
+},{}],152:[function(require,module,exports){
 /**
  * Graphics interface
  */
@@ -21157,7 +21173,7 @@ module.exports = {
     centerOn      : centerOn,
     addChildToHUD : addChildToHUD
 };
-},{"./custom-lib/pixi.min.js":128,"./starfield":157}],151:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":131,"./starfield":159}],153:[function(require,module,exports){
 /**
  * Gravity and related collisions
  */
@@ -21262,7 +21278,7 @@ function update() {
 module.exports = {
     update : update
 };
-},{"./entity":129,"./entityDB":132,"./entitygrid":133}],152:[function(require,module,exports){
+},{"./entity":132,"./entityDB":134,"./entitygrid":135}],154:[function(require,module,exports){
 var GamePad = require('./gamepad');
 
 function init() {
@@ -21376,7 +21392,7 @@ module.exports = {
     getFocalPoint : getFocalPoint,
     setFocalPoint : setFocalPoint
 };
-},{"./gamepad":135}],153:[function(require,module,exports){
+},{"./gamepad":137}],155:[function(require,module,exports){
 var Assets     = require('./assets');
 var Graphics   = require('./graphics');
 var GameField  = require('./gamefield');
@@ -21391,7 +21407,6 @@ var HumanInterface = require('./humanInterface');
 var Component      = require('./component');
 var Team           = require('./system/team');
 
-var Freighter = require('./entity/freighter');
 var Probe     = require('./entity/probe');
 
 // // // // Game loop // // // //
@@ -21456,8 +21471,8 @@ var SEQUENCE_ENTITY_UPDATE = [
     'SensorArray',
 
     'Fighter',
-//    'Freighter',
-//    'Probe',
+    'Freighter',
+//    'Probe', 
 
     'ShotCannonNormal',
     'ShotCannonHeavy'
@@ -21470,7 +21485,6 @@ function update() {
     SEQUENCE_ENTITY_UPDATE
         .forEach(applyComponentBehaviors);
 
-    Freighter.process();
     Probe.process();
 
     Gravity.update();
@@ -21480,7 +21494,7 @@ function update() {
     EntityGrid.commit();
 }
 
-},{"./assets":106,"./component":108,"./entity/freighter":130,"./entity/probe":131,"./entityDB":132,"./entitygrid":133,"./gamefield":134,"./graphics":150,"./gravity":151,"./humanInterface":152,"./radar":154,"./scanner":156,"./system/team":158}],154:[function(require,module,exports){
+},{"./assets":106,"./component":108,"./entity/probe":133,"./entityDB":134,"./entitygrid":135,"./gamefield":136,"./graphics":152,"./gravity":153,"./humanInterface":154,"./radar":156,"./scanner":158,"./system/team":160}],156:[function(require,module,exports){
 /**
  * Tactical radar
  */
@@ -21680,7 +21694,7 @@ module.exports = {
         return radarEnabled;
     }
 };
-},{"./custom-lib/pixi.min.js":128,"./entity":129,"./entityDB":132,"./graphics":150}],155:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":131,"./entity":132,"./entityDB":134,"./graphics":152}],157:[function(require,module,exports){
 /**
  * Random functions
  */
@@ -21717,7 +21731,7 @@ module.exports = {
     arrayElement : arrayElement
 };
 
-},{}],156:[function(require,module,exports){
+},{}],158:[function(require,module,exports){
 /**
  * Galactic scanner
  */
@@ -21834,7 +21848,7 @@ module.exports = {
     init   : init,
     update : update
 };
-},{"./custom-lib/pixi.min.js":128,"./entity":129,"./entityDB":132,"./gamefield":134,"./graphics":150}],157:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":131,"./entity":132,"./entityDB":134,"./gamefield":136,"./graphics":152}],159:[function(require,module,exports){
 var PIXI   = require('./custom-lib/pixi.min.js');
 var Random = require('./random');
 
@@ -21944,7 +21958,7 @@ module.exports = {
     reinit  : reinit,
     process : process
 };
-},{"./custom-lib/pixi.min.js":128,"./random":155}],158:[function(require,module,exports){
+},{"./custom-lib/pixi.min.js":131,"./random":157}],160:[function(require,module,exports){
 var Entity   = require('../entity');
 var EntityDB = require('../entityDB');
 var Random   = require('../random');
@@ -21955,7 +21969,7 @@ function assignFreightersToPlanet(freighters, planet) {
     if (freighters) {
         for (var i = freighters.length - 1; i >= 0; i--) {
             var freighter = freighters[i];
-            var isIdle    = !freighter.target || (freighter.target && freighter.target.type !== 'Planet');
+            var isIdle    = (!freighter.isOrbitingPlanet && !freighter.target) || (freighter.target && freighter.target.type !== 'Planet');
             if (isIdle) {
                 freighter.target = planet;
                 freighter.planet = undefined;
@@ -22041,4 +22055,4 @@ function process() {
 module.exports = {
     process : process
 };
-},{"../entity":129,"../entityDB":132,"../humanInterface":152,"../random":155}]},{},[153]);
+},{"../entity":132,"../entityDB":134,"../humanInterface":154,"../random":157}]},{},[155]);

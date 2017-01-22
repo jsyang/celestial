@@ -10,6 +10,7 @@ var ManufactureComponent     = require('./component/manufacture');
 var MineComponent            = require('./component/mine');
 var MetabolizeComponent      = require('./component/metabolize');
 var MoveLinearlyComponent    = require('./component/moveLinearly');
+var MoveToTargetComponent    = require('./component/moveToTarget');
 var HarvestComponent         = require('./component/harvest');
 var StoreMaterialComponent   = require('./component/storeMaterials');
 var RepairComponent          = require('./component/repair');
@@ -24,7 +25,9 @@ var DamageComponent          = require('./component/damage');
 var ShootCannonComponent     = require('./component/shootCannon');
 var LimitSpeedComponent      = require('./component/limitSpeed');
 var AccelerateComponent      = require('./component/accelerate');
+var DisplayHitComponent      = require('./component/displayHit');
 var DockPlanetComponent      = require('./component/dockPlanet');
+var ColonizePlanetComponent  = require('./component/colonizePlanet');
 
 /**
  * @param entity
@@ -48,6 +51,7 @@ function init(entity) {
     entity.canDamage && assume(entity, DamageComponent.DEFAULTS);
     entity.canMine && assume(entity, MineComponent.DEFAULTS);
     entity.canMoveLinearly && assume(entity, MoveLinearlyComponent.DEFAULTS);
+    entity.canMoveToTarget && assume(entity, MoveToTargetComponent.DEFAULTS);
     entity.canOrbitStar && assume(entity, OrbitStarComponent.DEFAULTS);
     entity.canOrbitPlanet && assume(entity, OrbitPlanetComponent.DEFAULTS);
     entity.canLimitSpeed && assume(entity, LimitSpeedComponent.DEFAULTS);
@@ -64,6 +68,8 @@ function init(entity) {
     entity.canShootCannon && assume(entity, ShootCannonComponent.DEFAULTS);
     entity.canAccelerate && assume(entity, AccelerateComponent.DEFAULTS);
     entity.canDockPlanet && assume(entity, DockPlanetComponent.DEFAULTS);
+    entity.canDisplayHit && assume(entity, DisplayHitComponent.DEFAULTS);
+    entity.canColonizePlanet && assume(entity, ColonizePlanetComponent.DEFAULTS);
 
     entity.isInitialized = true;
 }
@@ -82,6 +88,7 @@ function process(entity) {
         entity.canOccupyPlanet && OccupyPlanetComponent.process(entity);
         entity.canOccupySpacePort && OccupySpacePortComponent.process(entity);
         entity.canMoveLinearly && MoveLinearlyComponent.process(entity);
+        entity.canMoveToTarget && MoveToTargetComponent.process(entity);
         entity.canOrbitStar && OrbitStarComponent.process(entity);
         entity.canOrbitPlanet && OrbitPlanetComponent.process(entity);
         entity.canLimitSpeed && LimitSpeedComponent.process(entity);
@@ -98,9 +105,11 @@ function process(entity) {
         entity.canConstruct && ConstructComponent.process(entity);
         entity.canManufacture && ManufactureComponent.process(entity);
         entity.canShootCannon && ShootCannonComponent.process(entity);
+        entity.canColonizePlanet && ColonizePlanetComponent.process(entity);
 
         // Metabolize
         entity.canMetabolize && MetabolizeComponent.process(entity);
+        entity.canDisplayHit && DisplayHitComponent.process(entity);
 
         EntityGrid.add(entity);
     } else {

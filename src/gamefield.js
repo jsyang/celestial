@@ -78,13 +78,17 @@ function init() {
         x      : fighter.x + Random.int(-100, 100),
         y      : fighter.y + Random.int(-100, 100),
         target : fighter,
-        team   : Entity.TEAM.MAGENTA
+        team   : Entity.TEAM.MAGENTA,
+        isOrbitingPlanet: false,
+        materialsFinished : 500
     });
     Entity.create('Freighter', {
         x      : fighter.x + Random.int(-100, 100),
         y      : fighter.y + Random.int(-100, 100),
         target : fighter,
-        team   : Entity.TEAM.MAGENTA
+        team   : Entity.TEAM.MAGENTA,
+        isOrbitingPlanet: false,
+        materialsFinished : 500
     });
 }
 
