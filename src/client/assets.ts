@@ -41,10 +41,7 @@ function onAssetsZipLoaded(zip) {
         .then(this.onAssetsReady);
 }
 
-/**
- * @param {function} onAssetsReady
- */
-function init(onAssetsReady) {
+export function init(onAssetsReady: Function) {
     // Load all resources from assets.zip
     new JSZip.external
         .Promise(function (resolve, reject) {
@@ -59,7 +56,3 @@ function init(onAssetsReady) {
         .then(function (data) { return JSZip.loadAsync(data); })
         .then(onAssetsZipLoaded.bind({ onAssetsReady: onAssetsReady }));
 }
-
-module.exports = {
-    init : init
-};

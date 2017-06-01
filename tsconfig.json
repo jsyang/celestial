@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "es6",
+    "allowSyntheticDefaultImports": true,
+    // Use strict for future-proofing and performance benefits
+    // http://stackoverflow.com/a/31395185
+    "alwaysStrict": true,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "removeComments": false,
+    "moduleResolution": "node",
+    "allowJs": false,
+    "jsx": "react",
+    "lib": [
+      "es2017.object",
+      "es6",
+      "es7",
+      "dom"
+    ],
+    "noUnusedLocals": true,
+    "strictNullChecks": true
+  },
+  "include": [
+    "src/api/**/*",
+    "src/client/**/*",
+    "src/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

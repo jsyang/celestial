@@ -2,6 +2,13 @@
 
 Celestial combat. Conquer the universe sector by sector.
 
+```
+yarn
+yarn dev
+
+# --> http://localhost:3000
+```
+
 ## Controls
 
 - Arrow keys to thrust and move

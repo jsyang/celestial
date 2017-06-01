@@ -1,9 +1,0 @@
-default:
-  - browserify
-  - compress
-  - connect
-  - watch
-
-release:
-  - browserify
-  - uglify

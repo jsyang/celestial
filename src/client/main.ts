@@ -45,7 +45,7 @@ function start() {
     step();
 }
 
-window.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
+window.addEventListener('DOMContentLoaded', () => {
     Graphics.init();
     GameField.init();
     Scanner.init();
