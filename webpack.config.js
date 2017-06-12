@@ -5,10 +5,10 @@ const baseConfig = require('./webpack.config.base');
 
 const clientEntry = (process.env.NODE_ENV === 'production') ?
     {
-        main: './src/client/main.ts',
+        main: './src/client/index.ts',
     } :
     {
-        main: ['webpack-hot-middleware/client', './src/client/main.ts']
+        main: ['webpack-hot-middleware/client', './src/client/index.ts']
     };
 
 module.exports = [
