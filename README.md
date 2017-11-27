@@ -29,6 +29,7 @@ Works well with game pads:
 
 ## TODOs
 
+- use https://gildas-lormeau.github.io/zip.js/ instead of jszip
 - title screen
     - new game button
     - about button

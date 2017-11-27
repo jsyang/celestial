@@ -1,13 +1,10 @@
 {
   "compilerOptions": {
+    "skipLibCheck": true,
     "target": "es5",
     "module": "es6",
     "allowSyntheticDefaultImports": true,
-    // Use strict for future-proofing and performance benefits
-    // http://stackoverflow.com/a/31395185
     "alwaysStrict": true,
-    "inlineSourceMap": true,
-    "inlineSources": true,
     "removeComments": false,
     "moduleResolution": "node",
     "allowJs": true,

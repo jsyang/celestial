@@ -6,30 +6,24 @@ const sendFile = file => ((req, res) => {
     res.sendFile(`${__dirname}/${file}`);
 });
 
-if (process.env.NODE_ENV === 'production') {
-    app.use('/client', express.static('./dist/client'));
+const webpack                    = require('webpack');
+const webpackDevMiddleware       = require('webpack-dev-middleware');
+const webpackHotMiddleware       = require('webpack-hot-middleware');
 
-} else {
-    const webpack                    = require('webpack');
-    const webpackDevMiddleware       = require('webpack-dev-middleware');
-    const webpackHotMiddleware       = require('webpack-hot-middleware');
-    const webpackHotServerMiddleware = require('webpack-hot-server-middleware');
+const webpackConfig = require('./webpack.config');
+const clientConfig  = webpackConfig.find(_config => _config.name === 'client');
+const compiler      = webpack(webpackConfig);
 
-    const webpackConfig = require('./webpack.config');
-    const clientConfig  = webpackConfig.find(_config => _config.name === 'client');
-    const compiler      = webpack(webpackConfig);
+// Handle client-side and server-side hot-reloading
+app.use(webpackDevMiddleware(compiler, {
+    noInfo:     true,
+    publicPath: clientConfig.output.publicPath
+}));
 
-    // Handle client-side and server-side hot-reloading
-    app.use(webpackDevMiddleware(compiler, {
-        noInfo:     true,
-        publicPath: clientConfig.output.publicPath
-    }));
+app.use(webpackHotMiddleware(compiler.compilers.find(_compiler => _compiler.name === 'client')));
 
-    app.use(webpackHotMiddleware(compiler.compilers.find(_compiler => _compiler.name === 'client')));
-
-    app.get('/', sendFile('index.html'));
-    app.get('/assets.zip', sendFile('assets.zip'));
-}
+app.get('/', sendFile('index.html'));
+app.get('/assets.zip', sendFile('assets.zip'));
 
 http.createServer(app).listen(3000, function (err) {
     if (err) {
