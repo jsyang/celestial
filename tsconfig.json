@@ -22,9 +22,7 @@
     "strictNullChecks": true
   },
   "include": [
-    "src/api/**/*",
-    "src/client/**/*",
-    "src/*.tsx"
+    "src/client/**/*"
   ],
   "exclude": [
     "node_modules"

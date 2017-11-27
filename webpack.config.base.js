@@ -46,7 +46,6 @@ module.exports = {
                 include: path.join(__dirname, 'src'),
                 exclude: /node_modules/,
                 loaders: [
-                    'babel-loader?cacheDirectory',
                     'ts-loader?silent=true'
                 ]
             }

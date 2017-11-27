@@ -6,19 +6,18 @@ import Galaxy from './Galaxy';
 import Entity from './Entity';
 
 import RadarGalaxy from './RadarGalaxy';
-import RadarLocal  from './RadarLocal';
+import RadarLocal from './RadarLocal';
 import SystemGravity from './system/gravity';
 import SystemTeam from './system/team';
 
 // // // // Game loop // // // //
 
-let raf;
 let then;
-const FPS          = 60;
+const FPS = 60;
 const FPS_INTERVAL = 1000 / FPS;
 
 function step() {
-    const now     = Date.now();
+    const now = Date.now();
     const elapsed = now - then;
 
     update();
@@ -33,7 +32,7 @@ function step() {
         then = now - (elapsed % FPS_INTERVAL);
     }
 
-    raf = requestAnimationFrame(step);
+    requestAnimationFrame(step);
 }
 
 function start() {

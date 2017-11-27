@@ -4,13 +4,14 @@ PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 import StarField from './Starfield';
 
+let renderer;
 let width, width2;
 let height, height2;
 let lastX, lastY;
 
 function updateDimensions() {
-    width   = window.innerWidth;
-    height  = window.innerHeight;
+    width   = innerWidth;
+    height  = innerHeight;
     width2  = width >> 1;
     height2 = height >> 1;
 
@@ -26,11 +27,11 @@ const scene = new PIXI.Container();
 
 // Stage is the graphics container for all the interactive game entities
 const stage = new PIXI.Container();
+scene.addChild(stage);
 
-const renderer = new PIXI.WebGLRenderer(width, height);
+renderer = new PIXI.WebGLRenderer(width, height);
 
 StarField.init(stage);
-
 
 const clearLastCoordinates = () => lastX = lastY = undefined;
 
@@ -47,8 +48,6 @@ if (document && window) {
     });
 }
 
-scene.addChild(stage);
-
 export const addChildToHUD = child => scene.addChild(child);
 export const addChild      = child => stage.addChild(child);
 export const removeChild   = child => stage.removeChild(child);
@@ -58,7 +57,10 @@ interface IPoint {
     y: number;
 }
 
-export const render   = () => renderer.render(scene);
+export const render   = () => {
+    renderer.render(scene);
+}
+
 export const centerOn = (point: IPoint) => {
     if (point) {
         stage.x = width2 - point.x;
