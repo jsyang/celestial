@@ -8,6 +8,7 @@ const _module = (module as any);
 if (_module && _module.hot) {
     _module.hot.accept('./client/index', () => {
         stop();
+        onDOMContentLoaded();
         start();
     });
 }

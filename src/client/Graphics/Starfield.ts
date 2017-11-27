@@ -3,7 +3,7 @@ import Random from '../Random';
 
 const stars: Array<PIXI.Graphics> = [];
 
-function createStar(stage: PIXI.Graphics, {color, size, x, y}): PIXI.Graphics {
+function createStar(stage: PIXI.Graphics, { color, size, x, y }): PIXI.Graphics {
     const g = new PIXI.Graphics();
 
     g.beginFill(color);
@@ -19,32 +19,29 @@ function createStar(stage: PIXI.Graphics, {color, size, x, y}): PIXI.Graphics {
     return g;
 }
 
-const STAR = {
+const STAR: any = {
     BRIGHT: {
         speed: 0.01,
-        count: 40,
-        size:  2,
+        count: 8,
+        size : 2,
         color: 0xffffff,
-        x:     0,
-        y:     0
+        x    : 0,
+        y    : 0
     },
-    DIM:    {
+    DIM: {
         speed: 0.3,
         count: 20,
-        size:  1,
+        size : 1,
         color: 0xfefefe,
-        x:     0,
-        y:     0
+        x    : 0,
+        y    : 0
     }
 };
 
-let width2  = innerWidth >> 1;
-let height2 = innerHeight >> 1;
+let width2;
+let height2;
 
 function init(stage) {
-    width2  = innerWidth >> 1;
-    height2 = innerHeight >> 1;
-
     let i;
 
     for (i = 0; i < STAR.DIM.count; i++) {
@@ -54,16 +51,18 @@ function init(stage) {
     for (i = 0; i < STAR.BRIGHT.count; i++) {
         stars.push(createStar(stage, STAR.BRIGHT));
     }
+
+    reinit({ x: width2, y: height2 });
 }
 
 function reinit(point) {
-    width2  = innerWidth >> 1;
+    width2 = innerWidth >> 1;
     height2 = innerHeight >> 1;
 
-    stars.forEach(star => ({
-        x: point.x + Random.float(-width2, width2),
-        y: point.y + Random.float(-height2, height2)
-    }));
+    stars.forEach(star => {
+        star.x = point.x + Random.float(-width2, width2);
+        star.y = point.y + Random.float(-height2, height2);
+    });
 }
 
 

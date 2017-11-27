@@ -92,7 +92,7 @@ function createCircle(options) {
     g.endFill();
 
     g.x = options.x;
-    g.y = options.y;
+    g.y = options.y; 
 
     return createMutableGeoInterface(
         g, new SAT.Circle(v(g.x, g.y), options.radius)
