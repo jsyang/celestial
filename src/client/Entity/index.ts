@@ -6,7 +6,7 @@ import Team from './_Team';
 import Grid from './_Grid';
 
 import Fighter from './Fighter';
-import Freighter from './Fighter';
+import Freighter from './Freighter';
 import PBase from './PBase';
 import PColony from './PColony';
 import PComm from './PComm';

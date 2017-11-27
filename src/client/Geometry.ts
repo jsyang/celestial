@@ -5,6 +5,9 @@ const v = (x, y) => new SAT.Vector(x, y);
 
 const PIPI = Math.PI * 2;
 
+// todo turn this into Drawable
+// todo turn this into Collideable
+
 /**
  *
  * @param {object} graphics     - PixiJS primitive
@@ -26,7 +29,7 @@ function createMutableGeoInterface(graphics, collision) {
                 }
             }
 
-            this.graphics.x      = x;
+            this.graphics.x = x;
             this.collision.pos.x = x;
         },
         set y(y) {
@@ -42,7 +45,7 @@ function createMutableGeoInterface(graphics, collision) {
                 }
             }
 
-            this.graphics.y      = y;
+            this.graphics.y = y;
             this.collision.pos.y = y;
         },
         set rotation(rotation) {
@@ -70,7 +73,7 @@ function createMutableGeoInterface(graphics, collision) {
             return this.graphics.rotation;
         },
 
-        graphics:  graphics,
+        graphics: graphics,
         collision: collision
     };
 }
@@ -91,8 +94,8 @@ function createCircle(options) {
     g.drawCircle(0, 0, options.radius);
     g.endFill();
 
-    g.x = options.x;
-    g.y = options.y; 
+    g.x = options.x || 0;
+    g.y = options.y || 0;
 
     return createMutableGeoInterface(
         g, new SAT.Circle(v(g.x, g.y), options.radius)
@@ -114,8 +117,8 @@ function createPolygon(options) {
 
     g.drawPolygon(options.path);
     g.endFill();
-    g.x = options.x;
-    g.y = options.y;
+    g.x = options.x || 0;
+    g.y = options.y || 0;
 
     const polygonSAT: SAT.Vector[] = [];
     if (options.collisionPath) {
@@ -133,7 +136,7 @@ function createPolygon(options) {
 }
 
 export default function Geometry(geometryDef, options?) {
-    geometryDef = {...geometryDef, options};
+    geometryDef = { ...geometryDef, options };
 
     return geometryDef.type === 'circle' ?
         createCircle(geometryDef) :
