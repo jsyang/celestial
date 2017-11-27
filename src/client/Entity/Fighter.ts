@@ -59,20 +59,6 @@ const GEO = {
 };
 
 export default class Fighter extends LivingEntity {
-    constructor(params: Fighter) {
-        super();
-
-        Object.assign(this, params);
-
-        this.assignTeamColor();
-
-        // Add as graphics only, not collision geometry
-        this.geo.graphics.addChild(
-            Geometry(GEO.flame1).graphics,
-            Geometry(GEO.flame2).graphics
-        );
-    }
-
     type = 'Fighter';
     geo  = Geometry(GEO.body);
 
@@ -97,7 +83,19 @@ export default class Fighter extends LivingEntity {
     canAccelerate   = true;
     canDockPlanet   = true;
 
+    constructor(params: Fighter) {
+        super();
 
+        Object.assign(this, params);
+
+        this.assignTeamColor();
+
+        // Add as graphics only, not collision geometry
+        this.geo.graphics.addChild(
+            Geometry(GEO.flame1).graphics,
+            Geometry(GEO.flame2).graphics
+        );
+    }
 
     flameOn = () => {
         this.setChildVisible(0, true);
