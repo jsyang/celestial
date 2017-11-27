@@ -26,6 +26,7 @@
     "sat": "^0.6.0",
     "ts-loader": "^3.1.1",
     "typescript": "^2.6.1",
+    "uglifyjs-webpack-plugin": "^1.1.1",
     "webpack": "^3.8.1",
     "webpack-config-assign": "^1.0.0",
     "webpack-dev-middleware": "^1.10.2",

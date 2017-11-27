@@ -1,16 +1,20 @@
 const path = require('path');
 const webpack = require('webpack');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const isProd = (process.env.NODE_ENV === 'production');
 
 const devtool = isProd ?
     '' : 'inline-eval-cheap-source-map';
 
+console.log(`production ${isProd}!!!!!`);
+
 const plugins = [
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
-];
+    new webpack.NoEmitOnErrorsPlugin(),
+    isProd? new UglifyJsPlugin() : null
+].filter(Boolean);
 
 module.exports = {
     cache: true,
