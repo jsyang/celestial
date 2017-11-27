@@ -4,7 +4,7 @@ const webpack = require('webpack');
 const isProd = (process.env.NODE_ENV === 'production');
 
 const devtool = isProd ?
-    'source-map' : 'inline-eval-cheap-source-map';
+    '' : 'inline-eval-cheap-source-map';
 
 const plugins = [
     new webpack.optimize.OccurrenceOrderPlugin(),
@@ -17,7 +17,7 @@ module.exports = {
     devtool: devtool,
 
     output: {
-        path: path.resolve(__dirname, 'dist')
+        path: path.resolve(__dirname)
     },
 
     resolve: {
