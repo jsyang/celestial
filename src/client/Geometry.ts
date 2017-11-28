@@ -19,14 +19,8 @@ function createMutableGeoInterface(graphics, collision) {
         set x(x) {
             if (x < 0) {
                 x = 0;
-                if (this.dx) {
-                    this.dx = 0;
-                }
-            } else if (x > 32768) { // GameField.MAX_COORDINATE
+            } else if (x > 32768) {
                 x = 32768;
-                if (this.dx) {
-                    this.dx = 0;
-                }
             }
 
             this.graphics.x = x;
@@ -35,14 +29,8 @@ function createMutableGeoInterface(graphics, collision) {
         set y(y) {
             if (y < 0) {
                 y = 0;
-                if (this.dy) {
-                    this.dy = 0;
-                }
-            } else if (y > 32768) { // GameField.MAX_COORDINATE
+            } else if (y > 32768) {
                 y = 32768;
-                if (this.dy) {
-                    this.dy = 0;
-                }
             }
 
             this.graphics.y = y;
