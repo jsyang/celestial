@@ -1,4 +1,3 @@
-import Graphics from '../Graphics';
 import Component from '../component';
 
 import DB from './_DB';
@@ -58,8 +57,6 @@ function create(type, params) {
         entity = new ALL_ENTITIES[type](params);
         Component.init(entity);
         DB.add(entity);
-
-        Graphics.addChild(entity.geo.graphics);
     }
 
     return entity;

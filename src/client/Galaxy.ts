@@ -6,7 +6,7 @@ export const MAX_COORDINATE = 1 << 15;
 
 const MIN_STARS                 = 2;
 const MAX_STARS                 = 5;
-const MAX_PLANETS_PER_STAR      = 3;
+const MAX_PLANETS_PER_STAR      = 2;
 const CHANCE_STARS_HAVE_PLANETS = 0.8;
 
 /**

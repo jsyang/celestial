@@ -11,6 +11,8 @@ function add(entity) {
     } else {
         byType[type] = [entity];
     }
+
+    Graphics.addChild(entity.geo.graphics);
 }
 
 const getByType = (type: string): Array<any> => byType[type] || [];
@@ -29,7 +31,7 @@ function remove(entity) {
         byTypeCollection.splice(byTypeIndex, 1);
     }
 
-    Graphics.removeChild(entity.graphics);
+    Graphics.removeChild(entity.geo.graphics);
 }
 
 function getAbsoluteNearestByType(entity, type) {
