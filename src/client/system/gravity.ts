@@ -1,6 +1,8 @@
 // Gravity and related collisions
 
 import Entity   from '../Entity';
+import Planet from '../Entity/Planet';
+import Star from '../Entity/Star';
 
 // Max distance that gravitation forces from this entity affect
 // other entities
@@ -21,7 +23,7 @@ function attractToPlanet(p) {
     const r2 = Entity.getDistSquared(this, p);
 
     if (r2 < DIST_MIN_PLANET_GRAVITY2) {
-        const forceFactor = this.MASS * p.MASS / Math.pow(r2, 1.5);
+        const forceFactor = this.mass * p.mass / Math.pow(r2, 1.5);
 
         const dx = p.x - this.x;
         const dy = p.y - this.y;
@@ -29,7 +31,7 @@ function attractToPlanet(p) {
         this.dx += dx * forceFactor;
         this.dy += dy * forceFactor;
 
-        if (r2 < p.DIST_SURFACE2) {
+        if (r2 < Planet.DIST_SURFACE2) {
             const landingSpeed           = this.dx * this.dx + this.dy * this.dy;
             let fighterRotation          = this.rotation;
             const correctLandingRotation = Entity.getAngleFromTo(p, this);
@@ -66,12 +68,12 @@ function attractToStar(s) {
         const dx = s.x - this.x;
         const dy = s.y - this.y;
 
-        const forceFactor = this.MASS * s.MASS / Math.pow(r2, 1.5);
+        const forceFactor = this.mass * s.mass / Math.pow(r2, 1.5);
 
         this.dx += dx * forceFactor;
         this.dy += dy * forceFactor;
 
-        if (r2 < s.DIST_SURFACE2) {
+        if (r2 < Star.DIST_SURFACE2) {
             crash(this);
         }
     }

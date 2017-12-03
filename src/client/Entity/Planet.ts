@@ -8,6 +8,7 @@ import PComm from './PComm';
 import SpaceDock from './SpaceDock';
 import SensorArray from './SensorArray';
 import SpacePort from './SpacePort';
+import LivingEntity from './LivingEntity';
 
 const GEO = {
     body: {
@@ -38,9 +39,8 @@ const GEO = {
     }
 };
 
-export default class Planet {
+export default class Planet extends LivingEntity{
     type = 'Planet';
-    geo: any;
 
     static DIST_SURFACE2 = 105 * 105;
 
@@ -66,9 +66,11 @@ export default class Planet {
     spaceport?: SpacePort;
 
     constructor(params: Planet) {
-        Object.assign(this, params);
+        super();
         this.geo = Geometry(GEO.body);
         this.geo.graphics.addChild(Geometry(GEO.flag).graphics);
+
+        Object.assign(this, params);
         this.updateFlagColor();
     }
 

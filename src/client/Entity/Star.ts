@@ -1,5 +1,5 @@
-import TEAM from './_Team';
 import Geometry from '../Geometry';
+import LivingEntity from './LivingEntity';
 
 const GEO = {
     type:      "circle",
@@ -16,19 +16,16 @@ const GEO = {
 };
 
 
-export default class Star {
+export default class Star extends LivingEntity{
     static DIST_SURFACE2 = 200 * 200;
 
     type = 'Star';
-    geo: any;
-    x    = 0;
-    y    = 0;
     hp   = 10000;
     mass = 500;
-    team = TEAM.NONE;
-
+    
     constructor(params: Star) {
-        Object.assign(this, params);
+        super();
         this.geo = Geometry(GEO);
+        Object.assign(this, params);
     }
 }
