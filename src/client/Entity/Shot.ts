@@ -1,5 +1,6 @@
 import TEAM from './_Team';
 import Geometry from '../Geometry';
+import LivingEntity from './LivingEntity';
 
 const GEO = {
     "cannon_normal": {
@@ -40,10 +41,9 @@ const DAMAGE = {
     cannon_normal: 1
 };
 
-export default class Shot {
+export default class Shot extends LivingEntity {
     type = 'Shot';
-    geo: any;
-
+    
     canMoveLinearly = true;
     canDamage       = true;
     canMetabolize   = true;
@@ -51,15 +51,15 @@ export default class Shot {
     shotType = 'cannon_normal';
     team     = TEAM.NONE;
     hp       = 50;
-    x        = 0;
-    y        = 0;
-    dx       = 0;
-    dy       = 0;
     damageHp = 1;
 
     constructor(params: Shot) {
+        super();
+        
+        const {shotType} = params;
+
+        this.geo      = Geometry(GEO[shotType]);
+        this.damageHp = DAMAGE[shotType];
         Object.assign(this, params);
-        this.geo      = Geometry(GEO[this.shotType]);
-        this.damageHp = DAMAGE[this.shotType];
     }
 }

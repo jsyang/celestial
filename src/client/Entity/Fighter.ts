@@ -2,14 +2,14 @@ import Geometry from '../Geometry';
 import LivingEntity from './LivingEntity';
 
 const GEO = {
-    "body":   {
-        "type":          "polygon",
-        "lineStyle":     {
+    "body": {
+        "type": "polygon",
+        "lineStyle": {
             "width": 1,
             "color": 255,
             "alpha": 1
         },
-        "path":          [
+        "path": [
             -2, 2,
             -4, 0,
             -2, -2,
@@ -31,26 +31,26 @@ const GEO = {
         ]
     },
     "flame1": {
-        "type":      "polygon",
+        "type": "polygon",
         "lineStyle": {
             "width": 1,
             "color": 65535,
             "alpha": 1
         },
-        "path":      [
+        "path": [
             -4, -4,
             -8, -5,
             -4, -6
         ]
     },
     "flame2": {
-        "type":      "polygon",
+        "type": "polygon",
         "lineStyle": {
             "width": 1,
             "color": 65535,
             "alpha": 1
         },
-        "path":      [
+        "path": [
             -4, 4,
             -8, 5,
             -4, 6
@@ -60,28 +60,30 @@ const GEO = {
 
 export default class Fighter extends LivingEntity {
     type = 'Fighter';
-    geo  = Geometry(GEO.body);
+    geo = Geometry(
+        GEO.body,
+        { collisionPath: GEO.body.collisionPath }
+    );
 
     // Components
-    mass     = 10;
-    hp       = 6;
-    maxHp    = 6;
-    dx       = 0;
-    dy       = 0;
+    mass = 10;
+    hp = 6;
+    maxHp = 6;
+    dx = 0;
+    dy = 0;
     rotation = 0;
 
-    canExplode           = true;
-    //todo : refine this
+    canExplode = true;
+
     cannonGetMuzzleFuncs = [
-        function getFighterMuzzle(f) {
-            return f.collision.calcPoints[1];
-        }
+        fighter => fighter.geo.collision.calcPoints[1]
     ];
 
-    canLimitSpeed   = true;
+    canLimitSpeed = true;
     canMoveLinearly = true;
-    canAccelerate   = true;
-    canDockPlanet   = true;
+    canAccelerate = true;
+    canDockPlanet = true;
+    canShootCannon = true;
 
     constructor(params: Fighter) {
         super();
@@ -95,6 +97,8 @@ export default class Fighter extends LivingEntity {
             Geometry(GEO.flame1).graphics,
             Geometry(GEO.flame2).graphics
         );
+
+        this.flameOff();
     }
 
     flameOn = () => {

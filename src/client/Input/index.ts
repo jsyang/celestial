@@ -6,12 +6,12 @@ let focus;
 export const getFocalPoint = () => focus;
 export const setFocalPoint = entity => focus = entity;
 
-const DROTATION    = 0.05;
+const DROTATION = 0.05;
 const ACCELERATION = 0.2;
 
 const DEVICE_TYPE = {
     Keyboard: 0,
-    GamePad:  0
+    GamePad: 0
 };
 
 const device = localStorage.getItem('input.device') ||
@@ -36,6 +36,8 @@ function process() {
                         focus.rotation += DROTATION;
                     }
                 }
+
+                focus.isShooting = events.SHOOT;
             }
 
             focus.isShooting = events.SHOOT;

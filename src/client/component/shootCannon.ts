@@ -2,20 +2,10 @@ import Entity from '../Entity';
 import {playSound} from '../Audio';
 
 const AUDIO_SHOT = {
-    'ShotCannonHeavy'  : 'fire-heavy',
-    'ShotCannonNormal' : 'fire'
+    'cannon_heavy'  : 'fire-heavy',
+    'cannon_normal' : 'fire'
 };
 
-const DEFAULTS = {
-    cannonGetMuzzleFuncs       : [],
-    CANNON_LOAD_TIME_MS        : 100,
-    cannonLastShotTime         : 0,
-    cannonMatchShooterRotation : true,
-    cannonTarget               : undefined,
-    cannonShotSpeed            : 4,
-    cannonShotType             : 'ShotCannonNormal',
-    isShooting                 : false
-};
 
 function shoot(getMuzzleFunc) {
     const muzzle = getMuzzleFunc(this);
@@ -31,16 +21,32 @@ function shoot(getMuzzleFunc) {
     const dx = Math.cos(cannonAngle) * this.cannonShotSpeed;
     const dy = Math.sin(cannonAngle) * this.cannonShotSpeed;
 
-    Entity.create(this.cannonShotType, {
-        x    : muzzle.x + this.x,
-        y    : muzzle.y + this.y,
-        team : this.team,
-        dx   : dx + (this.dx || 0),
-        dy   : dy + (this.dy || 0)
+    const shooterDx = this.dx || 0;
+    const shooterDy = this.dy || 0;
+
+    Entity.create('Shot', {
+        shotType: this.cannonShotType,
+        x       : muzzle.x + this.x - shooterDx,
+        y       : muzzle.y + this.y - shooterDy,
+        team    : this.team,
+        dx      : dx + shooterDx,
+        dy      : dy + shooterDy
     });
 
     playSound(AUDIO_SHOT[this.cannonShotType]);
 }
+
+const DEFAULTS = {
+    cannonGetMuzzleFuncs       : [],
+    CANNON_LOAD_TIME_MS        : 100,
+    cannonLastShotTime         : 0,
+    cannonMatchShooterRotation : true,
+    cannonTarget               : undefined,
+    cannonShotSpeed            : 4,
+    cannonShotType             : 'cannon_normal',
+    isShooting                 : false,
+    shoot
+};
 
 function process(entity) {
     if (entity.isShooting) {
