@@ -68,7 +68,13 @@ function init(entity) {
     ALL_COMPONENTS
         .forEach((component: any) => {
             if (component.DEFAULTS && entity[component.componentFlag]) {
-                Object.assign(entity, component.DEFAULTS);
+                Object.keys(component.DEFAULTS)
+                    .forEach(defaultPropertyKey => {
+                        // Only set defaults if there isn't a value already set
+                        if(typeof entity[defaultPropertyKey] === 'undefined') {
+                            entity[defaultPropertyKey] = component.DEFAULTS[defaultPropertyKey];
+                        }
+                    });
             }
         });
 }

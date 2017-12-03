@@ -6,7 +6,7 @@ export const MAX_COORDINATE = 1 << 15;
 
 const MIN_STARS                 = 2;
 const MAX_STARS                 = 5;
-const MAX_PLANETS_PER_STAR      = 2;
+const MAX_PLANETS_PER_STAR      = 3;
 const CHANCE_STARS_HAVE_PLANETS = 0.8;
 
 /**
@@ -57,9 +57,7 @@ function init() {
             const planetCount = Random.int(1, MAX_PLANETS_PER_STAR);
             for (let j = 0; j < planetCount; j++) {
                 Entity.create('Planet', {
-                    x:             0,
-                    y:             0,
-                    star:          star,
+                    star,
                     orbitDistance: 1600 + j * Random.int(2, 5) * 800,
                     orbitRotation: Random.float(-Math.PI, Math.PI)
                 });
@@ -69,9 +67,10 @@ function init() {
 
     // Test entities
     const fighter = Entity.create('Fighter', {
-        x:    Random.int(0, MAX_COORDINATE),
-        y:    Random.int(0, MAX_COORDINATE),
-        team: TEAM.MAGENTA
+        x       : Random.int(0, MAX_COORDINATE),
+        y       : Random.int(0, MAX_COORDINATE),
+        rotation: Random.float(-Math.PI, Math.PI),
+        team    : TEAM.MAGENTA
     });
 
     Entity.create('Freighter', {

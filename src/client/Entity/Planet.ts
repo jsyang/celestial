@@ -43,18 +43,17 @@ export default class Planet extends LivingEntity{
     type = 'Planet';
 
     static DIST_SURFACE2 = 105 * 105;
+    
+    orbitDistance: number;
+    orbitRotation: number;
 
     // Components
     canOrbitStar     = true;
     canStoreMaterial = true;
-
-    team              = TEAM.NONE;
-    orbitDistance     = 0;
-    orbitRotation     = 0;
     materialsRaw      = 0;
     materialsFinished = 0;
     hp                = 2000;
-    mass              = 100;
+    mass              = 20;
 
     star?: Star;
     pbase?: PBase;
