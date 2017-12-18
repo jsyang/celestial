@@ -25,11 +25,8 @@ Works well with game pads:
 
 ## Bugs
 
-- cannon shots are not correctly affected by shooter's dx/dy
-
 ## TODOs
 
-- use https://gildas-lormeau.github.io/zip.js/ instead of jszip
 - title screen
     - new game button
     - about button
