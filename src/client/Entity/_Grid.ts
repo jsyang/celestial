@@ -3,9 +3,9 @@
  * The nextEntityGrid becomes the current entityGrid when EntityGrid.commit() is called.
  */
 import {getDistSquared} from '.';
-import {MAX_COORDINATE} from '../Galaxy';
+import {MAX_COORDINATE} from '../constants';
 
-const GRID_SIZE_BIT_SHIFT = 11;
+const GRID_SIZE_BIT_SHIFT = 9;
 const GRID_WIDTH          = MAX_COORDINATE >> GRID_SIZE_BIT_SHIFT;
 // const GRID_SIZE           = 1 << GRID_SIZE_BIT_SHIFT;
 
@@ -66,18 +66,18 @@ function filterNearestResult(filterType, minDistance2, neighbor) {
 }
 
 /**
- * Get all neighbors within 3x3 block around `entity`
+ * Get all neighbors within 1 block around `entity`
  */
 function getNearest(entity, filterType?, minDistance2?) {
     let nearest = [].concat(
         entityGrid[getEntityToGridIndex(entity, -1, -1)],
         entityGrid[getEntityToGridIndex(entity, 0, -1)],
         entityGrid[getEntityToGridIndex(entity, 1, -1)],
-        entityGrid[getEntityToGridIndex(entity, 0, -1)],
+        entityGrid[getEntityToGridIndex(entity, -1, 0)],
         entityGrid[getEntityToGridIndex(entity, 0, 0)],
+        entityGrid[getEntityToGridIndex(entity, 1, 0)],
         entityGrid[getEntityToGridIndex(entity, 0, 1)],
         entityGrid[getEntityToGridIndex(entity, -1, 1)],
-        entityGrid[getEntityToGridIndex(entity, 0, 1)],
         entityGrid[getEntityToGridIndex(entity, 1, 1)]
     ).filter(Boolean);
 

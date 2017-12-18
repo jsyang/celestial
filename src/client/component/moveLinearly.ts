@@ -1,4 +1,4 @@
-import { MAX_COORDINATE } from "../Galaxy";
+import {MAX_COORDINATE} from '../constants';
 
 const DEFAULTS = {
     dx : 0,

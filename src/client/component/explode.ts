@@ -1,17 +1,18 @@
 import {playSound} from '../Audio';
-import Entity from'../Entity';
+import Entity from '../Entity';
 import Random from '../Random';
 
 function explode() {
     playSound(this.EXPLOSION_SOUND);
 
     for (let fragmentCount = this.EXPLOSION_FRAGMENTS; fragmentCount > 0; fragmentCount--) {
-        Entity.create('ShotCannonNormal', {
-            x:    this.x + Random.float(-10, 10),
-            y:    this.y + Random.float(-10, 10),
-            team: Entity.TEAM.NONE,
-            dx:   Random.float(-2, 2) + (this.dx || 0),
-            dy:   Random.float(-2, 2) + (this.dy || 0)
+        Entity.create('Shot', {
+            shotType: 'cannon_normal',
+            x:        this.x + Random.float(-10, 10),
+            y:        this.y + Random.float(-10, 10),
+            team:     Entity.TEAM.NONE,
+            dx:       Random.float(-2, 2) + (this.dx || 0),
+            dy:       Random.float(-2, 2) + (this.dy || 0)
         });
     }
 }

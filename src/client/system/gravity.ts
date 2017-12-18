@@ -89,7 +89,9 @@ function attractFighterToStarOrPlanet(entity) {
 
 function updateFighter(fighter) {
     if (fighter && !fighter.isDockedPlanet && fighter.hp > 0) {
-        Entity.getNearest(fighter)
+        const nearest = Entity.getNearest(fighter);
+
+        nearest
             .forEach(attractFighterToStarOrPlanet.bind(fighter));
     }
 }

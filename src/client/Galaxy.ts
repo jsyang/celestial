@@ -1,8 +1,7 @@
 import Entity from './Entity';
 import TEAM from './Entity/_Team';
 import Random  from './Random';
-
-export const MAX_COORDINATE = 1 << 15;
+import {MAX_COORDINATE} from './constants';
 
 const MIN_STARS                 = 2;
 const MAX_STARS                 = 5;
