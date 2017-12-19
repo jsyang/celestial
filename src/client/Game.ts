@@ -39,8 +39,11 @@ function step() {
     if (elapsed > FPS_INTERVAL) {
         const focus = Input.getFocalPoint();
 
-        RadarLocal.setOrigin(focus);
-        Graphics.centerOn(focus);
+        if(focus) {
+            RadarLocal.setOrigin(focus);
+            Graphics.centerOn(focus);
+        }
+
         Graphics.render();
 
         then = now - (elapsed % FPS_INTERVAL);

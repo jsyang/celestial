@@ -1,31 +1,31 @@
 // Proximity radar
 // Available to any unit
 
-// todo: convert to TS
-
-import * as PIXI  from 'pixi.js';
+import * as PIXI from 'pixi.js';
 import Graphics from './Graphics';
 import Entity from './Entity';
 
-var DIAL_TRACK_ALPHA = 0.08;
-var DEGREES          = Math.PI / 180;
+const DIAL_TRACK_ALPHA = 0.08;
+const DEGREES          = Math.PI / 180;
 
-var dialNearestPlanet;
-
-function createNearestPlanetDial() {
-    var g = new PIXI.Graphics();
+function createDialAndTrack({trackWidth, trackColor, trackRadius, dialColor, dialSize}) {
+    // Circular track
+    const g = new PIXI.Graphics();
     g.beginFill(0, 0);
-    g.lineStyle(4, 0xffffff, DIAL_TRACK_ALPHA);
-    g.drawCircle(0, 0, 45);
+    g.lineStyle(trackWidth, trackColor, DIAL_TRACK_ALPHA);
+    g.drawCircle(0, 0, trackRadius);
     g.endFill();
 
     g.x = 0;
     g.y = 0;
 
-    var d = new PIXI.Graphics();
+    // Colored dial
+    const d = new PIXI.Graphics();
     d.beginFill(0, 0);
-    d.lineStyle(4, 0x00ff00, 1);
-    d.arc(0, 0, 45, -3 * DEGREES, 3 * DEGREES);
+    d.lineStyle(trackWidth, dialColor, 1);
+
+    const halfDialSize = 0.5 * dialSize;
+    d.arc(0, 0, trackRadius, -halfDialSize * DEGREES, halfDialSize * DEGREES);
     d.endFill();
 
     d.x = 0;
@@ -35,83 +35,49 @@ function createNearestPlanetDial() {
     return g;
 }
 
-var dialNearestStar;
+let dials;
+const MARGIN_EDGE = 4;
 
-function createNearestStarDial() {
-    var g = new PIXI.Graphics();
-    g.beginFill(0, 0);
-    g.lineStyle(4, 0xffffff, DIAL_TRACK_ALPHA);
-    g.drawCircle(0, 0, 50);
-    g.endFill();
-
-    g.x = 0;
-    g.y = 0;
-
-    var d = new PIXI.Graphics();
-    d.beginFill(0, 0);
-    d.lineStyle(4, 0xffff00, 1);
-    d.arc(0, 0, 50, -6 * DEGREES, 6 * DEGREES);
-    d.endFill();
-
-    d.x = 0;
-    d.y = 0;
-
-    g.addChild(d);
-    return g;
-}
-
-var dialNearestEnemy;
-
-function createNearestEnemyDial() {
-    var g = new PIXI.Graphics();
-    g.beginFill(0, 0);
-    g.lineStyle(1, 0xffffff, DIAL_TRACK_ALPHA);
-    g.drawCircle(0, 0, 50);
-    g.endFill();
-
-    g.x = 0;
-    g.y = 0;
-
-    var d = new PIXI.Graphics();
-    d.beginFill(0, 0);
-    d.lineStyle(2, 0xff0000, 1);
-    d.arc(0, 0, 50, -DEGREES, DEGREES);
-    d.endFill();
-
-    d.x = 0;
-    d.y = 0;
-
-    g.addChild(d);
-    return g;
-}
-
-var TEXT_OPTIONS = {
-    fontFamily: 'arial',
-    fontSize:   8,
-    fill:       0xf8f8f8,
-    align:      'center'
-};
-
-var centerLabel;
-
-function createCenterLabel() {
-    var centerLabel = new PIXI.Text(
-        'Tactical Radar',
-        TEXT_OPTIONS
-    );
-    centerLabel.x   = -centerLabel.width >> 1;
-    centerLabel.y   = -centerLabel.height >> 1;
-    return centerLabel;
-}
-
-var dials;
-var MARGIN_EDGE = 4;
+let dialNearestEnemy;
+let dialNearestPlanet;
+let dialNearestStar;
 
 function init() {
-    dialNearestPlanet = createNearestPlanetDial();
-    dialNearestStar   = createNearestStarDial();
-    dialNearestEnemy  = createNearestEnemyDial();
-    centerLabel       = createCenterLabel();
+    dialNearestPlanet = createDialAndTrack({
+        trackWidth:  4,
+        trackRadius: 45,
+        trackColor:  0xffffff,
+        dialColor:   0x00ff00,
+        dialSize:    6
+    });
+
+    dialNearestStar = createDialAndTrack({
+        trackWidth:  4,
+        trackRadius: 50,
+        trackColor:  0xffffff,
+        dialColor:   0xffff00,
+        dialSize:    12
+    });
+
+    dialNearestEnemy = createDialAndTrack({
+        trackWidth:  1,
+        trackRadius: 50,
+        trackColor:  0xffffff,
+        dialColor:   0xff0000,
+        dialSize:    2
+    });
+
+    const centerLabel = new PIXI.Text(
+        'Tactical Radar',
+        {
+            fontFamily: 'arial',
+            fontSize:   8,
+            fill:       0xf8f8f8,
+            align:      'center'
+        }
+    );
+    centerLabel.x     = -centerLabel.width >> 1;
+    centerLabel.y     = -centerLabel.height >> 1;
 
     dials = new PIXI.Container();
     dials.addChild(
@@ -129,6 +95,7 @@ function init() {
 }
 
 let radarEnabled = true;
+
 
 function setRotations(rotation) {
     if (rotation.nearestEnemy) {
@@ -153,23 +120,21 @@ function setRotations(rotation) {
     }
 }
 
-var lastUpdateTime = 0;
-var TIME_UPDATE    = 500;
-
-var origin;
+let lastUpdateTime = 0;
+const TIME_UPDATE  = 500;
 
 function update() {
     if (origin && radarEnabled) {
-        var now = Date.now();
+        const now = Date.now();
 
         if (now - lastUpdateTime > TIME_UPDATE) {
-            var nearestPlanet = Entity.getAbsoluteNearestByType(origin, 'Planet');
-            var nearestStar   = Entity.getAbsoluteNearestByType(origin, 'Star');
+            const nearestPlanet = Entity.getAbsoluteNearestByType(origin, 'Planet');
+            const nearestStar   = Entity.getAbsoluteNearestByType(origin, 'Star');
 
             setRotations({
                 nearestEnemy:  undefined,
-                nearestPlanet: nearestPlanet ? Entity.getAngleFromTo(origin, nearestPlanet) : undefined,
-                nearestStar:   nearestStar ? Entity.getAngleFromTo(origin, nearestStar) : undefined
+                nearestPlanet: nearestPlanet && Entity.getAngleFromTo(origin, nearestPlanet),
+                nearestStar:   nearestStar && Entity.getAngleFromTo(origin, nearestStar)
             });
 
             lastUpdateTime = now;
@@ -177,11 +142,8 @@ function update() {
     }
 }
 
-function setOrigin(entity) {
-    if (entity) {
-        origin = {x: entity.x, y: entity.y};
-    }
-}
+let origin;
+const setOrigin = ({x, y}) => origin = {x, y};
 
 export default {
     init,
