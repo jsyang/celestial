@@ -1,4 +1,4 @@
-import {defineSound} from './Audio';
+import {defineSound} from './audio';
 import JSZip from 'jszip';
 import JSZipUtils from 'jszip-utils';
 

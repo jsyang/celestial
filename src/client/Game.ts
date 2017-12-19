@@ -1,4 +1,4 @@
-import Assets from './Assets';
+import Assets from './assets/index';
 import Graphics from './Graphics';
 import Input from './Input';
 
@@ -62,6 +62,7 @@ export function onDOMContentLoaded () {
     Galaxy.init();
     RadarLocal.init();
 
-    Assets.load()
+    Assets
+        .load()
         .then(start);
 }

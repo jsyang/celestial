@@ -1,5 +1,5 @@
 import Entity from '../Entity';
-import {playSound} from '../Audio';
+import {playSound} from '../assets/audio';
 
 function createPBase() {
     const {planet} = this;

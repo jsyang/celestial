@@ -1,14 +1,13 @@
 // Galaxy radar
 // Only available via SensorArray
-// todo: implement fog of war scanner
 
 import * as PIXI from 'pixi.js';
 
 import Entity from'./Entity';
-import Galaxy from './Galaxy';
 import Graphics  from './Graphics';
+import {MAX_COORDINATE} from './constants';
 
-const ALPHA_SCANNER_BORDER = 0.8;
+const ALPHA_SCANNER_BORDER = 0.3;
 
 const SIZE        = 100;
 const MARGIN_EDGE = 4;
@@ -29,7 +28,7 @@ let markerPlanet    = [];
 let markerFighter   = [];
 let markerFreighter = [];
 
-const COORDINATE_TO_SCANNER_FACTOR = SIZE / Galaxy.MAX_COORDINATE;
+const COORDINATE_TO_SCANNER_FACTOR = SIZE / MAX_COORDINATE;
 
 function createMarker(color, size) {
     const marker = new PIXI.Graphics();
@@ -67,12 +66,11 @@ const FUNC_DRAW_FREIGHTER_MARKER = drawMarker.bind(null, markerFreighter, COLOR_
 function update() {
     const now = Date.now();
 
-    // todo: better implementation of these
-
     if (now - lastUpdateTime > TIME_UPDATE) {
         const stars = Entity.getByType('Star');
         if (stars) {
             // todo: correct implementation of this
+            // currently it only decreases marker count, no increase accounted for (if new ships become available)
             if (stars.length != markerStar.length) {
                 markerStar = markerStar.slice(0, stars.length - 1);
             }

@@ -1,4 +1,6 @@
 let audioContext = new AudioContext();
+
+// Dictionary of audio clips, keyed by clip name
 let audioBuffers = {};
 
 export function defineSound({name, arrayBuffer}) {
@@ -15,8 +17,3 @@ export function playSound(name: string) {
     source.connect(audioContext.destination);
     source.start();
 }
-
-export default {
-    defineSound,
-    playSound
-};

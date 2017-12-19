@@ -57,9 +57,7 @@ interface IPoint {
     y: number;
 }
 
-export const render   = () => {
-    renderer.render(scene);
-}
+export const render = () => renderer.render(scene);
 
 export const centerOn = (point: IPoint) => {
     if (point) {

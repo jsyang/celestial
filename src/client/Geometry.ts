@@ -1,3 +1,6 @@
+// Standard interface to handle both vector graphics positioning
+// as well as collisions
+
 import { Graphics } from 'pixi.js';
 import { Circle, Polygon, Vector } from 'sat';
 
