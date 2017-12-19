@@ -1,6 +1,5 @@
 import Entity from '../Entity';
 import Random from '../Random';
-import Input from '../Input';
 
 function assignFreightersToPlanet(freighters, planet) {
     if (freighters) {
@@ -38,9 +37,10 @@ function constructOnRandomPlanet(idleTeamPlanet, type) {
 }
 
 function processTeam(team) {
-    let teamPlanet    = Entity.getByType('Planet');
-    let teamFighter   = Entity.getByType('Fighter');
-    let teamFreighter = Entity.getByType('Freighter');
+    const selectOnlyCurrentTeam = filterByTeam.bind(null, team);
+
+    let teamPlanet    = Entity.getByType('Planet').filter(selectOnlyCurrentTeam);
+    let teamFreighter = Entity.getByType('Freighter').filter(selectOnlyCurrentTeam);
 
     let idleTeamPlanet;
 
@@ -63,17 +63,10 @@ function processTeam(team) {
         }
     }
 
-    if (teamFighter) {
-        teamFighter = teamFighter.filter(filterByTeam.bind(null, team));
-    }
+    const fighters = Entity.getByType('Fighter').filter(selectOnlyCurrentTeam);
 
-    if (!Input.getFocalPoint()) {
-
-        if (teamFighter.length > 0) {
-            Input.setFocalPoint(teamFighter[0]);
-        } else {
-            constructOnRandomPlanet(idleTeamPlanet, 'Fighter');
-        }
+    if (fighters.length === 0) {
+        constructOnRandomPlanet(idleTeamPlanet, 'Fighter');
     }
 }
 

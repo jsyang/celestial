@@ -32,8 +32,12 @@ export default class LivingEntity {
         this.geo.rotation = rotation;
     }
 
+    getChildAt(childIndex:number) {
+        return this.geo.graphics.getChildAt(childIndex);
+    }
+
     setChildVisible(childIndex: number, isVisible: boolean) {
-        this.geo.graphics.getChildAt(childIndex).visible = isVisible;
+        this.getChildAt(childIndex).visible = isVisible;
     }
 
     assignTeamColor() {

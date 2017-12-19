@@ -28,7 +28,6 @@ Works well with game pads:
 ## TODOs
 
 - create the 4 teams during galaxy generation
-- have some way to focus on different entities
 
 - title screen
     - new game button

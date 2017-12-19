@@ -53,7 +53,7 @@ export default class Planet extends LivingEntity{
     materialsRaw      = 0;
     materialsFinished = 0;
     hp                = 2000;
-    mass              = 20;
+    mass              = 180;
 
     star?: Star;
     pbase?: PBase;

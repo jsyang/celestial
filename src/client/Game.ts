@@ -1,5 +1,6 @@
 import Assets from './assets/index';
 import Graphics from './Graphics';
+import Focus from './Graphics/Focus';
 import Input from './Input';
 
 import Galaxy from './Galaxy';
@@ -37,7 +38,7 @@ function step() {
     update();
 
     if (elapsed > FPS_INTERVAL) {
-        const focus = Input.getFocalPoint();
+        const focus = Focus.getFocus();
 
         if(focus) {
             RadarLocal.setOrigin(focus);

@@ -41,7 +41,7 @@ function rotateToFaceTarget(entity, target) {
 function process(entity) {
     let {target, DIST_HALT2} = entity;
 
-    if (target) {
+    if (target && target.hp > 0) {
         const r2 = Entity.getDistSquared(entity, target);
 
         if (target.type === 'Planet') {
@@ -68,6 +68,8 @@ function process(entity) {
                 entity.flameOff();
             }
         }
+    } else {
+        entity.target = null;
     }
 }
 

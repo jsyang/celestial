@@ -21,7 +21,7 @@ export default class Star extends LivingEntity{
 
     type = 'Star';
     hp   = 10000;
-    mass = 500;
+    mass = 600;
     
     constructor(params: Star) {
         super();

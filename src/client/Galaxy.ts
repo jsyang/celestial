@@ -1,3 +1,5 @@
+import Focus from './Graphics/Focus';
+import Input from './Input';
 import Entity from './Entity';
 import TEAM from './Entity/_Team';
 import Random from './Random';
@@ -58,7 +60,7 @@ function createPBaseOrInvasionFleet(teamName, startingLocation) {
         });
 
         startingLocation.pbase = pbase;
-        startingLocation.team = team;
+        startingLocation.team  = team;
         startingLocation.updateFlagColor();
     }
 }
@@ -128,6 +130,9 @@ function init() {
         isOrbitingPlanet:  false,
         materialsFinished: 500
     });
+
+    Focus.setFocus(fighter);
+    Input.setControlledEntity(fighter);
 }
 
 export default {

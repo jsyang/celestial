@@ -1,6 +1,7 @@
 import Geometry from '../Geometry';
 import Planet from "./Planet";
 import LivingEntity from './LivingEntity';
+import TEAM from './_Team';
 
 const GEO = {
     "body":      {
@@ -160,8 +161,6 @@ export default class Freighter extends LivingEntity {
 
         Object.assign(this, params);
 
-        this.assignTeamColor();
-
         const cargoPodL = Geometry(GEO.cargopodL);
         const cargoPodR = Geometry(GEO.cargopodR);
         const turret1   = Geometry(GEO.turret1);
@@ -179,7 +178,12 @@ export default class Freighter extends LivingEntity {
             turret2.graphics
         );
 
+        this.assignTeamColor();
         this.flameOff();
+    }
+
+    assignTeamColor() {
+        this.getChildAt(1).currentPath.lineColor = TEAM._COLORS[this.team];
     }
 
     loadSupply = () => {
