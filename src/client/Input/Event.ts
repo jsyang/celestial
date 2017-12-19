@@ -1,12 +1,13 @@
-export default {
-    TURN_LEFT:    0,
-    TURN_RIGHT:   1,
-    ACCELERATE:   2,
-    SHOOT:        3,
-    RESTART_GAME: 4
-};
+export enum IEventType {
+    TURN_LEFT,
+    TURN_RIGHT,
+    ACCELERATE,
+    SHOOT,
+    RESTART_GAME
+}
 
 export interface IInputEvent {
+    SHOOT_SPECIAL: boolean;
     TURN_LEFT: boolean;
     TURN_RIGHT: boolean;
     ACCELERATE: boolean;

@@ -3,6 +3,7 @@ import * as PIXI from 'pixi.js';
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 import StarField from './Starfield';
+import Freelook from './Freelook';
 
 let renderer;
 let width, width2;
@@ -35,6 +36,11 @@ StarField.init(stage);
 
 const clearLastCoordinates = () => lastX = lastY = undefined;
 
+const updateFreelookPosition = () => Freelook.setIconPosition(
+    innerWidth - 16 - 4,
+    16 + 4
+);
+
 // Attach view and bind resize
 if (document && window) {
 
@@ -45,12 +51,16 @@ if (document && window) {
     window.addEventListener('resize', () => {
         updateDimensions();
         clearLastCoordinates();
+        updateFreelookPosition();
     });
 }
 
 export const addChildToHUD = child => scene.addChild(child);
 export const addChild      = child => stage.addChild(child);
 export const removeChild   = child => stage.removeChild(child);
+
+addChildToHUD(Freelook.symbol);
+updateFreelookPosition();
 
 interface IPoint {
     x: number;

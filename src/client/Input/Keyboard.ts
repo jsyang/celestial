@@ -21,6 +21,7 @@ const keyDown = {
 function onKeyUp(e) {
     keyDown[CODE_TO_KEY[e.which]] = false;
 }
+
 function onKeyDown(e) {
     keyDown[CODE_TO_KEY[e.which]] = true;
 }
@@ -32,11 +33,12 @@ if (window) {
 
 // todo: use key map
 export const getEvents = (): IInputEvent => ({
-    TURN_LEFT:    keyDown.left_arrow,
-    TURN_RIGHT:   keyDown.right_arrow,
-    ACCELERATE:   keyDown.up_arrow,
-    SHOOT:        keyDown.f,
-    RESTART_GAME: keyDown.r
+    SHOOT_SPECIAL: keyDown.down_arrow,
+    TURN_LEFT:     keyDown.left_arrow,
+    TURN_RIGHT:    keyDown.right_arrow,
+    ACCELERATE:    keyDown.up_arrow,
+    SHOOT:         keyDown.f,
+    RESTART_GAME:  keyDown.r
 });
 
 export default {getEvents};
