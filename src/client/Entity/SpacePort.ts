@@ -165,7 +165,7 @@ export default class SpacePort extends LivingEntity {
 
         this.assignTeamColor();
 
-        // Add turrets and flames as graphics only, not collision geometry
+        // Add turrets and flames as graphics only, not collider geometry
         this.geo.graphics
             .addChild(
                 Geometry(GEO.flame1).graphics,

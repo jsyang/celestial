@@ -1,6 +1,6 @@
 # celestial
 
-Celestial combat. Conquer the universe sector by sector.
+Celestial combat. Conquer the known universe sector by sector.
 
 ```
 yarn
@@ -27,8 +27,6 @@ Works well with game pads:
 
 ## TODOs
 
-- create the 4 teams during galaxy generation
-
 - title screen
     - new game button
     - about button
@@ -50,7 +48,6 @@ Works well with game pads:
 
 ## Nice-to-haves
 
-- add unit tests
 - implement structure status displays
 - capital ships
 - rockets

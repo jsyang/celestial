@@ -168,7 +168,7 @@ export default class Freighter extends LivingEntity {
         const flag      = Geometry(GEO.flag);
         const flame     = Geometry(GEO.flame);
 
-        // Add as graphics only, not collision geometry
+        // Add as graphics only, not collider geometry
         this.geo.graphics.addChild(
             flame.graphics,
             flag.graphics,

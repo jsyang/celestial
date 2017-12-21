@@ -1,13 +1,14 @@
 // Standard interface to handle both vector graphics positioning
 // as well as collisions
 
-import { Graphics } from 'pixi.js';
-import { Circle, Polygon, Vector } from 'sat';
+import {Graphics} from 'pixi.js';
+import {pointInPolygon, Circle, Polygon, Vector} from 'sat';
+import {IPoint} from './types';
 
-const v = (x, y) => new Vector(x, y);
+const v    = (x, y) => new Vector(x, y);
 const PIPI = Math.PI * 2;
 
-function createMutableGeoInterface(graphics, collision) {
+function createMutableGeoInterface(graphics, collider) {
     return {
         set x(x) {
             if (x < 0) {
@@ -16,8 +17,8 @@ function createMutableGeoInterface(graphics, collision) {
                 x = 32768;
             }
 
-            this.graphics.x = x;
-            this.collision.pos.x = x;
+            this.graphics.x     = x;
+            this.collider.pos.x = x;
         },
         set y(y) {
             if (y < 0) {
@@ -26,8 +27,8 @@ function createMutableGeoInterface(graphics, collision) {
                 y = 32768;
             }
 
-            this.graphics.y = y;
-            this.collision.pos.y = y;
+            this.graphics.y     = y;
+            this.collider.pos.y = y;
         },
         set rotation(rotation) {
             if (rotation > PIPI) {
@@ -36,9 +37,9 @@ function createMutableGeoInterface(graphics, collision) {
                 rotation += PIPI;
             }
 
-            if (!(this.collision instanceof Circle)) {
+            if (!(this.collider instanceof Circle)) {
                 // SAT.Circle.setAngle() doesn't exist
-                this.collision.setAngle(rotation);
+                this.collider.setAngle(rotation);
                 this.graphics.rotation = rotation;
 
             }
@@ -55,14 +56,18 @@ function createMutableGeoInterface(graphics, collision) {
         },
 
         graphics: graphics,
-        collision: collision
+        collider: collider
     };
 }
 
-export default function Geometry(geometryDef, options: any = {}) {
-    geometryDef = { ...geometryDef, options };
+export function testPointInEntity({x, y}: IPoint, entity) {
+    return pointInPolygon(v(x, y), entity.geo.collider);
+}
 
-    const { lineStyle, fill, path, radius, x, y, collisionPath } = geometryDef;
+export default function Geometry(geometryDef, options: any = {}) {
+    geometryDef = {...geometryDef, options};
+
+    const {lineStyle, fill, path, radius, x, y, collisionPath} = geometryDef;
     let collider;
 
     // Graphics set up
@@ -88,13 +93,15 @@ export default function Geometry(geometryDef, options: any = {}) {
         collider = new Circle(position, radius);
     } else {
         const polygonSAT: Vector[] = [];
-        if (collisionPath) {
-            for (let i = 0; i < collisionPath.length; i += 2) {
-                polygonSAT.push(v(
-                    collisionPath[i],       // x
-                    collisionPath[i + 1]    // y
-                ));
-            }
+
+        // Use default path if collisionPath isn't explicitly set
+        let colliderPath = collisionPath || path;
+
+        for (let i = 0; i < colliderPath.length; i += 2) {
+            polygonSAT.push(v(
+                colliderPath[i],       // x
+                colliderPath[i + 1]    // y
+            ));
         }
 
         g.drawPolygon(path);

@@ -27,8 +27,8 @@ const DIST_PLANET_DOCK = 105;
 
 const DEFAULTS = {
     isDockedPlanet: false,
-    dockPlanet:     dockPlanet,
-    undockPlanet:   undockPlanet
+    dockPlanet,
+    undockPlanet
 };
 
 function process(entity) {

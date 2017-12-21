@@ -13,6 +13,7 @@ function createPBase() {
         team:   this.team
     });
 
+    this.canExplode = false;
     Entity.destroy(this);
 }
 
@@ -28,6 +29,7 @@ function createPColony() {
         team:   this.team
     });
 
+    this.canExplode = false;
     Entity.destroy(this);
 }
 

@@ -76,7 +76,7 @@ export default class Fighter extends LivingEntity {
     canExplode = true;
 
     cannonGetMuzzleFuncs = [
-        fighter => fighter.geo.collision.calcPoints[1]
+        fighter => fighter.geo.collider.calcPoints[1]
     ];
 
     canLimitSpeed = true;
@@ -92,7 +92,7 @@ export default class Fighter extends LivingEntity {
 
         this.assignTeamColor();
 
-        // Add as graphics only, not collision geometry
+        // Add as graphics only, not collider geometry
         this.geo.graphics.addChild(
             Geometry(GEO.flame1).graphics,
             Geometry(GEO.flame2).graphics

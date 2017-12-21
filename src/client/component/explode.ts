@@ -27,7 +27,9 @@ const DEFAULTS = {
  * Explodes when dead
  */
 function process(entity) {
-    if (entity.hp <= 0) {
+    // Ensure the explosion is intentional
+    // i.e. Freighters should not explode when colonizing
+    if (entity.canExplode && entity.hp <= 0) {
         explode.call(entity);
     }
 }

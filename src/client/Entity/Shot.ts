@@ -50,7 +50,7 @@ export default class Shot extends LivingEntity {
 
     shotType = 'cannon_normal';
     team     = TEAM.NONE;
-    hp       = 50;
+    hp       = 60;
     damageHp = 1;
 
     constructor(params: Shot) {

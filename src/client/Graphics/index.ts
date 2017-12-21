@@ -4,6 +4,7 @@ PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 import StarField from './Starfield';
 import Freelook from './Freelook';
+import {IPoint} from '../types';
 
 let renderer;
 let width, width2;
@@ -62,10 +63,6 @@ export const removeChild   = child => stage.removeChild(child);
 addChildToHUD(Freelook.symbol);
 updateFreelookPosition();
 
-interface IPoint {
-    x: number;
-    y: number;
-}
 
 export const render = () => renderer.render(scene);
 

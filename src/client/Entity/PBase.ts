@@ -87,6 +87,7 @@ export default class PBase extends LivingEntity {
     hp    = 20;
     maxHp = 20;
 
+    canDisplayHit   = true;
     canExplode      = true;
     canHarvest      = true;
     canRepair       = true;
@@ -106,7 +107,7 @@ export default class PBase extends LivingEntity {
 
         this.geo.graphics.currentPath.lineColor = TEAM._COLORS[this.team];
 
-        // Add turrets as graphics only, not collision geometry
+        // Add turrets as graphics only, not collider geometry
         this.geo.graphics.addChild(
             Geometry(GEO.turret1).graphics,
             Geometry(GEO.turret2).graphics,

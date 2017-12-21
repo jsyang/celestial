@@ -27,7 +27,7 @@ const GEO = {
     flag: {
         type: "polygon",
         fill: {
-            color: 255,
+            color: 0xffffff,
             alpha: 1
         },
         path: [
@@ -39,17 +39,17 @@ const GEO = {
     }
 };
 
-export default class Planet extends LivingEntity{
+export default class Planet extends LivingEntity {
     type = 'Planet';
 
     static DIST_SURFACE2 = 105 * 105;
-    
+
     orbitDistance: number;
     orbitRotation: number;
 
     // Components
-    canOrbitStar     = true;
-    canStoreMaterial = true;
+    canOrbitStar      = true;
+    canStoreMaterial  = true;
     materialsRaw      = 0;
     materialsFinished = 0;
     hp                = 2000;
@@ -88,8 +88,10 @@ export default class Planet extends LivingEntity{
         if (this.team === TEAM.NONE) {
             flag.visible = false;
         } else {
-            flag.visible                   = true;
-            flag.graphicsData[0].fillColor = TEAM._COLORS[this.team];
+            (window as any).foo = flag;
+            (window as any).doo = this;
+            flag.visible        = true;
+            flag.tint           = TEAM._COLORS[this.team];
         }
 
     }
