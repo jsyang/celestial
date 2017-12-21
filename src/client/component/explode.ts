@@ -3,23 +3,28 @@ import Entity from '../Entity';
 import Random from '../Random';
 
 function explode() {
-    playSound(this.EXPLOSION_SOUND);
+    const {EXPLOSION_SOUND, EXPLOSION_FRAGMENTS, x, y, dx, dy} = this;
 
-    for (let fragmentCount = this.EXPLOSION_FRAGMENTS; fragmentCount > 0; fragmentCount--) {
+    playSound(EXPLOSION_SOUND);
+
+    for (let fragmentCount = EXPLOSION_FRAGMENTS; fragmentCount > 0; fragmentCount--) {
         Entity.create('Shot', {
             shotType: 'cannon_normal',
-            x:        this.x + Random.float(-10, 10),
-            y:        this.y + Random.float(-10, 10),
+            x:        x + Random.float(-10, 10),
+            y:        y + Random.float(-10, 10),
             team:     Entity.TEAM.NONE,
-            dx:       Random.float(-2, 2) + (this.dx || 0),
-            dy:       Random.float(-2, 2) + (this.dy || 0)
+            dx:       Random.float(-2, 2) + (dx || 0),
+            dy:       Random.float(-2, 2) + (dy || 0)
         });
     }
+
+    this.hasExploded = true;
 }
 
 const DEFAULTS = {
     EXPLOSION_FRAGMENTS: 6,
     EXPLOSION_SOUND:     'collide',
+    hasExploded:         false,
     explode
 };
 
@@ -27,9 +32,11 @@ const DEFAULTS = {
  * Explodes when dead
  */
 function process(entity) {
+    const {hasExploded, canExplode, hp} = entity;
+
     // Ensure the explosion is intentional
     // i.e. Freighters should not explode when colonizing
-    if (entity.canExplode && entity.hp <= 0) {
+    if (hp <= 0 && !hasExploded && canExplode) {
         explode.call(entity);
     }
 }

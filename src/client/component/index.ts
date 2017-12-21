@@ -88,6 +88,11 @@ function update(entity) {
                 component.process(entity);
             }
         });
+    } else {
+        // Special case for exploding when dead
+        if (entity[ExplodeComponent.componentFlag]) {
+            ExplodeComponent.process(entity);
+        }
     }
 
     if (entity.hp > 0) {

@@ -15,7 +15,7 @@ const ERROR_MARGIN_LANDING_SPEED2   = 2.1 * 2.1;
 const PIPI = Math.PI * 2;
 
 function crash(entity) {
-    entity.explode();
+    entity.explode(entity);
     Entity.destroy(entity);
 }
 
