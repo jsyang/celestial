@@ -17,10 +17,8 @@ function registerDamage(entity): boolean {
             if (testPointInEntity(this, entity)) {
                 playSound(entity.AUDIO_HIT || 'hit');
                 entity.hp -= this.damageHp;
-                entity.hitTime = 5;
+                entity.hitTime = 10;
                 Entity.destroy(this);
-
-                console.log(entity.type, 'hit!');
 
                 return true;
             }

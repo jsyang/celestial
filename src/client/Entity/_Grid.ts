@@ -65,11 +65,8 @@ function filterNearestResult(filterType, minDistance2, neighbor) {
     return isRelevant;
 }
 
-/**
- * Get all neighbors within 1 block around `entity`
- */
-function getNearest(entity, filterType?, minDistance2?) {
-    let nearest = [].concat(
+function get1CellRadiusAroundEntity(entity) {
+    return [].concat(
         entityGrid[getEntityToGridIndex(entity, -1, -1)],
         entityGrid[getEntityToGridIndex(entity, 0, -1)],
         entityGrid[getEntityToGridIndex(entity, 1, -1)],
@@ -80,6 +77,13 @@ function getNearest(entity, filterType?, minDistance2?) {
         entityGrid[getEntityToGridIndex(entity, -1, 1)],
         entityGrid[getEntityToGridIndex(entity, 1, 1)]
     ).filter(Boolean);
+}
+
+/**
+ * Get all neighbors within 1 block around `entity`
+ */
+function getNearest(entity, filterType?, minDistance2?) {
+    let nearest = get1CellRadiusAroundEntity(entity);
 
     if (filterType || minDistance2) {
         nearest = nearest.filter(filterNearestResult.bind(entity, filterType, minDistance2));
@@ -88,8 +92,48 @@ function getNearest(entity, filterType?, minDistance2?) {
     return nearest;
 }
 
+const TARGETABLE = {
+    Freighter:   true,
+    Fighter:     true,
+    PBase:       true,
+    PColony:     true,
+    PComm:       true,
+    PLab:        true,
+    Probe:       true,
+    SensorArray: true,
+    SpaceDock:   true,
+    SpacePort:   true
+};
+
+const isTargetable = e => e.type in TARGETABLE;
+
+function getNearestEnemyTarget(entity, searchDist2) {
+    const enemies = get1CellRadiusAroundEntity(entity)
+        .filter(
+            (e: any) => (e.team !== entity.team) && isTargetable(e)
+        );
+
+    let nearest;
+    let nearestDist2 = Infinity;
+
+    if (enemies) {
+        enemies.forEach(
+            e => {
+                const dist2 = getDistSquared(entity, e);
+                if (dist2 <= searchDist2 && dist2 < nearestDist2) {
+                    nearestDist2 = dist2;
+                    nearest      = e;
+                }
+            }
+        );
+    }
+
+    return nearest;
+}
+
 export default {
     prepareNext,
     commit,
-    getNearest
+    getNearest,
+    getNearestEnemyTarget
 }

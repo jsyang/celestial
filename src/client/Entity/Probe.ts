@@ -1,5 +1,4 @@
 import Geometry from '../Geometry';
-import Planet from "./Planet";
 import LivingEntity from './LivingEntity';
 
 const GEO = {
@@ -41,10 +40,9 @@ const GEO = {
     }
 };
 
-export default class Fighter extends LivingEntity {
+export default class Probe extends LivingEntity {
     type = 'Probe';
-    geo  = Geometry(GEO.body);
-    planet: Planet;
+    geo  = Geometry(GEO.body, {collisionPath: GEO.body.collisionPath});
 
     // Components
     AUDIO_HIT   = 'hit2';
@@ -56,10 +54,11 @@ export default class Fighter extends LivingEntity {
     rotation    = 0;
 
 
-    constructor(params: Fighter) {
+    constructor(params: Probe) {
         super();
         Object.assign(this, params);
         this.assignTeamColor();
+
         this.geo.graphics.addChild(
             Geometry(GEO.flame).graphics
         );

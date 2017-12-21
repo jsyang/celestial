@@ -78,6 +78,13 @@ const GEO = {
     }
 };
 
+const CANNON_MUZZLE_FUNCTIONS = [
+    () => ({x: 65, y: 65}),
+    () => ({x: 65, y: -65}),
+    () => ({x: -65, y: -65}),
+    () => ({x: -65, y: +65})
+];
+
 export default class PBase extends LivingEntity {
     type = 'PBase';
     geo  = Geometry(GEO.body);
@@ -99,6 +106,15 @@ export default class PBase extends LivingEntity {
     canStoreMaterial  = true;
     materialsRaw      = 0;
     materialsFinished = 0;
+
+    canAutoTargetEnemy    = true;
+    autoTargetSearchDist2 = 600 * 600;
+
+    canShootCannon             = true;
+    cannonShotType             = 'pbase_plasma'; //todo separate weapons for this
+    CANNON_LOAD_TIME_MS        = 450;
+    cannonMatchShooterRotation = false;
+    cannonGetMuzzleFuncs       = CANNON_MUZZLE_FUNCTIONS;
 
     constructor(params: PBase) {
         super();

@@ -12,7 +12,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "zip-assets": "cd assets; zip -r -X ../assets.zip",
+    "zip-assets": "cd assets ; rm .DS_Store ; zip -r -X ../assets.zip .",
     "dev": "NODE_ENV=development node .",
     "build": "NODE_ENV=production webpack -p"
   },

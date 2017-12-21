@@ -92,6 +92,7 @@ export default {
     commit:      Grid.commit,
     prepareNext: Grid.prepareNext,
     getNearest:  Grid.getNearest,
+    getNearestEnemyTarget: Grid.getNearestEnemyTarget,
 
     destroy:                  DB.remove,
     getByType:                DB.getByType,

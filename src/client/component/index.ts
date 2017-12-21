@@ -5,28 +5,29 @@
 
 import Entity from '../Entity';
 
-import ManufactureComponent     from './manufacture';
-import MineComponent            from './mine';
-import MetabolizeComponent      from './metabolize';
-import MoveLinearlyComponent    from './moveLinearly';
-import MoveToTargetComponent    from './moveToTarget';
-import HarvestComponent         from './harvest';
-import StoreMaterialComponent   from './storeMaterials';
-import RepairComponent          from './repair';
-import RefineComponent          from './refine';
-import ConstructComponent       from './construct';
-import ExplodeComponent         from './explode';
-import OccupyPlanetComponent    from './occupyPlanet';
+import AutoTargetEnemyComponent from './autoTargetEnemy';
+import ManufactureComponent from './manufacture';
+import MineComponent from './mine';
+import MetabolizeComponent from './metabolize';
+import MoveLinearlyComponent from './moveLinearly';
+import MoveToTargetComponent from './moveToTarget';
+import HarvestComponent from './harvest';
+import StoreMaterialComponent from './storeMaterials';
+import RepairComponent from './repair';
+import RefineComponent from './refine';
+import ConstructComponent from './construct';
+import ExplodeComponent from './explode';
+import OccupyPlanetComponent from './occupyPlanet';
 import OccupySpacePortComponent from './occupySpacePort';
-import OrbitStarComponent       from './orbitStar';
-import OrbitPlanetComponent     from './orbitPlanet';
-import DamageComponent          from './damage';
-import ShootCannonComponent     from './shootCannon';
-import LimitSpeedComponent      from './limitSpeed';
-import AccelerateComponent      from './accelerate';
-import DisplayHitComponent      from './displayHit';
-import DockPlanetComponent      from './dockPlanet';
-import ColonizePlanetComponent  from './colonizePlanet';
+import OrbitStarComponent from './orbitStar';
+import OrbitPlanetComponent from './orbitPlanet';
+import DamageComponent from './damage';
+import ShootCannonComponent from './shootCannon';
+import LimitSpeedComponent from './limitSpeed';
+import AccelerateComponent from './accelerate';
+import DisplayHitComponent from './displayHit';
+import DockPlanetComponent from './dockPlanet';
+import ColonizePlanetComponent from './colonizePlanet';
 
 
 // In order of update() precedence
@@ -44,6 +45,7 @@ const ALL_COMPONENTS = [
     DockPlanetComponent,
 
     // Affect other entities
+    AutoTargetEnemyComponent,
     DamageComponent,
     StoreMaterialComponent,
     HarvestComponent,
@@ -71,7 +73,7 @@ function init(entity) {
                 Object.keys(component.DEFAULTS)
                     .forEach(defaultPropertyKey => {
                         // Only set defaults if there isn't a value already set
-                        if(typeof entity[defaultPropertyKey] === 'undefined') {
+                        if (typeof entity[defaultPropertyKey] === 'undefined') {
                             entity[defaultPropertyKey] = component.DEFAULTS[defaultPropertyKey];
                         }
                     });

@@ -27,6 +27,10 @@ Works well with game pads:
 
 ## TODOs
 
+- shields
+    - around all turret locations
+    - PBase, Freighter, SpacePort shields
+    
 - title screen
     - new game button
     - about button

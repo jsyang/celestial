@@ -3,6 +3,18 @@ import Geometry from '../Geometry';
 import LivingEntity from './LivingEntity';
 
 const GEO = {
+    "plasma":        {
+        "type":      "polygon",
+        "lineStyle": {
+            "width": 1,
+            "color": 0xff0000,
+            "alpha": 0.6
+        },
+        "path":      [
+            15, 0,
+            -15, 0
+        ]
+    },
     "cannon_normal": {
         "type": "polygon",
         "fill": {
@@ -37,13 +49,14 @@ const GEO = {
 };
 
 const DAMAGE = {
+    plasma:        0.25,
     cannon_heavy:  2,
     cannon_normal: 1
 };
 
 export default class Shot extends LivingEntity {
     type = 'Shot';
-    
+
     canMoveLinearly = true;
     canDamage       = true;
     canMetabolize   = true;
@@ -55,7 +68,7 @@ export default class Shot extends LivingEntity {
 
     constructor(params: Shot) {
         super();
-        
+
         const {shotType} = params;
 
         this.geo      = Geometry(GEO[shotType]);
