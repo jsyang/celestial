@@ -84,7 +84,6 @@ export default class Fighter extends LivingEntity {
     canAccelerate   = true;
     canDockPlanet   = true;
     canShootCannon  = true;
-    cannonShotType  = 'plasma';
 
     constructor(params: Fighter) {
         super();

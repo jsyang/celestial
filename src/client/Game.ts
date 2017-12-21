@@ -3,7 +3,7 @@ import Graphics from './Graphics';
 import Focus from './Graphics/Focus';
 import Input from './Input';
 
-import Galaxy from './Galaxy';
+import Galaxy from './Galaxy/index';
 import Entity from './Entity';
 
 import RadarGalaxy from './RadarGalaxy';

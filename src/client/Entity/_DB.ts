@@ -21,7 +21,10 @@ function remove(entity) {
     entity.hp = 0;
 
     // Break references so entity can be GC'd
-    entity.planet && delete entity.planet[entity.type.toLowerCase()];
+    const childType = entity.type.toLowerCase();
+    entity.planet && delete entity.planet[childType];
+    entity.spaceport && delete entity.spaceport[childType];
+
     delete entity.target;
 
     const byTypeCollection = getByType(entity.type);
