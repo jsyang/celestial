@@ -38,8 +38,6 @@ Works well with game pads:
 
 - strategic enemy AI
 
-- projectiles damage enemy entities
-- freighters use ECS
 - probes use ECS
 
 - multiple fighters
