@@ -139,8 +139,8 @@ const GEO = {
 export default class SpacePort extends LivingEntity {
     type = 'SpacePort';
     geo  = Geometry(GEO.body);
+    planet: Planet;
 
-    // Components
     hp    = 30;
     maxHp = 30;
 
@@ -148,9 +148,9 @@ export default class SpacePort extends LivingEntity {
     canRefine = true;
 
     canOrbitPlanet = true;
-    planet: Planet;
     orbitDistance  = 205;
 
+    canDisplayHit       = true;
     canExplode          = true;
     EXPLOSION_FRAGMENTS = 12;
 

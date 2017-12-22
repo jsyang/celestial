@@ -1,8 +1,12 @@
+import Random from '../Random';
 import Entity from '../Entity';
 import {playSound} from '../assets/audio';
 
+// todo: define different dumb weapons here
+
 const AUDIO_SHOT = {
-    'plasma':        'laser',
+    // todo use better sounds
+    'plasma':        'fire',
     'pbase_plasma':  'laser',
     'cannon_heavy':  'fire-heavy',
     'cannon_normal': 'fire'
@@ -10,6 +14,8 @@ const AUDIO_SHOT = {
 
 
 function shoot(getMuzzleFunc) {
+    const {cannonTarget, cannonShotSpeed} = this;
+
     const muzzle = getMuzzleFunc(this);
 
     let cannonAngle;
@@ -17,17 +23,28 @@ function shoot(getMuzzleFunc) {
     if (this.cannonMatchShooterRotation) {
         cannonAngle = this.rotation;
     } else {
+        const targetDx = cannonTarget.dx || 0;
+        const targetDy = cannonTarget.dy || 0;
+
+        const leadingShot = {
+            x: cannonTarget.x + targetDx * 5 * cannonShotSpeed,
+            y: cannonTarget.y + targetDy * 5 * cannonShotSpeed
+        };
+
         cannonAngle = Entity.getAngleFromTo(
             {
                 x: muzzle.x + this.x,
                 y: muzzle.y + this.y
             },
-            this.cannonTarget
+            leadingShot
         );
+
+        // Fudge factor
+        cannonAngle += Random.float(-0.15, 0.15);
     }
 
-    const dx = Math.cos(cannonAngle) * this.cannonShotSpeed;
-    const dy = Math.sin(cannonAngle) * this.cannonShotSpeed;
+    const dx = Math.cos(cannonAngle) * cannonShotSpeed;
+    const dy = Math.sin(cannonAngle) * cannonShotSpeed;
 
     const shooterDx = this.dx || 0;
     const shooterDy = this.dy || 0;
@@ -56,32 +73,51 @@ function shoot(getMuzzleFunc) {
     }
 
     Entity.create('Shot', shotParams);
-
-    playSound(AUDIO_SHOT[this.cannonShotType]);
 }
 
 const DEFAULTS = {
     cannonGetMuzzleFuncs:       [],
+    CANNON_REARM_TIME:          40,
     CANNON_LOAD_TIME_MS:        100,
+    cannonRearmTime:            40,
     cannonLastShotTime:         0,
     cannonMatchShooterRotation: true,
     cannonTarget:               undefined,
     cannonShotSpeed:            4,
     cannonShotType:             'cannon_normal',
     isShooting:                 false,
+    isRearming:                 false,
+    cannonAmmo:                 Infinity,
+    cannonMaxAmmo:              Infinity,
     shoot
 };
 
 function process(entity) {
-    if (entity.isShooting) {
+    const {isShooting, cannonAmmo, cannonMaxAmmo, CANNON_REARM_TIME} = entity;
+
+    if (isShooting) {
         const now = Date.now();
 
-        if (now - entity.cannonLastShotTime >= entity.CANNON_LOAD_TIME_MS) {
-            entity.cannonGetMuzzleFuncs
-                .forEach(shoot.bind(entity));
+        if (cannonAmmo > 0) {
+            if (now - entity.cannonLastShotTime >= entity.CANNON_LOAD_TIME_MS) {
+                entity.cannonGetMuzzleFuncs
+                    .forEach(shoot.bind(entity));
 
-            entity.cannonLastShotTime = now;
+                playSound(AUDIO_SHOT[entity.cannonShotType]);
+
+                entity.cannonLastShotTime = now;
+                entity.cannonAmmo--;
+            }
+        } else {
+            // Re-arm
+            if (entity.cannonRearmTime > 0) {
+                entity.cannonRearmTime--;
+            } else {
+                entity.cannonAmmo      = cannonMaxAmmo;
+                entity.cannonRearmTime = CANNON_REARM_TIME;
+            }
         }
+
     }
 
 }

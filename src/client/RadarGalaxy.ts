@@ -3,8 +3,8 @@
 
 import * as PIXI from 'pixi.js';
 
-import Entity from'./Entity';
-import Graphics  from './Graphics';
+import Entity from './Entity';
+import Graphics from './Graphics';
 import {MAX_COORDINATE} from './constants';
 
 const ALPHA_SCANNER_BORDER = 0.3;
@@ -13,7 +13,7 @@ const SIZE        = 100;
 const MARGIN_EDGE = 4;
 
 const scanner = new PIXI.Graphics();
-scanner.beginFill(0, 0);
+scanner.beginFill(0, 1);
 scanner.lineStyle(1, 0xffffff, ALPHA_SCANNER_BORDER);
 scanner.drawRect(0, 0, SIZE, SIZE);
 scanner.endFill();

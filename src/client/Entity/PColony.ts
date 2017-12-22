@@ -25,13 +25,15 @@ export default class PColony extends LivingEntity {
     geo  = Geometry(GEO);
     planet: Planet;
 
-    // Components
-    team  = TEAM.NONE;
-    hp    = 30;
-    maxHp = 30;
+    hp    = 15;
+    maxHp = 15;
 
-    canMine         = true;
-    canExplode      = true;
+    canDisplayHit     = true;
+    canMine           = true;
+    canExplode        = true;
+    explosionOriginDx = -50;
+    explosionOriginDy = 0;
+
     canOccupyPlanet = true;
 
     canRepair            = true;

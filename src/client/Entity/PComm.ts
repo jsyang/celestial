@@ -30,10 +30,14 @@ export default class PComm extends LivingEntity {
 
     // Components
     team  = TEAM.NONE;
-    hp    = 20;
-    maxHp = 20;
+    hp    = 7;
+    maxHp = 7;
 
-    canExplode      = true;
+    canDisplayHit     = true;
+    canExplode        = true;
+    explosionOriginDx = 31;
+    explosionOriginDy = 33;
+
     canRepair       = true;
     canOccupyPlanet = true;
 

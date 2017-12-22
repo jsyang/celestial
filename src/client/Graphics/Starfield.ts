@@ -24,7 +24,7 @@ const STAR: any = {
         speed: 0.01,
         count: 8,
         size : 2,
-        color: 0xffffff,
+        color: 0xaaaaaa,
         x    : 0,
         y    : 0
     },
@@ -32,7 +32,7 @@ const STAR: any = {
         speed: 0.3,
         count: 20,
         size : 1,
-        color: 0xfefefe,
+        color: 0xf0f0f0,
         x    : 0,
         y    : 0
     }

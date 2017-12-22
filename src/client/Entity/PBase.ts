@@ -89,8 +89,6 @@ export default class PBase extends LivingEntity {
     type = 'PBase';
     geo  = Geometry(GEO.body);
 
-    // Components
-    team  = TEAM.NONE;
     hp    = 20;
     maxHp = 20;
 
@@ -110,10 +108,14 @@ export default class PBase extends LivingEntity {
     canAutoTargetEnemy    = true;
     autoTargetSearchDist2 = 600 * 600;
 
-    canShootCannon             = true;
-    cannonShotType             = 'pbase_plasma'; //todo separate weapons for this
-    CANNON_LOAD_TIME_MS        = 450;
+    canShootCannon = true;
+    cannonShotType = 'pbase_plasma'; //todo separate weapons for this
+
+    CANNON_LOAD_TIME_MS        = 100;
     cannonMatchShooterRotation = false;
+    cannonShotSpeed            = 8;
+    cannonAmmo                 = 10;
+    cannonMaxAmmo              = 10;
     cannonGetMuzzleFuncs       = CANNON_MUZZLE_FUNCTIONS;
 
     constructor(params: PBase) {

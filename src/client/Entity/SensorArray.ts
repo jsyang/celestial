@@ -31,6 +31,9 @@ export default class SensorArray extends LivingEntity {
     hp    = 5;
     maxHp = 5;
 
+    canExplode = true;
+
+    canDisplayHit      = true;
     canRepair          = true;
     canOccupySpacePort = true;
     spaceport: SpacePort;

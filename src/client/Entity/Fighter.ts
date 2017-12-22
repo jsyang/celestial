@@ -67,8 +67,8 @@ export default class Fighter extends LivingEntity {
 
     // Components
     mass     = 10;
-    hp       = 6;
-    maxHp    = 6;
+    hp       = 4;
+    maxHp    = 4;
     dx       = 0;
     dy       = 0;
     rotation = 0;

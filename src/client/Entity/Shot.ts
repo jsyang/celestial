@@ -11,8 +11,8 @@ const GEO = {
             "alpha": 0.6
         },
         "path":      [
-            15, 0,
-            -15, 0
+            8, 0,
+            -8, 0
         ]
     },
     "cannon_normal": {

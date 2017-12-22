@@ -47,7 +47,7 @@ export default class LivingEntity {
     renderHit() {
         if (this.hitTime > 0) {
             this.hitTime--;
-            this.geo.graphics.alpha = this.hitTime % 2;
+            this.geo.graphics.alpha = Math.random();
         } else if (this.hitTime === 0) {
             this.hitTime = -1;
             this.geo.graphics.alpha = 1;

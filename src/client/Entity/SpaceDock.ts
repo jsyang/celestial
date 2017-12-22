@@ -29,6 +29,8 @@ export default class SpaceDock extends LivingEntity {
     hp    = 8;
     maxHp = 8;
 
+    canExplode         = true;
+    canDisplayHit      = true;
     canRepair          = true;
     canManufacture     = true;
     PRODUCT            = {

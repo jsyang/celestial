@@ -27,10 +27,14 @@ export default class PLab extends LivingEntity {
 
     // Components
     team  = TEAM.NONE;
-    hp    = 20;
-    maxHp = 20;
+    hp    = 10;
+    maxHp = 10;
 
-    canExplode      = true;
+    canDisplayHit     = true;
+    canExplode        = true;
+    explosionOriginDx = 20;
+    explosionOriginDy = -52;
+
     canOccupyPlanet = true;
     canManufacture  = true;
     PRODUCT         = {
