@@ -63,6 +63,12 @@ export const removeChild   = child => stage.removeChild(child);
 addChildToHUD(Freelook.symbol);
 updateFreelookPosition();
 
+// todo make the title screen overlay!
+const title = PIXI.Sprite.fromImage('title.png');
+title.anchor.set(0.5);
+title.x     = width >> 1 - 160;
+title.y     = 130;
+addChildToHUD(title);
 
 export const render = () => renderer.render(scene);
 

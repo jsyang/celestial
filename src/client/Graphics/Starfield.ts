@@ -3,7 +3,7 @@ import Random from '../Random';
 
 const stars: Array<PIXI.Graphics> = [];
 
-function createStar(stage: PIXI.Graphics, { color, size, x, y }): PIXI.Graphics {
+function createStar(stage: PIXI.Graphics, {color, size, x, y}): PIXI.Graphics {
     const g = new PIXI.Graphics();
 
     g.beginFill(color);
@@ -23,18 +23,18 @@ const STAR: any = {
     BRIGHT: {
         speed: 0.01,
         count: 8,
-        size : 2,
+        size:  2,
         color: 0xaaaaaa,
-        x    : 0,
-        y    : 0
+        x:     0,
+        y:     0
     },
-    DIM: {
+    DIM:    {
         speed: 0.3,
         count: 20,
-        size : 1,
+        size:  1,
         color: 0xf0f0f0,
-        x    : 0,
-        y    : 0
+        x:     0,
+        y:     0
     }
 };
 
@@ -52,11 +52,11 @@ function init(stage) {
         stars.push(createStar(stage, STAR.BRIGHT));
     }
 
-    reinit({ x: width2, y: height2 });
+    reinit({x: width2, y: height2});
 }
 
 function reinit(point) {
-    width2 = innerWidth >> 1;
+    width2  = innerWidth >> 1;
     height2 = innerHeight >> 1;
 
     stars.forEach(star => {
