@@ -1,7 +1,7 @@
 import {IInputEvent} from '../Event';
 
 let freeLookPosition = {x: 0, y: 0};
-const DPOSITION        = 40;
+const DPOSITION      = 40;
 
 export const setFreelookPosition = ({x, y}) => freeLookPosition = {x, y};
 

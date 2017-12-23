@@ -1,5 +1,5 @@
 import Entity from '../Entity';
-import Random from '../Random';
+import Random from '../random';
 
 function assignFreightersToPlanet(freighters, planet) {
     if (freighters) {

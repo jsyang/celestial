@@ -1,9 +1,9 @@
 import * as PIXI from 'pixi.js';
-import Random from '../Random';
+import Random from '../random';
 
 const stars: Array<PIXI.Graphics> = [];
 
-function createStar(stage: PIXI.Graphics, {color, size, x, y}): PIXI.Graphics {
+function createStar({color, size, x, y}): PIXI.Graphics {
     const g = new PIXI.Graphics();
 
     g.beginFill(color);
@@ -13,8 +13,6 @@ function createStar(stage: PIXI.Graphics, {color, size, x, y}): PIXI.Graphics {
 
     g.x = x;
     g.y = y;
-
-    stage.addChild(g);
 
     return g;
 }
@@ -38,21 +36,27 @@ const STAR: any = {
     }
 };
 
-let width2;
-let height2;
+let width2  = innerWidth >> 1;
+let height2 = innerHeight >> 1;
 
-function init(stage) {
+function onResize() {
+    lastCenter = null;
+}
+
+function init(): PIXI.Graphics[] {
     let i;
 
     for (i = 0; i < STAR.DIM.count; i++) {
-        stars.push(createStar(stage, STAR.DIM));
+        stars.push(createStar(STAR.DIM));
     }
 
     for (i = 0; i < STAR.BRIGHT.count; i++) {
-        stars.push(createStar(stage, STAR.BRIGHT));
+        stars.push(createStar(STAR.BRIGHT));
     }
 
-    reinit({x: width2, y: height2});
+    addEventListener('resize', onResize);
+
+    return stars;
 }
 
 function reinit(point) {
@@ -65,8 +69,7 @@ function reinit(point) {
     });
 }
 
-
-function moveStar(star, dx, dy, center) {
+function moveStar(dx, dy, center, star) {
     if (star.lineWidth === 1) {
         dx *= STAR.DIM.speed;
         dy *= STAR.DIM.speed;
@@ -91,12 +94,30 @@ function moveStar(star, dx, dy, center) {
     }
 }
 
-function process(center, dx, dy) {
-    stars.forEach(star => moveStar(star, dx, dy, center));
+let lastCenter: any = null;
+
+function process(center) {
+    if (center) {
+        const {x, y} = center;
+
+        let dx = 0, dy = 0;
+
+        if (lastCenter) {
+            dx = x - lastCenter.x;
+            dy = y - lastCenter.y;
+        } else {
+            reinit(center);
+        }
+
+        stars.forEach(moveStar.bind(null, dx, dy, center));
+
+        lastCenter = {x, y};
+    } else {
+        lastCenter = null;
+    }
 }
 
 export default {
     init,
-    reinit,
     process
 };

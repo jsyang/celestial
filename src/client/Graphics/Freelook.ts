@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import {addChildToHUD} from '.';
 
 const symbol = new PIXI.Graphics();
 
@@ -12,7 +13,7 @@ const PATH = [
 ].map(v => 16 * v);
 
 // const LINE_COLOR_BLINK = 0xffffff;
-const LINE_COLOR       = 0x008800;
+const LINE_COLOR = 0x008800;
 
 const createArrow = (rotation) => {
     const icon = new PIXI.Graphics();
@@ -39,15 +40,23 @@ symbol.addChild(
 );
 
 const setIconVisible = visible => symbol.visible = visible;
-const setIconPosition = (x, y) => {
-    symbol.x = x;
-    symbol.y = y;
-};
 
-setIconVisible(false);
+const MARGIN = 16 + 4;
+
+function onResize() {
+    symbol.x = innerWidth - MARGIN;
+    symbol.y = MARGIN;
+}
+
+function init() {
+    addChildToHUD(symbol);
+    onResize();
+    setIconVisible(false);
+    addEventListener('resize', onResize);
+}
 
 export default {
+    init,
     symbol,
-    setIconVisible,
-    setIconPosition
+    setIconVisible
 }

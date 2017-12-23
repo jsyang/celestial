@@ -1,6 +1,6 @@
 import {playSound} from '../assets/audio';
 import Entity from '../Entity';
-import Random from '../Random';
+import Random from '../random';
 
 function explode() {
     const {

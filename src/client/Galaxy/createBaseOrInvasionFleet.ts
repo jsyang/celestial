@@ -1,6 +1,6 @@
 import TEAM from '../Entity/_Team';
 import Entity from '../Entity';
-import Random from '../Random';
+import Random from '../random';
 
 export function createBaseOrInvasionFleet(teamName, startingLocation) {
     const team = TEAM[teamName];

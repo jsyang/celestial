@@ -1,4 +1,4 @@
-import Random from '../Random';
+import Random from '../random';
 import Entity from '../Entity';
 import {playSound} from '../assets/audio';
 

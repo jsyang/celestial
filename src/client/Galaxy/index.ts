@@ -2,7 +2,7 @@ import Focus from '../Graphics/Focus';
 import Input from '../Input/index';
 import Entity from '../Entity/index';
 import TEAM from '../Entity/_Team';
-import Random from '../Random';
+import Random from '../random';
 import {MAX_COORDINATE} from '../constants';
 import {createSolarSystem} from './createSolarSystem';
 import {createBaseOrInvasionFleet} from './createBaseOrInvasionFleet';
