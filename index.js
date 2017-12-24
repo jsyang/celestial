@@ -22,10 +22,7 @@ app.use(webpackDevMiddleware(compiler, {
 
 app.use(webpackHotMiddleware(compiler.compilers.find(_compiler => _compiler.name === 'client')));
 
-app.get('/', sendFile('index.html'));
-app.get('/favicon.png', sendFile('favicon.png'));
-app.get('/title.png', sendFile('title.png'));
-app.get('/assets.zip', sendFile('assets.zip'));
+app.use(express.static('./'));
 
 http.createServer(app).listen(3000, function (err) {
     if (err) {

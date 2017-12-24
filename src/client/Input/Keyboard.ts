@@ -9,7 +9,17 @@ const CODE_TO_KEY = {
     82: 'r'
 };
 
-const keyDown = {
+
+export interface IKeyboardState {
+    left_arrow?: boolean;
+    right_arrow?: boolean;
+    up_arrow?: boolean;
+    down_arrow?: boolean;
+    f?: boolean;
+    r?: boolean;
+}
+
+const inputState: IKeyboardState = {
     left_arrow:  false,
     right_arrow: false,
     up_arrow:    false,
@@ -19,11 +29,11 @@ const keyDown = {
 };
 
 function onKeyUp(e) {
-    keyDown[CODE_TO_KEY[e.which]] = false;
+    inputState[CODE_TO_KEY[e.which]] = false;
 }
 
 function onKeyDown(e) {
-    keyDown[CODE_TO_KEY[e.which]] = true;
+    inputState[CODE_TO_KEY[e.which]] = true;
 }
 
 if (window) {
@@ -31,14 +41,18 @@ if (window) {
     window.addEventListener('keyup', onKeyUp);
 }
 
-// todo: use key map
 export const getEvents = (): IInputEvent => ({
-    SHOOT_SPECIAL: keyDown.down_arrow,
-    TURN_LEFT:     keyDown.left_arrow,
-    TURN_RIGHT:    keyDown.right_arrow,
-    ACCELERATE:    keyDown.up_arrow,
-    SHOOT:         keyDown.f,
-    RESTART_GAME:  keyDown.r
+    SHOOT_SPECIAL: Boolean(inputState.down_arrow),
+    TURN_LEFT:     Boolean(inputState.left_arrow),
+    TURN_RIGHT:    Boolean(inputState.right_arrow),
+    ACCELERATE:    Boolean(inputState.up_arrow),
+    SHOOT:         Boolean(inputState.f),
+    RESTART_GAME:  Boolean(inputState.r)
 });
 
-export default {getEvents};
+const getInputState = () => ({...inputState});
+
+export default {
+    getEvents,
+    getInputState
+};

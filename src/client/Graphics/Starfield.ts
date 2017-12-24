@@ -43,18 +43,28 @@ function onResize() {
     lastCenter = null;
 }
 
+let onStarfieldResize;
+
 function init(): PIXI.Graphics[] {
     let i;
 
-    for (i = 0; i < STAR.DIM.count; i++) {
-        stars.push(createStar(STAR.DIM));
+    if (stars.length === 0) {
+        // First initialization
+        for (i = 0; i < STAR.DIM.count; i++) {
+            stars.push(createStar(STAR.DIM));
+        }
+
+        for (i = 0; i < STAR.BRIGHT.count; i++) {
+            stars.push(createStar(STAR.BRIGHT));
+        }
+    } else {
+        // Reinitialize
+        process(null);
     }
 
-    for (i = 0; i < STAR.BRIGHT.count; i++) {
-        stars.push(createStar(STAR.BRIGHT));
+    if (!onStarfieldResize) {
+        onStarfieldResize = addEventListener('resize', onResize);
     }
-
-    addEventListener('resize', onResize);
 
     return stars;
 }

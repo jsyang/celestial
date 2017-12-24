@@ -1,11 +1,18 @@
 import GameScreen from './GameScreen';
+import TitleScreen from './TitleScreen';
 import Assets from './assets';
 
 function onDOMContentLoaded() {
+    TitleScreen.setFadeOutCallback(
+        () => {
+            GameScreen.init();
+            GameScreen.start();
+        }
+    );
+
     Assets
         .load()
-        .then(GameScreen.init)
-        .then(GameScreen.start);
+        .then(TitleScreen.start);
 }
 
 window.addEventListener('DOMContentLoaded', onDOMContentLoaded);

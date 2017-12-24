@@ -16,8 +16,8 @@ const DEVICE_TYPE = {
 
 const device = localStorage.getItem('input.device') || DEVICE_TYPE.Keyboard;
 
-function process() {
-    let events = device === DEVICE_TYPE.Keyboard ?
+function processGameScreen() {
+    const events = device === DEVICE_TYPE.Keyboard ?
         Keyboard.getEvents() : GamePad.getEvents();
 
     if (controlledEntity) {
@@ -46,7 +46,10 @@ function process() {
     }
 }
 
+const getDevice = () => device === DEVICE_TYPE.Keyboard ? Keyboard : GamePad;
+
 export default {
-    process,
+    getDevice,
+    processGameScreen,
     setControlledEntity
 };

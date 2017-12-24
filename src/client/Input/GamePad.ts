@@ -3,7 +3,7 @@ import {IInputEvent} from './Event';
 const AXES_ACTIVATION_VALUE = 0.1;
 const AXES_MIN_VALUE        = 0.000001;
 
-interface IGamePadState {
+export interface IGamePadState {
     left?: boolean;
     up?: boolean;
     right?: boolean;
@@ -25,9 +25,21 @@ const getEventsFromGamePad = ({left, right, up, analogAngle, button0, button1, b
     analogAngle
 });
 
+let inputState: IGamePadState = {
+    left:  false,
+    right: false,
+    up:    false,
+
+    analogAngle: 0,
+
+    button0: false,
+    button1: false,
+    button2: false,
+    button3: false
+};
+
 export function getEvents(id: number = 0): IInputEvent {
-    const gp       = navigator.getGamepads()[id];
-    let inputState = {};
+    const gp = navigator.getGamepads()[id];
 
     if (gp) {
         let [dx, dy]    = gp.axes;
@@ -64,4 +76,9 @@ export function getEvents(id: number = 0): IInputEvent {
     return getEventsFromGamePad(inputState);
 }
 
-export default {getEvents};
+const getInputState = () => ({...inputState});
+
+export default {
+    getEvents,
+    getInputState
+};

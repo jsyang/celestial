@@ -21,7 +21,6 @@ scanner.endFill();
 scanner.x = MARGIN_EDGE;
 scanner.y = MARGIN_EDGE;
 
-Graphics.addChildToHUD(scanner);
 
 let markerStar      = [];
 let markerPlanet    = [];
@@ -107,6 +106,11 @@ function update() {
     }
 }
 
+function init() {
+    Graphics.addChildToHUD(scanner);
+}
+
 export default {
+    init,
     update
 }

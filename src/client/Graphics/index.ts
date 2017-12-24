@@ -26,16 +26,18 @@ function onResize() {
 }
 
 function init() {
-    onResize();
-    addEventListener('resize', onResize);
+    if (typeof renderer === 'undefined') {
+        onResize();
+        addEventListener('resize', onResize);
 
-    scene.addChild(stage);
+        scene.addChild(stage);
 
-    renderer = new PIXI.WebGLRenderer(width, height);
-
-    document.body.appendChild(renderer.view);
+        renderer = new PIXI.WebGLRenderer(width, height);
+        document.body.appendChild(renderer.view);
+    }
 }
 
+const setGlobalAlpha = alpha => scene.alpha = alpha;
 export const addChildToHUD = child => scene.addChild(child);
 export const addChild      = child => stage.addChild(child);
 export const removeChild   = child => stage.removeChild(child);
@@ -49,10 +51,18 @@ export const centerOn = (point: IPoint) => {
     }
 };
 
+const removeAllChildren = () => {
+    while (stage.children[0]) stage.removeChild(stage.children[0]);
+    while (scene.children[0]) scene.removeChild(scene.children[0]);
+    scene.addChild(stage);
+};
+
 export default {
     init,
+    setGlobalAlpha,
     addChild,
     removeChild,
+    removeAllChildren,
     render,
     centerOn,
     addChildToHUD

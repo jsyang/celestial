@@ -18,9 +18,13 @@ let then; // Time stamp of last animation frame
 const FPS          = 60;
 const FPS_INTERVAL = 1000 / FPS;
 
+let isFadingIn      = true;
+let gameScreenAlpha = 0;
+let FADE_RATE       = 0.02;
+
 function update() {
     SystemTeam();
-    Input.process();
+    Input.processGameScreen();
 
     Entity.updateAll();
 
@@ -38,8 +42,19 @@ function step() {
     update();
 
     if (elapsed > FPS_INTERVAL) {
-        const focus = Focus.getFocus();
+        if (isFadingIn) {
+            if (gameScreenAlpha < 1) {
+                gameScreenAlpha += FADE_RATE;
+            } else {
+                gameScreenAlpha = 1;
+                isFadingIn      = false;
+            }
 
+            Graphics.setGlobalAlpha(gameScreenAlpha);
+
+        }
+
+        const focus = Focus.getFocus();
 
         if (focus) {
             RadarLocal.setOrigin(focus);
@@ -47,6 +62,7 @@ function step() {
         }
 
         Starfield.process(focus);
+
         Graphics.render();
 
         then = now - (elapsed % FPS_INTERVAL);
@@ -65,6 +81,9 @@ function stop() {
 }
 
 function init() {
+    isFadingIn      = true;
+    gameScreenAlpha = 0;
+
     Graphics.init();
     Freelook.init();
 
@@ -74,6 +93,7 @@ function init() {
 
     Galaxy.init();
     RadarLocal.init();
+    RadarGalaxy.init();
 }
 
 export default {

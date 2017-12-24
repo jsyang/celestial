@@ -61,3 +61,8 @@ Works well with game pads:
 - asteroids / uninhabitable worlds
 - ability to destroy planets
 - memoize math funcs
+
+
+### Notes
+
+- Title font is "Phosphate" in OSX system fonts.
