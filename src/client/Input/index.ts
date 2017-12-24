@@ -9,16 +9,27 @@ let controlledEntity;
 
 export const setControlledEntity = entity => controlledEntity = entity;
 
-const DEVICE_TYPE = {
-    Keyboard: 0,
-    GamePad:  0
-};
+enum DeviceType {
+    Keyboard = 0,
+    GamePad
+}
 
-const device = localStorage.getItem('input.device') || DEVICE_TYPE.Keyboard;
+const device = localStorage.getItem('input.device') || DeviceType.Keyboard;
 
 function processGameScreen() {
-    const events = device === DEVICE_TYPE.Keyboard ?
-        Keyboard.getEvents() : GamePad.getEvents();
+    let events, inputState;
+
+    switch(device) {
+        case DeviceType.GamePad:
+            events = GamePad.getEvents();
+            inputState = GamePad.getInputState();
+            break;
+
+        case DeviceType.Keyboard:
+        default:
+            events = Keyboard.getEvents();
+            inputState = Keyboard.getInputState();
+    }
 
     if (controlledEntity) {
         if (controlledEntity.hp > 0) {
@@ -36,17 +47,13 @@ function processGameScreen() {
         }
     } else {
         Focus.setFocus(
-            controlFreelook(events)
+            controlFreelook(inputState)
         );
         Freelook.setIconVisible(true);
     }
-
-    if (events.RESTART_GAME) {
-        location.reload();
-    }
 }
 
-const getDevice = () => device === DEVICE_TYPE.Keyboard ? Keyboard : GamePad;
+const getDevice = () => device === DeviceType.Keyboard ? Keyboard : GamePad;
 
 export default {
     getDevice,

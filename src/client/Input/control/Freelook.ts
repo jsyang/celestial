@@ -1,24 +1,22 @@
-import {IInputEvent} from '../Event';
-
 let freeLookPosition = {x: 0, y: 0};
 const DPOSITION      = 40;
 
 export const setFreelookPosition = ({x, y}) => freeLookPosition = {x, y};
 
-export default function controlFreelook(events: IInputEvent) {
-    if (events.ACCELERATE) {
+export default function controlFreelook(inputState: any) {
+    if (inputState.up_arrow || inputState.up) {
         freeLookPosition.y -= DPOSITION;
     }
 
-    if (events.SHOOT_SPECIAL) {
+    if (inputState.down_arrow || inputState.down) {
         freeLookPosition.y += DPOSITION;
     }
 
-    if (events.TURN_LEFT) {
+    if (inputState.left_arrow || inputState.left) {
         freeLookPosition.x -= DPOSITION;
     }
 
-    if (events.TURN_RIGHT) {
+    if (inputState.right_arrow || inputState.right) {
         freeLookPosition.x += DPOSITION;
     }
 
