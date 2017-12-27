@@ -1,15 +1,52 @@
 import Geometry from '../Geometry';
 import LivingEntity from './LivingEntity';
 
+/* Bomber
+
+3, 0,
+5, 4,
+9, 4,
+9, 9,
+3, 9,
+-6, 9,
+-1, 4,
+-2, 0,
+-1, -4,
+-6, -9,
+3, -9,
+9, -4,
+3, 0
+ */
+
+/* Fighter
+
+-2, 2,
+-4, 0,
+-2, -2,
+-4, -4,
+-4, -6,
+2, -4,
+0, -2,
+8, 0,
+0, 2,
+2, 4,
+-4, 6,
+-4, 4,
+-2, 2
+
+ */
+
 const GEO = {
     "body":   {
-        "type":          "polygon",
-        "lineStyle":     {
+        "type": "polygon",
+
+        "lineStyle": {
             "width": 1,
             "color": 255,
             "alpha": 1
         },
-        "path":          [
+
+        "path": [
             -2, 2,
             -4, 0,
             -2, -2,
@@ -24,6 +61,7 @@ const GEO = {
             -4, 4,
             -2, 2
         ],
+
         "collisionPath": [
             -4, -6,
             8, 0,

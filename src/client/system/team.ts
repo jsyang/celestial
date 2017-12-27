@@ -1,11 +1,14 @@
 import Entity from '../Entity';
+import Input from '../Input';
 import Random from '../random';
+import Focus from '../Graphics/Focus';
+import Starfield from '../Graphics/Starfield';
 
 function assignFreightersToPlanet(freighters, planet) {
     if (freighters) {
         for (let i = freighters.length - 1; i >= 0; i--) {
             const freighter = freighters[i];
-            const isIdle    = (!freighter.isOrbitingPlanet && !freighter.target) || (freighter.target && freighter.target.type !== 'Planet');
+            const isIdle    = (freighter.isOrbitingPlanet && !freighter.target) || (freighter.target && freighter.target.type !== 'Planet');
             if (isIdle) {
                 freighter.target = planet;
                 freighter.planet = undefined;
@@ -67,17 +70,32 @@ function processTeam(team) {
 
     if (fighters.length === 0) {
         constructOnRandomPlanet(idleTeamPlanet, 'Fighter');
+
+    } else if (team === Entity.TEAM.MAGENTA && !Input.hasControlledEntity()) {
+        const firstFighter = fighters[0];
+
+        Input.setControlledEntity(firstFighter);
+        Focus.setFocus(firstFighter);
+        Starfield.init();
     }
 }
 
 const STRATEGY_UPDATE_TIMEOUT  = 3000;
 let lastTeamStrategyUpdateTime = 0;
 
+const TEAMS = [
+    Entity.TEAM.GREEN,
+    Entity.TEAM.BLUE,
+    Entity.TEAM.YELLOW,
+    Entity.TEAM.RED,
+    Entity.TEAM.MAGENTA
+];
+
 export default function update() {
-    let now = Date.now();
+    const now = Date.now();
+
     if (now - lastTeamStrategyUpdateTime > STRATEGY_UPDATE_TIMEOUT) {
-        // only process 1 team for now: human magenta
-        processTeam(Entity.TEAM.MAGENTA);
+        TEAMS.forEach(processTeam);
         lastTeamStrategyUpdateTime = now;
     }
 }

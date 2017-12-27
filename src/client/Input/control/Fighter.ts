@@ -27,6 +27,8 @@ export default function controlFighter(controlledEntity, events:IInputEvent) {
     if (events.ACCELERATE) {
         if (isDocked) {
             controlledEntity.undockPlanet();
+            // Escape acceleration
+            controlledEntity.accelerate(1);
         }
 
         controlledEntity.flameOn();

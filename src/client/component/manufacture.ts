@@ -1,8 +1,4 @@
-import Random from '../random';
 import Entity from '../Entity';
-
-import DockPlanetComponent from './dockPlanet';
-import OrbitPlanetComponent from './orbitPlanet';
 
 const PRODUCT = {
     Freighter: {cost: 300, time: 120},
@@ -28,6 +24,7 @@ function orderManufacture(type) {
  */
 function process(entity) {
     if (entity.isManufacturing) {
+        const {planet, x, y, team} = entity;
 
         const shouldManufacture =
                   entity.planet.pbase &&
@@ -37,27 +34,18 @@ function process(entity) {
             if (entity.manufactureTime > 0) {
                 entity.manufactureTime--;
             } else {
-                const productOptions = {
-                    x:    entity.x + Random.float(-1, 1),
-                    y:    entity.y + Random.float(-1, 1),
-                    team: entity.team
-                };
-
-                const product = Entity.create(entity.manufactureType, productOptions);
+                const product = Entity.create(entity.manufactureType, {x, y, team});
 
                 if (entity.manufactureType === 'Fighter') {
                     if (entity.type === 'SpacePort') {
                         // todo: Dock in SpacePort
-                        DockPlanetComponent.DEFAULTS
-                            .dockPlanet.call(product, entity.planet);
+                        product.dockPlanet(planet);
                     } else {
-                        DockPlanetComponent.DEFAULTS
-                            .dockPlanet.call(product, entity.planet);
+                        product.dockPlanet(planet);
                     }
 
                 } else if (entity.manufactureType === 'Freighter') {
-                    OrbitPlanetComponent.DEFAULTS
-                        .enterPlanetOrbit.call(product, entity.planet);
+                    product.enterPlanetOrbit(planet);
                 }
 
                 entity.isManufacturing = false;

@@ -19,15 +19,15 @@ const device = localStorage.getItem('input.device') || DeviceType.Keyboard;
 function processGameScreen() {
     let events, inputState;
 
-    switch(device) {
+    switch (device) {
         case DeviceType.GamePad:
-            events = GamePad.getEvents();
+            events     = GamePad.getEvents();
             inputState = GamePad.getInputState();
             break;
 
         case DeviceType.Keyboard:
         default:
-            events = Keyboard.getEvents();
+            events     = Keyboard.getEvents();
             inputState = Keyboard.getInputState();
     }
 
@@ -55,8 +55,11 @@ function processGameScreen() {
 
 const getDevice = () => device === DeviceType.Keyboard ? Keyboard : GamePad;
 
+const hasControlledEntity = () => Boolean(controlledEntity);
+
 export default {
     getDevice,
     processGameScreen,
+    hasControlledEntity,
     setControlledEntity
 };

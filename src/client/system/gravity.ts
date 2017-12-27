@@ -1,6 +1,6 @@
 // Gravity and related collisions
 
-import Entity   from '../Entity';
+import Entity from '../Entity';
 import Planet from '../Entity/Planet';
 import Star from '../Entity/Star';
 
@@ -88,7 +88,7 @@ function attractFighterToStarOrPlanet(entity) {
 }
 
 function updateFighter(fighter) {
-    if (fighter && !fighter.isDockedPlanet && fighter.hp > 0) {
+    if (!fighter.isDockedPlanet && fighter.hp > 0) {
         Entity.getNearest(fighter)
             .forEach(attractFighterToStarOrPlanet.bind(fighter));
     }
