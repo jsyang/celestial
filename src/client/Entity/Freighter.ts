@@ -154,7 +154,7 @@ export default class Freighter extends LivingEntity {
 
     canStoreMaterial  = true;
     materialsRaw      = 0;
-    materialsFinished = 0;
+    materialsFinished = 500;
 
     constructor(params: Freighter) {
         super();

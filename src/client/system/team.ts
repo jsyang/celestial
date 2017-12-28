@@ -8,10 +8,19 @@ function assignFreightersToPlanet(freighters, planet) {
     if (freighters) {
         for (let i = freighters.length - 1; i >= 0; i--) {
             const freighter = freighters[i];
-            const isIdle    = (freighter.isOrbitingPlanet && !freighter.target) || (freighter.target && freighter.target.type !== 'Planet');
+
+            const isNotTargetingPlanet = freighter.target && freighter.target.type !== 'Planet';
+
+            const isIdle = (freighter.isOrbitingPlanet && !freighter.isColonizing) || isNotTargetingPlanet;
+
             if (isIdle) {
-                freighter.target = planet;
-                freighter.planet = undefined;
+                if (freighter.isOrbitingPlanet) {
+                    freighter.exitPlanetOrbit();
+                }
+
+                freighter.target       = planet;
+                freighter.planet       = undefined;
+                freighter.isColonizing = true;
                 break;
             }
         }
