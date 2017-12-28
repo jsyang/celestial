@@ -11,16 +11,15 @@ function assignFreightersToPlanet(freighters, planet) {
 
             const isNotTargetingPlanet = freighter.target && freighter.target.type !== 'Planet';
 
-            const isIdle = (freighter.isOrbitingPlanet && !freighter.isColonizing) || isNotTargetingPlanet;
+            const isIdle = (freighter.isOrbitingPlanet && !Boolean(freighter.colonizationTarget)) || isNotTargetingPlanet;
 
             if (isIdle) {
                 if (freighter.isOrbitingPlanet) {
                     freighter.exitPlanetOrbit();
                 }
 
-                freighter.target       = planet;
-                freighter.planet       = undefined;
-                freighter.isColonizing = true;
+                freighter.colonizationTarget = planet;
+                freighter.planet             = undefined;
                 break;
             }
         }

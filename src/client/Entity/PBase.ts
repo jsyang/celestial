@@ -111,7 +111,7 @@ export default class PBase extends LivingEntity {
     canShootCannon = true;
     cannonShotType = 'pbase_plasma'; //todo separate weapons for this
 
-    CANNON_LOAD_TIME_MS        = 100;
+    CANNON_LOAD_TIME_MS        = 500;
     cannonMatchShooterRotation = false;
     cannonShotSpeed            = 8;
     cannonAmmo                 = 10;

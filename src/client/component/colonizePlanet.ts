@@ -37,7 +37,7 @@ const DEFAULTS = {
     /** How long it takes before cargo can be used after reaching orbit **/
     TIME_OFFLOAD_SUPPLY:    200,
     MAX_MATERIALS_FINISHED: 500,
-    isColonizing:           false,
+    colonizationTarget:     null,
     createPBase,
     createPColony,
     loadOrDumpSupply
@@ -80,7 +80,7 @@ function loadOrDumpSupply() {
  * Supplies friendly planet with finished materials if no construction required
  */
 function process(entity) {
-    if (entity.isColonizing && entity.isOrbitingPlanet && entity.planet) {
+    if (entity.colonizationTarget && entity.isOrbitingPlanet && entity.planet) {
         if (entity.materialsFinished > 0) {
             if (entity.supplyTime === undefined) {
                 entity.supplyTime = entity.TIME_OFFLOAD_SUPPLY;
@@ -93,7 +93,7 @@ function process(entity) {
                     entity.createPColony();
                 } else {
                     entity.loadOrDumpSupply();
-                    entity.isColonizing = false;
+                    entity.colonizationTarget = null;
                 }
             }
         }

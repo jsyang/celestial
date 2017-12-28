@@ -10,7 +10,7 @@ import ManufactureComponent from './manufacture';
 import MineComponent from './mine';
 import MetabolizeComponent from './metabolize';
 import MoveLinearlyComponent from './moveLinearly';
-import MoveToTargetComponent from './moveToTarget';
+import MoveToTargetComponent from './moveToColonizationTarget';
 import HarvestComponent from './harvest';
 import StoreMaterialComponent from './storeMaterials';
 import RepairComponent from './repair';

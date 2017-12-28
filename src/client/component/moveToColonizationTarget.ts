@@ -8,9 +8,9 @@ const DEFAULTS = {
 
 const DIST_PLANET_ORBIT2 = 200 ** 2;
 
-function rotateToFaceTarget(entity, target) {
+function rotateToFaceColonizationTarget(entity) {
     let rotation          = entity.rotation;
-    const desiredRotation = Entity.getAngleFromTo(entity, target);
+    const desiredRotation = Entity.getAngleFromTo(entity, entity.colonizationTarget);
 
     const turnMagnitude = Math.abs(desiredRotation - rotation);
     if (turnMagnitude > Math.PI) {
@@ -39,17 +39,17 @@ function rotateToFaceTarget(entity, target) {
  * Moves to target
  */
 function process(entity) {
-    let {target, DIST_HALT2} = entity;
+    let {colonizationTarget, DIST_HALT2} = entity;
 
-    if (target && target.hp > 0) {
-        const r2 = Entity.getDistSquared(entity, target);
+    if (colonizationTarget && colonizationTarget.hp > 0) {
+        const r2 = Entity.getDistSquared(entity, colonizationTarget);
 
-        if (target.type === 'Planet') {
+        if (colonizationTarget.type === 'Planet') {
             DIST_HALT2 = DIST_PLANET_ORBIT2;
         }
 
         if (r2 > DIST_HALT2) {
-            const rotation = rotateToFaceTarget(entity, target);
+            const rotation = rotateToFaceColonizationTarget(entity);
 
             entity.x += Math.cos(rotation) * entity.SPEED;
             entity.y += Math.sin(rotation) * entity.SPEED;
@@ -58,9 +58,9 @@ function process(entity) {
                 entity.flameOn();
             }
         } else {
-            if (target.type === 'Planet') {
+            if (colonizationTarget.type === 'Planet') {
                 if (entity.canOrbitPlanet) {
-                    entity.enterPlanetOrbit(target);
+                    entity.enterPlanetOrbit(colonizationTarget);
                 }
             }
 
@@ -74,7 +74,7 @@ function process(entity) {
 }
 
 export default {
-    componentFlag: 'canMoveToTarget',
+    componentFlag: 'canMoveToColonizationTarget',
     DEFAULTS,
     process
 }

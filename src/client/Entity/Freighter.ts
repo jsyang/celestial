@@ -135,8 +135,6 @@ export default class Freighter extends LivingEntity {
     geo  = Geometry(GEO.body);
     planet: Planet;
 
-
-    // Components
     hp    = 10;
     maxHp = 10;
 
@@ -149,12 +147,34 @@ export default class Freighter extends LivingEntity {
 
     canColonizePlanet = true;
 
-    canMoveToTarget = true;
+    canMoveToColonizationTarget = true;
     target: any;
 
     canStoreMaterial  = true;
     materialsRaw      = 0;
     materialsFinished = 500;
+
+    canAutoTargetEnemy         = true;
+    autoTargetSearchDist2      = 400 * 400;
+    CANNON_LOAD_TIME_MS        = 400;
+    canShootCannon             = true;
+    cannonMatchShooterRotation = false;
+    cannonTarget: any;
+
+    cannonGetMuzzleFuncs = [
+        () => {
+            return {
+                x: -34 * Math.cos(this.rotation),
+                y: -34 * Math.sin(this.rotation)
+            }
+        },
+        () => {
+            return {
+                x: 32 * Math.cos(this.rotation),
+                y: 32 * Math.sin(this.rotation)
+            }
+        }
+    ];
 
     constructor(params: Freighter) {
         super();
