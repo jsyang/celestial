@@ -1,6 +1,6 @@
 import Entity from '../Entity';
 import Input from '../Input';
-import Random from '../random';
+import Random from '../Random';
 import Focus from '../Graphics/Focus';
 import Starfield from '../Graphics/Starfield';
 

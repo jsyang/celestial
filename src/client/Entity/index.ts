@@ -10,13 +10,17 @@ import PBase from './PBase';
 import PColony from './PColony';
 import PComm from './PComm';
 import PLab from './PLab';
-import Planet from './Planet';
 import Probe from './Probe';
 import SensorArray from './SensorArray';
-import Shot from './Shot';
 import SpaceDock from './SpaceDock';
 import SpacePort from './SpacePort';
+import Planet from './Planet';
 import Star from './Star';
+
+import CannonShot from './CannonShot';
+import HeavyCannonShot from './HeavyCannonShot';
+import LaserBolt from './LaserBolt';
+import HomingMissile from './HomingMissile';
 
 const ALL_ENTITIES = {
     Fighter,
@@ -28,10 +32,13 @@ const ALL_ENTITIES = {
     Planet,
     Probe,
     SensorArray,
-    Shot,
     SpaceDock,
     SpacePort,
-    Star
+    Star,
+    CannonShot,
+    HeavyCannonShot,
+    LaserBolt,
+    HomingMissile
 };
 
 const UPDATE_ALL_ENTITIES_SEQUENCE = [
@@ -46,7 +53,10 @@ const UPDATE_ALL_ENTITIES_SEQUENCE = [
     'SensorArray',
     'Fighter',
     'Freighter',
-    'Shot',
+    'CannonShot',
+    'HeavyCannonShot',
+    'LaserBolt',
+    'HomingMissile'
 // 'Probe',
 ];
 
@@ -89,9 +99,9 @@ export default {
     create,
     updateAll,
 
-    commit:      Grid.commit,
-    prepareNext: Grid.prepareNext,
-    getNearest:  Grid.getNearest,
+    commit:                Grid.commit,
+    prepareNext:           Grid.prepareNext,
+    getNearest:            Grid.getNearest,
     getNearestEnemyTarget: Grid.getNearestEnemyTarget,
 
     destroy:                  DB.remove,

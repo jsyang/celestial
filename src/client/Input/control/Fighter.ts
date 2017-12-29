@@ -3,7 +3,7 @@ import {IInputEvent} from '../Event';
 const DROTATION    = 0.05;
 const ACCELERATION = 0.2;
 
-export default function controlFighter(controlledEntity, events:IInputEvent) {
+export default function controlFighter(controlledEntity, events: IInputEvent) {
     const isDocked = controlledEntity.isDockedPlanet;
 
 
@@ -19,10 +19,8 @@ export default function controlFighter(controlledEntity, events:IInputEvent) {
             }
         }
 
-        controlledEntity.isShooting = events.SHOOT;
+        controlledEntity.isAttacking = events.SHOOT;
     }
-
-    controlledEntity.isShooting = events.SHOOT;
 
     if (events.ACCELERATE) {
         if (isDocked) {

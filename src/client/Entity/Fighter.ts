@@ -96,6 +96,14 @@ const GEO = {
     }
 };
 
+const ATTACK_TURRET_POSITIONS = [
+    fighter => {
+        const {x, y}     = fighter.geo.collider.calcPoints[1];
+        const {rotation} = fighter;
+        return {x, y, rotation};
+    }
+];
+
 export default class Fighter extends LivingEntity {
     type = 'Fighter';
     geo  = Geometry(
@@ -103,25 +111,21 @@ export default class Fighter extends LivingEntity {
         {collisionPath: GEO.body.collisionPath}
     );
 
-    // Components
     mass     = 10;
     hp       = 4;
     maxHp    = 4;
-    dx       = 0;
-    dy       = 0;
     rotation = 0;
 
     canExplode = true;
 
-    cannonGetMuzzleFuncs = [
-        fighter => fighter.geo.collider.calcPoints[1]
-    ];
+    canAttack             = true;
+    attackTurretPositions = ATTACK_TURRET_POSITIONS;
+    canShootCannon        = true;
 
     canLimitSpeed   = true;
     canMoveLinearly = true;
     canAccelerate   = true;
     canDockPlanet   = true;
-    canShootCannon  = true;
 
     constructor(params: Fighter) {
         super();

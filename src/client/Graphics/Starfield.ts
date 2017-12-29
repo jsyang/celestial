@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import Random from '../random';
+import Random from '../Random';
 
 const stars: Array<PIXI.Graphics> = [];
 

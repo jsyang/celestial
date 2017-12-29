@@ -1,4 +1,4 @@
-var Random   = require('../random');
+var Random   = require('../Random');
 var Entity   = require('./index');
 var EntityDB = require('./_DB');
 

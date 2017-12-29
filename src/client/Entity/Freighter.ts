@@ -1,7 +1,9 @@
 import Geometry from '../Geometry';
+import Entity from ".";
 import Planet from "./Planet";
 import LivingEntity from './LivingEntity';
 import TEAM from './_Team';
+import Random from '../Random';
 
 const GEO = {
     "body":      {
@@ -130,6 +132,48 @@ const GEO = {
     }
 };
 
+const getTurretRotation = (freighter, x, y) => {
+    // Turreted fire:
+    // direction of shot is independent of direction of shooter
+    const {attackTarget} = freighter;
+
+    const targetDx = attackTarget.dx || 0;
+    const targetDy = attackTarget.dy || 0;
+
+    const leadingShot = {
+        x: attackTarget.x + targetDx * 20,
+        y: attackTarget.y + targetDy * 20
+    };
+
+    let rotation = Entity.getAngleFromTo(
+        {
+            x: x + freighter.x,
+            y: y + freighter.y
+        },
+        leadingShot
+    );
+
+    // Fudge factor
+    rotation += Random.float(-0.15, 0.15);
+
+    return rotation;
+};
+
+const ATTACK_TURRET_POSITIONS = [
+    freighter => {
+        const x = -34 * Math.cos(freighter.rotation);
+        const y = -34 * Math.sin(freighter.rotation);
+
+        return {x, y, rotation: getTurretRotation(freighter, x, y)};
+    },
+    freighter => {
+        const x = 32 * Math.cos(freighter.rotation);
+        const y = 32 * Math.sin(freighter.rotation);
+
+        return {x, y, rotation: getTurretRotation(freighter, x, y)};
+    }
+];
+
 export default class Freighter extends LivingEntity {
     type = 'Freighter';
     geo  = Geometry(GEO.body);
@@ -145,57 +189,35 @@ export default class Freighter extends LivingEntity {
 
     canExplode = true;
 
-    canColonizePlanet = true;
-
+    canColonizePlanet           = true;
     canMoveToColonizationTarget = true;
-    target: any;
 
     canStoreMaterial  = true;
     materialsRaw      = 0;
     materialsFinished = 500;
 
-    canAutoTargetEnemy         = true;
-    autoTargetSearchDist2      = 400 * 400;
-    CANNON_LOAD_TIME_MS        = 400;
-    canShootCannon             = true;
-    cannonMatchShooterRotation = false;
-    cannonTarget: any;
+    canAutoTargetEnemy    = true;
+    autoTargetSearchDist2 = 400 * 400;
+    canAttack             = true;
+    attackTurretPositions = ATTACK_TURRET_POSITIONS;
 
-    cannonGetMuzzleFuncs = [
-        () => {
-            return {
-                x: -34 * Math.cos(this.rotation),
-                y: -34 * Math.sin(this.rotation)
-            }
-        },
-        () => {
-            return {
-                x: 32 * Math.cos(this.rotation),
-                y: 32 * Math.sin(this.rotation)
-            }
-        }
-    ];
+    canShootCannon    = true;
+    reloadTime_Cannon = 400;
+
 
     constructor(params: Freighter) {
         super();
 
         Object.assign(this, params);
 
-        const cargoPodL = Geometry(GEO.cargopodL);
-        const cargoPodR = Geometry(GEO.cargopodR);
-        const turret1   = Geometry(GEO.turret1);
-        const turret2   = Geometry(GEO.turret2);
-        const flag      = Geometry(GEO.flag);
-        const flame     = Geometry(GEO.flame);
-
         // Add as graphics only, not collider geometry
         this.geo.graphics.addChild(
-            flame.graphics,
-            flag.graphics,
-            cargoPodL.graphics,
-            cargoPodR.graphics,
-            turret1.graphics,
-            turret2.graphics
+            Geometry(GEO.flame).graphics,
+            Geometry(GEO.flag).graphics,
+            Geometry(GEO.cargopodL).graphics,
+            Geometry(GEO.cargopodR).graphics,
+            Geometry(GEO.turret1).graphics,
+            Geometry(GEO.turret2).graphics
         );
 
         this.assignTeamColor();

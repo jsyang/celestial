@@ -1,4 +1,4 @@
-import Random from '../random';
+import Random from '../Random';
 import {createSolarSystem} from './createSolarSystem';
 import {createBaseOrInvasionFleet} from './createBaseOrInvasionFleet';
 

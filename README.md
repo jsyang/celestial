@@ -1,6 +1,6 @@
 # celestial
 
-Celestial combat. Conquer the known universe sector by sector.
+Celestial Combat is a game of galactic trade, colonization, and conquest. 
 
 ```
 yarn
@@ -16,7 +16,9 @@ yarn dev
 
 - win / lose conditions
     - win / loss messages
+    
 - strategic enemy AI
+- enemy fighter AI
 - tutorial sector
 
 - ship / polygon editor

@@ -6,17 +6,17 @@ const DEFAULTS = {
     autoTargetLastSearchTime: 0
 };
 
-function setCannonTargetNearestEnemy(entity) {
-    entity.cannonTarget = Entity.getNearestEnemyTarget(entity, entity.autoTargetSearchDist2);
-    entity.isShooting   = Boolean(entity.cannonTarget);
+function setAttackTargetNearestEnemy(entity) {
+    entity.attackTarget = Entity.getNearestEnemyTarget(entity, entity.autoTargetSearchDist2);
+    entity.isAttacking  = Boolean(entity.attackTarget);
 }
 
 function process(entity) {
-    if (entity.canShootCannon) {
+    if (entity.canAttack) {
         const now = Date.now();
 
         if (now - entity.autoTargetLastSearchTime >= entity.AUTO_TARGET_ENEMY_TIME) {
-            setCannonTargetNearestEnemy(entity);
+            setAttackTargetNearestEnemy(entity);
             entity.autoTargetLastSearchTime = now;
         }
     }

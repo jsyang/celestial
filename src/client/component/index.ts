@@ -5,6 +5,8 @@
 
 import Entity from '../Entity';
 
+import ShootHomingMissileComponent from './shootHomingMissile';
+import AttackComponent from './attack';
 import AutoTargetEnemyComponent from './autoTargetEnemy';
 import ManufactureComponent from './manufacture';
 import MineComponent from './mine';
@@ -54,7 +56,9 @@ const ALL_COMPONENTS = [
     RefineComponent,
     ConstructComponent,
     ManufactureComponent,
+    AttackComponent,
     ShootCannonComponent,
+    ShootHomingMissileComponent,
     ColonizePlanetComponent,
 
     // Metabolize

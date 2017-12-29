@@ -1,6 +1,6 @@
 import {playSound} from '../assets/audio';
 import Entity from '../Entity';
-import Random from '../random';
+import Random from '../Random';
 
 function explode() {
     const {
@@ -13,13 +13,12 @@ function explode() {
     playSound(EXPLOSION_SOUND);
 
     for (let fragmentCount = EXPLOSION_FRAGMENTS; fragmentCount > 0; fragmentCount--) {
-        Entity.create('Shot', {
-            shotType: 'cannon_normal',
-            x:        explosionOriginDx + x + Random.float(-10, 10),
-            y:        explosionOriginDy + y + Random.float(-10, 10),
-            team:     Entity.TEAM.NONE,
-            dx:       Random.float(-2, 2) + (dx || 0),
-            dy:       Random.float(-2, 2) + (dy || 0)
+        Entity.create('CannonShot', {
+            x:    explosionOriginDx + x + Random.float(-10, 10),
+            y:    explosionOriginDy + y + Random.float(-10, 10),
+            team: Entity.TEAM.NONE,
+            dx:   Random.float(-2, 2) + (dx || 0),
+            dy:   Random.float(-2, 2) + (dy || 0)
         });
     }
 
@@ -32,7 +31,6 @@ const DEFAULTS = {
     explosionOriginDy: 0,
 
     EXPLOSION_FRAGMENTS: 6,
-    EXPLOSION_SOUND:     'collide',
     hasExploded:         false,
     explode
 };

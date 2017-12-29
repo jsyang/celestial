@@ -1,5 +1,5 @@
 import Entity from '../Entity';
-import Random from '../random';
+import Random from '../Random';
 import {MAX_COORDINATE} from '../constants';
 import Planet from '../Entity/Planet';
 import Star from '../Entity/Star';

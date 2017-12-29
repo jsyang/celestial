@@ -2,6 +2,8 @@ import TEAM from './_Team';
 import Geometry from '../Geometry';
 import Planet from "./Planet";
 import LivingEntity from './LivingEntity';
+import Entity from '.';
+import Random from '../Random';
 
 const GEO = {
     "_name":   "Planetary Base",
@@ -78,11 +80,39 @@ const GEO = {
     }
 };
 
-const CANNON_MUZZLE_FUNCTIONS = [
-    () => ({x: 65, y: 65}),
-    () => ({x: 65, y: -65}),
-    () => ({x: -65, y: -65}),
-    () => ({x: -65, y: +65})
+
+const getTurretRotation = (pbase, x, y) => {
+    // Turreted fire:
+    // direction of shot is independent of direction of shooter
+    const {attackTarget} = pbase;
+
+    const targetDx = attackTarget.dx || 0;
+    const targetDy = attackTarget.dy || 0;
+
+    const leadingShot = {
+        x: attackTarget.x + targetDx * 20,
+        y: attackTarget.y + targetDy * 20
+    };
+
+    let rotation = Entity.getAngleFromTo(
+        {
+            x: x + pbase.x,
+            y: y + pbase.y
+        },
+        leadingShot
+    );
+
+    // Fudge factor
+    rotation += Random.float(-0.15, 0.15);
+
+    return rotation;
+};
+
+const ATTACK_TURRET_POSITIONS = [
+    pbase => ({x: 65, y: 65, rotation: getTurretRotation(pbase, 65, 65)}),
+    pbase => ({x: 65, y: -65, rotation: getTurretRotation(pbase, 65, -65)}),
+    pbase => ({x: -65, y: -65, rotation: getTurretRotation(pbase, -65, -65)}),
+    pbase => ({x: -65, y: 65, rotation: getTurretRotation(pbase, -65, 65)})
 ];
 
 export default class PBase extends LivingEntity {
@@ -108,15 +138,10 @@ export default class PBase extends LivingEntity {
     canAutoTargetEnemy    = true;
     autoTargetSearchDist2 = 600 * 600;
 
-    canShootCannon = true;
-    cannonShotType = 'pbase_plasma'; //todo separate weapons for this
-
-    CANNON_LOAD_TIME_MS        = 500;
-    cannonMatchShooterRotation = false;
-    cannonShotSpeed            = 8;
-    cannonAmmo                 = 10;
-    cannonMaxAmmo              = 10;
-    cannonGetMuzzleFuncs       = CANNON_MUZZLE_FUNCTIONS;
+    canAttack             = true;
+    attackTurretPositions = ATTACK_TURRET_POSITIONS;
+    canShootCannon        = true;
+    reloadTime_Cannon     = 400;
 
     constructor(params: PBase) {
         super();
