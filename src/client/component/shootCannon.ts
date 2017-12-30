@@ -1,7 +1,7 @@
 import Entity from '../Entity';
 import {playSound} from '../assets/audio';
 
-const LAUNCH_SPEED = 4;
+const LAUNCH_SPEED = 5;
 
 function shoot(getMuzzleFunc) {
     const {team}           = this;

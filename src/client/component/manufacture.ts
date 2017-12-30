@@ -1,4 +1,5 @@
 import Entity from '../Entity';
+import Random from '../Random';
 
 const PRODUCT = {
     Freighter: {cost: 300, time: 120},
@@ -24,7 +25,7 @@ function orderManufacture(type) {
  */
 function process(entity) {
     if (entity.isManufacturing) {
-        const {planet, x, y, team} = entity;
+        const {planet, team} = entity;
 
         const shouldManufacture =
                   entity.planet.pbase &&
@@ -34,6 +35,9 @@ function process(entity) {
             if (entity.manufactureTime > 0) {
                 entity.manufactureTime--;
             } else {
+                const x = entity.x + Random.int(-20, 20);
+                const y = entity.y + Random.int(-20, 20);
+
                 const product = Entity.create(entity.manufactureType, {x, y, team});
 
                 if (entity.manufactureType === 'Fighter') {

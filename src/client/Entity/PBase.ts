@@ -90,8 +90,8 @@ const getTurretRotation = (pbase, x, y) => {
     const targetDy = attackTarget.dy || 0;
 
     const leadingShot = {
-        x: attackTarget.x + targetDx * 20,
-        y: attackTarget.y + targetDy * 20
+        x: attackTarget.x + targetDx * 24,
+        y: attackTarget.y + targetDy * 24
     };
 
     let rotation = Entity.getAngleFromTo(
@@ -103,7 +103,7 @@ const getTurretRotation = (pbase, x, y) => {
     );
 
     // Fudge factor
-    rotation += Random.float(-0.15, 0.15);
+    rotation += Random.float(-0.2, 0.2);
 
     return rotation;
 };
