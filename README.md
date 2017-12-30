@@ -9,8 +9,6 @@ yarn dev
 # --> http://localhost:3000
 ```
 
-## Bugs
-
 ## TODOs
 - save / load games
 
@@ -40,10 +38,8 @@ yarn dev
 
 - implement structure status displays
 - capital ships
-- rockets
 - asteroids / uninhabitable worlds
 - ability to destroy planets
 
 ### Notes
-
 - Title font is "Phosphate" in OSX system fonts.

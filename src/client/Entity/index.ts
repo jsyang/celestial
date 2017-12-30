@@ -21,6 +21,7 @@ import CannonShot from './CannonShot';
 import HeavyCannonShot from './HeavyCannonShot';
 import LaserBolt from './LaserBolt';
 import HomingMissile from './HomingMissile';
+import ClusterRocket from './ClusterRocket';
 
 const ALL_ENTITIES = {
     Fighter,
@@ -37,6 +38,7 @@ const ALL_ENTITIES = {
     Star,
     CannonShot,
     HeavyCannonShot,
+    ClusterRocket,
     LaserBolt,
     HomingMissile
 };
@@ -56,7 +58,8 @@ const UPDATE_ALL_ENTITIES_SEQUENCE = [
     'CannonShot',
     'HeavyCannonShot',
     'LaserBolt',
-    'HomingMissile'
+    'HomingMissile',
+    'ClusterRocket'
 // 'Probe',
 ];
 

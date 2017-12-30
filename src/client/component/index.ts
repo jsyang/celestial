@@ -5,7 +5,6 @@
 
 import Entity from '../Entity';
 
-import ShootHomingMissileComponent from './shootHomingMissile';
 import AttackComponent from './attack';
 import AutoTargetEnemyComponent from './autoTargetEnemy';
 import ManufactureComponent from './manufacture';
@@ -25,6 +24,8 @@ import OrbitStarComponent from './orbitStar';
 import OrbitPlanetComponent from './orbitPlanet';
 import DamageComponent from './damage';
 import ShootCannonComponent from './shootCannon';
+import ShootHomingMissileComponent from './shootHomingMissile';
+import ShootClusterRocketComponent from './shootClusterRocket';
 import LimitSpeedComponent from './limitSpeed';
 import AccelerateComponent from './accelerate';
 import AccelerateToAttackTargetComponent from './accelerateToAttackTarget';
@@ -61,6 +62,7 @@ const ALL_COMPONENTS = [
     AttackComponent,
     ShootCannonComponent,
     ShootHomingMissileComponent,
+    ShootClusterRocketComponent,
     ColonizePlanetComponent,
 
     // Metabolize

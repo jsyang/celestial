@@ -5,13 +5,13 @@ const GEO = {
     "missileBody": {
         "type":      "polygon",
         "lineStyle": {
-            "width": 1,
-            "color": 0xee0000,
+            "width": 2,
+            "color": 0x4444ff,
             "alpha": 1
         },
         "path":      [
             0, 0,
-            6, 0
+            8, 0
         ]
     },
 
@@ -19,32 +19,30 @@ const GEO = {
         "type":      "polygon",
         "lineStyle": {
             "width": 1,
-            "color": 0xff0000,
+            "color": 0xffff00,
             "alpha": 1
         },
         "path":      [
             0, 0,
-            -3, 0
+            -2, 0
         ]
     }
 };
 
-export default class HomingMissile extends LivingEntity {
-    type = 'HomingMissile';
+export default class ClusterRocket extends LivingEntity {
+    type = 'ClusterRocket';
 
-    canMoveLinearly             = true;
-    canLimitSpeed               = true;
-    MAX_SPEED                   = 55;
-    MAX_SPEED2                  = 55 * 55;
-    canAccelerateToAttackTarget = true;
-    canDamage                   = true;
-    canMetabolize               = true;
-    canAttack                   = true;
+    canExplode          = true;
+    EXPLOSION_FRAGMENTS = 20;
+    canMoveLinearly     = true;
+    canDamage           = true;
+    canMetabolize       = true;
+    canAttack           = true;
 
-    hp       = 60;
-    damageHp = 6;
+    hp       = 45;
+    damageHp = 0.5;
 
-    constructor(params: HomingMissile) {
+    constructor(params: ClusterRocket) {
         super();
 
         this.geo = Geometry(GEO.missileBody);

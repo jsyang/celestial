@@ -25,8 +25,7 @@ function shoot(getMuzzleFunc) {
 
 const DEFAULTS = {
     lastShotTime_Cannon: 0,
-    reloadTime_Cannon:   100,
-    isCannonTurreted:    false
+    reloadTime_Cannon:   100
 };
 
 const SOUND_SHOOT = 'fire';
