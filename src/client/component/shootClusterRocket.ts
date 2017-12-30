@@ -31,7 +31,7 @@ const DEFAULTS = {
     ammoMax_ClusterRocket:      8
 };
 
-const SOUND_SHOOT = 'missile';
+const SOUND_SHOOT = 'bomb-release';
 const SOUND_EMPTY = 'empty';
 
 function process(entity) {

@@ -27,9 +27,9 @@ function explode() {
 
 const DEFAULTS = {
     // Relative to entity x,y
-    explosionOriginDx: 0,
-    explosionOriginDy: 0,
-
+    explosionOriginDx:   0,
+    explosionOriginDy:   0,
+    EXPLOSION_SOUND:     'collide',
     EXPLOSION_FRAGMENTS: 6,
     hasExploded:         false,
     explode

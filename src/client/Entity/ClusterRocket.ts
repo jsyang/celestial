@@ -34,6 +34,7 @@ export default class ClusterRocket extends LivingEntity {
 
     canExplode          = true;
     EXPLOSION_FRAGMENTS = 20;
+    EXPLOSION_SOUND     = 'fire-heavy';
     canMoveLinearly     = true;
     canDamage           = true;
     canMetabolize       = true;
