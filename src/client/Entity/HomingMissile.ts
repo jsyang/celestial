@@ -6,7 +6,7 @@ const GEO = {
         "type":      "polygon",
         "lineStyle": {
             "width": 1,
-            "color": 0xee0000,
+            "color": 0xffffff,
             "alpha": 1
         },
         "path":      [
@@ -31,6 +31,9 @@ const GEO = {
 
 export default class HomingMissile extends LivingEntity {
     type = 'HomingMissile';
+
+    canShimmer         = true;
+    shimmerNormalColor = 0xee0000;
 
     canMoveLinearly             = true;
     canLimitSpeed               = true;

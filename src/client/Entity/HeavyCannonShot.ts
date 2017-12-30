@@ -6,7 +6,7 @@ const GEO = {
     "type":      "polygon",
     "lineStyle": {
         "width": 2,
-        "color": 65535,
+        "color": 0xffffff,
         "alpha": 1
     },
     "path":      [
@@ -23,12 +23,14 @@ const GEO = {
 export default class HeavyCannonShot extends LivingEntity {
     type = 'HeavyCannonShot';
 
-    canMoveLinearly = true;
-    canDamage       = true;
-    canMetabolize   = true;
+    canShimmer         = true;
+    shimmerNormalColor = 0x00ffff;
+    canMoveLinearly    = true;
+    canDamage          = true;
+    canMetabolize      = true;
 
     team     = TEAM.NONE;
-    hp       = 60;
+    hp       = 40;
     damageHp = 2;
 
     constructor(params: HeavyCannonShot) {

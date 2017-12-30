@@ -119,10 +119,12 @@ export default class Fighter extends LivingEntity {
     canExplode = true;
 
     canAttack             = true;
-    attackWeapon          = 'LaserBolt';
+    attackWeapon          = 'HeavyCannon';
     attackTurretPositions = ATTACK_TURRET_POSITIONS;
+
     canShootLaserBolt     = true;
     canShootCannon        = true;
+    canShootHeavyCannon   = true;
     canShootClusterRocket = true;
     canShootHomingMissile = true;
 

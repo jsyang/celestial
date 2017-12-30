@@ -24,6 +24,7 @@ import OrbitStarComponent from './orbitStar';
 import OrbitPlanetComponent from './orbitPlanet';
 import DamageComponent from './damage';
 import ShootCannonComponent from './shootCannon';
+import ShootHeavyCannonComponent from './shootHeavyCannon';
 import ShootLaserBoltComponent from './shootLaserBolt';
 import ShootHomingMissileComponent from './shootHomingMissile';
 import ShootClusterRocketComponent from './shootClusterRocket';
@@ -33,6 +34,7 @@ import AccelerateToAttackTargetComponent from './accelerateToAttackTarget';
 import DisplayHitComponent from './displayHit';
 import DockPlanetComponent from './dockPlanet';
 import ColonizePlanetComponent from './colonizePlanet';
+import ShimmerComponent from './shimmer';
 
 
 // In order of update() precedence
@@ -62,6 +64,7 @@ const ALL_COMPONENTS = [
     ManufactureComponent,
     AttackComponent,
     ShootCannonComponent,
+    ShootHeavyCannonComponent,
     ShootLaserBoltComponent,
     ShootHomingMissileComponent,
     ShootClusterRocketComponent,
@@ -70,6 +73,7 @@ const ALL_COMPONENTS = [
     // Metabolize
     MetabolizeComponent,
     DisplayHitComponent,
+    ShimmerComponent,
     ExplodeComponent
 ];
 
