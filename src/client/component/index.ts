@@ -24,6 +24,7 @@ import OrbitStarComponent from './orbitStar';
 import OrbitPlanetComponent from './orbitPlanet';
 import DamageComponent from './damage';
 import ShootCannonComponent from './shootCannon';
+import ShootLaserBoltComponent from './shootLaserBolt';
 import ShootHomingMissileComponent from './shootHomingMissile';
 import ShootClusterRocketComponent from './shootClusterRocket';
 import LimitSpeedComponent from './limitSpeed';
@@ -61,6 +62,7 @@ const ALL_COMPONENTS = [
     ManufactureComponent,
     AttackComponent,
     ShootCannonComponent,
+    ShootLaserBoltComponent,
     ShootHomingMissileComponent,
     ShootClusterRocketComponent,
     ColonizePlanetComponent,

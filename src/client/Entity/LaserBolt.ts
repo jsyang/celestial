@@ -1,17 +1,18 @@
 import TEAM from './_Team';
 import Geometry from '../Geometry';
 import LivingEntity from './LivingEntity';
+import Random from '../Random';
 
 const GEO = {
     "type":      "polygon",
     "lineStyle": {
         "width": 1,
-        "color": 0xff0000,
-        "alpha": 0.6
+        "color": 0xffff00,
+        "alpha": 1
     },
     "path":      [
-        8, 0,
-        -8, 0
+        5, 0,
+        -5, 0
     ]
 };
 
@@ -23,8 +24,8 @@ export default class LaserBolt extends LivingEntity {
     canMetabolize   = true;
 
     team     = TEAM.NONE;
-    hp       = 70;
-    damageHp = 0.25;
+    hp       = Random.int(2, 3);
+    damageHp = 30;
 
     constructor(params: LaserBolt) {
         super();

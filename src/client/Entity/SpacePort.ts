@@ -1,6 +1,8 @@
 import Geometry from '../Geometry';
 import Planet from "./Planet";
 import LivingEntity from './LivingEntity';
+import Entity from '.';
+import Random from '../Random';
 
 const GEO = {
     "_name":   "Space Port",
@@ -136,6 +138,63 @@ const GEO = {
     }
 };
 
+
+const getTurretRotation = (spaceport, x, y) => {
+    // Turreted fire:
+    // direction of shot is independent of direction of shooter
+    const {attackTarget} = spaceport;
+
+    const targetDx = attackTarget.dx || 0;
+    const targetDy = attackTarget.dy || 0;
+
+    const leadingShot = {
+        x: attackTarget.x + targetDx * 20,
+        y: attackTarget.y + targetDy * 20
+    };
+
+    let rotation = Entity.getAngleFromTo(
+        {
+            x: x + spaceport.x,
+            y: y + spaceport.y
+        },
+        leadingShot
+    );
+
+    // Fudge factor
+    rotation += Random.float(-0.15, 0.15);
+
+    return rotation;
+};
+
+const HALF_PI = Math.PI / 2;
+
+const ATTACK_TURRET_POSITIONS = [
+    spaceport => {
+        const x = 28 * Math.cos(spaceport.rotation - HALF_PI);
+        const y = 28 * Math.sin(spaceport.rotation - HALF_PI);
+
+        return {x, y, rotation: getTurretRotation(spaceport, x, y)};
+    },
+    spaceport => {
+        const x = -28 * Math.cos(spaceport.rotation - HALF_PI);
+        const y = -28 * Math.sin(spaceport.rotation - HALF_PI);
+
+        return {x, y, rotation: getTurretRotation(spaceport, x, y)};
+    },
+    spaceport => {
+        const x = 46 * Math.cos(spaceport.rotation - HALF_PI);
+        const y = 46 * Math.sin(spaceport.rotation - HALF_PI);
+
+        return {x, y, rotation: getTurretRotation(spaceport, x, y)};
+    },
+    spaceport => {
+        const x = -46 * Math.cos(spaceport.rotation - HALF_PI);
+        const y = -46 * Math.sin(spaceport.rotation - HALF_PI);
+
+        return {x, y, rotation: getTurretRotation(spaceport, x, y)};
+    }
+];
+
 export default class SpacePort extends LivingEntity {
     type = 'SpacePort';
     geo  = Geometry(GEO.body);
@@ -150,8 +209,13 @@ export default class SpacePort extends LivingEntity {
     canOrbitPlanet = true;
     orbitDistance  = 205;
 
-    canDisplayHit       = true;
-    canExplode          = true;
+    canAutoTargetEnemy    = true;
+    canDisplayHit         = true;
+    canExplode            = true;
+    canAttack             = true;
+    attackTurretPositions = ATTACK_TURRET_POSITIONS;
+    canShootCannon        = true;
+    reloadTime_Cannon     = 300;
 
     canStoreMaterial  = true;
     materialsRaw      = 0;

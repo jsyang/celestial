@@ -6,19 +6,9 @@
 HomingMissile
 Cannon
 HeavyCannon
-Laser
+LaserBolt
+ClusterRocket
 PlanetBuster
-
-// Maybe differentiate?
-
-PBaseCannon
-PBaseLaser
-PBaseHomingMissile
-
-FreighterCannon
-FreighterLaser
-FreighterHomingMissile
-
  */
 
 const DEFAULTS = {

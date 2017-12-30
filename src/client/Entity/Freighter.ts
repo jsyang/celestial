@@ -204,7 +204,6 @@ export default class Freighter extends LivingEntity {
     canShootCannon    = true;
     reloadTime_Cannon = 400;
 
-
     constructor(params: Freighter) {
         super();
 
