@@ -39,9 +39,9 @@ function rotateToFaceColonizationTarget(entity) {
  * Moves to target
  */
 function process(entity) {
-    let {colonizationTarget, DIST_HALT2} = entity;
+    let {isOrbitingPlanet, colonizationTarget, DIST_HALT2} = entity;
 
-    if (colonizationTarget && colonizationTarget.hp > 0) {
+    if (!isOrbitingPlanet && colonizationTarget) {
         const r2 = Entity.getDistSquared(entity, colonizationTarget);
 
         if (colonizationTarget.type === 'Planet') {
@@ -68,8 +68,6 @@ function process(entity) {
                 entity.flameOff();
             }
         }
-    } else {
-        entity.target = null;
     }
 }
 

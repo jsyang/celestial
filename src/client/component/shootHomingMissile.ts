@@ -1,7 +1,7 @@
 import Entity from '../Entity';
 import {playSound} from '../assets/audio';
 
-const LAUNCH_SPEED = 7;
+const LAUNCH_SPEED = 4;
 
 function shoot(getMuzzleFunc) {
     const {attackTarget, team} = this;
@@ -28,13 +28,14 @@ function shoot(getMuzzleFunc) {
 const RELOAD_TIME = 200;
 
 const DEFAULTS = {
-    lastShotTime_HomingMissile:  0,
-    ammo_HomingMissile:          20,
-    ammoMax_HomingMissile:       20
+    lastShotTime_HomingMissile: 0,
+    ammo_HomingMissile:         40,
+    ammoMax_HomingMissile:      40
 };
 
-const SOUND_SHOOT = 'missile';
-const SOUND_EMPTY = 'empty';
+const SOUND_SHOOT     = 'missile';
+const SOUND_EMPTY     = 'empty';
+const TARGETING_DIST2 = 800 * 800;
 
 function process(entity) {
     const {isAttacking, ammo_HomingMissile, attackWeapon} = entity;
@@ -44,6 +45,7 @@ function process(entity) {
 
         if (now - entity.lastShotTime_HomingMissile >= RELOAD_TIME) {
             if (ammo_HomingMissile > 0) {
+                entity.attackTarget = Entity.getNearestEnemyTarget(entity, TARGETING_DIST2);
 
                 entity.attackTurretPositions
                     .forEach(shoot.bind(entity));

@@ -3,9 +3,9 @@
 
 import * as PIXI from 'pixi.js';
 
-import Entity from './Entity';
-import Graphics from './Graphics';
-import {MAX_COORDINATE} from './constants';
+import Entity from '../Entity/index';
+import Graphics from '../Graphics/index';
+import {MAX_COORDINATE} from '../constants';
 
 const ALPHA_SCANNER_BORDER = 0.3;
 

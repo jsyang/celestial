@@ -41,11 +41,8 @@ yarn dev
 - implement structure status displays
 - capital ships
 - rockets
-- homing missiles
 - asteroids / uninhabitable worlds
 - ability to destroy planets
-- memoize math funcs
-
 
 ### Notes
 

@@ -6,8 +6,8 @@ import Input from '../Input';
 import Galaxy from '../Galaxy';
 import Entity from '../Entity';
 
-import RadarGalaxy from '../RadarGalaxy';
-import RadarLocal from '../RadarLocal';
+import RadarGalaxy from './RadarGalaxy';
+import RadarLocal from './RadarLocal';
 import SystemGravity from '../system/gravity';
 import SystemTeam from '../system/team';
 import Freelook from '../Graphics/Freelook';

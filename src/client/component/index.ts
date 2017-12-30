@@ -27,6 +27,7 @@ import DamageComponent from './damage';
 import ShootCannonComponent from './shootCannon';
 import LimitSpeedComponent from './limitSpeed';
 import AccelerateComponent from './accelerate';
+import AccelerateToAttackTargetComponent from './accelerateToAttackTarget';
 import DisplayHitComponent from './displayHit';
 import DockPlanetComponent from './dockPlanet';
 import ColonizePlanetComponent from './colonizePlanet';
@@ -38,12 +39,13 @@ const ALL_COMPONENTS = [
     // Change position
     OccupyPlanetComponent,
     OccupySpacePortComponent,
+    AccelerateComponent,
+    AccelerateToAttackTargetComponent,
     MoveLinearlyComponent,
     MoveToTargetComponent,
     OrbitStarComponent,
     OrbitPlanetComponent,
     LimitSpeedComponent,
-    AccelerateComponent,
     DockPlanetComponent,
 
     // Affect other entities

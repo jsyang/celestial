@@ -1,4 +1,3 @@
-import TEAM from './_Team';
 import Geometry from '../Geometry';
 import LivingEntity from './LivingEntity';
 
@@ -30,18 +29,24 @@ const GEO = {
     }
 };
 
-export default class Shot extends LivingEntity {
-    type = 'Shot';
+export default class HomingMissile extends LivingEntity {
+    type = 'HomingMissile';
 
-    canMoveLinearly = true;
-    canDamage       = true;
-    canMetabolize   = true;
+    canExplode                  = true;
+    EXPLOSION_FRAGMENTS         = 3;
+    canMoveLinearly             = true;
+    canLimitSpeed               = true;
+    MAX_SPEED                   = 55;
+    MAX_SPEED2                  = 55 * 55;
+    canAccelerateToAttackTarget = true;
+    canDamage                   = true;
+    canMetabolize               = true;
+    canAttack                   = true;
 
-    team     = TEAM.NONE;
-    hp       = 45;
+    hp       = 90;
     damageHp = 5;
 
-    constructor(params: Shot) {
+    constructor(params: HomingMissile) {
         super();
 
         this.geo = Geometry(GEO.missileBody);

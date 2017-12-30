@@ -152,7 +152,6 @@ export default class SpacePort extends LivingEntity {
 
     canDisplayHit       = true;
     canExplode          = true;
-    EXPLOSION_FRAGMENTS = 12;
 
     canStoreMaterial  = true;
     materialsRaw      = 0;
