@@ -2,20 +2,14 @@ const webpack = require('webpack');
 const webpackConfigAssign = require('webpack-config-assign');
 const baseConfig = require('./webpack.config.base');
 
-const clientEntry = (process.env.NODE_ENV === 'production') ?
-    {
-        main: './src/client/index.ts',
-    } :
-    {
-        main: ['webpack-hot-middleware/client', './src/client/index.ts']
-    };
-
 module.exports = [
     webpackConfigAssign({
-        name: 'client',
-        target: 'web',
-        entry: clientEntry,
-        output: {
+        name:    'client',
+        target:  'web',
+        entry:   {
+            main: './src/client/index.ts',
+        },
+        output:  {
             publicPath: '/',
             filename: 'client/[name].js'
         },

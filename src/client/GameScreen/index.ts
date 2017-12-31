@@ -11,6 +11,8 @@ import RadarLocal from './RadarLocal';
 import SystemGravity from '../system/gravity';
 import SystemTeam from '../system/team';
 import Freelook from '../Graphics/Freelook';
+import UnitDisplay from './UnitDisplay';
+import WeaponsDisplay from './WeaponsDisplay';
 
 let raf;  // requestAnimationFrame request
 let then; // Time stamp of last animation frame
@@ -51,7 +53,6 @@ function step() {
             }
 
             Graphics.setGlobalAlpha(gameScreenAlpha);
-
         }
 
         const focus = Focus.getFocus();
@@ -62,6 +63,8 @@ function step() {
         }
 
         Starfield.process(focus);
+        UnitDisplay.update();
+        WeaponsDisplay.update();
 
         Graphics.render();
 
@@ -94,6 +97,8 @@ function init() {
     Galaxy.init();
     RadarLocal.init();
     RadarGalaxy.init();
+    UnitDisplay.init();
+    WeaponsDisplay.init();
 }
 
 export default {

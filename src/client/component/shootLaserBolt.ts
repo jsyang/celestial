@@ -28,6 +28,8 @@ function shoot(getMuzzleFunc) {
 }
 
 const DEFAULTS = {
+    ammo_LaserBolt:         4,
+    ammoMax_LaserBolt:      4,
     lastShotTime_LaserBolt: 0,
     reloadTime_LaserBolt:   1000
 };
@@ -35,17 +37,20 @@ const DEFAULTS = {
 const SOUND_SHOOT = 'laser';
 
 function process(entity) {
-    const {isAttacking, attackWeapon} = entity;
+    const {isAttacking, attackWeapon, ammo_LaserBolt} = entity;
     if (isAttacking && attackWeapon === 'LaserBolt') {
         const now = Date.now();
 
         if (now - entity.lastShotTime_LaserBolt >= entity.reloadTime_LaserBolt) {
-            entity.attackTurretPositions
-                .forEach(shoot.bind(entity));
+            if (ammo_LaserBolt > 0) {
+                entity.attackTurretPositions
+                    .forEach(shoot.bind(entity));
 
-            playSound(SOUND_SHOOT);
+                playSound(SOUND_SHOOT);
 
-            entity.lastShotTime_LaserBolt = now;
+                entity.ammo_LaserBolt--;
+                entity.lastShotTime_LaserBolt = now;
+            }
         }
     }
 

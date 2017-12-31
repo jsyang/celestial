@@ -56,10 +56,12 @@ function processGameScreen() {
 const getDevice = () => device === DeviceType.Keyboard ? Keyboard : GamePad;
 
 const hasControlledEntity = () => Boolean(controlledEntity);
+const getControlledEntity = () => controlledEntity;
 
 export default {
     getDevice,
     processGameScreen,
     hasControlledEntity,
+    getControlledEntity,
     setControlledEntity
 };

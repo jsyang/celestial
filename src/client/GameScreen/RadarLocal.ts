@@ -2,8 +2,8 @@
 // Available to any unit
 
 import * as PIXI from 'pixi.js';
-import Graphics from '../Graphics/index';
-import Entity from '../Entity/index';
+import Graphics from '../Graphics';
+import Entity from '../Entity';
 
 const DIAL_TRACK_ALPHA = 0.08;
 const DEGREES          = Math.PI / 180;
@@ -150,7 +150,6 @@ export default {
     update,
 
     setOrigin,
-    setRotations,
 
     set isEnabled(isEnabled) {
         radarEnabled  = isEnabled;
