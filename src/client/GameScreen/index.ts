@@ -13,6 +13,7 @@ import SystemTeam from '../system/team';
 import Freelook from '../Graphics/Freelook';
 import UnitDisplay from './UnitDisplay';
 import WeaponsDisplay from './WeaponsDisplay';
+import Modal from './Modal';
 
 let raf;  // requestAnimationFrame request
 let then; // Time stamp of last animation frame
@@ -99,6 +100,9 @@ function init() {
     RadarGalaxy.init();
     UnitDisplay.init();
     WeaponsDisplay.init();
+    const m = Modal.create({});
+    Graphics.addChildToHUD(m.modal);
+
 }
 
 export default {
