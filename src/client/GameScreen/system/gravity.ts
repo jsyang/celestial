@@ -1,6 +1,6 @@
 // Gravity and related collisions
 
-import Entity from '../../Entity/index';
+import Entity from '../../Entity';
 import Planet from '../../Entity/Planet';
 import Star from '../../Entity/Star';
 

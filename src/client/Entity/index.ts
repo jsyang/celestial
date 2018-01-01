@@ -101,6 +101,8 @@ const getTeamColor = team => Team._COLORS[team];
 function clearAll() {
     Grid.prepareNext();
     Grid.prepareNext();
+    Grid.prepareNext();
+    Grid.prepareNext();
     DB.clearAll();
 }
 

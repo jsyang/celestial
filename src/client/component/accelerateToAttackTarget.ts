@@ -2,7 +2,7 @@
  * Homing capability
  */
 
-const ACCELERATION = 0.16;
+const ACCELERATION = 0.26;
 
 function process(entity) {
 
@@ -16,13 +16,13 @@ function process(entity) {
 
             if (entity.x > x) {
                 entity.dx -= ACCELERATION;
-            } else {
+            } else if (entity.x < x) {
                 entity.dx += ACCELERATION;
             }
 
             if (entity.y > y) {
                 entity.dy -= ACCELERATION;
-            } else {
+            } else if (entity.y < y) {
                 entity.dy += ACCELERATION;
             }
 
