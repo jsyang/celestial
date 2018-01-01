@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import Modal from '.';
-import Button from './Button';
+import Button from '../Button';
 
 const TEXT = 'GALAXY LOST\n\nFriendly forces have been vanquished!\nYour empire has failed to establish\na foothold in this galaxy.';
 

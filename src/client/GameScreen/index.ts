@@ -13,8 +13,8 @@ import SystemTeam from './system/team';
 import Freelook from '../Graphics/Freelook';
 import UnitDisplay from './UnitDisplay';
 import WeaponsDisplay from './WeaponsDisplay';
-import GalaxyWonModal from './Modal/GalaxyWonModal';
-import GalaxyLostModal from './Modal/GalaxyLostModal';
+import GalaxyWonModal from '../UI/Modal/GalaxyWonModal';
+import GalaxyLostModal from '../UI/Modal/GalaxyLostModal';
 
 let raf;  // requestAnimationFrame request
 let then; // Time stamp of last animation frame

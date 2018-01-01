@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import Modal from '.';
-import Button from './Button';
+import Button from '../Button';
 
 const TEXT = 'GALAXY CONQUERED\n\nAll enemies in this sector have been eradicated!\nYour empire encompasses all known worlds in this galaxy.';
 

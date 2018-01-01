@@ -2,7 +2,7 @@ import Input from '../Input';
 import TitleScreen from '.';
 
 let then           = 0; // Time stamp of last animation frame
-const FPS          = 15;
+const FPS          = 16;
 const FPS_INTERVAL = 1000 / FPS;
 
 
@@ -17,7 +17,7 @@ function update() {
             TitleScreen.prevButton();
         } else if (keys.down || keys.down_arrow) {
             TitleScreen.nextButton();
-        } else if (keys.f || keys.button0) {
+        } else if (keys.f || keys.button0 || keys.button1 || keys.button2 || keys.button3) {
             TitleScreen.clickButton();
         }
 

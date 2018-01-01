@@ -1,8 +1,9 @@
 import * as PIXI from "pixi.js";
+import Modal from '../UI/Modal';
 import Graphics from '../Graphics';
 import Starfield from '../Graphics/Starfield';
-import {playSound} from '../assets/audio';
 import TitleScreenInput from './input';
+import Button from '../UI/Button';
 
 let raf;  // requestAnimationFrame request
 let then; // Time stamp of last animation frame
@@ -16,7 +17,7 @@ let angle      = 0;
 const SPEED    = Math.PI / 180 * 0.02;
 
 let titleScreenAlpha = 1;
-const FADE_RATE      = 0.02;
+const FADE_RATE      = 0.05;
 let isFadingOut      = false;
 
 
@@ -62,97 +63,61 @@ function step() {
 }
 
 function onClickNewGame() {
-    menuItemSprites.forEach(item => {
-        item.off('tap');
-        item.off('click');
-        item.off('mouseout');
-        item.off('mouseover');
-    });
-
     isFadingOut = true;
 }
 
-const menu: any = [
+const menuButtonParams = [
     {
-        filename: 'assets/title.png',
-        dy:       -200
+        text:    'New game',
+        onClick: onClickNewGame
     },
     {
-        filename: 'assets/new-game.png',
-        dy:       -50,
-        onClick:  onClickNewGame
+        text:    'How to play',
+        onClick: () => window.open('how-to-play.html', '_blank')
     },
     {
-        filename: 'assets/how-to-play.png',
-        dy:       50,
-        onClick:  () => window.open('how-to-play.html', '_blank')
-    },
-    {
-        filename: 'assets/about.png',
-        dy:       150,
-        onClick:  () => window.open('http://github.com/jsyang/celestial', '_blank')
+        text:    'GitHub project',
+        onClick: () => window.open('http://github.com/jsyang/celestial', '_blank')
     }
 ];
 
-let menuItemSprites: PIXI.Sprite[] = [];
-
-function onMouseOverMenuButton() {
-    this.alpha = 0.5;
-    playSound('switch-flick');
-}
-
-function onMouseOutMenuButton() {
-    this.alpha = 1;
-}
-
-function createMenuButton({filename, onClick, dy}: any): PIXI.Sprite {
-    const menuButton = PIXI.Sprite.fromImage(filename) as any;
-
-    menuButton.anchor.set(0.5);
-    menuButton.y = innerHeight >> 1 + dy;
-
-    if (onClick) {
-        const _onClick = () => {
-            playSound('heavy-switch');
-            onClick();
-        };
-
-        menuButton.buttonMode  = true;
-        menuButton.interactive = true;
-        menuButton.on('mouseover', onMouseOverMenuButton);
-        menuButton.on('mouseout', onMouseOutMenuButton);
-        menuButton.on('tap', _onClick);
-        menuButton.on('click', _onClick);
-    }
-
-    return menuButton;
-}
-
-const onResize = () => {
-    menuItemSprites.forEach((item, index) => {
-        item.x = innerWidth / 2;
-        item.y = innerHeight / 2 + menu[index].dy;
-    });
-};
+let menuButtons;
 
 function start() {
     Graphics.init();
     Starfield.init()
         .forEach(Graphics.addChild);
 
-    menuItemSprites = menu.map(createMenuButton);
-    menuItemSprites.forEach(Graphics.addChildToHUD);
+    const menuOptionsModal = Modal.create({width: 340, height: 360});
 
-    addEventListener('resize', onResize);
-    onResize();
+    let modalStackY = 360;
+
+    menuButtons = menuButtonParams.reverse().map((buttonParams) => {
+        modalStackY -= 20 + 40;
+        const button = Button.create(buttonParams);
+        button.x     = 20;
+        button.y     = modalStackY;
+        menuOptionsModal.modal.addChild(button);
+        return button;
+    }).reverse();
+
+    modalStackY -= 20;
+
+    const title = PIXI.Sprite.fromImage('assets/title.png') as any;
+    title.anchor.set(0.5);
+    title.x = 170;
+    title.y = modalStackY - title.height - 70;
+    menuOptionsModal.modal.addChild(title);
+
+    Graphics.addChildToHUD(menuOptionsModal.modal);
 
     then = Date.now();
     step();
 }
 
 function stop() {
+    menuButtons = [];
     cancelAnimationFrame(raf);
-    removeEventListener('resize', onResize);
 
     if (onFadeOutComplete) {
         onFadeOutComplete();
@@ -165,37 +130,42 @@ function setFadeOutCallback(cb) {
     onFadeOutComplete = cb;
 }
 
-let activeButtonIndex = 0;
+let activeIndex = -1;
 
-function updateActiveButton() {
-    activeButtonIndex = Math.max(
-        Math.min(activeButtonIndex, menu.length - 1),
-        1
-    );
-
-    menuItemSprites.forEach((item, index) => {
-        if (index === activeButtonIndex) {
-            onMouseOverMenuButton.call(menuItemSprites[activeButtonIndex]);
+const updateButtonState = () => {
+    menuButtons.forEach((button, index) => {
+        if (index === activeIndex) {
+            button.mouseover();
         } else {
-            onMouseOutMenuButton.bind(item)();
+            button.mouseout();
         }
     });
-}
+};
 
-function nextButton() {
-    activeButtonIndex++;
-    updateActiveButton();
-}
+const prevButton = () => {
+    activeIndex--;
 
-function prevButton() {
-    activeButtonIndex--;
-    updateActiveButton();
-}
+    if (activeIndex < 0) {
+        activeIndex = 0;
+    }
 
-function clickButton() {
-    menu[activeButtonIndex].onClick();
-    playSound('heavy-switch');
-}
+    updateButtonState();
+};
+
+const nextButton = () => {
+    activeIndex++;
+
+    const maxIndex = menuButtons.length - 1;
+    if (activeIndex > maxIndex) {
+        activeIndex = maxIndex;
+    }
+
+    updateButtonState();
+};
+
+const clickButton = () => {
+    menuButtons[activeIndex].click();
+};
 
 export default {
     setFadeOutCallback,

@@ -59,7 +59,10 @@ function getAbsoluteNearestByType(entity, type) {
 
 function clearAll() {
     Object.keys(byType).forEach(
-        type => byType[type].forEach(remove)
+        type => {
+            byType[type].forEach(remove);
+            delete byType[type];
+        }
     );
 }
 
