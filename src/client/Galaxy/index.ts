@@ -14,12 +14,13 @@ const MIN_STARS = 2;
 const MAX_STARS = 5;
 
 function init() {
-    const starCount = Random.int(MIN_STARS, MAX_STARS);
+    const starCount      = Random.int(MIN_STARS, MAX_STARS);
+    const teamsRemaining = [...startingTeams];
 
     for (let i = 0; i < starCount; i++) {
         const teamStartingLocation = createSolarSystem();
 
-        const newTeam = startingTeams.pop();
+        const newTeam = teamsRemaining.pop();
         if (newTeam) {
             createBaseOrInvasionFleet(newTeam, teamStartingLocation);
         }

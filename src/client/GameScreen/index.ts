@@ -13,7 +13,6 @@ import SystemTeam from './system/team';
 import Freelook from '../Graphics/Freelook';
 import UnitDisplay from './UnitDisplay';
 import WeaponsDisplay from './WeaponsDisplay';
-import Modal from './Modal';
 import GalaxyWonModal from './Modal/GalaxyWonModal';
 import GalaxyLostModal from './Modal/GalaxyLostModal';
 
@@ -25,7 +24,7 @@ const FPS_INTERVAL = 1000 / FPS;
 
 let isFadingIn      = true;
 let gameScreenAlpha = 0;
-let FADE_RATE       = 0.02;
+let FADE_RATE       = 0.05;
 
 let isPaused = false;
 
@@ -92,12 +91,18 @@ function onTeamLost(team) {
     if (team === Entity.TEAM.MAGENTA) {
         isPaused        = true;
         const lostModal = GalaxyLostModal.create({
-            onClickContinue: () => {
-                Modal.destroy(lostModal);
-            }
+            onClickContinue: reinitAll
         });
         Graphics.addChildToHUD(lostModal.modal);
     }
+}
+
+function reinitAll() {
+    isPaused = false;
+    init();
+    Input.setControlledEntity(null);
+    stop();
+    start();
 }
 
 function onTeamWon(team) {
@@ -105,10 +110,7 @@ function onTeamWon(team) {
         isPaused = true;
 
         const wonModal = GalaxyWonModal.create({
-            onClickContinue: () => {
-                init();
-                start();
-            },
+            onClickContinue: reinitAll,
             onClickStay:     () => {
                 isPaused = false;
                 SystemTeam.setOnTeamWinCallback(new Function());

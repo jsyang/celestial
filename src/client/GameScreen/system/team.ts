@@ -125,7 +125,7 @@ const setOnTeamLostCallback = cb => onTeamLost = cb;
 const setOnTeamWinCallback = cb => onTeamWin = cb;
 
 function init() {
-    teamsRemaining = TEAMS.slice();
+    teamsRemaining = [...TEAMS];
 }
 
 export default {
