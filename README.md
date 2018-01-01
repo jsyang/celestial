@@ -10,7 +10,6 @@ yarn dev
 ```
 
 ## TODOs
-- weapon reload via docking
 - shields
     - around all turret locations
     - PBase, Freighter, SpacePort shields
@@ -22,7 +21,6 @@ yarn dev
 - weapon loadout customization
 
 - save / load games
-
 
 - probes use ECS
 

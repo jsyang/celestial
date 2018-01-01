@@ -25,9 +25,17 @@ function shoot(getMuzzleFunc) {
     });
 }
 
+function reload_HomingMissile() {
+    if (this.ammo_HomingMissile < this.ammoMax_HomingMissile) {
+        playSound('empty');
+        this.ammo_HomingMissile = this.ammoMax_HomingMissile;
+    }
+}
+
 const RELOAD_TIME = 200;
 
 const DEFAULTS = {
+    reload_HomingMissile,
     lastShotTime_HomingMissile: 0,
     ammo_HomingMissile:         40,
     ammoMax_HomingMissile:      40

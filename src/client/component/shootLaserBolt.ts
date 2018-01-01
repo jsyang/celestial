@@ -27,7 +27,15 @@ function shoot(getMuzzleFunc) {
 
 }
 
+function reload_LaserBolt() {
+    if (this.ammo_LaserBolt < this.ammoMax_LaserBolt) {
+        playSound('empty');
+        this.ammo_LaserBolt = this.ammoMax_LaserBolt;
+    }
+}
+
 const DEFAULTS = {
+    reload_LaserBolt,
     ammo_LaserBolt:         4,
     ammoMax_LaserBolt:      4,
     lastShotTime_LaserBolt: 0,

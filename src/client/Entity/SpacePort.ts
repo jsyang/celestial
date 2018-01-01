@@ -200,8 +200,8 @@ export default class SpacePort extends LivingEntity {
     geo  = Geometry(GEO.body);
     planet: Planet;
 
-    hp    = 30;
-    maxHp = 30;
+    hp    = 35;
+    maxHp = 35;
 
     canRepair = true;
     canRefine = true;

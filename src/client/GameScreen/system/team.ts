@@ -3,6 +3,7 @@ import Input from '../../Input/index';
 import Random from '../../Random';
 import Focus from '../../Graphics/Focus';
 import Starfield from '../../Graphics/Starfield';
+import {playSound} from '../../assets/audio';
 
 function assignFreightersToPlanet(freighters, planet) {
     if (freighters) {
@@ -39,6 +40,24 @@ function constructOnRandomPlanet(idleTeamPlanet, type) {
         const plab = Random.arrayElement(idleTeamPlanet).plab;
         if (plab) {
             plab.orderManufacture(type);
+        }
+    }
+}
+
+function repairRearmWhenDockedToOccupiedPlanet(fighter) {
+    const {planet, isDockedPlanet, team} = fighter;
+    if (isDockedPlanet && team === planet.team && planet.isOccupied()) {
+        const {reload_HomingMissile, reload_ClusterRocket, reload_LaserBolt} = fighter;
+
+        // Re-arm
+        reload_HomingMissile && fighter.reload_HomingMissile();
+        reload_ClusterRocket && fighter.reload_ClusterRocket();
+        reload_LaserBolt && fighter.reload_LaserBolt();
+
+        // Repair
+        if (fighter.hp < fighter.maxHp) {
+            playSound('repaired');
+            fighter.hp = fighter.maxHp;
         }
     }
 }
@@ -83,6 +102,8 @@ function processTeam(team) {
         Focus.setFocus(firstFighter);
         Starfield.init();
     }
+
+    teamFighter.forEach(repairRearmWhenDockedToOccupiedPlanet);
 
     if (teamPColony.length === 0 && teamFighter.length === 0 && teamFreighter.length === 0) {
         teamsRemaining = teamsRemaining.filter(t => t !== team);

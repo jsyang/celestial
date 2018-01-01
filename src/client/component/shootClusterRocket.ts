@@ -24,7 +24,15 @@ function shoot(getMuzzleFunc) {
     });
 }
 
+function reload_ClusterRocket() {
+    if (this.ammo_ClusterRocket < this.ammoMax_ClusterRocket) {
+        playSound('empty');
+        this.ammo_ClusterRocket = this.ammoMax_ClusterRocket;
+    }
+}
+
 const DEFAULTS = {
+    reload_ClusterRocket,
     lastShotTime_ClusterRocket: 0,
     reloadTime_ClusterRocket:   600,
     ammo_ClusterRocket:         8,

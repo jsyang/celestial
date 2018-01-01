@@ -1,3 +1,5 @@
+/** Self repair **/
+
 const DEFAULTS = {
     REPAIR_COST_FINISHED: 25,
     REPAIR_TIME:          30,
