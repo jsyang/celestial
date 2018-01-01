@@ -98,6 +98,12 @@ function updateAll() {
 
 const getTeamColor = team => Team._COLORS[team];
 
+function clearAll() {
+    Grid.prepareNext();
+    Grid.prepareNext();
+    DB.clearAll();
+}
+
 export default {
     create,
     updateAll,
@@ -107,6 +113,7 @@ export default {
     getNearest:            Grid.getNearest,
     getNearestEnemyTarget: Grid.getNearestEnemyTarget,
 
+    clearAll,
     destroy:                  DB.remove,
     getByType:                DB.getByType,
     getAbsoluteNearestByType: DB.getAbsoluteNearestByType,

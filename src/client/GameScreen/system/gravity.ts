@@ -1,8 +1,8 @@
 // Gravity and related collisions
 
-import Entity from '../Entity';
-import Planet from '../Entity/Planet';
-import Star from '../Entity/Star';
+import Entity from '../../Entity/index';
+import Planet from '../../Entity/Planet';
+import Star from '../../Entity/Star';
 
 // Max distance that gravitation forces from this entity affect
 // other entities

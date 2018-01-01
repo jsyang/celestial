@@ -8,12 +8,14 @@ import Entity from '../Entity';
 
 import RadarGalaxy from './RadarGalaxy';
 import RadarLocal from './RadarLocal';
-import SystemGravity from '../system/gravity';
-import SystemTeam from '../system/team';
+import SystemGravity from './system/gravity';
+import SystemTeam from './system/team';
 import Freelook from '../Graphics/Freelook';
 import UnitDisplay from './UnitDisplay';
 import WeaponsDisplay from './WeaponsDisplay';
 import Modal from './Modal';
+import GalaxyWonModal from './Modal/GalaxyWonModal';
+import GalaxyLostModal from './Modal/GalaxyLostModal';
 
 let raf;  // requestAnimationFrame request
 let then; // Time stamp of last animation frame
@@ -25,8 +27,10 @@ let isFadingIn      = true;
 let gameScreenAlpha = 0;
 let FADE_RATE       = 0.02;
 
+let isPaused = false;
+
 function update() {
-    SystemTeam();
+    SystemTeam.update();
     Input.processGameScreen();
 
     Entity.updateAll();
@@ -42,7 +46,7 @@ function step() {
     const now     = Date.now();
     const elapsed = now - then;
 
-    update();
+    !isPaused && update();
 
     if (elapsed > FPS_INTERVAL) {
         if (isFadingIn) {
@@ -84,10 +88,42 @@ function stop() {
     cancelAnimationFrame(raf);
 }
 
+function onTeamLost(team) {
+    if (team === Entity.TEAM.MAGENTA) {
+        isPaused        = true;
+        const lostModal = GalaxyLostModal.create({
+            onClickContinue: () => {
+                Modal.destroy(lostModal);
+            }
+        });
+        Graphics.addChildToHUD(lostModal.modal);
+    }
+}
+
+function onTeamWon(team) {
+    if (team === Entity.TEAM.MAGENTA) {
+        isPaused = true;
+
+        const wonModal = GalaxyWonModal.create({
+            onClickContinue: () => {
+                init();
+                start();
+            },
+            onClickStay:     () => {
+                isPaused = false;
+                SystemTeam.setOnTeamWinCallback(new Function());
+            }
+        });
+
+        Graphics.addChildToHUD(wonModal.modal);
+    }
+}
+
 function init() {
     isFadingIn      = true;
     gameScreenAlpha = 0;
 
+    Entity.clearAll();
     Graphics.init();
     Freelook.init();
 
@@ -100,9 +136,10 @@ function init() {
     RadarGalaxy.init();
     UnitDisplay.init();
     WeaponsDisplay.init();
-    const m = Modal.create({});
-    Graphics.addChildToHUD(m.modal);
 
+    SystemTeam.init();
+    SystemTeam.setOnTeamLostCallback(onTeamLost);
+    SystemTeam.setOnTeamWinCallback(onTeamWon);
 }
 
 export default {

@@ -152,7 +152,6 @@ function start() {
 
 function stop() {
     cancelAnimationFrame(raf);
-    Graphics.removeAllChildren();
     removeEventListener('resize', onResize);
 
     if (onFadeOutComplete) {

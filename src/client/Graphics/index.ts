@@ -26,6 +26,7 @@ function onResize() {
 }
 
 function init() {
+    removeAllChildren();
     if (typeof renderer === 'undefined') {
         addEventListener('resize', onResize);
         onResize();

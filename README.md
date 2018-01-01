@@ -10,20 +10,19 @@ yarn dev
 ```
 
 ## TODOs
-- save / load games
-
-- win / lose conditions
-    - win / loss messages
-    
-- strategic enemy AI
-- enemy fighter AI
-- tutorial sector
-
-- ship / polygon editor
-
+- weapon reload via docking
 - shields
     - around all turret locations
     - PBase, Freighter, SpacePort shields
+- fighter AI
+- segregate projectiles from rest of the entities in the grid
+- strategic enemy AI
+- tutorial sector
+- ship / polygon editor -- maybe reuse 3dphototrace for this purpose 
+- weapon loadout customization
+
+- save / load games
+
 
 - probes use ECS
 

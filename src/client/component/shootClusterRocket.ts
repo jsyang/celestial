@@ -32,7 +32,6 @@ const DEFAULTS = {
 };
 
 const SOUND_SHOOT = 'bomb-release';
-const SOUND_EMPTY = 'empty';
 
 function process(entity) {
     const {isAttacking, attackWeapon, ammo_ClusterRocket} = entity;
@@ -49,8 +48,6 @@ function process(entity) {
                 entity.ammo_ClusterRocket--;
 
                 playSound(SOUND_SHOOT);
-            } else {
-                playSound(SOUND_EMPTY);
             }
         }
     }

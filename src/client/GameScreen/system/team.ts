@@ -1,8 +1,8 @@
-import Entity from '../Entity';
-import Input from '../Input';
-import Random from '../Random';
-import Focus from '../Graphics/Focus';
-import Starfield from '../Graphics/Starfield';
+import Entity from '../../Entity/index';
+import Input from '../../Input/index';
+import Random from '../../Random';
+import Focus from '../../Graphics/Focus';
+import Starfield from '../../Graphics/Starfield';
 
 function assignFreightersToPlanet(freighters, planet) {
     if (freighters) {
@@ -47,7 +47,9 @@ function processTeam(team) {
     const selectOnlyCurrentTeam = filterByTeam.bind(null, team);
 
     let teamPlanet    = Entity.getByType('Planet').filter(selectOnlyCurrentTeam);
+    let teamPColony   = Entity.getByType('PColony').filter(selectOnlyCurrentTeam);
     let teamFreighter = Entity.getByType('Freighter').filter(selectOnlyCurrentTeam);
+    const teamFighter = Entity.getByType('Fighter').filter(selectOnlyCurrentTeam);
 
     let idleTeamPlanet;
 
@@ -70,19 +72,24 @@ function processTeam(team) {
         }
     }
 
-    const fighters = Entity.getByType('Fighter').filter(selectOnlyCurrentTeam);
 
-    if (fighters.length === 0) {
+    if (teamFighter.length === 0) {
         constructOnRandomPlanet(idleTeamPlanet, 'Fighter');
 
     } else if (team === Entity.TEAM.MAGENTA && !Input.hasControlledEntity()) {
-        const firstFighter = fighters[0];
+        const firstFighter = teamFighter[0];
 
         Input.setControlledEntity(firstFighter);
         Focus.setFocus(firstFighter);
         Starfield.init();
     }
+
+    if (teamPColony.length === 0 && teamFighter.length === 0 && teamFreighter.length === 0) {
+        teamsRemaining = teamsRemaining.filter(t => t !== team);
+        onTeamLost(team);
+    }
 }
+
 
 const STRATEGY_UPDATE_TIMEOUT  = 3000;
 let lastTeamStrategyUpdateTime = 0;
@@ -95,11 +102,35 @@ const TEAMS = [
     Entity.TEAM.MAGENTA
 ];
 
-export default function update() {
+let teamsRemaining;
+
+function update() {
     const now = Date.now();
 
     if (now - lastTeamStrategyUpdateTime > STRATEGY_UPDATE_TIMEOUT) {
-        TEAMS.forEach(processTeam);
+        teamsRemaining.forEach(processTeam);
+
+        // Everyone else has lost
+        if (teamsRemaining.length === 1) {
+            onTeamWin(teamsRemaining[0]);
+        }
+
         lastTeamStrategyUpdateTime = now;
     }
+}
+
+let onTeamLost              = new Function();
+let onTeamWin               = new Function();
+const setOnTeamLostCallback = cb => onTeamLost = cb;
+const setOnTeamWinCallback = cb => onTeamWin = cb;
+
+function init() {
+    teamsRemaining = TEAMS.slice();
+}
+
+export default {
+    init,
+    update,
+    setOnTeamLostCallback,
+    setOnTeamWinCallback
 }

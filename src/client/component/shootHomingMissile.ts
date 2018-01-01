@@ -34,7 +34,6 @@ const DEFAULTS = {
 };
 
 const SOUND_SHOOT     = 'missile';
-const SOUND_EMPTY     = 'empty';
 const TARGETING_DIST2 = 800 * 800;
 
 function process(entity) {
@@ -54,9 +53,6 @@ function process(entity) {
                 entity.ammo_HomingMissile--;
 
                 playSound(SOUND_SHOOT);
-
-            } else {
-                playSound(SOUND_EMPTY);
             }
         }
     }
