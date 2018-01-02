@@ -12,9 +12,7 @@
 
 Celestial Combat is a game of galactic trade, colonization, and conquest. 
 
-To win, you must supplant and destroy all enemy forces. 
-
-## Keyboard controls
+### Keyboard controls
 
 ```
     KEY                 ACTION
@@ -23,9 +21,137 @@ To win, you must supplant and destroy all enemy forces.
     Right arrow key     Turn right
     Up arrow key        Accelerate
     F                   Fire primary weapon
-    E                   Fire special weapon
 
 ```
+
+### Game play
+You begin with either an invasion fleet (1 x Fighter + 4 invasion Freighters) or
+a single occupied planet.
+
+To colonize planets, you must land on them when they are unoccupied with your 
+Fighter. It will lay a colonization beacon that will start the flow of Freighters 
+sent to construct facilities on it. 
+
+To win, you need to destroy all enemy production and combat facilities.
+
+#### Landing on planets
+Before colonization can begin, you must land on a planet to secure your colonization
+beacon. To do this safely, approach the planet at a slow speed and rotate it to
+face outwards from the planet's center. Failing to do this means your Fighter will
+be destroyed.
+
+**When you land on a friendly planet, your weapons will be rearmed and your ship repaired.**
+
+Note: you cannot land on stars. Fighters are affected by gravity from planets and stars. 
+
+### Units
+
+##### Fighter
+
+![1](assets/fighter.png)
+
+The backbone of an offensive fighting force is the standard GHX-12 Fighter
+craft armed with a rapid-fire cannon. Fighters can lay claim to unoccupied
+planets.
+
+```
+Speed           ||||||||||
+Firepower       |||||||...
+Armor           |||.......
+Storage         ||........
+```
+
+##### Freighter 
+
+![1](assets/freighter.png)
+
+Transport for raw and finished materials is provided primarily by Freighters.
+They carry the capability to speed up construction of the essential 
+fortifications and facilities. Freighters are the only craft capable of constructing
+a Planetary Base (PBase).
+
+```
+Speed           ||........
+Firepower       |||....... 
+Armor           ||||......
+Storage         ||||||||||
+```
+
+### Facilities
+
+##### PBase
+
+![1](assets/pbase.png)
+
+A Planetary Base (PBase) provides a planet with basic production and mining operations.
+It can harvest and store raw materials on the planet. It can construct a Communications
+Center and a Planetary Lab. It also provides defensive weapons, allowing the planet to 
+defend itself from attackers. 
+
+```
+Speed           ..........
+Firepower       |||||..... 
+Armor           ||||||||..
+Storage         ||||......
+```
+
+##### PColony
+
+![1](assets/pcolony.png)
+
+A Planetary Colony (PColony) is the most efficient way for a planet to produce finished
+materials from raw materials. It can construct spacecraft and other facilities; its operation
+is critical to the maintenance demands of a planet. 
+
+```
+Speed           ..........
+Firepower       .......... 
+Armor           |||.......
+Storage         |||||||...
+```
+
+#### PComm
+
+![1](assets/pcomm.png)
+
+Galactic scanners installed in the Planetary Communications (PComm) allow
+empires to track precise locations of other worlds. A galactic radar display is
+active when your faction owns at least one functional PComm.
+
+```
+Speed           ..........
+Firepower       .......... 
+Armor           ||........
+Storage         ..........
+```
+ 
+#### PLab
+
+![1](assets/plab.png)
+
+Weapons technology research and new weapon installation is carried out from the 
+Planetary Lab.
+
+```
+Speed           ..........
+Firepower       .......... 
+Armor           |.........
+Storage         ||........
+```  
+
+#### Spaceport, SpaceDock, SensorArray
+
+![1](assets/spaceport.png)
+
+The orbital Spaceport and its facilities allow the Fighter craft to be swiftly repaired and
+rearmed. As it is the first point of defense for a planet, it is heavily armed and armored.  
+
+```
+Speed           |.........
+Firepower       ||||||.... 
+Armor           |||||||...
+Storage         ||||......
+```  
 
 ## Gamepad controls
 
@@ -41,4 +167,5 @@ To win, you must supplant and destroy all enemy forces.
 
 ## Acknowledgements
 
-This game is inspired by and based on [Gravity Well v2.2 (circa 1995)](https://archive.org/details/GWELL22), the planetary conquest game by Software Engineering. 
+Gameplay inspired by and based on [Gravity Well v2.2 (circa 1995)](https://archive.org/details/GWELL22), the planetary 
+conquest game by David H. Hoeft of Software Engineering Inc. 
