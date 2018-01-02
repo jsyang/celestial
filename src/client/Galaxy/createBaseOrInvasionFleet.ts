@@ -25,9 +25,10 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
         };
 
         const fighter = Entity.create('Fighter', {
-            x:            fleetPosition.x + Random.int(-100, 100),
-            y:            fleetPosition.y + Random.int(-100, 100),
-            attackWeapon: Random.arrayElement(startingWeapons),
+            x:                      fleetPosition.x + Random.int(-100, 100),
+            y:                      fleetPosition.y + Random.int(-100, 100),
+            attackWeapon:           Random.arrayElement(startingWeapons),
+            reloadTime_HeavyCannon: 60,
             team
         });
 
