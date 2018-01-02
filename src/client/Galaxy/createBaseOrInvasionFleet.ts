@@ -55,6 +55,8 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
             x:                 fleetPosition.x + Random.int(-100, 100),
             y:                 fleetPosition.y + Random.int(-100, 100),
             team,
+            attackWeapon:      'LaserBolt',
+            range_LaserBolt:   40,
             isOrbitingPlanet:  false,
             materialsFinished: 500
         });
@@ -63,8 +65,6 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
             x:                  fleetPosition.x + Random.int(-100, 100),
             y:                  fleetPosition.y + Random.int(-100, 100),
             team,
-            attackWeapon:       'HomingMissile',
-            ammo_HomingMissile: 240,
             isOrbitingPlanet:   false,
             materialsFinished:  500
         });

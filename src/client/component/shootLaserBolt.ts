@@ -3,12 +3,11 @@ import {playSound} from '../assets/audio';
 
 const LAUNCH_SPEED = 10;
 
-const BOLTS_PER_SHOT = 20;
 
 function shoot(getMuzzleFunc) {
-    const {team}           = this;
-    const muzzle           = getMuzzleFunc(this);
-    const {rotation, x, y} = muzzle;
+    const {team, range_LaserBolt} = this;
+    const muzzle                  = getMuzzleFunc(this);
+    const {rotation, x, y}        = muzzle;
 
     const dx = Math.cos(rotation) * LAUNCH_SPEED;
     const dy = Math.sin(rotation) * LAUNCH_SPEED;
@@ -16,7 +15,7 @@ function shoot(getMuzzleFunc) {
     const shooterDx = this.dx || 0;
     const shooterDy = this.dy || 0;
 
-    for (let i = BOLTS_PER_SHOT; i > 0; i--) {
+    for (let i = range_LaserBolt; i > 0; i--) {
         Entity.create('LaserBolt', {
             team,
             rotation,
@@ -36,6 +35,7 @@ function reload_LaserBolt() {
 
 const DEFAULTS = {
     reload_LaserBolt,
+    range_LaserBolt:        20,
     ammo_LaserBolt:         4,
     ammoMax_LaserBolt:      4,
     lastShotTime_LaserBolt: 0,

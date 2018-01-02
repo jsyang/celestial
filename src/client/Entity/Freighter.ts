@@ -203,6 +203,7 @@ export default class Freighter extends LivingEntity {
     attackTurretPositions = ATTACK_TURRET_POSITIONS;
 
     canShootHomingMissile = true;
+    canShootLaserBolt     = true;
     canShootCannon        = true;
     reloadTime_Cannon     = 400;
 
