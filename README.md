@@ -10,6 +10,7 @@ yarn dev
 ```
 
 ## TODOs
+- polyline title graphics + win / loss symbols
 - shields
     - around all turret locations
     - PBase, Freighter, SpacePort shields

@@ -2,6 +2,14 @@ import TEAM from '../Entity/_Team';
 import Entity from '../Entity';
 import Random from '../Random';
 
+const startingWeapons = [
+    'Cannon',
+    'HeavyCannon',
+    'LaserBolt',
+    'HomingMissile',
+    'ClusterRocket'
+];
+
 export function createBaseOrInvasionFleet(teamName, startingLocation) {
     const team = TEAM[teamName];
 
@@ -17,8 +25,9 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
         };
 
         const fighter = Entity.create('Fighter', {
-            x: fleetPosition.x + Random.int(-100, 100),
-            y: fleetPosition.y + Random.int(-100, 100),
+            x:            fleetPosition.x + Random.int(-100, 100),
+            y:            fleetPosition.y + Random.int(-100, 100),
+            attackWeapon: Random.arrayElement(startingWeapons),
             team
         });
 
@@ -26,36 +35,37 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
             x:                 fleetPosition.x + Random.int(-100, 100),
             y:                 fleetPosition.y + Random.int(-100, 100),
             team,
-            target:            fighter,
             isOrbitingPlanet:  false,
             materialsFinished: 500
+        });
+
+        Entity.create('Freighter', {
+            x:                  fleetPosition.x + Random.int(-100, 100),
+            y:                  fleetPosition.y + Random.int(-100, 100),
+            team,
+            attackWeapon:       'HomingMissile',
+            ammo_HomingMissile: 240,
+            target:             fighter,
+            isOrbitingPlanet:   false,
+            materialsFinished:  500
         });
 
         Entity.create('Freighter', {
             x:                 fleetPosition.x + Random.int(-100, 100),
             y:                 fleetPosition.y + Random.int(-100, 100),
             team,
-            target:            fighter,
             isOrbitingPlanet:  false,
             materialsFinished: 500
         });
 
         Entity.create('Freighter', {
-            x:                 fleetPosition.x + Random.int(-100, 100),
-            y:                 fleetPosition.y + Random.int(-100, 100),
+            x:                  fleetPosition.x + Random.int(-100, 100),
+            y:                  fleetPosition.y + Random.int(-100, 100),
             team,
-            target:            fighter,
-            isOrbitingPlanet:  false,
-            materialsFinished: 500
-        });
-
-        Entity.create('Freighter', {
-            x:                 fleetPosition.x + Random.int(-100, 100),
-            y:                 fleetPosition.y + Random.int(-100, 100),
-            team,
-            target:            fighter,
-            isOrbitingPlanet:  false,
-            materialsFinished: 500
+            attackWeapon:       'HomingMissile',
+            ammo_HomingMissile: 240,
+            isOrbitingPlanet:   false,
+            materialsFinished:  500
         });
 
     } else {
@@ -65,7 +75,10 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
             planet: startingLocation
         };
 
-        const fighter = Entity.create('Fighter', {team});
+        const fighter = Entity.create('Fighter', {
+            team,
+            attackWeapon: Random.arrayElement(startingWeapons)
+        });
         fighter.dockPlanet(startingLocation);
 
 

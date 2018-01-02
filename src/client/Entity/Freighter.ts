@@ -135,7 +135,8 @@ const GEO = {
 const getTurretRotation = (freighter, x, y) => {
     // Turreted fire:
     // direction of shot is independent of direction of shooter
-    const {attackTarget} = freighter;
+    let {attackTarget} = freighter;
+    attackTarget       = attackTarget || {};
 
     const targetDx = attackTarget.dx || 0;
     const targetDy = attackTarget.dy || 0;
@@ -201,8 +202,9 @@ export default class Freighter extends LivingEntity {
     canAttack             = true;
     attackTurretPositions = ATTACK_TURRET_POSITIONS;
 
-    canShootCannon    = true;
-    reloadTime_Cannon = 400;
+    canShootHomingMissile = true;
+    canShootCannon        = true;
+    reloadTime_Cannon     = 400;
 
     constructor(params: Freighter) {
         super();

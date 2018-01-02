@@ -62,6 +62,27 @@ function repairRearmWhenDockedToOccupiedPlanet(fighter) {
     }
 }
 
+function colonizeNearestPlanet(freighter) {
+    if (freighter.colonizationTarget) return;
+
+    let nearestPlanet, nearestDist2 = Infinity;
+
+    Entity.getByType('Planet')
+        .forEach(planet => {
+            const dist2 = Entity.getDistSquared(freighter, planet);
+
+            if (nearestDist2 > dist2) {
+                nearestPlanet = planet;
+                nearestDist2  = dist2;
+            }
+        });
+
+    if (nearestPlanet) {
+        freighter.exitPlanetOrbit();
+        freighter.colonizationTarget = nearestPlanet;
+    }
+}
+
 function processTeam(team) {
     const selectOnlyCurrentTeam = filterByTeam.bind(null, team);
 
@@ -72,25 +93,21 @@ function processTeam(team) {
 
     let idleTeamPlanet;
 
-    if (teamFreighter) {
-        teamFreighter = teamFreighter.filter(filterByTeam.bind(null, team));
+    idleTeamPlanet = teamPlanet.filter(filterByIdlePLab);
+    idleTeamPlanet = idleTeamPlanet.length > 0 ? idleTeamPlanet : undefined;
+
+    if (teamPlanet.length > teamFreighter.length) {
+        constructOnRandomPlanet(idleTeamPlanet, 'Freighter');
     }
 
-    if (teamPlanet) {
-        teamPlanet = teamPlanet.filter(filterByTeam.bind(null, team));
+    if (teamPlanet.length === 0 && teamFreighter.length > 0) {
+        teamFreighter.forEach(colonizeNearestPlanet);
 
+    } else {
         teamPlanet
             .filter(filterByNoPBaseOrPColony)
             .forEach(assignFreightersToPlanet.bind(null, teamFreighter));
-
-        idleTeamPlanet = teamPlanet.filter(filterByIdlePLab);
-        idleTeamPlanet = idleTeamPlanet.length > 0 ? idleTeamPlanet : undefined;
-
-        if (teamFreighter && teamPlanet.length > teamFreighter.length) {
-            constructOnRandomPlanet(idleTeamPlanet, 'Freighter');
-        }
     }
-
 
     if (teamFighter.length === 0) {
         constructOnRandomPlanet(idleTeamPlanet, 'Fighter');

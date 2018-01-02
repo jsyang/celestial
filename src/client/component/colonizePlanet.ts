@@ -96,24 +96,32 @@ function loadOrDumpSupply(entity) {
  * Supplies friendly planet with finished materials if no construction required
  */
 function process(entity) {
-    if (entity.colonizationTarget && entity.isOrbitingPlanet && entity.planet) {
-        if (entity.materialsFinished > 0) {
-            if (entity.supplyTime === undefined) {
-                entity.supplyTime = entity.TIME_OFFLOAD_SUPPLY;
-            } else if (entity.supplyTime > 0) {
-                entity.supplyTime--;
-            } else if (entity.supplyTime === 0) {
-                if (!entity.planet.pbase) {
-                    createPBase(entity);
-                } else if (!entity.planet.pcolony) {
-                    createPColony(entity);
-                } else if (!entity.planet.spaceport) {
-                    createSpacePort(entity);
-                } else {
-                    loadOrDumpSupply(entity);
-                    entity.colonizationTarget = null;
+    const {colonizationTarget, isOrbitingPlanet, planet, team} = entity;
+
+    if (colonizationTarget && isOrbitingPlanet && planet) {
+        if (planet.team === team) {
+            if (entity.materialsFinished > 0) {
+                if (entity.supplyTime === undefined) {
+                    entity.supplyTime = entity.TIME_OFFLOAD_SUPPLY;
+                } else if (entity.supplyTime > 0) {
+                    entity.supplyTime--;
+                } else if (entity.supplyTime === 0) {
+                    if (!planet.pbase) {
+                        createPBase(entity);
+                    } else if (!planet.pcolony) {
+                        createPColony(entity);
+                    } else if (!planet.spaceport) {
+                        createSpacePort(entity);
+                    } else {
+                        loadOrDumpSupply(entity);
+                        entity.colonizationTarget = null;
+                    }
                 }
             }
+        } else if (!colonizationTarget.isOccupied()) {
+            // Plant flag
+            colonizationTarget.team = team;
+            colonizationTarget.updateFlagColor();
         }
     }
 }
