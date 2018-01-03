@@ -1,5 +1,4 @@
 import Input from '../Input';
-import Modal from '../UI/Modal';
 
 let then           = 0; // Time stamp of last animation frame
 const FPS          = 16;
@@ -21,7 +20,6 @@ function update(modalInterface) {
             modalInterface.nextButton();
         } else if (keys.f || keys.button0 || keys.button1 || keys.button2 || keys.button3) {
             modalInterface.clickButton();
-            Modal.destroy(modalInterface);
         }
 
         then = now - (elapsed % FPS_INTERVAL);

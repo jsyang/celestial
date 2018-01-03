@@ -64,7 +64,7 @@ const modal = TitleScreenModal.create({
     onClickNewGame: () => isFadingOut = true
 });
 
-function start() { 
+function start() {
     Graphics.init();
     Starfield.init()
         .forEach(Graphics.addChild);
