@@ -1,4 +1,5 @@
 const DEFAULTS = {
+    isShimmering:       true,
     isShimmerBlink:     false,
     shimmerTime:        3,
     shimmerTimeMax:     3,
@@ -10,16 +11,20 @@ const DEFAULTS = {
  * Display hits on the owner entity
  */
 function process(entity) {
-    const {shimmerBlinkColor, shimmerNormalColor, shimmerTime, shimmerTimeMax, isShimmerBlink} = entity;
+    if (entity.isShimmering) {
+        const {shimmerBlinkColor, shimmerNormalColor, shimmerTime, shimmerTimeMax, isShimmerBlink} = entity;
 
-    if (shimmerTime > 0) {
-        entity.shimmerTime--;
+        if (shimmerTime > 0) {
+            entity.shimmerTime--;
+        } else {
+            entity.shimmerTime    = shimmerTimeMax;
+            entity.isShimmerBlink = !isShimmerBlink;
+        }
+
+        entity.geo.graphics.tint = isShimmerBlink ? shimmerBlinkColor : shimmerNormalColor;
     } else {
-        entity.shimmerTime    = shimmerTimeMax;
-        entity.isShimmerBlink = !isShimmerBlink;
+        entity.geo.graphics.tint = entity.shimmerNormalColor;
     }
-
-    entity.geo.graphics.tint = isShimmerBlink ? shimmerBlinkColor : shimmerNormalColor;
 }
 
 export default {

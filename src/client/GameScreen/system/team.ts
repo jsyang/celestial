@@ -31,15 +31,16 @@ function filterByTeam(team, entity) {
     return entity.team === team;
 }
 
-function filterByIdlePLab(entity) {
-    return entity.pcolony && entity.plab && !entity.plab.isManufacturing;
+function filterByIdlePColony(entity) {
+    return entity.pcolony && !entity.pcolony.isManufacturing;
 }
 
 function constructOnRandomPlanet(idleTeamPlanet, type) {
     if (idleTeamPlanet) {
-        const plab = Random.arrayElement(idleTeamPlanet).plab;
-        if (plab) {
-            plab.orderManufacture(type);
+        const pcolony = Random.arrayElement(idleTeamPlanet).pcolony;
+
+        if (pcolony) {
+            pcolony.orderManufacture(type);
         }
     }
 }
@@ -93,7 +94,7 @@ function processTeam(team) {
 
     let idleTeamPlanet;
 
-    idleTeamPlanet = teamPlanet.filter(filterByIdlePLab);
+    idleTeamPlanet = teamPlanet.filter(filterByIdlePColony);
     idleTeamPlanet = idleTeamPlanet.length > 0 ? idleTeamPlanet : undefined;
 
     if (teamPlanet.length > teamFreighter.length) {

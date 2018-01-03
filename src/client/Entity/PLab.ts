@@ -8,7 +8,7 @@ const GEO = {
     "_name":     "Planetary Lab",
     "lineStyle": {
         "width": 1,
-        "color": 255,
+        "color": 0xffffff,
         "alpha": 1
     },
     "path":      [
@@ -25,11 +25,15 @@ export default class PLab extends LivingEntity {
     geo  = Geometry(GEO);
     planet: Planet;
 
-    // Components
-    team  = TEAM.NONE;
     hp    = 10;
     maxHp = 10;
 
+    canShimmer        = true;
+    isShimmering      = false;
+    shimmerNormalColor: number;
+    shimmerBlinkColor=  0x0ff00f;
+
+    canDevelopWeapon  = true;
     canDisplayHit     = true;
     canExplode        = true;
     explosionOriginDx = 20;
@@ -41,6 +45,10 @@ export default class PLab extends LivingEntity {
         super();
 
         Object.assign(this, params);
-        this.geo.graphics.currentPath.lineColor = TEAM._COLORS[this.team];
+
+        const teamColor = TEAM._COLORS[this.team];
+
+        this.geo.graphics.currentPath.lineColor = teamColor;
+        this.shimmerNormalColor                 = teamColor;
     }
 }

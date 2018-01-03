@@ -35,6 +35,7 @@ import DisplayHitComponent from './displayHit';
 import DockPlanetComponent from './dockPlanet';
 import ColonizePlanetComponent from './colonizePlanet';
 import ShimmerComponent from './shimmer';
+import DevelopWeaponComponent from './developWeapon';
 
 
 // In order of update() precedence
@@ -58,6 +59,7 @@ const ALL_COMPONENTS = [
     StoreMaterialComponent,
     HarvestComponent,
     MineComponent,
+    DevelopWeaponComponent,
     RepairComponent,
     RefineComponent,
     ConstructComponent,

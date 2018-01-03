@@ -55,18 +55,17 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
             x:                 fleetPosition.x + Random.int(-100, 100),
             y:                 fleetPosition.y + Random.int(-100, 100),
             team,
-            attackWeapon:      'LaserBolt',
-            range_LaserBolt:   40,
+            attackWeapon:      'HomingMissile',
             isOrbitingPlanet:  false,
             materialsFinished: 500
         });
 
         Entity.create('Freighter', {
-            x:                  fleetPosition.x + Random.int(-100, 100),
-            y:                  fleetPosition.y + Random.int(-100, 100),
+            x:                 fleetPosition.x + Random.int(-100, 100),
+            y:                 fleetPosition.y + Random.int(-100, 100),
             team,
-            isOrbitingPlanet:   false,
-            materialsFinished:  500
+            isOrbitingPlanet:  false,
+            materialsFinished: 500
         });
 
     } else {
@@ -76,10 +75,7 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
             planet: startingLocation
         };
 
-        const fighter = Entity.create('Fighter', {
-            team,
-            attackWeapon: Random.arrayElement(startingWeapons)
-        });
+        const fighter = Entity.create('Fighter', {team});
         fighter.dockPlanet(startingLocation);
 
 
