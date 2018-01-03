@@ -11,10 +11,10 @@ const DEVELOPABLE = {
 };
 
 const DEFAULTS = {
-    developWeapon_installTimeMax: 100,
-    developWeapon_installTime:    100,
-    developWeapon_timeMax:        800,
-    developWeapon_time:           800,
+    developWeapon_installTimeMax: 150,
+    developWeapon_installTime:    150,
+    developWeapon_timeMax:        1600,
+    developWeapon_time:           1600,
     developWeapon_weaponReady:    ''
 };
 

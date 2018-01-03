@@ -27,7 +27,6 @@ let isPaused = false;
 
 function update() {
     SystemTeam.update();
-    GameScreenControl.update();
     Entity.updateAll();
     SystemGravity();
     Entity.prepareNext();
@@ -38,6 +37,7 @@ function step() {
     const elapsed = now - then;
 
     !isPaused && update();
+    GameScreenControl.update();
 
     if (elapsed > FPS_INTERVAL) {
         if (isFadingIn) {

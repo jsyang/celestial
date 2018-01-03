@@ -16,7 +16,11 @@ function update() {
     const inputState = device.getInputState();
 
     if (controlledEntity) {
-        if (controlledEntity.hp > 0) {
+        if (controlledEntity.modal) {
+            // Modals handled first
+            controlActiveModal(controlledEntity, inputState);
+        } else if (controlledEntity.hp > 0) {
+            // Any controlled entities
             FreelookIcon.setIconVisible(false);
             Focus.setFocus(controlledEntity);
 
@@ -25,10 +29,8 @@ function update() {
                     controlFighter(controlledEntity, events);
                     break;
             }
-        } else if (controlledEntity.modal) {
-            debugger;
-            controlActiveModal(controlledEntity, inputState);
         } else {
+            // Freelook if none
             Freelook.setPosition(controlledEntity);
             setControlledEntity(null);
         }
