@@ -179,7 +179,6 @@ Storage         ||||......
     
     Analog stick        Set craft direction
     Button 0            Fire primary weapon
-    Button 1            Fire special weapon
     Button 2            Accelerate
 
 ```
