@@ -29,16 +29,15 @@ You begin with either an invasion fleet (1 x Fighter + 4 invasion Freighters) or
 a single occupied planet.
 
 To colonize planets, you must land on them when they are unoccupied with your 
-Fighter. It will lay a colonization beacon that will start the flow of Freighters 
-sent to construct facilities on it. 
+Fighter. The landing will plant a beacon, starting the flow of Freighters 
+and raw materials sent to construct facilities on the planet. 
 
-To win, you need to destroy all enemy production and combat facilities.
+To win, you need to destroy all enemy production, combat facilities, and spacecraft.
 
 #### Landing on planets
 Before colonization can begin, you must land on a planet to secure your colonization
-beacon. To do this safely, approach the planet at a slow speed and rotate it to
-face outwards from the planet's center. Failing to do this means your Fighter will
-be destroyed.
+beacon. Approach the planet at slow speed and rotate the craft to face outwards from 
+the planet's center. Failing to do this the Fighter will be destroyed.
 
 **When you land on a friendly planet, your weapons will be rearmed and your ship repaired.**
 
@@ -50,12 +49,12 @@ Note: you cannot land on stars. Fighters are affected by gravity from planets an
  a spacecraft's propulsion system.<br>`Damage: 1 per hit`
  
 - **Heavy Cannon**<br>Focusing the emitters of the standard cannon allowed us to create a weapon that 
-deliver twice the energy per projectile.<br>`Damage: 2 per hit`
+delivers twice the energy per projectile.<br>`Damage: 2 per hit`
   
 - **Cluster Rocket**<br>Packed with high explosive shells, this unguided rocket can deliver 20
 shells to the recipient for maximum destruction.<br>`Damage: 1 per hit x 20 shells + 0.5 impact damage`
    
-- **Homing Missile**<br>We have developed cheap, miniaturized biological prey-seeking intelligence
+- **Homing Missile**<br>We have developed cheap, miniaturized, biological prey-seeking intelligence
 that is installed into every mass produced homing missile; a highly destructive weapon.<br>`Damage: 6 per hit`
     
 - **Laser Bolt**<br>Fast discharge ultra-capacitors have enabled our technicians to pack a devastating laser weapon
@@ -75,7 +74,7 @@ planets.
 Speed           ||||||||||
 Firepower       |||||||...
 Armor           |||.......
-Storage         ||........
+Storage         |.........
 ```
 
 ##### Freighter 
@@ -83,7 +82,7 @@ Storage         ||........
 ![1](assets/freighter.png)
 
 Transport for raw and finished materials is provided primarily by Freighters.
-They carry the capability to speed up construction of the essential 
+They carry the capability to speed up construction of essential 
 fortifications and facilities. Freighters are the only craft capable of constructing
 a Planetary Base (PBase).
 
