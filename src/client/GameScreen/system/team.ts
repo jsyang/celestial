@@ -1,5 +1,5 @@
-import Entity from '../../Entity/index';
-import Input from '../../Input/index';
+import Entity from '../../Entity';
+import GameScreenControl from '../control';
 import Random from '../../Random';
 import Focus from '../../Graphics/Focus';
 import Starfield from '../../Graphics/Starfield';
@@ -113,10 +113,10 @@ function processTeam(team) {
     if (teamFighter.length === 0) {
         constructOnRandomPlanet(idleTeamPlanet, 'Fighter');
 
-    } else if (team === Entity.TEAM.MAGENTA && !Input.hasControlledEntity()) {
+    } else if (team === Entity.TEAM.MAGENTA && !GameScreenControl.getControlledEntity()) {
         const firstFighter = teamFighter[0];
 
-        Input.setControlledEntity(firstFighter);
+        GameScreenControl.setControlledEntity(firstFighter);
         Focus.setFocus(firstFighter);
         Starfield.init();
     }

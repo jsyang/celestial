@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
-import Graphics from '../Graphics';
-import Input from '../Input';
+import Graphics from '../../Graphics';
+import GameScreenControl from '../control';
 
 const MARGIN_EDGE = 4;
 
@@ -38,7 +38,7 @@ display.addChild(labelWeaponName);
 display.addChild(labelWeaponAmmo);
 
 function update() {
-    const entity = Input.getControlledEntity();
+    const entity = GameScreenControl.getControlledEntity();
 
     if (entity) {
         const {attackWeapon, canAttack, ammo_HomingMissile, ammo_ClusterRocket, ammo_LaserBolt} = entity;

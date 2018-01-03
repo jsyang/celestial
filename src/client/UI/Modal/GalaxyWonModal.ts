@@ -4,22 +4,10 @@ import Button from '../Button';
 
 const TEXT = 'GALAXY CONQUERED\n\nAll enemies in this sector have been eradicated!\nYour empire encompasses all known worlds in this galaxy.';
 
-function create({onClickContinue, onClickStay}) {
+function create({onClickContinue}) {
     const modal = Modal.create({width: 400, height: 300});
 
     let buttonStackY = 300;
-
-    buttonStackY -= 40 + 20;
-    const stayButton = Button.create({
-        text:    'Stay in current sector',
-        width:   360,
-        onClick: () => {
-            Modal.destroy(modal);
-            onClickStay();
-        }
-    });
-    stayButton.x     = 20;
-    stayButton.y     = buttonStackY;
 
     buttonStackY -= 40 + 20;
     const continueButton = Button.create({
@@ -45,9 +33,9 @@ function create({onClickContinue, onClickStay}) {
     label.x     = (400 - label.width) / 2;
     label.y     = 40;
 
+    modal.buttons.push(continueButton);
 
     modal.modal.addChild(continueButton);
-    modal.modal.addChild(stayButton);
     modal.modal.addChild(label);
 
     return modal;

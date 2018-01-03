@@ -7,6 +7,7 @@ export interface IGamePadState {
     left?: boolean;
     up?: boolean;
     right?: boolean;
+    down?: boolean;
 
     analogAngle?: number;
     button0?: boolean;
@@ -16,12 +17,11 @@ export interface IGamePadState {
 }
 
 const getEventsFromGamePad = ({left, right, up, analogAngle, button0, button1, button2, button3}: IGamePadState): IInputEvent => ({
-    TURN_LEFT:     Boolean(left),
-    TURN_RIGHT:    Boolean(right),
-    ACCELERATE:    Boolean(button2),
-    SHOOT_SPECIAL: Boolean(button1),
-    SHOOT:         Boolean(button0),
-    RESTART_GAME:  Boolean(button1 && button3),
+    TURN_LEFT:  Boolean(left),
+    TURN_RIGHT: Boolean(right),
+    ACCELERATE: Boolean(button3),
+    SPECIAL:    Boolean(button1),
+    SHOOT:      Boolean(button0),
     analogAngle
 });
 
@@ -29,6 +29,7 @@ let inputState: IGamePadState = {
     left:  false,
     right: false,
     up:    false,
+    down:  false,
 
     analogAngle: 0,
 
@@ -63,6 +64,7 @@ export function getEvents(id: number = 0): IInputEvent {
             left:  gp.axes[0] < -AXES_ACTIVATION_VALUE,
             right: gp.axes[0] > AXES_ACTIVATION_VALUE,
             up:    gp.axes[1] < -AXES_ACTIVATION_VALUE,
+            down:  gp.axes[1] > AXES_ACTIVATION_VALUE,
 
             analogAngle,
 

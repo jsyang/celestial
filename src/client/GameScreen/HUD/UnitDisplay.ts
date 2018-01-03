@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
-import Graphics from '../Graphics';
-import Input from '../Input';
+import Graphics from '../../Graphics';
+import GameScreenControl from '../control';
 
 const MARGIN_EDGE = 4;
 const WIDTH       = 100;
@@ -55,7 +55,7 @@ function updateHealthAndDamage(entity) {
 }
 
 function update() {
-    const entity = Input.getControlledEntity();
+    const entity = GameScreenControl.getControlledEntity();
 
     if (entity) {
         labelUnitName.text = entity.type;

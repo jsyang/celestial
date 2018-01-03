@@ -1,67 +1,26 @@
-import Focus from '../Graphics/Focus';
 import GamePad from './GamePad';
 import Keyboard from './Keyboard';
-import Freelook from '../Graphics/Freelook';
-import controlFighter from './control/Fighter';
-import controlFreelook, {setFreelookPosition} from './control/Freelook';
-
-let controlledEntity;
-
-export const setControlledEntity = entity => controlledEntity = entity;
 
 enum DeviceType {
     Keyboard = 0,
     GamePad
 }
 
-const device = localStorage.getItem('input.device') || DeviceType.Keyboard;
+let device;
 
-function processGameScreen() {
-    let events, inputState;
+function init() {
+    const isForcedGamepad = location.search.indexOf('gamepad') > -1;
 
-    switch (device) {
-        case DeviceType.GamePad:
-            events     = GamePad.getEvents();
-            inputState = GamePad.getInputState();
-            break;
-
-        case DeviceType.Keyboard:
-        default:
-            events     = Keyboard.getEvents();
-            inputState = Keyboard.getInputState();
-    }
-
-    if (controlledEntity) {
-        if (controlledEntity.hp > 0) {
-            Freelook.setIconVisible(false);
-            Focus.setFocus(controlledEntity);
-
-            switch (controlledEntity.type) {
-                case 'Fighter':
-                    controlFighter(controlledEntity, events);
-                    break;
-            }
-        } else {
-            setFreelookPosition(controlledEntity);
-            setControlledEntity(null);
-        }
+    if (isForcedGamepad) {
+        device = DeviceType.GamePad;
     } else {
-        Focus.setFocus(
-            controlFreelook(inputState)
-        );
-        Freelook.setIconVisible(true);
+        device = DeviceType.Keyboard;
     }
 }
 
 const getDevice = () => device === DeviceType.Keyboard ? Keyboard : GamePad;
 
-const hasControlledEntity = () => Boolean(controlledEntity);
-const getControlledEntity = () => controlledEntity;
-
 export default {
-    getDevice,
-    processGameScreen,
-    hasControlledEntity,
-    getControlledEntity,
-    setControlledEntity
+    init,
+    getDevice
 };

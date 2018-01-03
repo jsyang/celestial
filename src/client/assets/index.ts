@@ -2,7 +2,7 @@ import {defineSound} from './audio';
 import JSZip from 'jszip';
 import JSZipUtils from 'jszip-utils';
 
-const REGEX_FILENAME_TO_SOUNDNAME = /(^sounds\/|\.ogg$)/gi;
+const SOUND_FILENAME = /(^sounds\/|\.ogg$)/gi;
 
 interface IZipObject {
     name: string;
@@ -17,7 +17,7 @@ function loadAudioFromZip(zip: any): Promise<void> {
         .forEach(
             (relativePath, file: IZipObject) => {
                 // Get sound name from sound file name
-                soundNames.push(file.name.replace(REGEX_FILENAME_TO_SOUNDNAME, ''));
+                soundNames.push(file.name.replace(SOUND_FILENAME, ''));
 
                 // Load sound buffers
                 loadAllSoundBuffers.push(file.async('arraybuffer'));

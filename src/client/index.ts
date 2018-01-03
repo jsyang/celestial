@@ -1,6 +1,7 @@
 import GameScreen from './GameScreen';
 import TitleScreen from './TitleScreen';
 import Assets from './assets';
+import Input from './Input';
 
 function onTitleScreenFadeout() {
     GameScreen.init();
@@ -18,6 +19,8 @@ function onDOMContentLoaded() {
         TitleScreen.setFadeOutCallback(onTitleScreenFadeout);
         onAssetsLoad = TitleScreen.start;
     }
+
+    Input.init();
 
     Assets
         .load()

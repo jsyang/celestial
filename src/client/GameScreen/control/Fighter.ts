@@ -1,4 +1,4 @@
-import {IInputEvent} from '../Event';
+import {IInputEvent} from '../../Input/Event';
 
 const DROTATION    = 0.05;
 const ACCELERATION = 0.2;

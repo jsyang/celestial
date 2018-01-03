@@ -33,6 +33,7 @@ function create({onClickContinue}) {
     label.x     = (400 - label.width) / 2;
     label.y     = 30;
 
+    modal.buttons.push(continueButton);
 
     modal.modal.addChild(continueButton);
     modal.modal.addChild(label);

@@ -4,11 +4,16 @@ let audioContext = new AudioContext();
 let audioBuffers = {};
 
 export function defineSound({name, arrayBuffer}) {
-    // https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/decodeAudioData 
-    audioContext.decodeAudioData(arrayBuffer)
-        .then(decodedAudioBuffer => {
-            audioBuffers[name] = decodedAudioBuffer;
-        });
+    try {
+        // https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/decodeAudioData
+        audioContext.decodeAudioData(arrayBuffer)
+            .then(decodedAudioBuffer => {
+                audioBuffers[name] = decodedAudioBuffer;
+            });
+    } catch (e) {
+        console.warn(`Failed to decode audio file "${name}"! ${e.toString()}`);
+    }
+
 }
 
 export function playSound(name: string) {

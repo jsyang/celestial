@@ -1,5 +1,5 @@
 var Random   = require('../Random');
-var Entity   = require('./index');
+var Entity   = require('.');
 var EntityDB = require('./_DB');
 
 var probes = [];

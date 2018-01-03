@@ -2,8 +2,8 @@
 // Available to any unit
 
 import * as PIXI from 'pixi.js';
-import Graphics from '../Graphics';
-import Entity from '../Entity';
+import Graphics from '../../Graphics';
+import Entity from '../../Entity';
 
 const DIAL_TRACK_ALPHA = 0.08;
 const DEGREES          = Math.PI / 180;

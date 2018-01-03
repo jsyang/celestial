@@ -6,8 +6,7 @@ const CODE_TO_KEY = {
     39: 'right_arrow',
     40: 'down_arrow',
     69: 'e',
-    70: 'f',
-    82: 'r'
+    70: 'f'
 };
 
 
@@ -18,7 +17,6 @@ export interface IKeyboardState {
     down_arrow?: boolean;
     e?: boolean;
     f?: boolean;
-    r?: boolean;
 }
 
 const inputState: IKeyboardState = {
@@ -27,8 +25,7 @@ const inputState: IKeyboardState = {
     up_arrow:    false,
     down_arrow:  false,
     e:           false,
-    f:           false,
-    r:           false
+    f:           false
 };
 
 function onKeyUp(e) {
@@ -45,12 +42,11 @@ if (window) {
 }
 
 export const getEvents = (): IInputEvent => ({
-    SHOOT_SPECIAL: Boolean(inputState.e),
-    TURN_LEFT:     Boolean(inputState.left_arrow),
-    TURN_RIGHT:    Boolean(inputState.right_arrow),
-    ACCELERATE:    Boolean(inputState.up_arrow),
-    SHOOT:         Boolean(inputState.f),
-    RESTART_GAME:  Boolean(inputState.r)
+    SPECIAL:    Boolean(inputState.e),
+    TURN_LEFT:  Boolean(inputState.left_arrow),
+    TURN_RIGHT: Boolean(inputState.right_arrow),
+    ACCELERATE: Boolean(inputState.up_arrow),
+    SHOOT:      Boolean(inputState.f)
 });
 
 const getInputState = () => ({...inputState});

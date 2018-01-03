@@ -3,15 +3,14 @@ export enum IEventType {
     TURN_RIGHT,
     ACCELERATE,
     SHOOT,
-    RESTART_GAME
+    SPECIAL
 }
 
 export interface IInputEvent {
-    SHOOT_SPECIAL: boolean;
+    SPECIAL: boolean;
     TURN_LEFT: boolean;
     TURN_RIGHT: boolean;
     ACCELERATE: boolean;
     SHOOT: boolean;
-    RESTART_GAME: boolean;
     analogAngle?: number;
 }

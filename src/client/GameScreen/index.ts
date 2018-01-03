@@ -1,18 +1,15 @@
 import Starfield from '../Graphics/Starfield';
 import Graphics from '../Graphics';
 import Focus from '../Graphics/Focus';
-import Input from '../Input';
+import GameScreenControl from './control';
 
 import Galaxy from '../Galaxy';
 import Entity from '../Entity';
 
-import RadarGalaxy from './RadarGalaxy';
-import RadarLocal from './RadarLocal';
+import HUD from './HUD';
 import SystemGravity from './system/gravity';
 import SystemTeam from './system/team';
 import Freelook from '../Graphics/Freelook';
-import UnitDisplay from './UnitDisplay';
-import WeaponsDisplay from './WeaponsDisplay';
 import GalaxyWonModal from '../UI/Modal/GalaxyWonModal';
 import GalaxyLostModal from '../UI/Modal/GalaxyLostModal';
 
@@ -30,14 +27,9 @@ let isPaused = false;
 
 function update() {
     SystemTeam.update();
-    Input.processGameScreen();
-
+    GameScreenControl.update();
     Entity.updateAll();
-
     SystemGravity();
-    RadarGalaxy.update();
-    RadarLocal.update();
-
     Entity.prepareNext();
 }
 
@@ -62,14 +54,12 @@ function step() {
         const focus = Focus.getFocus();
 
         if (focus) {
-            RadarLocal.setOrigin(focus);
+            HUD.setFocus(focus);
             Graphics.centerOn(focus);
         }
 
         Starfield.process(focus);
-        UnitDisplay.update();
-        WeaponsDisplay.update();
-
+        HUD.update();
         Graphics.render();
 
         then = now - (elapsed % FPS_INTERVAL);
@@ -87,22 +77,25 @@ function stop() {
     cancelAnimationFrame(raf);
 }
 
-function onTeamLost(team) {
-    if (team === Entity.TEAM.MAGENTA) {
-        isPaused        = true;
-        const lostModal = GalaxyLostModal.create({
-            onClickContinue: reinitAll
-        });
-        Graphics.addChildToHUD(lostModal.modal);
-    }
-}
-
 function reinitAll() {
     isPaused = false;
     init();
-    Input.setControlledEntity(null);
+    GameScreenControl.setControlledEntity(null);
     stop();
     start();
+}
+
+function onTeamLost(team) {
+    if (team === Entity.TEAM.MAGENTA) {
+        isPaused = true;
+
+        const lostModal = GalaxyLostModal.create({
+            onClickContinue: reinitAll
+        });
+
+        Graphics.addChildToHUD(lostModal.modal);
+        GameScreenControl.setControlledEntity(lostModal);
+    }
 }
 
 function onTeamWon(team) {
@@ -110,14 +103,11 @@ function onTeamWon(team) {
         isPaused = true;
 
         const wonModal = GalaxyWonModal.create({
-            onClickContinue: reinitAll,
-            onClickStay:     () => {
-                isPaused = false;
-                SystemTeam.setOnTeamWinCallback(new Function());
-            }
+            onClickContinue: reinitAll
         });
 
         Graphics.addChildToHUD(wonModal.modal);
+        GameScreenControl.setControlledEntity(wonModal);
     }
 }
 
@@ -134,10 +124,7 @@ function init() {
         .forEach(Graphics.addChild);
 
     Galaxy.init();
-    RadarLocal.init();
-    RadarGalaxy.init();
-    UnitDisplay.init();
-    WeaponsDisplay.init();
+    HUD.init();
 
     SystemTeam.init();
     SystemTeam.setOnTeamLostCallback(onTeamLost);

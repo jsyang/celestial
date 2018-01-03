@@ -1,28 +1,22 @@
-import Input from '../Input';
-import TitleScreen from '.';
-
 let then           = 0; // Time stamp of last animation frame
 const FPS          = 16;
 const FPS_INTERVAL = 1000 / FPS;
 
+export default function controlActiveModal(modalInterface, keys) {
 
-function update() {
     const now     = Date.now();
     const elapsed = now - then;
 
     if (elapsed > FPS_INTERVAL) {
-        const keys = Input.getDevice().getInputState() as any;
 
         if (keys.up || keys.up_arrow) {
-            TitleScreen.prevButton();
+            modalInterface.prevButton();
         } else if (keys.down || keys.down_arrow) {
-            TitleScreen.nextButton();
+            modalInterface.nextButton();
         } else if (keys.f || keys.button0 || keys.button1 || keys.button2 || keys.button3) {
-            TitleScreen.clickButton();
+            modalInterface.clickButton();
         }
 
         then = now - (elapsed % FPS_INTERVAL);
     }
 }
-
-export default {update}
