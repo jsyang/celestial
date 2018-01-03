@@ -4,7 +4,10 @@ import {playSound} from '../assets/audio';
 function createPBase(entity) {
     const {planet, team} = entity;
 
-    playSound('nav');
+    // Only play sound if human team
+    if (entity.team === Entity.TEAM.MAGENTA) {
+        playSound('nav');
+    }
 
     planet.pbase = Entity.create('PBase', {
         x: planet.x,
@@ -20,7 +23,10 @@ function createPBase(entity) {
 function createPColony(entity) {
     const {planet, team} = entity;
 
-    playSound('nav');
+    // Only play sound if human team
+    if (entity.team === Entity.TEAM.MAGENTA) {
+        playSound('nav');
+    }
 
     planet.pcolony = Entity.create('PColony', {
         x: planet.x,
@@ -36,17 +42,20 @@ function createPColony(entity) {
 function createSpacePort(entity) {
     const {planet, team, orbitRotation} = entity;
 
-    playSound('nav');
+    // Only play sound if human team
+    if (entity.team === Entity.TEAM.MAGENTA) {
+        playSound('nav');
+    }
 
     planet.spaceport = Entity.create('SpacePort', {
         x: planet.x,
         y: planet.y,
-        orbitRotation,
         planet,
         team
     });
 
     planet.spaceport.enterPlanetOrbit(planet);
+    planet.spaceport.orbitRotation = orbitRotation;
 
     entity.canExplode = false;
     Entity.destroy(entity);
