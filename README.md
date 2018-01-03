@@ -5,30 +5,57 @@ Celestial Combat is a game of galactic trade, colonization, and conquest.
 See this page for [How to Play](how-to-play.html) this game.
 
 ## TODOs
-- polyline title graphics + win / loss symbols
+
 - shields
     - around all turret locations
     - PBase, Freighter, SpacePort shields
+
 - fighter AI
 - segregate projectiles from rest of the entities in the grid
-- strategic enemy AI
-- tutorial sector
-- ship / polygon editor -- maybe reuse 3dphototrace for this purpose 
-- weapon loadout customization
 
+- strategic enemy AI
+    - attack enemy freighters in transit
+    - seek unoccupied planets to land on
+    - protect own freighters in transit
+    - attack with fighters in groups
+    - assign priority to highly armed enemy spacecraft
+    
+- tutorial sector
+    - only planet to colonize is a planet with defunct colony and fighter 
+
+- polyline title graphics + win / loss symbols    
+    - maybe reuse 3dphototrace for this purpose 
+
+- weapon loadout customization
 - save / load games
 
-- probes use ECS
+- probes (alien craft?)
 
-- multiple fighters
+- more spacecraft
     - light fighter
+    - escort guard 
     - heavy fighter
-- different mission objectives
+    - capital ships
+    - viral (T4) shaped ships
 
-- implement galcon-like gameplay now that there is a boid entity behavior
+- mercenary gameplay
+    - bid / accept jobs
+    - manage fleet
+    - purchase / upgrade facilities
+
+- different mission objectives
+    - raiding
+        - steal weapon from enemy PLab
+        - steal finished goods
+    - vengeance
+    - infiltration
+        - hijack spaceport and use it to destroy planet facilities
+        - land saboteurs on planet to reduce production
+        - land saboteurs on planet to reduce production
+ 
+    
 
 - implement structure status displays
-- capital ships
 - asteroids / uninhabitable worlds
 - ability to destroy planets
 
