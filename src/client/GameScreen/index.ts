@@ -81,8 +81,6 @@ function reinitAll() {
     isPaused = false;
     init();
     GameScreenControl.setControlledEntity(null);
-    stop();
-    start();
 }
 
 function onTeamLost(team) {
