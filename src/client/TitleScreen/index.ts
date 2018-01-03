@@ -60,18 +60,15 @@ function step() {
     }
 }
 
-function onClickNewGame() {
-    isFadingOut = true;
-}
+const modal = TitleScreenModal.create({
+    onClickNewGame: () => isFadingOut = true
+});
 
-let modal;
-
-function start() {
+function start() { 
     Graphics.init();
     Starfield.init()
         .forEach(Graphics.addChild);
 
-    modal = TitleScreenModal.create({onClickNewGame});
     Graphics.addChildToHUD(modal.modal);
 
     then = Date.now();

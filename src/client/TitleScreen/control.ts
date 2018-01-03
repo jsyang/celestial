@@ -5,7 +5,7 @@ let then           = 0; // Time stamp of last animation frame
 const FPS          = 16;
 const FPS_INTERVAL = 1000 / FPS;
 
-function update(modal) {
+function update(modalInterface) {
     const now     = Date.now();
     const elapsed = now - then;
 
@@ -16,12 +16,12 @@ function update(modal) {
         const keys = getInputState() as any;
 
         if (keys.up || keys.up_arrow) {
-            modal.prevButton();
+            modalInterface.prevButton();
         } else if (keys.down || keys.down_arrow) {
-            modal.nextButton();
+            modalInterface.nextButton();
         } else if (keys.f || keys.button0 || keys.button1 || keys.button2 || keys.button3) {
-            modal.clickButton();
-            Modal.destroy(modal);
+            modalInterface.clickButton();
+            Modal.destroy(modalInterface);
         }
 
         then = now - (elapsed % FPS_INTERVAL);
