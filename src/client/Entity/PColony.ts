@@ -34,6 +34,12 @@ export default class PColony extends LivingEntity {
     explosionOriginDx = -50;
     explosionOriginDy = 0;
 
+    canManufacture    = true;
+    PRODUCT           = {
+        Freighter: {cost: 300, time: 120},
+        Fighter:   {cost: 500, time: 90}
+    };
+
     canOccupyPlanet = true;
 
     canRepair            = true;

@@ -1,13 +1,8 @@
-# celestial
+# Celestial Combat
 
 Celestial Combat is a game of galactic trade, colonization, and conquest. 
 
-```
-yarn
-yarn dev
-
-# --> http://localhost:3000
-```
+See this page for [How to Play](how-to-play.html) this game.
 
 ## TODOs
 - polyline title graphics + win / loss symbols
@@ -31,8 +26,6 @@ yarn dev
 - different mission objectives
 
 - implement galcon-like gameplay now that there is a boid entity behavior
-
-## Nice-to-haves
 
 - implement structure status displays
 - capital ships

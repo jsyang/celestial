@@ -44,6 +44,23 @@ be destroyed.
 
 Note: you cannot land on stars. Fighters are affected by gravity from planets and stars. 
 
+### Weapons
+
+- **Cannon**<br>The standard energy weapon supplied by the same power plant that drives
+ a spacecraft's propulsion system.<br>`Damage: 1 per hit`
+ 
+- **Heavy Cannon**<br>Focusing the emitters of the standard cannon allowed us to create a weapon that 
+deliver twice the energy per projectile.<br>`Damage: 2 per hit`
+  
+- **Cluster Rocket**<br>Packed with high explosive shells, this unguided rocket can deliver 20
+shells to the recipient for maximum destruction.<br>`Damage: 1 per hit x 20 shells + 0.5 impact damage`
+   
+- **Homing Missile**<br>We have developed cheap, miniaturized biological prey-seeking intelligence
+that is installed into every mass produced homing missile; a highly destructive weapon.<br>`Damage: 6 per hit`
+    
+- **Laser Bolt**<br>Fast discharge ultra-capacitors have enabled our technicians to pack a devastating laser weapon
+into a small space.<br>`Damage: 30 per hit, ranged` 
+
 ### Units
 
 ##### Fighter
@@ -78,6 +95,8 @@ Storage         ||||||||||
 ```
 
 ### Facilities
+
+![1](assets/planet.png)
 
 ##### PBase
 

@@ -36,11 +36,6 @@ export default class PLab extends LivingEntity {
     explosionOriginDy = -52;
 
     canOccupyPlanet = true;
-    canManufacture  = true;
-    PRODUCT         = {
-        Freighter: {cost: 300, time: 120},
-        Fighter:   {cost: 500, time: 90}
-    };
 
     constructor(params: PLab) {
         super();
