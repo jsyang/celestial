@@ -6,12 +6,15 @@ See this page for [How to Play](how-to-play.html) this game.
 
 ## TODOs
 
-- shields
-    - around all turret locations
-    - PBase, Freighter, SpacePort shields
-
 - fighter AI
 - segregate projectiles from rest of the entities in the grid
+
+- better nearest star / nearest planet HUD (upgrade?)
+- special button when docked to planet:
+    - set planet as preferred respawn point
+    - replace current weapon
+    - pick up unused upgrades
+    - drop unused upgrades
 
 - strategic enemy AI
     - attack enemy freighters in transit
@@ -19,6 +22,10 @@ See this page for [How to Play](how-to-play.html) this game.
     - protect own freighters in transit
     - attack with fighters in groups
     - assign priority to highly armed enemy spacecraft
+
+- shields
+    - around all turret locations
+    - PBase, Freighter, SpacePort shields
     
 - tutorial sector
     - only planet to colonize is a planet with defunct colony and fighter 
