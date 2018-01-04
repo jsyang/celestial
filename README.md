@@ -2,7 +2,7 @@
 
 Celestial Combat is a game of galactic trade, colonization, and conquest. 
 
-See this page for [How to Play](how-to-play.html) this game.
+See this page for [How to Play](how-to-play.md) this game.
 
 ## TODOs
 
