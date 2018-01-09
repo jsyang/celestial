@@ -4,27 +4,60 @@
         color: #c8c8c8;
         font-family: sans-serif;
     }
+    
+    section {
+        padding-left: 2em;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+    
+    section.hide {
+        height: 0px;
+    }
+    
+    h2 {
+        user-select: none;
+        cursor: pointer;
+        color: #2288aa;
+        margin-bottom: 0;
+    }
+    
+    h2:before {
+        content: '↑ ';
+    }
+    
+    h2.hide:before {
+        content: '↓ ';
+    }
 </style>
 
 <center>
     <img src="assets/title.png"/>
 </center>
 
-Celestial Combat is a game of galactic trade, colonization, and conquest. 
+_Celestial Combat is a game of galactic trade, colonization, and conquest._ 
 
-### Keyboard controls
+## Player controls
 
 ```
-    KEY                 ACTION
+    KEYBOARD            ACTION
     
     Left arrow key      Turn left
     Right arrow key     Turn right
     Up arrow key        Accelerate
     F                   Fire primary weapon
 
+
+    
+    GAMEPAD             ACTION
+    
+    Analog stick        Set craft direction
+    Button 0            Fire primary weapon
+    Button 2            Accelerate
 ```
 
-### Game play
+## Game play
+
 You begin with either an invasion fleet (1 x Fighter + 4 invasion Freighters) or
 a single occupied planet.
 
@@ -43,7 +76,7 @@ the planet's center. Failing to do this the Fighter will be destroyed.
 
 Note: you cannot land on stars. Fighters are affected by gravity from planets and stars. 
 
-### Weapons
+## Weapons
 
 - **Cannon**<br>The standard energy weapon supplied by the same power plant that drives
  a spacecraft's propulsion system.<br>`Damage: 1 per hit`
@@ -60,7 +93,7 @@ that is installed into every mass produced homing missile; a highly destructive 
 - **Laser Bolt**<br>Fast discharge ultra-capacitors have enabled our technicians to pack a devastating laser weapon
 into a small space.<br>`Damage: 30 per hit, ranged` 
 
-### Units
+## Units
 
 ##### Fighter
 
@@ -93,7 +126,7 @@ Armor           ||||......
 Storage         ||||||||||
 ```
 
-### Facilities
+## Facilities
 
 ![1](assets/planet.png)
 
@@ -171,18 +204,48 @@ Armor           |||||||...
 Storage         ||||......
 ```  
 
-## Gamepad controls
-
-```
-    KEY                 ACTION
-    
-    Analog stick        Set craft direction
-    Button 0            Fire primary weapon
-    Button 2            Accelerate
-
-```
-
 ## Acknowledgements
 
 Gameplay inspired by and based on [Gravity Well v2.2 (circa 1995)](https://archive.org/details/GWELL22), the planetary 
-conquest game by David H. Hoeft of Software Engineering Inc. 
+conquest game by David H. Hoeft of Software Engineering Inc.
+
+<script>
+
+// Collapse into sections
+
+var insertAfter = function(newNode, referenceNode) {
+    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+}
+
+var $ = document.querySelectorAll.bind(document);
+
+Array.from($('h2'))
+    .forEach(function(h2) {
+        var section = document.createElement('section');
+        var sectionEls = [];
+        var el = h2;
+        
+        while(1) {
+            el = el.nextElementSibling;
+        
+            if(!el || el.tagName === 'H2' || el.tagName === 'SCRIPT') {
+                break;
+            } else {
+                section.innerHTML += el.outerHTML;
+                sectionEls.push(el);
+            }
+        }
+
+        section.classList.toggle('hide');
+        insertAfter(section, h2);
+        sectionEls.forEach(function(r){ r.remove();});
+        
+        h2.classList.add('hide');
+        
+        h2.onclick = function(e) {
+            e.target.nextElementSibling.classList.toggle('hide');
+            e.target.classList.toggle('hide');
+        };
+    });
+
+</script> 

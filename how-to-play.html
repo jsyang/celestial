@@ -4,21 +4,54 @@
         color: #c8c8c8;
         font-family: sans-serif;
     }
+
+    section {
+        padding-left: 2em;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    section.hide {
+        height: 0px;
+    }
+
+    h2 {
+        user-select: none;
+        cursor: pointer;
+        color: #2288aa;
+        margin-bottom: 0;
+    }
+
+    h2:before {
+        content: '↑ ';
+    }
+
+    h2.hide:before {
+        content: '↓ ';
+    }
 </style>
 
 <center>
     <img src="assets/title.png"/>
 </center>
 
-<p>Celestial Combat is a game of galactic trade, colonization, and conquest. </p>
-<h3 id="keyboard-controls">Keyboard controls</h3>
-<pre><code>    KEY                 ACTION
+<p><em>Celestial Combat is a game of galactic trade, colonization, and conquest.</em></p>
+<h2 id="player-controls">Player controls</h2>
+<pre><code>    KEYBOARD            ACTION
 
     Left arrow key      Turn left
     Right arrow key     Turn right
     Up arrow key        Accelerate
     F                   Fire primary weapon
-</code></pre><h3 id="game-play">Game play</h3>
+
+
+
+    GAMEPAD             ACTION
+
+    Analog stick        Set craft direction
+    Button 0            Fire primary weapon
+    Button 2            Accelerate
+</code></pre><h2 id="game-play">Game play</h2>
 <p>You begin with either an invasion fleet (1 x Fighter + 4 invasion Freighters) or
 a single occupied planet.</p>
 <p>To colonize planets, you must land on them when they are unoccupied with your 
@@ -31,7 +64,7 @@ beacon. Approach the planet at slow speed and rotate the craft to face outwards 
 the planet&#39;s center. Failing to do this the Fighter will be destroyed.</p>
 <p><strong>When you land on a friendly planet, your weapons will be rearmed and your ship repaired.</strong></p>
 <p>Note: you cannot land on stars. Fighters are affected by gravity from planets and stars. </p>
-<h3 id="weapons">Weapons</h3>
+<h2 id="weapons">Weapons</h2>
 <ul>
 <li><p><strong>Cannon</strong><br>The standard energy weapon supplied by the same power plant that drives
 a spacecraft&#39;s propulsion system.<br><code>Damage: 1 per hit</code></p>
@@ -49,7 +82,7 @@ that is installed into every mass produced homing missile; a highly destructive 
 into a small space.<br><code>Damage: 30 per hit, ranged</code> </p>
 </li>
 </ul>
-<h3 id="units">Units</h3>
+<h2 id="units">Units</h2>
 <h5 id="fighter">Fighter</h5>
 <p><img src="assets/fighter.png" alt="1"></p>
 <p>The backbone of an offensive fighting force is the standard GHX-12 Fighter
@@ -69,7 +102,7 @@ a Planetary Base (PBase).</p>
 Firepower       |||....... 
 Armor           ||||......
 Storage         ||||||||||
-</code></pre><h3 id="facilities">Facilities</h3>
+</code></pre><h2 id="facilities">Facilities</h2>
 <p><img src="assets/planet.png" alt="1"></p>
 <h5 id="pbase">PBase</h5>
 <p><img src="assets/pbase.png" alt="1"></p>
@@ -115,12 +148,48 @@ rearmed. As it is the first point of defense for a planet, it is heavily armed a
 Firepower       ||||||.... 
 Armor           |||||||...
 Storage         ||||......
-</code></pre><h2 id="gamepad-controls">Gamepad controls</h2>
-<pre><code>    KEY                 ACTION
-
-    Analog stick        Set craft direction
-    Button 0            Fire primary weapon
-    Button 2            Accelerate
 </code></pre><h2 id="acknowledgements">Acknowledgements</h2>
-<p>Gameplay inspired by and based on <a href="https://archive.org/details/GWELL22">Gravity Well v2.2 (circa 1995)</a>, the planetary 
-conquest game by David H. Hoeft of Software Engineering Inc. </p>
+<p>Gameplay inspired by and based on <a href="https://archive.org/details/GWELL22">Gravity Well v2.2 (circa 1995)</a>, the planetary
+    conquest game by David H. Hoeft of Software Engineering Inc.</p>
+<script>
+
+    // Collapse into sections
+
+    var insertAfter = function (newNode, referenceNode) {
+        referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+    }
+
+    var $ = document.querySelectorAll.bind(document);
+
+    Array.from($('h2'))
+        .forEach(function (h2) {
+            var section    = document.createElement('section');
+            var sectionEls = [];
+            var el         = h2;
+
+            while (1) {
+                el = el.nextElementSibling;
+
+                if (!el || el.tagName === 'H2' || el.tagName === 'SCRIPT') {
+                    break;
+                } else {
+                    section.innerHTML += el.outerHTML;
+                    sectionEls.push(el);
+                }
+            }
+
+            section.classList.toggle('hide');
+            insertAfter(section, h2);
+            sectionEls.forEach(function (r) {
+                r.remove();
+            });
+
+            h2.classList.add('hide');
+
+            h2.onclick = function (e) {
+                e.target.nextElementSibling.classList.toggle('hide');
+                e.target.classList.toggle('hide');
+            };
+        });
+
+</script> 
