@@ -115,19 +115,18 @@ function processTeam(team) {
         constructOnRandomPlanet(idleTeamPlanet, 'Fighter');
 
     } else {
+        const firstFighter: any = teamFighter[0];
+
         // Human control
         if (team === Entity.TEAM.MAGENTA && !GameScreenControl.getControlledEntity()) {
-            const firstFighter = teamFighter[0];
-
             GameScreenControl.setControlledEntity(firstFighter);
-            // Focus.setFocus(firstFighter);
+            Focus.setFocus(firstFighter);
             Starfield.init();
         }
 
         // AI control (testing)
-        if (team === Entity.TEAM.YELLOW) {
-            (teamFighter[0] as any).attackTarget = humanFighter[0];
-            Focus.setFocus(teamFighter[0]);
+        if (team !== Entity.TEAM.MAGENTA && !firstFighter.attackTarget) {
+            firstFighter.attackTarget = humanFighter[0];
         }
     }
 
