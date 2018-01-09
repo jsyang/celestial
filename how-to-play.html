@@ -35,7 +35,7 @@
     <img src="assets/title.png"/>
 </center>
 
-<p><em>Celestial Combat is a game of galactic trade, colonization, and conquest.</em></p>
+<p><em>Celestial Combat is a game of galactic trade, colonization, and conquest.</em> </p>
 <h2 id="player-controls">Player controls</h2>
 <pre><code>    KEYBOARD            ACTION
 
@@ -149,47 +149,45 @@ Firepower       ||||||....
 Armor           |||||||...
 Storage         ||||......
 </code></pre><h2 id="acknowledgements">Acknowledgements</h2>
-<p>Gameplay inspired by and based on <a href="https://archive.org/details/GWELL22">Gravity Well v2.2 (circa 1995)</a>, the planetary
-    conquest game by David H. Hoeft of Software Engineering Inc.</p>
+<p>Gameplay inspired by and based on <a href="https://archive.org/details/GWELL22">Gravity Well v2.2 (circa 1995)</a>, the planetary 
+conquest game by David H. Hoeft of Software Engineering Inc.</p>
 <script>
 
-    // Collapse into sections
+// Collapse into sections
 
-    var insertAfter = function (newNode, referenceNode) {
-        referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-    }
+var insertAfter = function(newNode, referenceNode) {
+    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+}
 
-    var $ = document.querySelectorAll.bind(document);
+var $ = document.querySelectorAll.bind(document);
 
-    Array.from($('h2'))
-        .forEach(function (h2) {
-            var section    = document.createElement('section');
-            var sectionEls = [];
-            var el         = h2;
+Array.from($('h2'))
+    .forEach(function(h2) {
+        var section = document.createElement('section');
+        var sectionEls = [];
+        var el = h2;
 
-            while (1) {
-                el = el.nextElementSibling;
+        while(1) {
+            el = el.nextElementSibling;
 
-                if (!el || el.tagName === 'H2' || el.tagName === 'SCRIPT') {
-                    break;
-                } else {
-                    section.innerHTML += el.outerHTML;
-                    sectionEls.push(el);
-                }
+            if(!el || el.tagName === 'H2' || el.tagName === 'SCRIPT') {
+                break;
+            } else {
+                section.innerHTML += el.outerHTML;
+                sectionEls.push(el);
             }
+        }
 
-            section.classList.toggle('hide');
-            insertAfter(section, h2);
-            sectionEls.forEach(function (r) {
-                r.remove();
-            });
+        section.classList.toggle('hide');
+        insertAfter(section, h2);
+        sectionEls.forEach(function(r){ r.remove();});
 
-            h2.classList.add('hide');
+        h2.classList.add('hide');
 
-            h2.onclick = function (e) {
-                e.target.nextElementSibling.classList.toggle('hide');
-                e.target.classList.toggle('hide');
-            };
-        });
+        h2.onclick = function(e) {
+            e.target.nextElementSibling.classList.toggle('hide');
+            e.target.classList.toggle('hide');
+        };
+    });
 
 </script> 
