@@ -119,6 +119,7 @@ function processTeam(team) {
 
         // Human control
         if (team === Entity.TEAM.MAGENTA && !GameScreenControl.getControlledEntity()) {
+            firstFighter.isFighterAutoAccelerated = false;
             GameScreenControl.setControlledEntity(firstFighter);
             Focus.setFocus(firstFighter);
             Starfield.init();
