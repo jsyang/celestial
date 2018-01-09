@@ -5,8 +5,28 @@ import Button from '../Button';
 const onClickHowToPlay = () => window.open('how-to-play.html', '_blank');
 const onClickGitHub    = () => window.open('http://github.com/jsyang/celestial', '_blank');
 
+const width  = 340;
+const height = 360;
+
+declare const BUILD_DATE: string;
+declare const BUILD_HASH: string;
+
 function create({onClickNewGame}) {
-    const modal = Modal.create({width: 340, height: 360});
+    const modal = Modal.create({width, height});
+
+    const label = new PIXI.Text(
+        `Build: ${BUILD_DATE} -- ${BUILD_HASH}`,
+        {
+            fontFamily: 'arial',
+            fontSize:   12,
+            fill:       0x112211,
+            align:      'left'
+        }
+    );
+    label.x     = 0;
+    label.y     = height + 10;
+    modal.modal.addChild(label);
+
 
     let modalStackY = 360;
 

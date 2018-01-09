@@ -31,6 +31,7 @@ import ShootClusterRocketComponent from './shootClusterRocket';
 import LimitSpeedComponent from './limitSpeed';
 import AccelerateComponent from './accelerate';
 import AccelerateToAttackTargetComponent from './accelerateToAttackTarget';
+import AccelerateFighterToAttackTargetComponent from './accelerateFighterToAttackTarget';
 import DisplayHitComponent from './displayHit';
 import DockPlanetComponent from './dockPlanet';
 import ColonizePlanetComponent from './colonizePlanet';
@@ -42,16 +43,17 @@ import DevelopWeaponComponent from './developWeapon';
 // ExplodeComponent excluded for now
 const ALL_COMPONENTS = [
     // Change position
+    DockPlanetComponent,
     OccupyPlanetComponent,
     OccupySpacePortComponent,
     AccelerateComponent,
     AccelerateToAttackTargetComponent,
+    AccelerateFighterToAttackTargetComponent,
     MoveLinearlyComponent,
     MoveToTargetComponent,
     OrbitStarComponent,
     OrbitPlanetComponent,
     LimitSpeedComponent,
-    DockPlanetComponent,
 
     // Affect other entities
     AutoTargetEnemyComponent,

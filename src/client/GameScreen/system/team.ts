@@ -87,10 +87,11 @@ function colonizeNearestPlanet(freighter) {
 function processTeam(team) {
     const selectOnlyCurrentTeam = filterByTeam.bind(null, team);
 
-    let teamPlanet    = Entity.getByType('Planet').filter(selectOnlyCurrentTeam);
-    let teamPColony   = Entity.getByType('PColony').filter(selectOnlyCurrentTeam);
-    let teamFreighter = Entity.getByType('Freighter').filter(selectOnlyCurrentTeam);
-    const teamFighter = Entity.getByType('Fighter').filter(selectOnlyCurrentTeam);
+    let teamPlanet     = Entity.getByType('Planet').filter(selectOnlyCurrentTeam);
+    let teamPColony    = Entity.getByType('PColony').filter(selectOnlyCurrentTeam);
+    let teamFreighter  = Entity.getByType('Freighter').filter(selectOnlyCurrentTeam);
+    const teamFighter  = Entity.getByType('Fighter').filter(selectOnlyCurrentTeam);
+    const humanFighter = Entity.getByType('Fighter').filter(f => f.team === Entity.TEAM.MAGENTA);
 
     let idleTeamPlanet;
 
@@ -113,12 +114,21 @@ function processTeam(team) {
     if (teamFighter.length === 0) {
         constructOnRandomPlanet(idleTeamPlanet, 'Fighter');
 
-    } else if (team === Entity.TEAM.MAGENTA && !GameScreenControl.getControlledEntity()) {
-        const firstFighter = teamFighter[0];
+    } else {
+        // Human control
+        if (team === Entity.TEAM.MAGENTA && !GameScreenControl.getControlledEntity()) {
+            const firstFighter = teamFighter[0];
 
-        GameScreenControl.setControlledEntity(firstFighter);
-        Focus.setFocus(firstFighter);
-        Starfield.init();
+            GameScreenControl.setControlledEntity(firstFighter);
+            // Focus.setFocus(firstFighter);
+            Starfield.init();
+        }
+
+        // AI control (testing)
+        if (team === Entity.TEAM.YELLOW) {
+            (teamFighter[0] as any).attackTarget = humanFighter[0];
+            Focus.setFocus(teamFighter[0]);
+        }
     }
 
     teamFighter.forEach(repairRearmWhenDockedToOccupiedPlanet);

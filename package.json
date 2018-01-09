@@ -13,7 +13,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "NODE_ENV=development node .",
-    "zip-assets": "cd assets ; rm .DS_Store ; zip -r -X ../assets.zip .",
+    "zip-assets": "cd assets ; rm .DS_Store ; zip-r -X ../assets.zip . -x '.DS_Store'",
     "generate-how-to-play-page": "marked -o how-to-play.html < how-to-play.md",
     "compile-js": "NODE_ENV=production webpack -p",
     "build": "yarn compile-js ; yarn generate-how-to-play-page ; yarn zip-assets"

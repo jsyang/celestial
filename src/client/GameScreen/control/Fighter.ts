@@ -1,7 +1,5 @@
 import {IInputEvent} from '../../Input/Event';
-
-const DROTATION    = 0.05;
-const ACCELERATION = 0.2;
+import {ACCELERATION_FIGHTER, ACCELERATION_FIGHTER_UNDOCK, ROTATION_RATE_FIGHTER} from '../../constants';
 
 export default function controlFighter(controlledEntity, events: IInputEvent) {
     const isDocked = controlledEntity.isDockedPlanet;
@@ -13,9 +11,9 @@ export default function controlFighter(controlledEntity, events: IInputEvent) {
             controlledEntity.rotation = events.analogAngle;
         } else {
             if (events.TURN_LEFT) {
-                controlledEntity.rotation -= DROTATION;
+                controlledEntity.rotation -= ROTATION_RATE_FIGHTER;
             } else if (events.TURN_RIGHT) {
-                controlledEntity.rotation += DROTATION;
+                controlledEntity.rotation += ROTATION_RATE_FIGHTER;
             }
         }
 
@@ -26,11 +24,11 @@ export default function controlFighter(controlledEntity, events: IInputEvent) {
         if (isDocked) {
             controlledEntity.undockPlanet();
             // Escape acceleration
-            controlledEntity.accelerate(1);
+            controlledEntity.accelerate(ACCELERATION_FIGHTER_UNDOCK);
         }
 
         controlledEntity.flameOn();
-        controlledEntity.accelerate(ACCELERATION);
+        controlledEntity.accelerate(ACCELERATION_FIGHTER);
 
     } else {
         controlledEntity.flameOff();

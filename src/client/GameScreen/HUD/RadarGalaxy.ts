@@ -33,7 +33,7 @@ const drawMarker = entity => {
     switch (type) {
         case 'Planet':
             color = COLOR_MARKER_PLANET;
-            size  = 2;
+            size  = 4;
             break;
         case 'Star':
             color = COLOR_MARKER_STAR;
@@ -41,7 +41,7 @@ const drawMarker = entity => {
             break;
         case 'Fighter':
             color = Entity.getTeamColor(entity.team);
-            size  = 1;
+            size  = 2;
             break;
         case 'Freighter':
         default:

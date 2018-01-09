@@ -128,10 +128,11 @@ export default class Fighter extends LivingEntity {
     canShootClusterRocket = true;
     canShootHomingMissile = true;
 
-    canLimitSpeed   = true;
-    canMoveLinearly = true;
-    canAccelerate   = true;
-    canDockPlanet   = true;
+    canLimitSpeed                      = true;
+    canMoveLinearly                    = true;
+    canAccelerate                      = true;
+    canDockPlanet                      = true;
+    canAccelerateFighterToAttackTarget = true;
 
     constructor(params: Fighter) {
         super();

@@ -1,3 +1,4 @@
+const child_process  = require('child_process');
 const path           = require('path');
 const webpack        = require('webpack');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
@@ -7,14 +8,20 @@ const isProd = (process.env.NODE_ENV === 'production');
 const devtool = isProd ?
     '' : 'inline-eval-cheap-source-map';
 
+const now = new Date();
+
 const plugins = [
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
-    isProd? new UglifyJsPlugin() : null
+    isProd ? new UglifyJsPlugin() : null,
+    new webpack.DefinePlugin({
+        BUILD_DATE: JSON.stringify(now.toDateString()),
+        BUILD_HASH: JSON.stringify(child_process.execSync('git rev-parse --short HEAD').toString())
+    })
 ].filter(Boolean);
 
 module.exports = {
-    cache: true,
+    cache:   true,
     devtool: devtool,
 
     output: {
@@ -25,8 +32,8 @@ module.exports = {
         // Turn on for further performance improvements
         // https://webpack.js.org/configuration/resolve/#resolve-unsafecache
         unsafeCache: false,
-        modules: ['node_modules', 'src'],
-        extensions: [
+        modules:     ['node_modules', 'src'],
+        extensions:  [
             '.ts',
             '.tsx',
             '.js'
@@ -38,7 +45,7 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.tsx?$/,
+                test:    /\.tsx?$/,
                 include: path.join(__dirname, 'src'),
                 exclude: /node_modules/,
                 loaders: [

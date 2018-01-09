@@ -1,6 +1,6 @@
 const DEFAULTS = {
     MAX_SPEED:  40,
-    MAX_SPEED2: 40 * 40
+    MAX_SPEED2: 40 ** 2
 };
 
 /**

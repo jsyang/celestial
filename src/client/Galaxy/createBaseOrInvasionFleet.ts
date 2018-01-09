@@ -25,10 +25,11 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
         };
 
         const fighter = Entity.create('Fighter', {
-            x:                      fleetPosition.x + Random.int(-100, 100),
-            y:                      fleetPosition.y + Random.int(-100, 100),
-            attackWeapon:           Random.arrayElement(startingWeapons),
-            reloadTime_HeavyCannon: 60,
+            x:                        fleetPosition.x + Random.int(-100, 100),
+            y:                        fleetPosition.y + Random.int(-100, 100),
+            attackWeapon:             Random.arrayElement(startingWeapons),
+            isFighterAutoAccelerated: team !== Entity.TEAM.MAGENTA,
+            reloadTime_HeavyCannon:   60,
             team
         });
 
@@ -75,7 +76,10 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
             planet: startingLocation
         };
 
-        const fighter = Entity.create('Fighter', {team});
+        const fighter = Entity.create('Fighter', {
+            isFighterAutoAccelerated: team !== Entity.TEAM.MAGENTA,
+            team
+        });
         fighter.dockPlanet(startingLocation);
 
 
