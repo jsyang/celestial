@@ -25,7 +25,6 @@ export default class SpaceDock extends LivingEntity {
     geo  = Geometry(GEO);
     planet: Planet;
 
-    // Components
     hp    = 8;
     maxHp = 8;
 

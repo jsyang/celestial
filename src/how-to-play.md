@@ -97,7 +97,7 @@ into a small space.<br>`Damage: 30 per hit, ranged`
 
 ##### Fighter
 
-![1](assets/fighter.png)
+![1](../assets/fighter.png)
 
 The backbone of an offensive fighting force is the standard GHX-12 Fighter
 craft armed with a rapid-fire cannon. Fighters can lay claim to unoccupied
@@ -112,7 +112,7 @@ Storage         |.........
 
 ##### Freighter 
 
-![1](assets/freighter.png)
+![1](../assets/freighter.png)
 
 Transport for raw and finished materials is provided primarily by Freighters.
 They carry the capability to speed up construction of essential 
@@ -128,11 +128,11 @@ Storage         ||||||||||
 
 ## Facilities
 
-![1](assets/planet.png)
+![1](../assets/planet.png)
 
 ##### PBase
 
-![1](assets/pbase.png)
+![1](../assets/pbase.png)
 
 A Planetary Base (PBase) provides a planet with basic production and mining operations.
 It can harvest and store raw materials on the planet. It can construct a Communications
@@ -148,7 +148,7 @@ Storage         ||||......
 
 ##### PColony
 
-![1](assets/pcolony.png)
+![1](../assets/pcolony.png)
 
 A Planetary Colony (PColony) is the most efficient way for a planet to produce finished
 materials from raw materials. It can construct spacecraft and other facilities; its operation
@@ -163,7 +163,7 @@ Storage         |||||||...
 
 #### PComm
 
-![1](assets/pcomm.png)
+![1](../assets/pcomm.png)
 
 Galactic scanners installed in the Planetary Communications (PComm) allow
 empires to track precise locations of other worlds. A galactic radar display is
@@ -178,7 +178,7 @@ Storage         ..........
  
 #### PLab
 
-![1](assets/plab.png)
+![1](../assets/plab.png)
 
 Weapons technology research and new weapon installation is carried out from the 
 Planetary Lab.
@@ -192,7 +192,7 @@ Storage         ||........
 
 #### Spaceport, SpaceDock, SensorArray
 
-![1](assets/spaceport.png)
+![1](../assets/spaceport.png)
 
 The orbital Spaceport and its facilities allow the Fighter craft to be swiftly repaired and
 rearmed. As it is the first point of defense for a planet, it is heavily armed and armored.  

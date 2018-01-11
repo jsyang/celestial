@@ -1,4 +1,3 @@
-import TEAM from './_Team';
 import Geometry from '../Geometry';
 import Planet from "./Planet";
 import LivingEntity from './LivingEntity';
@@ -31,7 +30,7 @@ export default class PLab extends LivingEntity {
     canShimmer        = true;
     isShimmering      = false;
     shimmerNormalColor: number;
-    shimmerBlinkColor=  0x0ff00f;
+    shimmerBlinkColor = 0x0ff00f;
 
     canDevelopWeapon  = true;
     canDisplayHit     = true;
@@ -46,9 +45,7 @@ export default class PLab extends LivingEntity {
 
         Object.assign(this, params);
 
-        const teamColor = TEAM._COLORS[this.team];
-
-        this.geo.graphics.currentPath.lineColor = teamColor;
-        this.shimmerNormalColor                 = teamColor;
+        const teamColor         = this.assignTeamColor();
+        this.shimmerNormalColor = teamColor;
     }
 }

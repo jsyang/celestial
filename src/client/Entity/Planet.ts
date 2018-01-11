@@ -1,4 +1,4 @@
-import TEAM from './_Team';
+import TEAM from './TEAM';
 import Geometry from '../Geometry';
 import Star from './Star';
 import PBase from './PBase';
@@ -47,7 +47,6 @@ export default class Planet extends LivingEntity {
     orbitDistance: number;
     orbitRotation: number;
 
-    // Components
     canOrbitStar      = true;
     canStoreMaterial  = true;
     materialsRaw      = 0;

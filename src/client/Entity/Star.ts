@@ -16,16 +16,16 @@ const GEO = {
 };
 
 
-export default class Star extends LivingEntity{
+export default class Star extends LivingEntity {
     static DIST_SURFACE2 = 200 * 200;
 
+    geo  = Geometry(GEO);
     type = 'Star';
     hp   = 10000;
     mass = 600;
-    
+
     constructor(params: Star) {
         super();
-        this.geo = Geometry(GEO);
         Object.assign(this, params);
     }
 }

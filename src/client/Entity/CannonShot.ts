@@ -1,4 +1,3 @@
-import TEAM from './_Team';
 import Geometry from '../Geometry';
 import LivingEntity from './LivingEntity';
 
@@ -24,7 +23,6 @@ export default class CannonShot extends LivingEntity {
     canDamage       = true;
     canMetabolize   = true;
 
-    team     = TEAM.NONE;
     hp       = 60; // effective range
     damageHp = 1; // damage inflicted
 

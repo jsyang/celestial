@@ -27,7 +27,6 @@ export default class SensorArray extends LivingEntity {
     geo  = Geometry(GEO);
     planet: Planet;
 
-    // Components
     hp    = 5;
     maxHp = 5;
 

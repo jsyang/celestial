@@ -1,9 +1,10 @@
 import Component from '../component';
 
 import DB from './_DB';
-import Team from './_Team';
-import Grid from './_Grid';
+import TEAM from './TEAM';
+import EntityGrid from './EntityGrid';
 
+// Units and Facilities
 import Fighter from './Fighter';
 import Freighter from './Freighter';
 import PBase from './PBase';
@@ -14,14 +15,45 @@ import Probe from './Probe';
 import SensorArray from './SensorArray';
 import SpaceDock from './SpaceDock';
 import SpacePort from './SpacePort';
+
+const gridUnits   = new EntityGrid();
+const TYPES_UNITS = [
+    'PBase',
+    'PColony',
+    'PComm',
+    'PLab',
+    'SpacePort',
+    'SpaceDock',
+    'SensorArray',
+    'Fighter',
+    'Freighter'
+];
+
+// Celestial bodies
 import Planet from './Planet';
 import Star from './Star';
 
+const gridBodies   = new EntityGrid();
+const TYPES_BODIES = [
+    'Star',
+    'Planet'
+];
+
+// Projectiles
 import CannonShot from './CannonShot';
 import HeavyCannonShot from './HeavyCannonShot';
 import LaserBolt from './LaserBolt';
 import HomingMissile from './HomingMissile';
 import ClusterRocket from './ClusterRocket';
+
+const gridProjectiles   = new EntityGrid();
+const TYPES_PROJECTILES = [
+    'CannonShot',
+    'HeavyCannonShot',
+    'LaserBolt',
+    'HomingMissile',
+    'ClusterRocket'
+];
 
 const ALL_ENTITIES = {
     Fighter,
@@ -44,23 +76,9 @@ const ALL_ENTITIES = {
 };
 
 const UPDATE_ALL_ENTITIES_SEQUENCE = [
-    'Star',
-    'Planet',
-    'PBase',
-    'PColony',
-    'PComm',
-    'PLab',
-    'SpacePort',
-    'SpaceDock',
-    'SensorArray',
-    'Fighter',
-    'Freighter',
-    'CannonShot',
-    'HeavyCannonShot',
-    'LaserBolt',
-    'HomingMissile',
-    'ClusterRocket'
-// 'Probe',
+    ...TYPES_BODIES,
+    ...TYPES_UNITS,
+    ...TYPES_PROJECTILES
 ];
 
 function create(type, params) {
@@ -96,13 +114,13 @@ function updateAll() {
     UPDATE_ALL_ENTITIES_SEQUENCE.forEach(update);
 }
 
-const getTeamColor = team => Team._COLORS[team];
+const getTeamColor = team => TEAM._COLORS[team];
 
 function clearAll() {
-    Grid.prepareNext();
-    Grid.prepareNext();
-    Grid.prepareNext();
-    Grid.prepareNext();
+    EntityGrid.prepareNext();
+    EntityGrid.prepareNext();
+    EntityGrid.prepareNext();
+    EntityGrid.prepareNext();
     DB.clearAll();
 }
 
@@ -110,10 +128,10 @@ export default {
     create,
     updateAll,
 
-    commit:                Grid.commit,
-    prepareNext:           Grid.prepareNext,
-    getNearest:            Grid.getNearest,
-    getNearestEnemyTarget: Grid.getNearestEnemyTarget,
+    commit:                EntityGrid.commit,
+    prepareNext:           EntityGrid.prepareNext,
+    getNearest:            EntityGrid.getNearest,
+    getNearestEnemyTarget: EntityGrid.getNearestEnemyTarget,
 
     clearAll,
     destroy:                  DB.remove,
@@ -123,6 +141,5 @@ export default {
     getTeamColor,
     getDistSquared,
     getAngleFromTo,
-
-    TEAM: Team
+    TEAM
 };

@@ -2,19 +2,14 @@
 
 Celestial Combat is a game of galactic trade, colonization, and conquest. 
 
-See this page for [How to Play](how-to-play.md) this game.
+See this page for [How to Play](src/how-to-play.md) this game.
 
 ## TODOs
 
-- fighter AI
-- segregate projectiles from rest of the entities in the grid
-
-- better nearest star / nearest planet HUD (upgrade?)
-- special button when docked to planet:
-    - set planet as preferred respawn point
-    - replace current weapon
-    - pick up unused upgrades
-    - drop unused upgrades
+- segregate entities for grid purposes
+    - projectiles
+    - units + facilities
+    - celestial bodies
 
 - strategic enemy AI
     - attack enemy freighters in transit
@@ -22,6 +17,13 @@ See this page for [How to Play](how-to-play.md) this game.
     - protect own freighters in transit
     - attack with fighters in groups
     - assign priority to highly armed enemy spacecraft
+
+- better nearest star / nearest planet HUD (upgrade?)
+- special button when docked to planet:
+    - set planet as preferred respawn point
+    - replace current weapon
+    - pick up unused upgrades
+    - drop unused upgrades
 
 - shields
     - around all turret locations

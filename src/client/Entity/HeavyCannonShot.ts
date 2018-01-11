@@ -1,4 +1,3 @@
-import TEAM from './_Team';
 import Geometry from '../Geometry';
 import LivingEntity from './LivingEntity';
 
@@ -29,7 +28,6 @@ export default class HeavyCannonShot extends LivingEntity {
     canDamage          = true;
     canMetabolize      = true;
 
-    team     = TEAM.NONE;
     hp       = 40;
     damageHp = 2;
 

@@ -1,4 +1,3 @@
-import TEAM from './_Team';
 import Geometry from '../Geometry';
 import Planet from "./Planet";
 import LivingEntity from './LivingEntity';
@@ -28,8 +27,6 @@ export default class PComm extends LivingEntity {
     geo  = Geometry(GEO);
     planet: Planet;
 
-    // Components
-    team  = TEAM.NONE;
     hp    = 7;
     maxHp = 7;
 
@@ -48,6 +45,6 @@ export default class PComm extends LivingEntity {
         super();
 
         Object.assign(this, params);
-        this.geo.graphics.currentPath.lineColor = TEAM._COLORS[this.team];
+        this.assignTeamColor();
     }
 }

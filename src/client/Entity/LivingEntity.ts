@@ -1,4 +1,4 @@
-import TEAM from './_Team';
+import TEAM from './TEAM';
 
 export default class LivingEntity {
     hitTime: number;
@@ -41,7 +41,10 @@ export default class LivingEntity {
     }
 
     assignTeamColor() {
-        this.geo.graphics.currentPath.lineColor = TEAM._COLORS[this.team];
+        const color = TEAM._COLORS[this.team];
+        this.geo.graphics.currentPath.lineColor = color;
+
+        return color;
     }
 
     renderHit() {

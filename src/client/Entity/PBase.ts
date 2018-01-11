@@ -1,4 +1,3 @@
-import TEAM from './_Team';
 import Geometry from '../Geometry';
 import Planet from "./Planet";
 import LivingEntity from './LivingEntity';
@@ -148,7 +147,7 @@ export default class PBase extends LivingEntity {
 
         Object.assign(this, params);
 
-        this.geo.graphics.currentPath.lineColor = TEAM._COLORS[this.team];
+        this.assignTeamColor();
 
         // Add turrets as graphics only, not collider geometry
         this.geo.graphics.addChild(

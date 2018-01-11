@@ -1,4 +1,3 @@
-import TEAM from './_Team';
 import Geometry from '../Geometry';
 import LivingEntity from './LivingEntity';
 import Random from '../Random';
@@ -23,7 +22,6 @@ export default class LaserBolt extends LivingEntity {
     canDamage       = true;
     canMetabolize   = true;
 
-    team     = TEAM.NONE;
     hp       = Random.int(2, 3);
     damageHp = 30;
 
