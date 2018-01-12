@@ -7,7 +7,7 @@ const DEFAULTS = {
 };
 
 function setAttackTargetNearestEnemy(entity) {
-    entity.attackTarget = Entity.getNearestEnemyTarget(entity, entity.autoTargetSearchDist2);
+    entity.attackTarget = Entity.getNearestEnemyUnit(entity, entity.autoTargetSearchDist2);
     entity.isAttacking  = Boolean(entity.attackTarget);
 }
 

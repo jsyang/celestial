@@ -4,6 +4,7 @@
 import {Graphics} from 'pixi.js';
 import {pointInPolygon, Circle, Polygon, Vector} from 'sat';
 import {IPoint} from './types';
+import {MAX_COORDINATE} from './constants';
 
 const v    = (x, y) => new Vector(x, y);
 const PIPI = Math.PI * 2;
@@ -13,8 +14,8 @@ function createMutableGeoInterface(graphics, collider) {
         set x(x) {
             if (x < 0) {
                 x = 0;
-            } else if (x > 32768) {
-                x = 32768;
+            } else if (x > MAX_COORDINATE) {
+                x = MAX_COORDINATE;
             }
 
             this.graphics.x     = x;
@@ -23,8 +24,8 @@ function createMutableGeoInterface(graphics, collider) {
         set y(y) {
             if (y < 0) {
                 y = 0;
-            } else if (y > 32768) {
-                y = 32768;
+            } else if (y > MAX_COORDINATE) {
+                y = MAX_COORDINATE;
             }
 
             this.graphics.y     = y;

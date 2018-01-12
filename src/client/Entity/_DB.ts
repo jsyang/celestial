@@ -1,5 +1,4 @@
 import Graphics from '../Graphics';
-import {getDistSquared} from '.';
 
 const byType = {};
 
@@ -37,26 +36,6 @@ function remove(entity) {
     Graphics.removeChild(entity.geo.graphics);
 }
 
-function getAbsoluteNearestByType(entity, type) {
-    let nearest;
-    let nearestDist2 = Infinity;
-    const entities   = getByType(type);
-
-    if (entities) {
-        entities.forEach(
-            e => {
-                const dist2 = getDistSquared(entity, e);
-                if (dist2 < nearestDist2) {
-                    nearestDist2 = dist2;
-                    nearest      = e;
-                }
-            }
-        );
-    }
-
-    return nearest;
-}
-
 function clearAll() {
     Object.keys(byType).forEach(
         type => {
@@ -70,6 +49,5 @@ export default {
     add,
     remove,
     clearAll,
-    getByType,
-    getAbsoluteNearestByType
+    getByType
 }

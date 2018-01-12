@@ -11,33 +11,23 @@ import PBase from './PBase';
 import PColony from './PColony';
 import PComm from './PComm';
 import PLab from './PLab';
-import Probe from './Probe';
+// import Probe from './Probe';
 import SensorArray from './SensorArray';
 import SpaceDock from './SpaceDock';
 import SpacePort from './SpacePort';
 
 const gridUnits   = new EntityGrid();
-const TYPES_UNITS = [
-    'PBase',
-    'PColony',
-    'PComm',
-    'PLab',
-    'SpacePort',
-    'SpaceDock',
-    'SensorArray',
-    'Fighter',
-    'Freighter'
-];
-
-// Celestial bodies
-import Planet from './Planet';
-import Star from './Star';
-
-const gridBodies   = new EntityGrid();
-const TYPES_BODIES = [
-    'Star',
-    'Planet'
-];
+const TYPES_UNITS = {
+    PBase,
+    PColony,
+    PComm,
+    PLab,
+    SpacePort,
+    SpaceDock,
+    SensorArray,
+    Fighter,
+    Freighter
+};
 
 // Projectiles
 import CannonShot from './CannonShot';
@@ -47,47 +37,48 @@ import HomingMissile from './HomingMissile';
 import ClusterRocket from './ClusterRocket';
 
 const gridProjectiles   = new EntityGrid();
-const TYPES_PROJECTILES = [
-    'CannonShot',
-    'HeavyCannonShot',
-    'LaserBolt',
-    'HomingMissile',
-    'ClusterRocket'
-];
-
-const ALL_ENTITIES = {
-    Fighter,
-    Freighter,
-    PBase,
-    PColony,
-    PComm,
-    PLab,
-    Planet,
-    Probe,
-    SensorArray,
-    SpaceDock,
-    SpacePort,
-    Star,
+const TYPES_PROJECTILES = {
     CannonShot,
     HeavyCannonShot,
-    ClusterRocket,
     LaserBolt,
-    HomingMissile
+    HomingMissile,
+    ClusterRocket
 };
 
-const UPDATE_ALL_ENTITIES_SEQUENCE = [
+
+// Celestial bodies
+import Planet from './Planet';
+import Star from './Star';
+
+let bodies: any    = [];
+const TYPES_BODIES = {
+    Star,
+    Planet
+};
+
+const ALL_ENTITIES = {
     ...TYPES_BODIES,
     ...TYPES_UNITS,
     ...TYPES_PROJECTILES
+};
+
+const UPDATE_ALL_ENTITIES_SEQUENCE = [
+    ...Object.keys(TYPES_BODIES),
+    ...Object.keys(TYPES_UNITS),
+    ...Object.keys(TYPES_PROJECTILES)
 ];
 
 function create(type, params) {
     let entity;
-
     if (type in ALL_ENTITIES) {
         entity = new ALL_ENTITIES[type](params);
         Component.init(entity);
         DB.add(entity);
+
+        if (type in TYPES_BODIES) {
+            // Celestial bodies are not destroyed during a game
+            bodies.push(entity);
+        }
     }
 
     return entity;
@@ -117,26 +108,76 @@ function updateAll() {
 const getTeamColor = team => TEAM._COLORS[team];
 
 function clearAll() {
-    EntityGrid.prepareNext();
-    EntityGrid.prepareNext();
-    EntityGrid.prepareNext();
-    EntityGrid.prepareNext();
+    // Clear projectiles and units
+    for (let i = 0; i < 4; i++) {
+        prepareNext();
+    }
+
+    // Clear celestial bodies
+    bodies = [];
+
+    // Clear entity db
     DB.clearAll();
+}
+
+function prepareNext() {
+    gridUnits.prepareNext();
+    gridProjectiles.prepareNext();
+}
+
+function commit(entity) {
+    const {type} = entity;
+
+    if (type in TYPES_PROJECTILES) {
+        gridProjectiles.commit(entity);
+    } else if (type in TYPES_UNITS) {
+        gridUnits.commit(entity);
+    }
+}
+
+function getBodies() {
+    return bodies;
+}
+
+function getAbsoluteNearestByBodyType(entity, type) {
+    let nearest;
+    let nearestDist2 = Infinity;
+
+    bodies
+        .filter((body: any) => body.type === type)
+        .forEach(body => {
+            const dist2 = getDistSquared(entity, body);
+            if (dist2 < nearestDist2) {
+                nearestDist2 = dist2;
+                nearest      = body;
+            }
+        });
+
+    return nearest;
+}
+
+function getNearestEnemyUnit(entity, searchDist2 = Infinity) {
+    return gridUnits.getNearestEnemy(entity, searchDist2);
+}
+
+function getNearestUnits(entity) {
+    return gridUnits.get1CellRadiusAroundEntity(entity);
 }
 
 export default {
     create,
     updateAll,
 
-    commit:                EntityGrid.commit,
-    prepareNext:           EntityGrid.prepareNext,
-    getNearest:            EntityGrid.getNearest,
-    getNearestEnemyTarget: EntityGrid.getNearestEnemyTarget,
+    commit,
+    prepareNext,
+    getBodies,
+    getAbsoluteNearestByBodyType,
+    getNearestEnemyUnit,
+    getNearestUnits,
 
     clearAll,
-    destroy:                  DB.remove,
-    getByType:                DB.getByType,
-    getAbsoluteNearestByType: DB.getAbsoluteNearestByType,
+    destroy:   DB.remove,
+    getByType: DB.getByType,
 
     getTeamColor,
     getDistSquared,

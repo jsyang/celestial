@@ -33,38 +33,6 @@ function getEntityToGridIndex(entity, dGx, dGy): number {
     return gX + gY * GRID_WIDTH;
 }
 
-/**
- * Filter for neighbor type, minDistance2 from a particular entity
- */
-function filterNearestResult(filterType, minDistance2, neighbor) {
-    let isRelevant = true;
-
-    if (minDistance2 > 0) {
-        isRelevant = isRelevant && getDistSquared(this, neighbor) <= minDistance2;
-    }
-
-    if (filterType) {
-        isRelevant = isRelevant && neighbor.type === filterType;
-    }
-
-    return isRelevant;
-}
-
-const TARGETABLE = {
-    Freighter:   true,
-    Fighter:     true,
-    PBase:       true,
-    PColony:     true,
-    PComm:       true,
-    PLab:        true,
-    Probe:       true,
-    SensorArray: true,
-    SpaceDock:   true,
-    SpacePort:   true
-};
-
-const isTargetable = e => e.type in TARGETABLE;
-
 export default class EntityGrid {
     grid: any     = [];
     nextGrid: any = [];
@@ -109,24 +77,9 @@ export default class EntityGrid {
         ).filter(Boolean);
     }
 
-    /**
-     * Get all neighbors within 1 block around `entity`
-     */
-    getNearest(entity, filterType?, minDistance2?) {
-        let nearest = this.get1CellRadiusAroundEntity(entity);
-
-        if (filterType || minDistance2) {
-            nearest = nearest.filter(filterNearestResult.bind(entity, filterType, minDistance2));
-        }
-
-        return nearest;
-    }
-
-    getNearestEnemyTarget(entity, searchDist2) {
+    getNearestEnemy(entity, searchDist2 = Infinity) {
         const enemies = this.get1CellRadiusAroundEntity(entity)
-            .filter(
-                (e: any) => (e.team !== entity.team) && isTargetable(e)
-            );
+            .filter((e: any) => e.team !== entity.team);
 
         let nearest;
         let nearestDist2 = Infinity;
@@ -146,10 +99,3 @@ export default class EntityGrid {
         return nearest;
     }
 }
-
-// export default {
-//     prepareNext,
-//     commit,
-//     getNearest,
-//     getNearestEnemyTarget
-// }

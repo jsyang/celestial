@@ -30,7 +30,7 @@ function registerDamage(entity): boolean {
 
 // Damages other entities if it collides with them
 function process(entity) {
-    Entity.getNearest(entity)
+    Entity.getNearestUnits(entity)
         .some(registerDamage.bind(entity));
 }
 

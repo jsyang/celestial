@@ -40,7 +40,7 @@ export default class LivingEntity {
         this.getChildAt(childIndex).visible = isVisible;
     }
 
-    assignTeamColor() {
+    assignTeamColor(): any {
         const color = TEAM._COLORS[this.team];
         this.geo.graphics.currentPath.lineColor = color;
 

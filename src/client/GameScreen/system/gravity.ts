@@ -1,4 +1,5 @@
 // Gravity and related collisions
+// todo move this into a component: gravitate
 
 import Entity from '../../Entity';
 import Planet from '../../Entity/Planet';
@@ -79,18 +80,18 @@ function attractToStar(s) {
     }
 }
 
-function attractFighterToStarOrPlanet(entity) {
-    if (entity.type === 'Star') {
-        attractToStar.call(this, entity);
-    } else if (entity.type === 'Planet') {
-        attractToPlanet.call(this, entity);
+function attractFighterToBody(body) {
+    if (body.type === 'Star') {
+        attractToStar.call(this, body);
+    } else if (body.type === 'Planet') {
+        attractToPlanet.call(this, body);
     }
 }
 
 function updateFighter(fighter) {
     if (!fighter.isDockedPlanet && fighter.hp > 0) {
-        Entity.getNearest(fighter)
-            .forEach(attractFighterToStarOrPlanet.bind(fighter));
+        Entity.getBodies()
+            .forEach(attractFighterToBody.bind(fighter));
     }
 }
 

@@ -128,8 +128,8 @@ function update() {
         const now = Date.now();
 
         if (now - lastUpdateTime > TIME_UPDATE) {
-            const nearestPlanet = Entity.getAbsoluteNearestByType(origin, 'Planet');
-            const nearestStar   = Entity.getAbsoluteNearestByType(origin, 'Star');
+            const nearestPlanet = Entity.getAbsoluteNearestByBodyType(origin, 'Planet');
+            const nearestStar   = Entity.getAbsoluteNearestByBodyType(origin, 'Star');
 
             setRotations({
                 nearestEnemy:  undefined,

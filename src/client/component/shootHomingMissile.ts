@@ -52,7 +52,7 @@ function process(entity) {
 
         if (now - entity.lastShotTime_HomingMissile >= RELOAD_TIME) {
             if (ammo_HomingMissile > 0) {
-                entity.attackTarget = Entity.getNearestEnemyTarget(entity, TARGETING_DIST2);
+                entity.attackTarget = Entity.getNearestEnemyUnit(entity, TARGETING_DIST2);
 
                 entity.attackTurretPositions
                     .forEach(shoot.bind(entity));
