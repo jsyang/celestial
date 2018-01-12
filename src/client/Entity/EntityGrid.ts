@@ -13,7 +13,7 @@ import {MAX_COORDINATE} from '../constants';
  * ex: celestial bodies would be much less than number of cells to keep track of them.
  * i.e. they could all sit in the same cell / array
  */
-const GRID_SIZE_BIT_SHIFT = 11;
+const GRID_SIZE_BIT_SHIFT = 10;
 const GRID_WIDTH          = MAX_COORDINATE >> GRID_SIZE_BIT_SHIFT;
 
 

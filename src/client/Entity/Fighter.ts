@@ -116,7 +116,8 @@ export default class Fighter extends LivingEntity {
     maxHp    = 4;
     rotation = 0;
 
-    canExplode = true;
+    canGravitate = true;
+    canExplode   = true;
 
     canAttack             = true;
     attackWeapon          = 'Cannon';

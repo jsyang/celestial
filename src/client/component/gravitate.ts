@@ -1,17 +1,17 @@
-// Gravity and related collisions
-// todo move this into a component: gravitate
+/**
+ * Is affected by gravity from planets and stars
+ */
 
-import Entity from '../../Entity';
-import Planet from '../../Entity/Planet';
-import Star from '../../Entity/Star';
+import Entity from '../Entity';
+import Planet from '../Entity/Planet';
+import Star from '../Entity/Star';
 
-// Max distance that gravitation forces from this entity affect
-// other entities
+// Max distance that gravitation forces from this body affect other entities
 const DIST_MIN_STAR_GRAVITY2   = 1000 ** 2;
 const DIST_MIN_PLANET_GRAVITY2 = 800 ** 2;
 
 const ERROR_MARGIN_LANDING_ROTATION = Math.PI / 4;
-const ERROR_MARGIN_LANDING_SPEED2   = 2.1 * 2.1;
+const ERROR_MARGIN_LANDING_SPEED2   = 2.1 ** 2;
 
 const PIPI = Math.PI * 2;
 
@@ -80,22 +80,29 @@ function attractToStar(s) {
     }
 }
 
-function attractFighterToBody(body) {
-    if (body.type === 'Star') {
+function attractToBody(body) {
+    const {type} = body;
+
+    if (type === 'Star') {
         attractToStar.call(this, body);
-    } else if (body.type === 'Planet') {
+    } else if (type === 'Planet') {
         attractToPlanet.call(this, body);
     }
 }
 
-function updateFighter(fighter) {
-    if (!fighter.isDockedPlanet && fighter.hp > 0) {
+const DEFAULTS = {};
+
+function process(entity) {
+    const {isDockedPlanet, hp} = entity;
+
+    if (!isDockedPlanet && hp > 0) {
         Entity.getBodies()
-            .forEach(attractFighterToBody.bind(fighter));
+            .forEach(attractToBody.bind(entity));
     }
 }
 
-export default function update() {
-    Entity.getByType('Fighter')
-        .forEach(updateFighter);
+export default {
+    componentFlag: 'canGravitate',
+    DEFAULTS,
+    process
 }

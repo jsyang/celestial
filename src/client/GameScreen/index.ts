@@ -7,7 +7,6 @@ import Galaxy from '../Galaxy';
 import Entity from '../Entity';
 
 import HUD from './HUD';
-import SystemGravity from './system/gravity';
 import SystemTeam from './system/team';
 import Freelook from '../Graphics/Freelook';
 import GalaxyWonModal from '../UI/Modal/GalaxyWonModal';
@@ -28,7 +27,6 @@ let isPaused = false;
 function update() {
     SystemTeam.update();
     Entity.updateAll();
-    SystemGravity();
     Entity.prepareNext();
 }
 

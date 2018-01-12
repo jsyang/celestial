@@ -36,7 +36,7 @@ import LaserBolt from './LaserBolt';
 import HomingMissile from './HomingMissile';
 import ClusterRocket from './ClusterRocket';
 
-const gridProjectiles   = new EntityGrid();
+let projectiles         = [];
 const TYPES_PROJECTILES = {
     CannonShot,
     HeavyCannonShot,
@@ -120,17 +120,15 @@ function clearAll() {
     DB.clearAll();
 }
 
+const isHPAbove0 = (e: any) => e.hp > 0;
+
 function prepareNext() {
     gridUnits.prepareNext();
-    gridProjectiles.prepareNext();
+    projectiles = projectiles.filter(isHPAbove0);
 }
 
 function commit(entity) {
-    const {type} = entity;
-
-    if (type in TYPES_PROJECTILES) {
-        gridProjectiles.commit(entity);
-    } else if (type in TYPES_UNITS) {
+    if (entity.type in TYPES_UNITS) {
         gridUnits.commit(entity);
     }
 }

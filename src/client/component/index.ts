@@ -37,6 +37,7 @@ import DockPlanetComponent from './dockPlanet';
 import ColonizePlanetComponent from './colonizePlanet';
 import ShimmerComponent from './shimmer';
 import DevelopWeaponComponent from './developWeapon';
+import GravitateComponent from './gravitate';
 
 
 // In order of update() precedence
@@ -78,7 +79,8 @@ const ALL_COMPONENTS = [
     MetabolizeComponent,
     DisplayHitComponent,
     ShimmerComponent,
-    ExplodeComponent
+    ExplodeComponent,
+    GravitateComponent
 ];
 
 /**
