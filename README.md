@@ -7,6 +7,7 @@ See this page for [How to Play](src/how-to-play.md) this game.
 ## TODOs
 
 - better nearest star / nearest planet HUD (upgrade?)
+
 - special button when docked to planet:
     - set planet as preferred respawn point
     - replace current weapon

@@ -87,11 +87,11 @@ function colonizeNearestPlanet(freighter) {
 function processTeam(team) {
     const selectOnlyCurrentTeam = filterByTeam.bind(null, team);
 
-    let teamPlanet     = Entity.getByType('Planet').filter(selectOnlyCurrentTeam);
-    let teamPColony    = Entity.getByType('PColony').filter(selectOnlyCurrentTeam);
-    let teamFreighter  = Entity.getByType('Freighter').filter(selectOnlyCurrentTeam);
-    const teamFighter  = Entity.getByType('Fighter').filter(selectOnlyCurrentTeam);
-    const humanFighter = Entity.getByType('Fighter').filter(f => f.team === Entity.TEAM.MAGENTA);
+    let teamPlanet    = Entity.getByType('Planet').filter(selectOnlyCurrentTeam);
+    let teamPColony   = Entity.getByType('PColony').filter(selectOnlyCurrentTeam);
+    let teamFreighter = Entity.getByType('Freighter').filter(selectOnlyCurrentTeam);
+    const teamFighter = Entity.getByType('Fighter').filter(selectOnlyCurrentTeam);
+    const enemyPBase  = Entity.getByType('PBase').filter(f => f.team !== team);
 
     let idleTeamPlanet;
 
@@ -125,9 +125,9 @@ function processTeam(team) {
             Starfield.init();
         }
 
-        // AI control (testing)
+        // AI fighter should attack enemy bases
         if (team !== Entity.TEAM.MAGENTA && !firstFighter.attackTarget) {
-            firstFighter.attackTarget = humanFighter[0];
+            firstFighter.attackTarget = Random.arrayElement(enemyPBase);
         }
     }
 
