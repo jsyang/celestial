@@ -40,8 +40,7 @@ _Celestial Combat is a game of galactic trade, colonization, and conquest._
 ## Player controls
 
 ```
-    KEYBOARD            ACTION
-    
+    KEYBOARD........... ACTION.............
     Left arrow key      Turn left
     Right arrow key     Turn right
     Up arrow key        Accelerate
@@ -49,8 +48,7 @@ _Celestial Combat is a game of galactic trade, colonization, and conquest._
 
 
     
-    GAMEPAD             ACTION
-    
+    GAMEPAD............ ACTION.............
     Analog stick        Set craft direction
     Button 0            Fire primary weapon
     Button 2            Accelerate

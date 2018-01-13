@@ -21,6 +21,14 @@ See this page for [How to Play](src/how-to-play.md) this game.
     - attack with fighters in groups
     - assign priority to highly armed enemy spacecraft
 
+- tutorial sector
+    - only planet to colonize is a planet with defunct colony and fighter 
+
+- fighter AI
+    - return to planet for repair
+    - return to planet for upgrade
+    - land on planet to colonize
+
 ## TODOs
 
 - better nearest star / nearest planet HUD (upgrade?)
@@ -32,8 +40,6 @@ See this page for [How to Play](src/how-to-play.md) this game.
 - cloaking device
     - one time use (actively cloaked until ship is damaged or fires a weapon)
     
-- tutorial sector
-    - only planet to colonize is a planet with defunct colony and fighter 
 
 - polyline title graphics + win / loss symbols    
     - maybe reuse 3dphototrace for this purpose 
