@@ -38,12 +38,14 @@ import ColonizePlanetComponent from './colonizePlanet';
 import ShimmerComponent from './shimmer';
 import DevelopWeaponComponent from './developWeapon';
 import GravitateComponent from './gravitate';
+import FlockComponent from './flock';
 
 
 // In order of update() precedence
 // ExplodeComponent excluded for now
 const ALL_COMPONENTS = [
     // Change position
+    FlockComponent,
     DockPlanetComponent,
     OccupyPlanetComponent,
     OccupySpacePortComponent,

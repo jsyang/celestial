@@ -69,6 +69,20 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
             materialsFinished: 500
         });
 
+        for (let i = 10; i-- > 0;) {
+            Entity.create('Probe', {
+                x:                 fleetPosition.x + Random.int(-100, 100) + 200,
+                y:                 fleetPosition.y + Random.int(-100, 100) + 200,
+                flockPoint:        {
+                    x: startingLocation.x,
+                    y: startingLocation.y
+                },
+                team,
+                isOrbitingPlanet:  false,
+                materialsFinished: 500
+            });
+        }
+
     } else {
 
         const planetStructureParams = {
@@ -99,5 +113,13 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
 
         startingLocation.team = team;
         startingLocation.updateFlagColor();
+
+        // Find other planets in solar system and mark them as friendly
+        Entity.getByType('Planet')
+            .filter(p => p.star === startingLocation.star && p !== startingLocation)
+            .forEach(p => {
+                p.team = team;
+                p.updateFlagColor();
+            });
     }
 }

@@ -27,10 +27,6 @@ function filterByNoPBaseOrPColony(entity) {
     return !entity.pbase || !entity.pcolony;
 }
 
-function filterByTeam(team, entity) {
-    return entity.team === team;
-}
-
 function filterByIdlePColony(entity) {
     return entity.pcolony && !entity.pcolony.isManufacturing;
 }
@@ -85,13 +81,13 @@ function colonizeNearestPlanet(freighter) {
 }
 
 function processTeam(team) {
-    const selectOnlyCurrentTeam = filterByTeam.bind(null, team);
+    const friendlyOnly = (e: any) => e.team === team;
+    const enemyOnly    = (e: any) => e.team !== team;
 
-    let teamPlanet    = Entity.getByType('Planet').filter(selectOnlyCurrentTeam);
-    let teamPColony   = Entity.getByType('PColony').filter(selectOnlyCurrentTeam);
-    let teamFreighter = Entity.getByType('Freighter').filter(selectOnlyCurrentTeam);
-    const teamFighter = Entity.getByType('Fighter').filter(selectOnlyCurrentTeam);
-    const enemyPBase  = Entity.getByType('PBase').filter(f => f.team !== team);
+    let teamPlanet    = Entity.getByType('Planet').filter(friendlyOnly);
+    let teamPColony   = Entity.getByType('PColony').filter(friendlyOnly);
+    let teamFreighter = Entity.getByType('Freighter').filter(friendlyOnly);
+    const teamFighter = Entity.getByType('Fighter').filter(friendlyOnly);
 
     let idleTeamPlanet;
 
@@ -111,23 +107,42 @@ function processTeam(team) {
             .forEach(assignFreightersToPlanet.bind(null, teamFreighter));
     }
 
-    if (teamFighter.length === 0) {
+    // Construct wingmen
+    if (teamFighter.length < teamPlanet.length) {
         constructOnRandomPlanet(idleTeamPlanet, 'Fighter');
+    }
 
-    } else {
-        const firstFighter: any = teamFighter[0];
+    if (teamFighter.length > 0) {
+        let fighter: any = Random.arrayElement(teamFighter);
 
         // Human control
-        if (team === Entity.TEAM.MAGENTA && !GameScreenControl.getControlledEntity()) {
-            firstFighter.isFighterAutoAccelerated = false;
-            GameScreenControl.setControlledEntity(firstFighter);
-            Focus.setFocus(firstFighter);
-            Starfield.init();
+        if (team === Entity.TEAM.MAGENTA) {
+            if (!GameScreenControl.getControlledEntity()) {
+                fighter = teamFighter.filter(f => f.isDockedPlanet || !f.isFighterAutoAccelerated)[0];
+
+                if (fighter) {
+                    fighter.isFighterAutoAccelerated = false;
+                    GameScreenControl.setControlledEntity(fighter);
+                    Focus.setFocus(fighter);
+                    Starfield.init();
+                }
+            }
         }
 
-        // AI fighter should attack enemy bases
-        if (team !== Entity.TEAM.MAGENTA && !firstFighter.attackTarget) {
-            firstFighter.attackTarget = Random.arrayElement(enemyPBase);
+        // Attack if idle
+        if (fighter && !fighter.attackTarget && fighter.isFighterAutoAccelerated) {
+            const whichAttackType = Math.random();
+            let potentialTarget;
+
+            if (whichAttackType < 0.4) {
+                potentialTarget = Random.arrayElement(Entity.getByType('Freighter').filter(enemyOnly));
+            } else if (whichAttackType < 0.8) {
+                potentialTarget = Entity.getAbsoluteNearestByBodyType(fighter, 'PBase');
+            }
+
+            if (potentialTarget) {
+                fighter.attackTarget = potentialTarget;
+            }
         }
     }
 

@@ -6,6 +6,11 @@ See this page for [How to Play](src/how-to-play.md) this game.
 
 ## TODOs to finish v1
 
+- implement positional sound so far away noises don't play
+
+- make planet markers the team owning them
+- better nearest star / nearest planet HUD (upgrade?)
+
 - special button when docked to planet:
     - set planet as preferred respawn point
     - replace current weapon
@@ -31,15 +36,16 @@ See this page for [How to Play](src/how-to-play.md) this game.
 
 ## TODOs
 
-- better nearest star / nearest planet HUD (upgrade?)
-
 - special button when docked to planet:
     - pick up unused upgrades
     - drop unused upgrades
 
+- special button when near non-friendly planet
+    - negotiate treaty
+    - buy / sell resources
+
 - cloaking device
     - one time use (actively cloaked until ship is damaged or fires a weapon)
-    
 
 - polyline title graphics + win / loss symbols    
     - maybe reuse 3dphototrace for this purpose 

@@ -8,8 +8,8 @@ const MAX_PLANETS_PER_STAR      = 2;
 const CHANCE_STARS_HAVE_PLANETS = 0.8;
 
 // How far stars MUST be away from each other
-const MIN_MARGIN_STARS  = 6000;
-const MIN_MARGIN_STARS2 = MIN_MARGIN_STARS * MIN_MARGIN_STARS;
+const MIN_MARGIN_STARS  = 8000;
+const MIN_MARGIN_STARS2 = MIN_MARGIN_STARS ** 2;
 
 function generateStarPosition() {
     return {

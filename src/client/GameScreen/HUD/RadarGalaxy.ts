@@ -26,6 +26,12 @@ scanner.y = MARGIN_EDGE;
 
 const COORDINATE_TO_SCANNER_FACTOR = SIZE / MAX_COORDINATE;
 
+// Make planet markers show the team owning them.
+// const PLANET_MARKER_COLOR_TEAM =
+//           Entity.TEAM._COLORS.map(c => {
+//
+//           });
+
 const drawMarker = entity => {
     const {type} = entity;
 

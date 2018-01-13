@@ -44,15 +44,11 @@ export default class Probe extends LivingEntity {
     type = 'Probe';
     geo  = Geometry(GEO.body, {collisionPath: GEO.body.collisionPath});
 
-    // Components
-    AUDIO_HIT   = 'hit2';
-    hp          = 2;
-    maxHp       = 2;
-    hasDied     = false;
-    hitTime     = -1;
-    patrolIndex = 0;
-    rotation    = 0;
+    hp    = 2;
+    maxHp = 2;
 
+    canMoveLinearly = true;
+    canFlock        = true;
 
     constructor(params: Probe) {
         super();

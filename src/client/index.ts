@@ -12,14 +12,17 @@ function onTitleScreenFadeout() {
 const isGameScreenStart = location.search.match(/game$/);
 
 function onDOMContentLoaded() {
-    (window as any).FPSMETER = new (window as any).FPSMeter({
-        left:    'auto',
-        top:     '5px',
-        right:   '5px',
-        heat:    0,
-        graph:   1,
-        history: 40
-    });
+    (window as any).FPSMETER = {tick: new Function()};
+    //
+    //     new (window as any).FPSMeter({
+    //     left:    'auto',
+    //     top:     'auto',
+    //     bottom:  '5px',
+    //     right:   '5px',
+    //     heat:    0,
+    //     graph:   1,
+    //     history: 40
+    // });
 
     let onAssetsLoad;
 

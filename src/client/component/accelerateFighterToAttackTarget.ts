@@ -17,7 +17,7 @@ const FRAMES_TO_TURN      = Math.PI / ROTATION_RATE_FIGHTER;
 const ATTACK_DIST2        = 400 ** 2;
 const ATTACK_PLANET_DIST2 = 600 ** 2;
 
-const KEEP_AWAY_PLANET_DIST2     = 450 ** 2;
+const KEEP_AWAY_PLANET_DIST2     = 400 ** 2;
 const FRAMES_DECELERATION_MARGIN = 5;
 
 function rotate(entity, idealRotation) {

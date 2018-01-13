@@ -11,13 +11,14 @@ import PBase from './PBase';
 import PColony from './PColony';
 import PComm from './PComm';
 import PLab from './PLab';
-// import Probe from './Probe';
+import Probe from './Probe';
 import SensorArray from './SensorArray';
 import SpaceDock from './SpaceDock';
 import SpacePort from './SpacePort';
 
 const gridUnits   = new EntityGrid();
 const TYPES_UNITS = {
+    Probe,
     PBase,
     PColony,
     PComm,
