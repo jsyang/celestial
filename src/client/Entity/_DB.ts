@@ -24,6 +24,12 @@ function remove(entity) {
     entity.planet && delete entity.planet[childType];
     entity.spaceport && delete entity.spaceport[childType];
 
+    // Blow up the docked fighter as well if SpacePort
+    if (entity.fighter) {
+        entity.fighter.undockSpacePort();
+        entity.fighter.hp = 0;
+    }
+
     delete entity.target;
 
     const byTypeCollection = getByType(entity.type);

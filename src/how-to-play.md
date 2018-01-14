@@ -74,6 +74,11 @@ the planet's center. Failing to do this the Fighter will be destroyed.
 
 Note: you cannot land on stars. Fighters are affected by gravity from planets and stars. 
 
+#### Landing on a friendly spaceport
+Much like landing on a planet, you must approach the spaceport slowly and aim for the center of
+the spaceport to trigger the docking sequence. Once this is achieved, the spaceport will
+catch your fighter craft. Rearming and repairing aboard the spaceport is much faster than on a planet surface.
+
 ## Weapons
 
 - **Cannon**<br>The standard energy weapon supplied by the same power plant that drives
@@ -127,6 +132,8 @@ Storage         ||||||||||
 ## Facilities
 
 ![1](../assets/planet.png)
+
+A typical planet with a full complement of facilities.
 
 ##### PBase
 
@@ -204,7 +211,7 @@ Storage         ||||......
 
 ## Acknowledgements
 
-Gameplay inspired by and based on [Gravity Well v2.2 (circa 1995)](https://archive.org/details/GWELL22), the planetary 
+Gameplay inspired by [Gravity Well v2.2 (circa 1995)](https://archive.org/details/GWELL22), the planetary 
 conquest game by David H. Hoeft of Software Engineering Inc.
 
 <script>

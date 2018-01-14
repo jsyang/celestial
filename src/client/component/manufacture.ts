@@ -2,7 +2,7 @@ import Entity from '../Entity';
 import Random from '../Random';
 
 const PRODUCT = {
-    Freighter: {cost: 300, time: 120},
+    Freighter: {cost: 800, time: 1200},
     Fighter:   {cost: 500, time: 90}
 };
 
@@ -41,9 +41,9 @@ function process(entity) {
                 const product = Entity.create(entity.manufactureType, {x, y, team});
 
                 if (entity.manufactureType === 'Fighter') {
-                    if (entity.type === 'SpacePort') {
-                        // todo: Dock in SpacePort
-                        product.dockPlanet(planet);
+                    //if (entity.type === 'SpacePort') {
+                    if (planet.spaceport && !planet.spaceport.isCarryingFighter) {
+                        product.dockSpacePort(planet.spaceport);
                     } else {
                         product.dockPlanet(planet);
                     }

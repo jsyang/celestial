@@ -24,12 +24,18 @@ function shoot(getMuzzleFunc) {
     });
 }
 
-function reload_ClusterRocket() {
+function reload_ClusterRocket(isGradual = true) {
     if (this.ammo_ClusterRocket < this.ammoMax_ClusterRocket) {
         playSound('empty');
-        this.ammo_ClusterRocket = this.ammoMax_ClusterRocket;
+
+        if (isGradual) {
+            this.ammo_ClusterRocket++;
+        } else {
+            this.ammo_ClusterRocket = this.ammoMax_ClusterRocket;
+        }
     }
 }
+
 
 const DEFAULTS = {
     reload_ClusterRocket,

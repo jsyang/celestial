@@ -17,7 +17,7 @@ const FRAMES_TO_TURN      = Math.PI / ROTATION_RATE_FIGHTER;
 const ATTACK_DIST2        = 400 ** 2;
 const ATTACK_PLANET_DIST2 = 600 ** 2;
 
-const KEEP_AWAY_PLANET_DIST2     = 400 ** 2;
+const KEEP_AWAY_PLANET_DIST2     = 300 ** 2;
 const FRAMES_DECELERATION_MARGIN = 5;
 
 function rotate(entity, idealRotation) {
@@ -34,11 +34,16 @@ function accelerateFlameOn(entity, acc = ACCELERATION_FIGHTER) {
 }
 
 function moveOrAttack(entity) {
-    const {attackTarget, dx, dy, isDockedPlanet} = entity;
+    const {attackTarget, dx, dy, isDockedPlanet, isDockedSpacePort, isFighterPreviouslyDocked} = entity;
 
     if (isDockedPlanet) {
+        entity.isFighterPreviouslyDocked = true;
         entity.undockPlanet();
         accelerateFlameOn(entity, ACCELERATION_FIGHTER_UNDOCK * 2 + ACCELERATION_FIGHTER);
+    } else if (isDockedSpacePort) {
+        entity.isFighterPreviouslyDocked = true;
+        entity.undockSpacePort();
+        accelerateFlameOn(entity, ACCELERATION_FIGHTER_UNDOCK + ACCELERATION_FIGHTER);
 
     } else {
         let rotation;
@@ -60,10 +65,14 @@ function moveOrAttack(entity) {
         const framesToSlowDown            = (dist2 / ACCELERATION_FIGHTER) ** 0.25 + FRAMES_TO_TURN + FRAMES_DECELERATION_MARGIN;
         const numberOfFramesAwayFromPoint = Math.sqrt(dist2 / speed2);
 
-        if (speed2 < 9) {
+        if (isFighterPreviouslyDocked && speed2 < 9) {
             // Develop initial speed
             rotation = entity.rotation;
         } else {
+            entity.isFighterPreviouslyDocked = false;
+
+            entity.isAttacking = false;
+
             if (numberOfFramesAwayFromPoint <= framesToSlowDown) {
                 // Decelerate when approaching target point
                 rotation = movementBearing + Math.PI;
@@ -74,8 +83,7 @@ function moveOrAttack(entity) {
 
             // Keep away from planet's gravitation force
             if (dist2 < KEEP_AWAY_PLANET_DIST2) {
-                rotation           = movementBearing + Math.PI;
-                entity.isAttacking = false;
+                rotation = movementBearing + Math.PI;
 
                 // If close enough, start attacking
             } else if (dist2 < attackDist2) {
@@ -83,9 +91,7 @@ function moveOrAttack(entity) {
                 const ay = Math.sin(idealRotation) * 10;
 
                 rotation           = Math.atan2(ay - dy, ax - dx);
-                entity.isAttacking = Math.abs(rotation - entity.rotation) < ACCELERATION_ANGLE_MAGNITUDE;
-            } else {
-                entity.isAttacking = false;
+                entity.isAttacking = Math.abs(rotation - entity.rotation) < ACCELERATION_ANGLE_MAGNITUDE * 2;
             }
 
             rotate(entity, rotation);
@@ -120,7 +126,8 @@ function process(entity) {
 }
 
 const DEFAULTS = {
-    isFighterAutoAccelerated: true
+    isFighterPreviouslyDocked: false,
+    isFighterAutoAccelerated:  true
 };
 
 export default {

@@ -61,8 +61,6 @@ function step() {
         Graphics.render();
 
         then = now - (elapsed % FPS_INTERVAL);
-
-        (window as any).FPSMETER.tick();
     }
 
     raf = requestAnimationFrame(step);

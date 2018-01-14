@@ -41,11 +41,22 @@ function constructOnRandomPlanet(idleTeamPlanet, type) {
     }
 }
 
-function repairRearmWhenDockedToOccupiedPlanet(fighter) {
-    const {planet, isDockedPlanet, team} = fighter;
-    if (isDockedPlanet && team === planet.team && planet.isOccupied()) {
-        const {reload_HomingMissile, reload_ClusterRocket, reload_LaserBolt} = fighter;
+function repairRearmWhenDocked(fighter) {
+    const {planet, isDockedPlanet, team, isDockedSpacePort, reload_HomingMissile, reload_ClusterRocket, reload_LaserBolt} = fighter;
 
+    if (isDockedSpacePort) {
+        // Repair
+        if (fighter.hp < fighter.maxHp) {
+            playSound('repaired');
+            fighter.hp = fighter.maxHp;
+        }
+
+        // Re-arm
+        reload_HomingMissile && fighter.reload_HomingMissile();
+        reload_ClusterRocket && fighter.reload_ClusterRocket();
+        reload_LaserBolt && fighter.reload_LaserBolt();
+
+    } else if (isDockedPlanet && team === planet.team && planet.isOccupied()) {
         // Re-arm
         reload_HomingMissile && fighter.reload_HomingMissile();
         reload_ClusterRocket && fighter.reload_ClusterRocket();
@@ -54,7 +65,7 @@ function repairRearmWhenDockedToOccupiedPlanet(fighter) {
         // Repair
         if (fighter.hp < fighter.maxHp) {
             playSound('repaired');
-            fighter.hp = fighter.maxHp;
+            fighter.hp += 0.5;
         }
     }
 }
@@ -134,10 +145,10 @@ function processTeam(team) {
             const whichAttackType = Math.random();
             let potentialTarget;
 
-            if (whichAttackType < 0.4) {
+            if (whichAttackType < 0.1) {
                 potentialTarget = Random.arrayElement(Entity.getByType('Freighter').filter(enemyOnly));
             } else if (whichAttackType < 0.8) {
-                potentialTarget = Entity.getAbsoluteNearestByBodyType(fighter, 'PBase');
+                potentialTarget = Random.arrayElement(Entity.getByType('PBase').filter(enemyOnly));
             }
 
             if (potentialTarget) {
@@ -146,7 +157,7 @@ function processTeam(team) {
         }
     }
 
-    teamFighter.forEach(repairRearmWhenDockedToOccupiedPlanet);
+    teamFighter.forEach(repairRearmWhenDocked);
 
     if (teamPColony.length === 0 && teamFighter.length === 0 && teamFreighter.length === 0) {
         teamsRemaining = teamsRemaining.filter(t => t !== team);

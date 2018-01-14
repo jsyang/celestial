@@ -26,12 +26,18 @@ function shoot(getMuzzleFunc) {
 
 }
 
-function reload_LaserBolt() {
+function reload_LaserBolt(isGradual = true) {
     if (this.ammo_LaserBolt < this.ammoMax_LaserBolt) {
         playSound('empty');
-        this.ammo_LaserBolt = this.ammoMax_LaserBolt;
+
+        if (isGradual) {
+            this.ammo_LaserBolt++;
+        } else {
+            this.ammo_LaserBolt = this.ammoMax_LaserBolt;
+        }
     }
 }
+
 
 const DEFAULTS = {
     reload_LaserBolt,

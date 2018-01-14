@@ -5,8 +5,8 @@
 import Entity from '../Entity';
 
 const DEFAULTS = {
-    CONSTRUCTION_TIME: 3000,
-    constructionTime:  3000
+    CONSTRUCTION_TIME: 5000,
+    constructionTime:  5000
 };
 
 // i.e. "Build tree"
@@ -54,7 +54,6 @@ function build(construction) {
 }
 
 function process(entity) {
-
     if (entity.materialsFinished > 0) {
         if (entity.constructionTime > 0) {
             entity.constructionTime--;

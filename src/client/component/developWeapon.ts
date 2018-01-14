@@ -22,7 +22,13 @@ const DEFAULTS = {
  * Develop new weapons to be installed on Fighter craft
  */
 function process(entity) {
-    const {developWeapon_time, developWeapon_installTime, developWeapon_installTimeMax, developWeapon_timeMax, developWeapon_weaponReady} = entity;
+    const {
+              developWeapon_time,
+              developWeapon_installTime,
+              developWeapon_installTimeMax,
+              developWeapon_timeMax,
+              developWeapon_weaponReady
+          } = entity;
 
     if (Boolean(developWeapon_weaponReady)) {
         entity.isShimmering = true;
@@ -30,10 +36,13 @@ function process(entity) {
         if (developWeapon_installTime > 0) {
             entity.developWeapon_installTime--;
         } else {
-            const installable = Entity.getByType('Fighter')
-                .find(fighter => (
+            const installable: any = Entity.getNearestUnits(entity)
+                .find((fighter: any) => (
                     fighter.team === entity.team &&
-                    fighter.planet === entity.planet
+                    (
+                        (fighter.isDockedPlanet && fighter.planet === entity.planet) ||
+                        (fighter.isDockedSpacePort && fighter.spaceport === entity.planet.spaceport)
+                    )
                 ));
 
             if (installable && installable.attackWeapon === 'Cannon') {

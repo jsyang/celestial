@@ -25,10 +25,15 @@ function shoot(getMuzzleFunc) {
     });
 }
 
-function reload_HomingMissile() {
+function reload_HomingMissile(isGradual = true) {
     if (this.ammo_HomingMissile < this.ammoMax_HomingMissile) {
         playSound('empty');
-        this.ammo_HomingMissile = this.ammoMax_HomingMissile;
+
+        if (isGradual) {
+            this.ammo_HomingMissile++;
+        } else {
+            this.ammo_HomingMissile = this.ammoMax_HomingMissile;
+        }
     }
 }
 

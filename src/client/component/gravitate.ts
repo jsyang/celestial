@@ -93,9 +93,9 @@ function attractToBody(body) {
 const DEFAULTS = {};
 
 function process(entity) {
-    const {isDockedPlanet, hp} = entity;
+    const {isDockedPlanet, isDockedSpacePort, hp} = entity;
 
-    if (!isDockedPlanet && hp > 0) {
+    if (!isDockedPlanet && !isDockedSpacePort && hp > 0) {
         Entity.getBodies()
             .forEach(attractToBody.bind(entity));
     }

@@ -6,6 +6,8 @@ See this page for [How to Play](src/how-to-play.md) this game.
 
 ## TODOs to finish v1
 
+- spaceport should catch a flying fighter to dock
+
 - implement positional sound so far away noises don't play
 
 - make planet markers the team owning them

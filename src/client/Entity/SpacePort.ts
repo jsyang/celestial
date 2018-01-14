@@ -217,6 +217,8 @@ export default class SpacePort extends LivingEntity {
     canShootCannon        = true;
     reloadTime_Cannon     = 300;
 
+    canCarryFighter = true;
+
     canStoreMaterial  = true;
     materialsRaw      = 0;
     materialsFinished = 0;

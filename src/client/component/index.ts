@@ -34,6 +34,8 @@ import AccelerateToAttackTargetComponent from './accelerateToAttackTarget';
 import AccelerateFighterToAttackTargetComponent from './accelerateFighterToAttackTarget';
 import DisplayHitComponent from './displayHit';
 import DockPlanetComponent from './dockPlanet';
+import DockSpacePortComponent from './dockSpacePort';
+import CarryFighterComponent from './carryFighter';
 import ColonizePlanetComponent from './colonizePlanet';
 import ShimmerComponent from './shimmer';
 import DevelopWeaponComponent from './developWeapon';
@@ -47,6 +49,7 @@ const ALL_COMPONENTS = [
     // Change position
     FlockComponent,
     DockPlanetComponent,
+    DockSpacePortComponent,
     OccupyPlanetComponent,
     OccupySpacePortComponent,
     AccelerateComponent,
@@ -76,6 +79,7 @@ const ALL_COMPONENTS = [
     ShootHomingMissileComponent,
     ShootClusterRocketComponent,
     ColonizePlanetComponent,
+    CarryFighterComponent,
 
     // Metabolize
     MetabolizeComponent,

@@ -8,20 +8,13 @@ const DEFAULTS = {
 
 function registerDamage(entity): boolean {
     if (entity.team !== this.team) {
-        const isEntityPlanetOrStar = (
-            entity.type === 'Planet' ||
-            entity.type === 'Star'
-        );
+        if (testPointInEntity(this, entity)) {
+            playSound(entity.AUDIO_HIT || 'hit');
+            entity.hp -= this.damageHp;
+            entity.hitTime = 10;
+            Entity.destroy(this);
 
-        if (!isEntityPlanetOrStar) {
-            if (testPointInEntity(this, entity)) {
-                playSound(entity.AUDIO_HIT || 'hit');
-                entity.hp -= this.damageHp;
-                entity.hitTime = 10;
-                Entity.destroy(this);
-
-                return true;
-            }
+            return true;
         }
     }
 

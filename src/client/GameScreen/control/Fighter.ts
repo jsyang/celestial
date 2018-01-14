@@ -2,8 +2,9 @@ import {IInputEvent} from '../../Input/Event';
 import {ACCELERATION_FIGHTER, ACCELERATION_FIGHTER_UNDOCK, ROTATION_RATE_FIGHTER} from '../../constants';
 
 export default function controlFighter(controlledEntity, events: IInputEvent) {
-    const isDocked = controlledEntity.isDockedPlanet;
+    const {isDockedPlanet, isDockedSpacePort} = controlledEntity;
 
+    const isDocked = isDockedPlanet || isDockedSpacePort;
 
     if (!isDocked) {
         // Update fighter rotation
@@ -22,7 +23,12 @@ export default function controlFighter(controlledEntity, events: IInputEvent) {
 
     if (events.ACCELERATE) {
         if (isDocked) {
-            controlledEntity.undockPlanet();
+            if (isDockedPlanet) {
+                controlledEntity.undockPlanet();
+
+            } else if (isDockedSpacePort) {
+                controlledEntity.undockSpacePort();
+            }
             // Escape acceleration
             controlledEntity.accelerate(ACCELERATION_FIGHTER_UNDOCK);
         }
