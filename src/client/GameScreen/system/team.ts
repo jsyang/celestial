@@ -52,9 +52,9 @@ function repairRearmWhenDocked(fighter) {
         }
 
         // Re-arm
-        reload_HomingMissile && fighter.reload_HomingMissile();
-        reload_ClusterRocket && fighter.reload_ClusterRocket();
-        reload_LaserBolt && fighter.reload_LaserBolt();
+        reload_HomingMissile && fighter.reload_HomingMissile(false);
+        reload_ClusterRocket && fighter.reload_ClusterRocket(false);
+        reload_LaserBolt && fighter.reload_LaserBolt(false);
 
     } else if (isDockedPlanet && team === planet.team && planet.isOccupied()) {
         // Re-arm
