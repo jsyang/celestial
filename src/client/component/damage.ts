@@ -1,4 +1,4 @@
-import {playSound} from '../assets/audio';
+import {playSoundLocalized} from '../assets/audio';
 import Entity from '../Entity';
 import {testPointInEntity} from '../Geometry';
 
@@ -7,10 +7,12 @@ const DEFAULTS = {
 };
 
 function registerDamage(entity): boolean {
-    if (entity.team !== this.team) {
+    const {team, damageHp} = this;
+
+    if (entity.team !== team) {
         if (testPointInEntity(this, entity)) {
-            playSound(entity.AUDIO_HIT || 'hit');
-            entity.hp -= this.damageHp;
+            playSoundLocalized(entity.AUDIO_HIT || 'hit', this);
+            entity.hp -= damageHp;
             entity.hitTime = 10;
             Entity.destroy(this);
 

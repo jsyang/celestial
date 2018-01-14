@@ -1,4 +1,4 @@
-import TEAM from '../Entity/TEAM';
+import TEAM from '../Entity/_TEAM';
 import Entity from '../Entity';
 import Random from '../Random';
 

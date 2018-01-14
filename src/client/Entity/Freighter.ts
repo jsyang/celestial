@@ -2,7 +2,7 @@ import Geometry from '../Geometry';
 import Entity from ".";
 import Planet from "./Planet";
 import LivingEntity from './LivingEntity';
-import TEAM from './TEAM';
+import TEAM from './_TEAM';
 import Random from '../Random';
 
 const GEO = {

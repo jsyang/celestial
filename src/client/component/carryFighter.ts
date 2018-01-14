@@ -17,7 +17,9 @@ function catchFighter(fighter): boolean {
         const speed2 = dx ** 2 + dy ** 2;
 
         if (speed2 <= DOCK_SPEED_MAX2) {
-            playSound('repaired');
+            if (team === Entity.TEAM.MAGENTA) {
+                playSound('repaired');
+            }
             fighter.dockSpacePort(this);
             return true;
         }

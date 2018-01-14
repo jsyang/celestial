@@ -1,5 +1,5 @@
 import Entity from '../Entity';
-import {playSound} from '../assets/audio';
+import {playSoundLocalized} from '../assets/audio';
 
 const LAUNCH_SPEED = 5;
 
@@ -39,7 +39,7 @@ function process(entity) {
             entity.attackTurretPositions
                 .forEach(shoot.bind(entity));
 
-            playSound(SOUND_SHOOT);
+            playSoundLocalized(SOUND_SHOOT, entity);
 
             entity.lastShotTime_Cannon = now;
         }

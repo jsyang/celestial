@@ -1,4 +1,4 @@
-import {playSound} from '../assets/audio';
+import {playSoundLocalized} from '../assets/audio';
 import Entity from '../Entity';
 import Random from '../Random';
 
@@ -10,7 +10,7 @@ function explode() {
               explosionOriginDy
           } = this;
 
-    playSound(EXPLOSION_SOUND);
+    playSoundLocalized(EXPLOSION_SOUND, this);
 
     for (let fragmentCount = EXPLOSION_FRAGMENTS; fragmentCount > 0; fragmentCount--) {
         Entity.create('CannonShot', {

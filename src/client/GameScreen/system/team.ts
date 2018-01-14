@@ -129,7 +129,7 @@ function processTeam(team) {
         // Human control
         if (team === Entity.TEAM.MAGENTA) {
             if (!GameScreenControl.getControlledEntity()) {
-                fighter = teamFighter.filter(f => f.isDockedPlanet || !f.isFighterAutoAccelerated)[0];
+                fighter = teamFighter.filter(f => f.isDockedPlanet || f.isDockedSpacePort || !f.isFighterAutoAccelerated)[0];
 
                 if (fighter) {
                     fighter.isFighterAutoAccelerated = false;
@@ -145,9 +145,9 @@ function processTeam(team) {
             const whichAttackType = Math.random();
             let potentialTarget;
 
-            if (whichAttackType < 0.1) {
+            if (whichAttackType < 0.02) {
                 potentialTarget = Random.arrayElement(Entity.getByType('Freighter').filter(enemyOnly));
-            } else if (whichAttackType < 0.8) {
+            } else if (whichAttackType < 0.1) {
                 potentialTarget = Random.arrayElement(Entity.getByType('PBase').filter(enemyOnly));
             }
 

@@ -1,4 +1,4 @@
-import TEAM from './TEAM';
+import TEAM from './_TEAM';
 import Geometry from '../Geometry';
 import Star from './Star';
 import PBase from './PBase';

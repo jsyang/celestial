@@ -1,4 +1,4 @@
-import TEAM from './TEAM';
+import TEAM from './_TEAM';
 
 export default class LivingEntity {
     hitTime: number;

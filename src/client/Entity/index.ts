@@ -1,8 +1,8 @@
 import Component from '../component';
 
 import DB from './_DB';
-import TEAM from './TEAM';
-import EntityGrid from './EntityGrid';
+import TEAM from './_TEAM';
+import EntityGrid from './_EntityGrid';
 
 // Units and Facilities
 import Fighter from './Fighter';

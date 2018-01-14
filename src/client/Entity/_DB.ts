@@ -26,8 +26,9 @@ function remove(entity) {
 
     // Blow up the docked fighter as well if SpacePort
     if (entity.fighter) {
-        entity.fighter.undockSpacePort();
         entity.fighter.hp = 0;
+        entity.fighter.undockSpacePort();
+        delete entity.fighter;
     }
 
     delete entity.target;

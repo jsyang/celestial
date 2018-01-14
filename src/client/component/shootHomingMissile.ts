@@ -1,5 +1,5 @@
 import Entity from '../Entity';
-import {playSound} from '../assets/audio';
+import {playSound, playSoundLocalized} from '../assets/audio';
 
 const LAUNCH_SPEED = 4;
 
@@ -65,7 +65,7 @@ function process(entity) {
                 entity.lastShotTime_HomingMissile = now;
                 entity.ammo_HomingMissile--;
 
-                playSound(SOUND_SHOOT);
+                playSoundLocalized(SOUND_SHOOT, entity);
             }
         }
     }
