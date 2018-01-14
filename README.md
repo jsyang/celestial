@@ -6,9 +6,6 @@ See this page for [How to Play](src/how-to-play.md) this game.
 
 ## TODOs to finish v1
 
-- make planet markers the team owning them
-- better nearest star / nearest planet HUD (upgrade?)
-
 - special button when docked to planet:
     - set planet as preferred respawn point
     - replace current weapon
@@ -28,11 +25,15 @@ See this page for [How to Play](src/how-to-play.md) this game.
     - only planet to colonize is a planet with defunct colony and fighter 
 
 - fighter AI
-    - return to planet for repair
+    - return to spaceport for repair
     - return to planet for upgrade
     - land on planet to colonize
 
 ## TODOs
+
+- better HUD
+    - nearest star / nearest planet is like the enemy indicator from XEvil (screen borders)
+    - make a more advanced galaxy radar
 
 - special button when docked to planet:
     - pick up unused upgrades

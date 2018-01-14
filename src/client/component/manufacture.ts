@@ -40,7 +40,6 @@ function process(entity) {
                 const product = Entity.create(entity.manufactureType, {x, y, team});
 
                 if (entity.manufactureType === 'Fighter') {
-                    //if (entity.type === 'SpacePort') {
                     if (planet.spaceport && !planet.spaceport.isCarryingFighter) {
                         product.dockSpacePort(planet.spaceport);
                     } else {
