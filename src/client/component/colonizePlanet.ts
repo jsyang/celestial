@@ -61,7 +61,7 @@ function createSpacePort(entity) {
     Entity.destroy(entity);
 }
 
-const TIME_OFFLOAD_SUPPLY = 1000;
+const TIME_OFFLOAD_SUPPLY = 600;
 
 const DEFAULTS = {
     /** How long it takes before cargo can be used after reaching orbit **/

@@ -2,7 +2,7 @@ import Entity from '../Entity';
 import Random from '../Random';
 
 const PRODUCT = {
-    Freighter: {cost: 800, time: 4000},
+    Freighter: {cost: 800, time: 3000},
     Fighter:   {cost: 500, time: 100}
 };
 
