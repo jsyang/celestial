@@ -61,9 +61,10 @@ function createSpacePort(entity) {
     Entity.destroy(entity);
 }
 
+const TIME_OFFLOAD_SUPPLY = 2000;
+
 const DEFAULTS = {
     /** How long it takes before cargo can be used after reaching orbit **/
-    TIME_OFFLOAD_SUPPLY:    200,
     MAX_MATERIALS_FINISHED: 500,
     colonizationTarget:     null
 };
@@ -111,7 +112,7 @@ function process(entity) {
         if (planet.team === team) {
             if (entity.materialsFinished > 0) {
                 if (entity.supplyTime === undefined) {
-                    entity.supplyTime = entity.TIME_OFFLOAD_SUPPLY;
+                    entity.supplyTime = TIME_OFFLOAD_SUPPLY;
                 } else if (entity.supplyTime > 0) {
                     entity.supplyTime--;
                 } else if (entity.supplyTime === 0) {

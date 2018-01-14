@@ -2,12 +2,11 @@ import Entity from '../Entity';
 import Random from '../Random';
 
 const PRODUCT = {
-    Freighter: {cost: 800, time: 1200},
-    Fighter:   {cost: 500, time: 90}
+    Freighter: {cost: 800, time: 4000},
+    Fighter:   {cost: 500, time: 100}
 };
 
 const DEFAULTS = {
-    PRODUCT,
     orderManufacture,
     isManufacturing: false,
     manufactureTime: 0,
@@ -16,7 +15,7 @@ const DEFAULTS = {
 
 function orderManufacture(type) {
     this.isManufacturing = true;
-    this.manufactureTime = this.PRODUCT[type].time;
+    this.manufactureTime = PRODUCT[type].time;
     this.manufactureType = type;
 }
 

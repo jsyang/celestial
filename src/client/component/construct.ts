@@ -4,9 +4,10 @@
 
 import Entity from '../Entity';
 
+const CONSTRUCTION_TIME = 8000;
+
 const DEFAULTS = {
-    CONSTRUCTION_TIME: 5000,
-    constructionTime:  5000
+    constructionTime: 8000
 };
 
 // i.e. "Build tree"
@@ -20,7 +21,6 @@ const SEQUENCE_BUILD_PRIORITY = [
 
 function build(construction) {
     const {team, planet} = this;
-
 
     const planetEntityType = construction.type.toLowerCase();
 
@@ -50,7 +50,11 @@ function build(construction) {
         }
 
         this.materialsFinished -= construction.cost;
+
+        return true;
     }
+
+    return false;
 }
 
 function process(entity) {
@@ -58,8 +62,8 @@ function process(entity) {
         if (entity.constructionTime > 0) {
             entity.constructionTime--;
         } else {
-            SEQUENCE_BUILD_PRIORITY.forEach(build.bind(entity));
-            entity.constructionTime = entity.CONSTRUCTION_TIME;
+            SEQUENCE_BUILD_PRIORITY.some(build.bind(entity));
+            entity.constructionTime = CONSTRUCTION_TIME;
         }
     }
 }
