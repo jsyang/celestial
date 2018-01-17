@@ -7,7 +7,7 @@ import Galaxy from '../Galaxy';
 import Entity from '../Entity';
 
 import HUD from './HUD';
-import SystemTeam from './system/team';
+import TeamSystem from './TeamSystem';
 import Freelook from '../Graphics/Freelook';
 import GalaxyWonModal from '../UI/Modal/GalaxyWonModal';
 import GalaxyLostModal from '../UI/Modal/GalaxyLostModal';
@@ -25,7 +25,7 @@ let FADE_RATE       = 0.05;
 let isPaused = false;
 
 function update() {
-    SystemTeam.update();
+    TeamSystem.update();
     Entity.updateAll();
     Entity.prepareNext();
 }
@@ -122,9 +122,9 @@ function init() {
     Galaxy.init();
     HUD.init();
 
-    SystemTeam.init();
-    SystemTeam.setOnTeamLostCallback(onTeamLost);
-    SystemTeam.setOnTeamWinCallback(onTeamWon);
+    TeamSystem.init();
+    TeamSystem.setOnTeamLostCallback(onTeamLost);
+    TeamSystem.setOnTeamWinCallback(onTeamWon);
 }
 
 export default {

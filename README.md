@@ -6,6 +6,13 @@ See this page for [How to Play](src/how-to-play.md) this game.
 
 ## TODOs to finish v1
 
+- message box at the bottom right
+    - "planet X1 has been claimed"
+    - "new weapon constructed"
+    - "New friendly fighter constructed on planet X1"
+    - "Planet X1 has been colonized"
+    - "Planet G5 is under attack"
+
 - special button when docked to planet:
     - set planet as preferred respawn point
     - replace current weapon
@@ -31,7 +38,10 @@ See this page for [How to Play](src/how-to-play.md) this game.
 
 ## TODOs
 
+- UI config
+
 - better HUD
+    - landing speed indicator
     - nearest star / nearest planet is like the enemy indicator from XEvil (screen borders)
     - make a more advanced galaxy radar
 

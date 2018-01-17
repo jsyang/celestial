@@ -1,9 +1,9 @@
-import Entity from '../../Entity';
-import GameScreenControl from '../control';
-import Random from '../../Random';
-import Focus from '../../Graphics/Focus';
-import Starfield from '../../Graphics/Starfield';
-import {playSound} from '../../assets/audio';
+import Entity from '../Entity/index';
+import GameScreenControl from './control/index';
+import Random from '../Random';
+import Focus from '../Graphics/Focus';
+import Starfield from '../Graphics/Starfield';
+import {playSound} from '../assets/audio';
 
 function assignFreightersToPlanet(freighters, planet) {
     if (freighters) {
