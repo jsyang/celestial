@@ -17,28 +17,40 @@ See this page for [How to Play](src/how-to-play.md) this game.
     - set planet as preferred respawn point
     - replace current weapon
 
+- complete basic fighter AI
+    - land on spaceport
+    - land on planet
+
+- vector logo
+
 - shields
     - around all turret locations
     - PBase, Freighter, SpacePort shields
 
-- strategic enemy AI
-    - attack enemy freighters in transit
-    - seek unoccupied planets to land on
-    - protect own freighters in transit
-    - attack with fighters in groups
-    - assign priority to highly armed enemy spacecraft
-
 - tutorial sector
     - only planet to colonize is a planet with defunct colony and fighter 
 
-- fighter AI
-    - return to spaceport for repair
-    - return to planet for upgrade
-    - land on planet to colonize
-
 ## TODOs
 
-- UI config
+- structured strategic enemy AI (possibly use btrees here)
+    - 1st order
+        - move to point
+        - move to point + maintain distance away from point (radius)
+        - move, avoiding stars and planets
+    - 2nd order
+        - attack planet
+        - attack enemy fighter
+        - intercept enemy colonization attempt
+        - retreat to nearest friendly planet
+        - dock on friendly planet
+        - dock on friendly spaceport
+        - request backup
+        - defend entity (move + maintain dist, + attack enemies within range)
+        - seek unoccupied planets to land on
+        - coordinated attack with fighters in groups
+        - assign priority to targets
+
+- Custom key mapping
 
 - better HUD
     - landing speed indicator
