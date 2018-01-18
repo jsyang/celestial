@@ -21,6 +21,10 @@ See this page for [How to Play](src/how-to-play.md) this game.
     - land on spaceport
     - land on planet
 
+- way to track who killed what
+    - earn XP
+    - rank up with XP
+
 - vector logo
 
 - shields
@@ -31,6 +35,13 @@ See this page for [How to Play](src/how-to-play.md) this game.
     - only planet to colonize is a planet with defunct colony and fighter 
 
 ## TODOs
+
+- dedicated drop-ship unit
+
+- drop off ground forces (probes) to attack enemy planet facilities
+    - armies bounded to surface of a planet
+
+- high score board
 
 - structured strategic enemy AI (possibly use btrees here)
     - 1st order
