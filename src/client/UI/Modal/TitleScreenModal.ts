@@ -62,15 +62,6 @@ function create({onClickNewGame}) {
     modal.buttons.push(buttonHowToPlay);
     modal.buttons.push(buttonGitHub);
 
-    modalStackY -= 20;
-
-    /*
-    const title = PIXI.Sprite.fromImage('assets/title.png') as any;
-    title.anchor.set(0.5);
-    title.x = 170;
-    title.y = modalStackY - title.height - 70;
-    */
-
     const title = new PIXI.Graphics() as any;
     title.lineStyle(2, 0xffff00, 1);
 
