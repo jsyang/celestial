@@ -38,7 +38,7 @@ By appending certain strings to the launch URL, you may also:
 - tutorial sector
     - only planet to colonize is a planet with defunct colony and fighter 
 
-## TODOs
+## BACKLOG
 
 - dedicated drop-ship unit
 
@@ -115,6 +115,3 @@ By appending certain strings to the launch URL, you may also:
 - implement structure status displays
 - asteroids / uninhabitable worlds
 - ability to destroy planets
-
-### Notes
-- Title font is "Phosphate" in OSX system fonts.
