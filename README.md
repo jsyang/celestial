@@ -4,6 +4,10 @@ Celestial Combat is a game of galactic trade, colonization, and conquest.
 
 See this page for [How to Play](src/how-to-play.md) this game.
 
+By appending certain strings to the launch URL, you may also:
+ - load up straight into the game with `?game`
+ - enter the polygon editor with `?editor`
+
 ## TODOs to finish v1
 
 - message box at the bottom right
@@ -79,8 +83,7 @@ See this page for [How to Play](src/how-to-play.md) this game.
 - cloaking device
     - one time use (actively cloaked until ship is damaged or fires a weapon)
 
-- polyline title graphics + win / loss symbols    
-    - maybe reuse 3dphototrace for this purpose 
+- vector win / loss symbols    
 
 - save / load games
 

@@ -6,12 +6,11 @@ const webpack              = require('webpack');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 
 const webpackConfig = require('./webpack.config');
-const clientConfig  = webpackConfig.find(_config => _config.name === 'client');
 const compiler      = webpack(webpackConfig);
 
 app.use(webpackDevMiddleware(compiler, {
     noInfo:     true,
-    publicPath: clientConfig.output.publicPath
+    publicPath: webpackConfig.output.publicPath
 }));
 
 app.use(express.static('./'));

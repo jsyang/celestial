@@ -1,3 +1,4 @@
+import GeometryEditScreen from './GeometryEditScreen';
 import GameScreen from './GameScreen';
 import TitleScreen from './TitleScreen';
 import Assets from './assets';
@@ -8,14 +9,18 @@ function onTitleScreenFadeout() {
     GameScreen.start();
 }
 
-const isGameScreenStart = location.search.match(/game$/);
+const isGameScreenStart         = location.search.match(/game$/);
+const isGeometryEditScreenStart = location.search.match(/editor$/);
 
 function onDOMContentLoaded() {
     let onAssetsLoad;
 
     if (isGameScreenStart) {
         onAssetsLoad = onTitleScreenFadeout;
+    } else if (isGeometryEditScreenStart) {
+        onAssetsLoad = GeometryEditScreen.start;
     } else {
+
         TitleScreen.setFadeOutCallback(onTitleScreenFadeout);
         onAssetsLoad = TitleScreen.start;
     }
