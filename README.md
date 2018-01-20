@@ -6,7 +6,7 @@ See this page for [How to Play](src/how-to-play.md) this game.
 
 By appending certain strings to the launch URL, you may also:
  - load up straight into the game with `?game`
- - enter the polygon editor with `?editor`
+ - enter the polygon editor with `?editor`<br><img src=assets/editor.png>
 
 ## TODOs to finish v1
 
