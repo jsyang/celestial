@@ -1,5 +1,7 @@
 # Celestial Combat
 
+<img src=assets/title.png><br>
+
 Celestial Combat is a game of galactic trade, colonization, and conquest. 
 
 See this page for [How to Play](src/how-to-play.md) this game.
@@ -28,8 +30,6 @@ By appending certain strings to the launch URL, you may also:
 - way to track who killed what
     - earn XP
     - rank up with XP
-
-- vector logo
 
 - shields
     - around all turret locations

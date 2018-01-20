@@ -14,7 +14,7 @@ Press S to set the scale of the preview / exported geometry
 const DIVISION = 12;
 const SIZE     = 400;
 
-let scaleX=1/4, scaleY=1/4;
+let scaleX = 1 / 4, scaleY = 1 / 4;
 
 let layerPoints: any = [];
 let editor: any;
@@ -71,24 +71,29 @@ function deleteLayer() {
     if (layerPoints.length > 1) {
         editor.removeChild(editor.children[editor.children.length - 1]);
         layerPoints.pop();
-
-        const currentLayerPoints = layerPoints[layerPoints.length - 1];
-        const currentLayer       = editor.children[editor.children.length - 1];
-        updateLayer(currentLayer, currentLayerPoints);
+    } else {
+        layerPoints[0] = [];
     }
+    updatePreview();
 }
 
 function exportLayers() {
-    prompt('Exported geometry', JSON.stringify(layerPoints));
+    const exportedString = layerPoints.length > 1 ?
+        JSON.stringify(layerPoints) :
+        JSON.stringify(layerPoints[0]);
+
+    prompt('Exported geometry', exportedString);
 }
 
 const setScale = () => {
-    scaleX = parseFloat(eval(prompt('Scale X coordinates\nYou may also use fractions here, e.g. "0.25" or "1/4"', '0.25') || '1/4'));
-    scaleY = parseFloat(eval(prompt('Scale Y coordinates\nYou may also use fractions here, e.g. "0.25" or "1/4"', '0.25') || '1/4'));
+    const userScaleX = prompt('Scale X coordinates\nYou may also use fractions here, e.g. "0.25" or "1/4"', scaleX.toString()) || '1/4';
+    const userScaleY = prompt('Scale Y coordinates\nYou may also use fractions here, e.g. "0.25" or "1/4"', scaleY.toString()) || '1/4';
+
+    scaleX = parseFloat(eval(userScaleX));
+    scaleY = parseFloat(eval(userScaleY));
 };
 
 function onKeyPress({which}) {
-    console.log(which);
     let currentLayer;
     let currentLayerPoints;
 
