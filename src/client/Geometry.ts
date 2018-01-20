@@ -65,6 +65,9 @@ export function testPointInEntity({x, y}: IPoint, entity) {
     return pointInPolygon(v(x, y), entity.geo.collider);
 }
 
+export const transformPolygon = (poly, dx = 0, dy = 0, sx = 1, sy = 1) =>
+    poly.map((coord, index) => index % 2 === 0 ? coord * sx + dx : coord * sy + dy);
+
 export default function Geometry(geometryDef, options: any = {}) {
     geometryDef = {...geometryDef, options};
 

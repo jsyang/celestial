@@ -2,8 +2,9 @@ import * as PIXI from 'pixi.js';
 import Modal from '.';
 import Button from '../Button';
 import {LETTERS} from '../../constants';
+import {transformPolygon} from '../../Geometry';
 
-const onClickHowToPlay = () => window.open('how-to-play.html', '_blank');
+const onClickHowToPlay = () => window.open('how-to-play', '_blank');
 const onClickGitHub    = () => window.open('http://github.com/jsyang/celestial', '_blank');
 
 const width  = 340;
@@ -75,7 +76,7 @@ function create({onClickNewGame}) {
     dy = 60;
     'celestial'.split('').forEach(letter => {
         title.drawPolygon(
-            translatePolygon(LETTERS[letter], dx, dy, scaleX, scaleY)
+            transformPolygon(LETTERS[letter], dx, dy, scaleX, scaleY)
         );
         dx += 30;
     });
@@ -84,7 +85,7 @@ function create({onClickNewGame}) {
     dy = 100;
     'combat'.split('').forEach(letter => {
         title.drawPolygon(
-            translatePolygon(LETTERS[letter], dx, dy, scaleX, scaleY)
+            transformPolygon(LETTERS[letter], dx, dy, scaleX, scaleY)
         );
         dx += 30;
     });
@@ -97,11 +98,11 @@ function create({onClickNewGame}) {
     scaleY = 1 / 3;
     titleBackground.lineStyle(12, 0x333300, 1);
     titleBackground.drawPolygon(
-        translatePolygon(LETTERS.symbol[0], dx, dy, scaleX, scaleY)
+        transformPolygon(LETTERS.symbol[0], dx, dy, scaleX, scaleY)
     );
     titleBackground.lineStyle(32, 0x333300, 1);
     titleBackground.drawPolygon(
-        translatePolygon(LETTERS.symbol[1], dx, dy, scaleX, scaleY)
+        transformPolygon(LETTERS.symbol[1], dx, dy, scaleX, scaleY)
     );
 
     modal.modal.addChild(titleBackground);
@@ -109,9 +110,5 @@ function create({onClickNewGame}) {
 
     return modal;
 }
-
-const translatePolygon = (poly, dx = 0, dy = 0, sx = 1, sy = 1) =>
-    poly.map((coord, index) => index % 2 === 0 ? coord * sx + dx : coord * sy + dy);
-
 
 export default {create}

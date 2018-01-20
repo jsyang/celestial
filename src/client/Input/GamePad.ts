@@ -22,6 +22,7 @@ const getEventsFromGamePad = ({left, right, up, analogAngle, button0, button1, b
     ACCELERATE: Boolean(button3),
     SPECIAL:    Boolean(button1),
     SHOOT:      Boolean(button0),
+    PAUSE:      Boolean(button2),
     analogAngle
 });
 

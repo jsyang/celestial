@@ -14,7 +14,7 @@
   "scripts": {
     "dev": "NODE_ENV=development node .",
     "zip-assets": "cd assets ; rm -r .DS_Store ; rm assets.zip ; zip -x '.DS_Store' -r -X ../assets.zip . ",
-    "generate-how-to-play-page": "marked -o how-to-play.html < src/how-to-play.md",
+    "generate-how-to-play-page": "marked -o how-to-play/index.html < src/how-to-play.md",
     "compile-js": "NODE_ENV=production webpack -p",
     "build": "yarn compile-js ; yarn generate-how-to-play-page ; yarn zip-assets"
   },

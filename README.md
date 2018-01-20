@@ -1,6 +1,6 @@
 # Celestial Combat
 
-<img src=assets/title.png><br>
+<img src="how-to-play/title.png"><br>
 
 Celestial Combat is a game of galactic trade, colonization, and conquest. 
 
@@ -8,7 +8,7 @@ See this page for [How to Play](src/how-to-play.md) this game.
 
 By appending certain strings to the launch URL, you may also:
  - load up straight into the game with `?game`
- - enter the polygon editor with `?editor`<br><img src=assets/editor.png>
+ - enter the polygon editor with `?editor`<br><img src="how-to-play/editor.png">
 
 ## TODOs to finish v1
 

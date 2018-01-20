@@ -69,20 +69,6 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
             materialsFinished: 500
         });
 
-        for (let i = 10; i-- > 0;) {
-            Entity.create('Probe', {
-                x:                 fleetPosition.x + Random.int(-100, 100) + 200,
-                y:                 fleetPosition.y + Random.int(-100, 100) + 200,
-                flockPoint:        {
-                    x: startingLocation.x,
-                    y: startingLocation.y
-                },
-                team,
-                isOrbitingPlanet:  false,
-                materialsFinished: 500
-            });
-        }
-
     } else {
 
         const planetStructureParams = {

@@ -3,10 +3,12 @@ export enum IEventType {
     TURN_RIGHT,
     ACCELERATE,
     SHOOT,
-    SPECIAL
+    SPECIAL,
+    PAUSE
 }
 
 export interface IInputEvent {
+    PAUSE: boolean;
     SPECIAL: boolean;
     TURN_LEFT: boolean;
     TURN_RIGHT: boolean;

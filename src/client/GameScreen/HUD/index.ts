@@ -2,8 +2,10 @@ import UnitDisplay from './UnitDisplay';
 import WeaponsDisplay from './WeaponsDisplay';
 import RadarLocal from './RadarLocal';
 import RadarGalaxy from './RadarGalaxy';
+import PauseStatus from './PauseStatus';
 
 function init() {
+    PauseStatus.init();
     RadarLocal.init();
     RadarGalaxy.init();
     UnitDisplay.init();
@@ -20,5 +22,6 @@ function update() {
 export default {
     init,
     update,
-    setFocus: RadarLocal.setOrigin
+    setFocus:        RadarLocal.setOrigin,
+    setPauseVisible: PauseStatus.setVisible
 }

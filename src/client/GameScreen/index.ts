@@ -11,6 +11,8 @@ import TeamSystem from './TeamSystem';
 import Freelook from '../Graphics/Freelook';
 import GalaxyWonModal from '../UI/Modal/GalaxyWonModal';
 import GalaxyLostModal from '../UI/Modal/GalaxyLostModal';
+import {debounce} from '../debounce';
+import {playSound} from '../assets/audio';
 
 let raf;  // requestAnimationFrame request
 let then; // Time stamp of last animation frame
@@ -127,8 +129,16 @@ function init() {
     TeamSystem.setOnTeamWinCallback(onTeamWon);
 }
 
+const togglePauseState = () => {
+    isPaused = !isPaused;
+    playSound(isPaused ? 'pause' : 'electric-fizzle');
+    HUD.setPauseVisible(isPaused);
+};
+
 export default {
     init,
     start,
-    stop
+    stop,
+    togglePause: debounce(togglePauseState, 250),
+    getIsPaused: () => isPaused
 }
