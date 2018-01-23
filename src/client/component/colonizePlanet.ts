@@ -1,5 +1,6 @@
 import Entity from '../Entity';
 import {playSound} from '../assets/audio';
+import HUD from '../GameScreen/HUD';
 
 function createPBase(entity) {
     const {planet, team} = entity;
@@ -118,10 +119,13 @@ function process(entity) {
                 } else if (entity.supplyTime === 0) {
                     if (!planet.pbase) {
                         createPBase(entity);
+                        HUD.displayText(team, 'Colonization successful: PBase secured.');
                     } else if (!planet.pcolony) {
                         createPColony(entity);
+                        HUD.displayText(team, 'Colonization successful: Colony secured.');
                     } else if (!planet.spaceport) {
                         createSpacePort(entity);
+                        HUD.displayText(team, 'Colonization successful: SpacePort secured.');
                     } else {
                         loadOrDumpSupply(entity);
                         entity.colonizationTarget = null;

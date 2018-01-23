@@ -1,6 +1,7 @@
 import TEAM from '../Entity/_TEAM';
 import Entity from '../Entity';
 import Random from '../Random';
+import HUD from '../GameScreen/HUD';
 
 const startingWeapons = [
     'Cannon',
@@ -68,6 +69,8 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
             isOrbitingPlanet:  false,
             materialsFinished: 500
         });
+
+        HUD.displayText(team, 'Invasion fleet en route to hostile world.');
 
     } else {
 

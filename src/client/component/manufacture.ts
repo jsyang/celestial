@@ -1,8 +1,9 @@
 import Entity from '../Entity';
 import Random from '../Random';
+import HUD from '../GameScreen/HUD';
 
 const PRODUCT = {
-    Freighter: {cost: 800, time: 3000},
+    Freighter: {cost: 800, time: 1500},
     Fighter:   {cost: 500, time: 100}
 };
 
@@ -17,6 +18,8 @@ function orderManufacture(type) {
     this.isManufacturing = true;
     this.manufactureTime = PRODUCT[type].time;
     this.manufactureType = type;
+
+    HUD.displayText(this.team, `Manufacturing new ${type}.`);
 }
 
 /**
@@ -49,6 +52,8 @@ function process(entity) {
                 } else if (entity.manufactureType === 'Freighter') {
                     product.enterPlanetOrbit(planet);
                 }
+
+                HUD.displayText(team, `New ${product.type} manufactured.`);
 
                 entity.isManufacturing = false;
                 entity.manufactureType = undefined;

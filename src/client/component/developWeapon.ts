@@ -1,6 +1,7 @@
 import Entity from "../Entity";
 import Random from "../Random";
 import {playSound} from '../assets/audio';
+import HUD from '../GameScreen/HUD';
 
 // Chance of successfully developing this weapon type
 const DEVELOPABLE = {
@@ -52,6 +53,10 @@ function process(entity) {
                 // Only play sound if human team
                 if (entity.team === Entity.TEAM.MAGENTA) {
                     playSound('install');
+
+                    if (!installable.isFighterAutoAccelerated) {
+                        HUD.displayText(entity.team, `${developWeapon_weaponReady} installed.`);
+                    }
                 }
             }
 
@@ -73,6 +78,7 @@ function process(entity) {
                 // Only play sound if human team
                 if (entity.team === Entity.TEAM.MAGENTA) {
                     playSound('develop');
+                    HUD.displayText(entity.team, `New weapon ${weaponToDevelop} available.`);
                 }
             }
         }

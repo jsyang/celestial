@@ -4,9 +4,12 @@ import Random from '../Random';
 import Focus from '../Graphics/Focus';
 import Starfield from '../Graphics/Starfield';
 import {playSound} from '../assets/audio';
+import HUD from './HUD';
 
 function assignFreightersToPlanet(freighters, planet) {
-    if (freighters) {
+    let isNewColonizationTarget = false;
+
+    if (freighters.length > 0) {
         for (let i = freighters.length - 1; i >= 0; i--) {
             const freighter = freighters[i];
             const isIdle    = !Boolean(freighter.colonizationTarget);
@@ -17,8 +20,13 @@ function assignFreightersToPlanet(freighters, planet) {
                 }
 
                 freighter.colonizationTarget = planet;
+                isNewColonizationTarget = true;
                 break;
             }
+        }
+
+        if(isNewColonizationTarget){
+            HUD.displayText(freighters[0].team, 'Freighter fleet heading towards target.');
         }
     }
 }
@@ -49,6 +57,7 @@ function repairRearmWhenDocked(fighter) {
         if (fighter.hp < fighter.maxHp) {
             playSound('repaired');
             fighter.hp = fighter.maxHp;
+            HUD.displayText(fighter.team, 'Fully repaired.');
         }
 
         // Re-arm
@@ -66,6 +75,7 @@ function repairRearmWhenDocked(fighter) {
         if (fighter.hp < fighter.maxHp) {
             playSound('repaired');
             fighter.hp += 0.5;
+            HUD.displayText(fighter.team, `Repairing: ${Math.round(fighter.hp / fighter.maxHp * 100)}%`);
         }
     }
 }
@@ -147,8 +157,12 @@ function processTeam(team) {
 
             if (whichAttackType < 0.1) {
                 potentialTarget = Random.arrayElement(Entity.getByType('Freighter').filter(enemyOnly));
+                HUD.displayText(team, 'Friendly Fighter targeting enemy Freighter!');
+
             } else if (whichAttackType < 0.3) {
                 potentialTarget = Random.arrayElement(Entity.getByType('PBase').filter(enemyOnly));
+                HUD.displayText(team, 'Friendly Fighter targeting enemy planet!');
+
             }
 
             if (potentialTarget) {

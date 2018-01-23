@@ -12,13 +12,6 @@ By appending certain strings to the launch URL, you may also:
 
 ## TODOs to finish v1
 
-- message box at the bottom right
-    - "planet X1 has been claimed"
-    - "new weapon constructed"
-    - "New friendly fighter constructed on planet X1"
-    - "Planet X1 has been colonized"
-    - "Planet G5 is under attack"
-
 - special button when docked to planet:
     - set planet as preferred respawn point
     - replace current weapon
@@ -26,10 +19,6 @@ By appending certain strings to the launch URL, you may also:
 - complete basic fighter AI
     - land on spaceport
     - land on planet
-
-- way to track who killed what
-    - earn XP
-    - rank up with XP
 
 - shields
     - around all turret locations
@@ -39,6 +28,11 @@ By appending certain strings to the launch URL, you may also:
     - only planet to colonize is a planet with defunct colony and fighter 
 
 ## BACKLOG
+
+- kill statistics (entity killed by XXX)
+
+- fix for higher-pixel density displays
+https://github.com/pixijs/pixi.js/issues/1841
 
 - dedicated drop-ship unit
 

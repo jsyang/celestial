@@ -121,8 +121,8 @@ function init() {
         .init()
         .forEach(Graphics.addChild);
 
-    Galaxy.init();
     HUD.init();
+    Galaxy.init();
 
     TeamSystem.init();
     TeamSystem.setOnTeamLostCallback(onTeamLost);
