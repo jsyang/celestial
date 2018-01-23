@@ -12,10 +12,6 @@ By appending certain strings to the launch URL, you may also:
 
 ## TODOs to finish v1
 
-- special button when docked to planet:
-    - set planet as preferred respawn point
-    - replace current weapon
-
 - complete basic fighter AI
     - land on spaceport
     - land on planet
@@ -29,14 +25,17 @@ By appending certain strings to the launch URL, you may also:
 
 ## BACKLOG
 
+- health bars for units receiving damage
+
 - kill statistics (entity killed by XXX)
 
 - fix for higher-pixel density displays
 https://github.com/pixijs/pixi.js/issues/1841
 
-- dedicated drop-ship unit
+- networked gameplay
 
 - drop off ground forces (probes) to attack enemy planet facilities
+    - dedicated drop-ship unit
     - armies bounded to surface of a planet
 
 - high score board

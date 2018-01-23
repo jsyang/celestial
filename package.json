@@ -12,6 +12,7 @@
   },
   "main": "index.js",
   "scripts": {
+    "lint": "tslint 'src/**/*.ts'",
     "dev": "NODE_ENV=development node .",
     "zip-assets": "cd assets ; rm -r .DS_Store ; rm assets.zip ; zip -x '.DS_Store' -r -X ../assets.zip . ",
     "generate-how-to-play-page": "marked -o how-to-play/index.html < src/how-to-play.md",
@@ -28,6 +29,7 @@
     "pixi.js": "^4.6.1",
     "sat": "^0.6.0",
     "ts-loader": "^3.1.1",
+    "tslint": "^5.9.1",
     "typescript": "^2.6.1",
     "uglifyjs-webpack-plugin": "^1.1.1",
     "webpack": "^3.8.1",

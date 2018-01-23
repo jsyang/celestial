@@ -9,10 +9,13 @@ import Entity from '../Entity';
 import HUD from './HUD';
 import TeamSystem from './TeamSystem';
 import Freelook from '../Graphics/Freelook';
+import DockedModal from '../UI/Modal/DockedModal';
+import SwapWeaponModal from '../UI/Modal/SwapWeaponModal';
 import GalaxyWonModal from '../UI/Modal/GalaxyWonModal';
 import GalaxyLostModal from '../UI/Modal/GalaxyLostModal';
 import {debounce} from '../debounce';
 import {playSound} from '../assets/audio';
+import {TEAM} from '../constants';
 
 let raf;  // requestAnimationFrame request
 let then; // Time stamp of last animation frame
@@ -84,7 +87,7 @@ function reinitAll() {
 }
 
 function onTeamLost(team) {
-    if (team === Entity.TEAM.MAGENTA) {
+    if (team === TEAM.MAGENTA) {
         isPaused = true;
 
         const lostModal = GalaxyLostModal.create({
@@ -97,7 +100,7 @@ function onTeamLost(team) {
 }
 
 function onTeamWon(team) {
-    if (team === Entity.TEAM.MAGENTA) {
+    if (team === TEAM.MAGENTA) {
         isPaused = true;
 
         const wonModal = GalaxyWonModal.create({
@@ -135,10 +138,48 @@ const togglePauseState = () => {
     HUD.setPauseVisible(isPaused);
 };
 
+let dockedEntity;
+
+const unpauseAndClearDocked = () => {
+    GameScreenControl.setControlledEntity(dockedEntity);
+    isPaused     = false;
+    dockedEntity = null;
+};
+
+const showDockedModal = () => {
+    isPaused     = true;
+    dockedEntity = GameScreenControl.getControlledEntity();
+
+    const dockedModal = DockedModal.create({
+        onClickSetHomePlanet: () => {
+            TeamSystem.setHumanTeamHomePlanet(dockedEntity.planet || dockedEntity.spaceport.planet);
+            unpauseAndClearDocked();
+        },
+        onClickSwapWeapon:    showSwapWeaponModal,
+        onClickDone:          unpauseAndClearDocked
+    });
+
+    Graphics.addChildToHUD(dockedModal.modal);
+    GameScreenControl.setControlledEntity(dockedModal);
+};
+
+const showSwapWeaponModal = () => {
+    isPaused = true;
+
+    const swapWeaponModal = SwapWeaponModal.create({
+        fighter:       dockedEntity,
+        onClickWeapon: unpauseAndClearDocked
+    });
+
+    Graphics.addChildToHUD(swapWeaponModal.modal);
+    GameScreenControl.setControlledEntity(swapWeaponModal);
+};
+
 export default {
     init,
     start,
     stop,
+    showDockedModal,
     togglePause: debounce(togglePauseState, 250),
     getIsPaused: () => isPaused
 }

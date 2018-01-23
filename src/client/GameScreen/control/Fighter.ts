@@ -1,12 +1,20 @@
+import GameScreen from '..';
 import {IInputEvent} from '../../Input/Event';
 import {ACCELERATION_FIGHTER, ACCELERATION_FIGHTER_UNDOCK, ROTATION_RATE_FIGHTER} from '../../constants';
 
 export default function controlFighter(controlledEntity, events: IInputEvent) {
-    const {isDockedPlanet, isDockedSpacePort} = controlledEntity;
+    const {isDockedPlanet, isDockedSpacePort, team, planet, spaceport} = controlledEntity;
 
     const isDocked = isDockedPlanet || isDockedSpacePort;
 
-    if (!isDocked) {
+    if (isDocked) {
+        if (events.SPECIAL) {
+            if ((isDockedPlanet && planet.team === team) ||
+                (isDockedSpacePort && spaceport.team === team)) {
+                GameScreen.showDockedModal();
+            }
+        }
+    } else {
         // Update fighter rotation
         if (typeof events.analogAngle === 'number') {
             controlledEntity.rotation = events.analogAngle;

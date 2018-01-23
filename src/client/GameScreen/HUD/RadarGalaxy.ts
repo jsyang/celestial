@@ -5,7 +5,7 @@ import * as PIXI from 'pixi.js';
 
 import Entity from '../../Entity';
 import Graphics from '../../Graphics';
-import {MAX_COORDINATE} from '../../constants';
+import {MAX_COORDINATE, TEAM_COLOR} from '../../constants';
 
 const ALPHA_SCANNER_BORDER = 0.3;
 
@@ -26,14 +26,10 @@ scanner.y = MARGIN_EDGE;
 
 const COORDINATE_TO_SCANNER_FACTOR = SIZE / MAX_COORDINATE;
 
-// Make planet markers show the team owning them.
-// const PLANET_MARKER_COLOR_TEAM =
-//           Entity.TEAM._COLORS.map(c => {
-//
-//           });
+// todo: Make planet markers show the team owning them.
 
 const drawMarker = entity => {
-    const {type} = entity;
+    const {type, team} = entity;
 
     let size, color;
     switch (type) {
@@ -46,7 +42,7 @@ const drawMarker = entity => {
             size  = 2;
             break;
         case 'Fighter':
-            color = Entity.getTeamColor(entity.team);
+            color = TEAM_COLOR[team];
             size  = 2;
             break;
         case 'Freighter':

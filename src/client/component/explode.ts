@@ -1,6 +1,7 @@
 import {playSoundLocalized} from '../assets/audio';
 import Entity from '../Entity';
 import Random from '../Random';
+import {TEAM} from '../constants';
 
 function explode() {
     const {
@@ -16,7 +17,7 @@ function explode() {
         Entity.create('CannonShot', {
             x:    explosionOriginDx + x + Random.float(-10, 10),
             y:    explosionOriginDy + y + Random.float(-10, 10),
-            team: Entity.TEAM.NONE,
+            team: TEAM.NONE,
             dx:   Random.float(-2, 2) + (dx || 0),
             dy:   Random.float(-2, 2) + (dy || 0)
         });

@@ -5,6 +5,9 @@ import Focus from '../Graphics/Focus';
 import Starfield from '../Graphics/Starfield';
 import {playSound} from '../assets/audio';
 import HUD from './HUD';
+import {TEAM} from '../constants';
+
+let humanTeamHomePlanet;
 
 function assignFreightersToPlanet(freighters, planet) {
     let isNewColonizationTarget = false;
@@ -20,12 +23,12 @@ function assignFreightersToPlanet(freighters, planet) {
                 }
 
                 freighter.colonizationTarget = planet;
-                isNewColonizationTarget = true;
+                isNewColonizationTarget      = true;
                 break;
             }
         }
 
-        if(isNewColonizationTarget){
+        if (isNewColonizationTarget) {
             HUD.displayText(freighters[0].team, 'Freighter fleet heading towards target.');
         }
     }
@@ -39,9 +42,23 @@ function filterByIdlePColony(entity) {
     return entity.pcolony && !entity.pcolony.isManufacturing;
 }
 
-function constructOnRandomPlanet(idleTeamPlanet, type) {
+const isTeamHuman = team => team === TEAM.MAGENTA;
+
+function constructOnRandomPlanet(team, idleTeamPlanet, type) {
     if (idleTeamPlanet) {
-        const pcolony = Random.arrayElement(idleTeamPlanet).pcolony;
+        let pcolony;
+
+        // Attempt to manufacture on home planet for humans
+        if (isTeamHuman(team) && humanTeamHomePlanet) {
+            const preferredPColony = humanTeamHomePlanet.pcolony;
+            if (preferredPColony && !preferredPColony.isManufacturing) {
+                pcolony = preferredPColony;
+            }
+        }
+
+        if (!pcolony) {
+            pcolony = Random.arrayElement(idleTeamPlanet).pcolony;
+        }
 
         if (pcolony) {
             pcolony.orderManufacture(type);
@@ -51,12 +68,13 @@ function constructOnRandomPlanet(idleTeamPlanet, type) {
 
 function repairRearmWhenDocked(fighter) {
     const {planet, isDockedPlanet, team, isDockedSpacePort, reload_HomingMissile, reload_ClusterRocket, reload_LaserBolt} = fighter;
+    let isHumanTeamRepair                                                                                                 = false;
 
     if (isDockedSpacePort) {
         // Repair
         if (fighter.hp < fighter.maxHp) {
-            playSound('repaired');
-            fighter.hp = fighter.maxHp;
+            isHumanTeamRepair = isTeamHuman(team);
+            fighter.hp        = fighter.maxHp;
             HUD.displayText(fighter.team, 'Fully repaired.');
         }
 
@@ -73,10 +91,14 @@ function repairRearmWhenDocked(fighter) {
 
         // Repair
         if (fighter.hp < fighter.maxHp) {
-            playSound('repaired');
+            isHumanTeamRepair = isTeamHuman(team);
             fighter.hp += 0.5;
             HUD.displayText(fighter.team, `Repairing: ${Math.round(fighter.hp / fighter.maxHp * 100)}%`);
         }
+    }
+
+    if (isHumanTeamRepair) {
+        playSound('repaired');
     }
 }
 
@@ -101,6 +123,22 @@ function colonizeNearestPlanet(freighter) {
     }
 }
 
+function sortByDockedToHomePlanet(f1, f2) {
+    const preferF1: any = f1.planet === humanTeamHomePlanet ||
+        (f1.spaceport && f1.spaceport.planet === humanTeamHomePlanet);
+
+    const preferF2: any = f2.planet === humanTeamHomePlanet ||
+        (f2.spaceport && f2.spaceport.planet === humanTeamHomePlanet);
+
+    return (preferF2 >> 0) - (preferF1 >> 0);
+}
+
+function clearHumanTeamPlanetIfNotInTeam() {
+    if (humanTeamHomePlanet && !isTeamHuman(humanTeamHomePlanet.team)) {
+        humanTeamHomePlanet = null;
+    }
+}
+
 function processTeam(team) {
     const friendlyOnly = (e: any) => e.team === team;
     const enemyOnly    = (e: any) => e.team !== team;
@@ -115,10 +153,6 @@ function processTeam(team) {
     idleTeamPlanet = teamPlanet.filter(filterByIdlePColony);
     idleTeamPlanet = idleTeamPlanet.length > 0 ? idleTeamPlanet : undefined;
 
-    if (teamPlanet.length > teamFreighter.length) {
-        constructOnRandomPlanet(idleTeamPlanet, 'Freighter');
-    }
-
     if (teamPlanet.length === 0 && teamFreighter.length > 0) {
         teamFreighter.forEach(colonizeNearestPlanet);
 
@@ -130,16 +164,18 @@ function processTeam(team) {
 
     // Construct wingmen
     if (teamFighter.length < teamPlanet.length) {
-        constructOnRandomPlanet(idleTeamPlanet, 'Fighter');
+        constructOnRandomPlanet(team, idleTeamPlanet, 'Fighter');
     }
 
     if (teamFighter.length > 0) {
         let fighter: any = Random.arrayElement(teamFighter);
 
         // Human control
-        if (team === Entity.TEAM.MAGENTA) {
+        if (isTeamHuman(team)) {
+            clearHumanTeamPlanetIfNotInTeam();
+
             if (!GameScreenControl.getControlledEntity()) {
-                fighter = teamFighter.filter(f => f.isDockedPlanet || f.isDockedSpacePort || !f.isFighterAutoAccelerated)[0];
+                fighter = teamFighter.sort(sortByDockedToHomePlanet)[0];
 
                 if (fighter) {
                     fighter.isFighterAutoAccelerated = false;
@@ -173,22 +209,29 @@ function processTeam(team) {
 
     teamFighter.forEach(repairRearmWhenDocked);
 
+    if (teamPlanet.length > teamFreighter.length) {
+        constructOnRandomPlanet(team, idleTeamPlanet, 'Freighter');
+    }
+
     if (teamPColony.length === 0 && teamFighter.length === 0 && teamFreighter.length === 0) {
         teamsRemaining = teamsRemaining.filter(t => t !== team);
         onTeamLost(team);
     }
 }
 
+function setHumanTeamHomePlanet(planet) {
+    humanTeamHomePlanet = planet;
+}
 
 const STRATEGY_UPDATE_TIMEOUT  = 3000;
 let lastTeamStrategyUpdateTime = 0;
 
 const TEAMS = [
-    Entity.TEAM.GREEN,
-    Entity.TEAM.BLUE,
-    Entity.TEAM.YELLOW,
-    Entity.TEAM.RED,
-    Entity.TEAM.MAGENTA
+    TEAM.GREEN,
+    TEAM.BLUE,
+    TEAM.YELLOW,
+    TEAM.RED,
+    TEAM.MAGENTA
 ];
 
 let teamsRemaining;
@@ -220,6 +263,7 @@ function init() {
 export default {
     init,
     update,
+    setHumanTeamHomePlanet,
     setOnTeamLostCallback,
     setOnTeamWinCallback
 }

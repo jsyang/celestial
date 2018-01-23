@@ -1,8 +1,8 @@
 import Geometry from '../Geometry';
-import Entity from ".";
-import Planet from "./Planet";
+import Entity from '.';
+import Planet from './Planet';
 import LivingEntity from './LivingEntity';
-import TEAM from './_TEAM';
+import {TEAM_COLOR} from '../constants';
 import Random from '../Random';
 
 const GEO = {
@@ -227,7 +227,7 @@ export default class Freighter extends LivingEntity {
     }
 
     assignTeamColor() {
-        this.getChildAt(1).currentPath.lineColor = TEAM._COLORS[this.team];
+        this.getChildAt(1).currentPath.lineColor = TEAM_COLOR[this.team];
     }
 
     loadSupply = () => {

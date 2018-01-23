@@ -1,4 +1,4 @@
-import TEAM from '../Entity/_TEAM';
+import {TEAM} from '../constants';
 import Entity from '../Entity';
 import Random from '../Random';
 import HUD from '../GameScreen/HUD';
@@ -29,7 +29,7 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
             x:                        fleetPosition.x + Random.int(-100, 100),
             y:                        fleetPosition.y + Random.int(-100, 100),
             attackWeapon:             Random.arrayElement(startingWeapons),
-            isFighterAutoAccelerated: team !== Entity.TEAM.MAGENTA,
+            isFighterAutoAccelerated: team !== TEAM.MAGENTA,
             reloadTime_HeavyCannon:   60,
             team
         });
@@ -80,7 +80,7 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
         };
 
         const fighter = Entity.create('Fighter', {
-            isFighterAutoAccelerated: team !== Entity.TEAM.MAGENTA,
+            isFighterAutoAccelerated: team !== TEAM.MAGENTA,
             team
         });
         fighter.dockPlanet(startingLocation);

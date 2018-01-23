@@ -1,4 +1,4 @@
-import TEAM from './_TEAM';
+import {TEAM, TEAM_COLOR} from '../constants';
 import Geometry from '../Geometry';
 import Star from './Star';
 import PBase from './PBase';
@@ -90,7 +90,7 @@ export default class Planet extends LivingEntity {
             (window as any).foo = flag;
             (window as any).doo = this;
             flag.visible        = true;
-            flag.tint           = TEAM._COLORS[this.team];
+            flag.tint           = TEAM_COLOR[this.team];
         }
 
     }

@@ -1,7 +1,6 @@
 import Component from '../component';
 
 import DB from './_DB';
-import TEAM from './_TEAM';
 import EntityGrid from './_EntityGrid';
 
 // Units and Facilities
@@ -106,8 +105,6 @@ function updateAll() {
     UPDATE_ALL_ENTITIES_SEQUENCE.forEach(update);
 }
 
-const getTeamColor = team => TEAM._COLORS[team];
-
 function clearAll() {
     // Clear projectiles and units
     for (let i = 0; i < 4; i++) {
@@ -178,8 +175,6 @@ export default {
     destroy:   DB.remove,
     getByType: DB.getByType,
 
-    getTeamColor,
     getDistSquared,
-    getAngleFromTo,
-    TEAM
+    getAngleFromTo
 };

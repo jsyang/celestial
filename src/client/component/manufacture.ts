@@ -15,11 +15,14 @@ const DEFAULTS = {
 };
 
 function orderManufacture(type) {
-    this.isManufacturing = true;
-    this.manufactureTime = PRODUCT[type].time;
-    this.manufactureType = type;
+    if (!this.isManufacturing) {
+        this.isManufacturing = true;
 
-    HUD.displayText(this.team, `Manufacturing new ${type}.`);
+        this.manufactureTime = PRODUCT[type].time;
+        this.manufactureType = type;
+
+        HUD.displayText(this.team, `Manufacturing new ${type}.`);
+    }
 }
 
 /**

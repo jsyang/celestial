@@ -1,12 +1,13 @@
 import Entity from '../Entity';
 import {playSound} from '../assets/audio';
 import HUD from '../GameScreen/HUD';
+import {TEAM} from '../constants';
 
 function createPBase(entity) {
     const {planet, team} = entity;
 
     // Only play sound if human team
-    if (entity.team === Entity.TEAM.MAGENTA) {
+    if (entity.team === TEAM.MAGENTA) {
         playSound('nav');
     }
 
@@ -25,7 +26,7 @@ function createPColony(entity) {
     const {planet, team} = entity;
 
     // Only play sound if human team
-    if (entity.team === Entity.TEAM.MAGENTA) {
+    if (entity.team === TEAM.MAGENTA) {
         playSound('nav');
     }
 
@@ -44,7 +45,7 @@ function createSpacePort(entity) {
     const {planet, team, orbitRotation} = entity;
 
     // Only play sound if human team
-    if (entity.team === Entity.TEAM.MAGENTA) {
+    if (entity.team === TEAM.MAGENTA) {
         playSound('nav');
     }
 

@@ -2,6 +2,7 @@ import Entity from "../Entity";
 import Random from "../Random";
 import {playSound} from '../assets/audio';
 import HUD from '../GameScreen/HUD';
+import {TEAM} from '../constants';
 
 // Chance of successfully developing this weapon type
 const DEVELOPABLE = {
@@ -28,7 +29,8 @@ function process(entity) {
               developWeapon_installTime,
               developWeapon_installTimeMax,
               developWeapon_timeMax,
-              developWeapon_weaponReady
+              developWeapon_weaponReady,
+              team
           } = entity;
 
     if (Boolean(developWeapon_weaponReady)) {
@@ -39,7 +41,7 @@ function process(entity) {
         } else {
             const installable: any = Entity.getNearestUnits(entity)
                 .find((fighter: any) => (
-                    fighter.team === entity.team &&
+                    fighter.team === team &&
                     (
                         (fighter.isDockedPlanet && fighter.planet === entity.planet) ||
                         (fighter.isDockedSpacePort && fighter.spaceport === entity.planet.spaceport)
@@ -51,11 +53,11 @@ function process(entity) {
                 entity.developWeapon_weaponReady = '';
 
                 // Only play sound if human team
-                if (entity.team === Entity.TEAM.MAGENTA) {
+                if (team === TEAM.MAGENTA) {
                     playSound('install');
 
                     if (!installable.isFighterAutoAccelerated) {
-                        HUD.displayText(entity.team, `${developWeapon_weaponReady} installed.`);
+                        HUD.displayText(team, `${developWeapon_weaponReady} installed.`);
                     }
                 }
             }
@@ -76,9 +78,9 @@ function process(entity) {
                 entity.developWeapon_weaponReady = weaponToDevelop;
 
                 // Only play sound if human team
-                if (entity.team === Entity.TEAM.MAGENTA) {
+                if (team === TEAM.MAGENTA) {
                     playSound('develop');
-                    HUD.displayText(entity.team, `New weapon ${weaponToDevelop} available.`);
+                    HUD.displayText(team, `New weapon ${weaponToDevelop} available.`);
                 }
             }
         }

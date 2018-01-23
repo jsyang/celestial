@@ -20,7 +20,6 @@ function onDOMContentLoaded() {
     } else if (isGeometryEditScreenStart) {
         onAssetsLoad = GeometryEditScreen.start;
     } else {
-
         TitleScreen.setFadeOutCallback(onTitleScreenFadeout);
         onAssetsLoad = TitleScreen.start;
     }

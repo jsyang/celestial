@@ -1,10 +1,10 @@
-import Entity from '../../Entity';
 import UnitDisplay from './UnitDisplay';
 import WeaponsDisplay from './WeaponsDisplay';
 import RadarLocal from './RadarLocal';
 import RadarGalaxy from './RadarGalaxy';
 import PauseStatus from './PauseStatus';
 import TextContainer from './TextContainer';
+import {TEAM} from '../../constants';
 
 function init() {
     TextContainer.init();
@@ -23,9 +23,12 @@ function update() {
     WeaponsDisplay.update();
 }
 
-// Only display text for human team
-// todo: move all TEAM references to constants.ts
-const displayText = (team, text) => team === Entity.TEAM.MAGENTA? TextContainer.displayText(text) : null;
+function displayText(team, text) {
+    // Only display text for human team
+    if (team === TEAM.MAGENTA) {
+        TextContainer.displayText(text);
+    }
+}
 
 export default {
     init,
