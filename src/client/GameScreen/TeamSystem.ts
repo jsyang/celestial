@@ -175,7 +175,7 @@ function processTeam(team) {
             clearHumanTeamPlanetIfNotInTeam();
 
             if (!GameScreenControl.getControlledEntity()) {
-                fighter = teamFighter.sort(sortByDockedToHomePlanet)[0];
+                fighter = teamFighter.filter(f => !f.attackTarget && (f.planet || f.spaceport)).sort(sortByDockedToHomePlanet)[0];
 
                 if (fighter) {
                     fighter.isFighterAutoAccelerated = false;
@@ -207,7 +207,8 @@ function processTeam(team) {
         }
     }
 
-    teamFighter.forEach(repairRearmWhenDocked);
+    teamFighter
+        .forEach(repairRearmWhenDocked);
 
     if (teamPlanet.length > teamFreighter.length) {
         constructOnRandomPlanet(team, idleTeamPlanet, 'Freighter');
