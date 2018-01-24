@@ -14,6 +14,7 @@ import Probe from './Probe';
 import SensorArray from './SensorArray';
 import SpaceDock from './SpaceDock';
 import SpacePort from './SpacePort';
+import Shield from './Shield';
 
 const gridUnits   = new EntityGrid();
 const TYPES_UNITS = {
@@ -26,7 +27,8 @@ const TYPES_UNITS = {
     SpaceDock,
     SensorArray,
     Fighter,
-    Freighter
+    Freighter,
+    Shield
 };
 
 // Projectiles

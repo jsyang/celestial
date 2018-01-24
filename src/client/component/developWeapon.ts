@@ -4,13 +4,16 @@ import {playSound} from '../assets/audio';
 import HUD from '../GameScreen/HUD';
 import {TEAM} from '../constants';
 
-// Chance of successfully developing this weapon type
+// Chance of successfully developing equipment
 const DEVELOPABLE = {
     'HeavyCannon':   0.6,
     'ClusterRocket': 0.5,
     'HomingMissile': 0.4,
-    'LaserBolt':     0.2
+    'LaserBolt':     0.2,
+    'Shield':        0.7
 };
+
+const isShield = name => name === 'Shield';
 
 const DEFAULTS = {
     developWeapon_installTimeMax: 150,
@@ -48,16 +51,37 @@ function process(entity) {
                     )
                 ));
 
-            if (installable && installable.attackWeapon === 'Cannon') {
-                installable.attackWeapon         = developWeapon_weaponReady;
-                entity.developWeapon_weaponReady = '';
+            if (installable) {
+                if (isShield(developWeapon_weaponReady) && installable.canBeShielded && !installable.shield) {
+                    installable.shield = Entity.create(
+                        'Shield',
+                        {
+                            team,
+                            anchor: installable
+                        }
+                    );
 
-                // Only play sound if human team
-                if (team === TEAM.MAGENTA) {
-                    playSound('install');
+                    entity.developWeapon_weaponReady = '';
 
-                    if (!installable.isFighterAutoAccelerated) {
-                        HUD.displayText(team, `${developWeapon_weaponReady} installed.`);
+                    // Only play sound if human team
+                    if (team === TEAM.MAGENTA) {
+                        playSound('install');
+
+                        if (!installable.isFighterAutoAccelerated) {
+                            HUD.displayText(team, `${developWeapon_weaponReady} installed.`);
+                        }
+                    }
+                } else if (installable.attackWeapon === 'Cannon') {
+                    installable.attackWeapon         = developWeapon_weaponReady;
+                    entity.developWeapon_weaponReady = '';
+
+                    // Only play sound if human team
+                    if (team === TEAM.MAGENTA) {
+                        playSound('install');
+
+                        if (!installable.isFighterAutoAccelerated) {
+                            HUD.displayText(team, `${developWeapon_weaponReady} installed.`);
+                        }
                     }
                 }
             }
@@ -80,7 +104,7 @@ function process(entity) {
                 // Only play sound if human team
                 if (team === TEAM.MAGENTA) {
                     playSound('develop');
-                    HUD.displayText(team, `New weapon ${weaponToDevelop} available.`);
+                    HUD.displayText(team, `New equipment: ${weaponToDevelop} available.`);
                 }
             }
         }

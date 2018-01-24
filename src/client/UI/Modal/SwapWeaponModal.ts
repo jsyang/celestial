@@ -26,7 +26,7 @@ function create({fighter, onClickWeapon}) {
                 onClick: () => {
                     // Swap only effective if Fighter is armed with something
                     // better than a Cannon
-                    if (plab) {
+                    if (plab && plab.developWeapon_weaponReady !== 'Shield') {
                         fighter.attackWeapon           = plab.developWeapon_weaponReady || DEFAULT_WEAPON;
                         plab.developWeapon_weaponReady = attackWeapon === DEFAULT_WEAPON ? '' : attackWeapon;
                     }

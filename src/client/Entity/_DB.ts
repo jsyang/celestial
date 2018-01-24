@@ -19,7 +19,7 @@ const getByType = (type: string): Array<any> => byType[type] || [];
 function remove(entity) {
     entity.hp = 0;
 
-    // Break references so entity can be GC'd
+    // Break references to planet and spaceport
     const childType = entity.type.toLowerCase();
     entity.planet && delete entity.planet[childType];
     entity.spaceport && delete entity.spaceport[childType];
@@ -31,7 +31,15 @@ function remove(entity) {
         delete entity.fighter;
     }
 
-    delete entity.target;
+    if(entity.anchor) {
+        // Break reference to shield holder
+        entity.anchor.shield = null;
+        delete entity.anchor;
+    }
+
+    delete entity.shield;
+    delete entity.attackTarget;
+    delete entity.colonizationTarget;
 
     const byTypeCollection = getByType(entity.type);
     const byTypeIndex      = byTypeCollection.indexOf(entity);

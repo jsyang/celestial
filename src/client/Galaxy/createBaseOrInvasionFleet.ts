@@ -34,6 +34,16 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
             team
         });
 
+        fighter.shield = Entity.create(
+            'Shield',
+            {
+                x:      fighter.x,
+                y:      fighter.y,
+                team,
+                anchor: fighter
+            }
+        );
+
         Entity.create('Freighter', {
             x:                 fleetPosition.x + Random.int(-100, 100),
             y:                 fleetPosition.y + Random.int(-100, 100),

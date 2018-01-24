@@ -2,7 +2,7 @@
 // as well as collisions
 
 import {Graphics} from 'pixi.js';
-import {pointInPolygon, Circle, Polygon, Vector} from 'sat';
+import {pointInPolygon, pointInCircle, Circle, Polygon, Vector} from 'sat';
 import {IPoint} from './types';
 import {MAX_COORDINATE} from './constants';
 
@@ -62,7 +62,14 @@ function createMutableGeoInterface(graphics, collider) {
 }
 
 export function testPointInEntity({x, y}: IPoint, entity) {
-    return pointInPolygon(v(x, y), entity.geo.collider);
+    const {collider} = entity.geo;
+    const point      = v(x, y);
+
+    if (collider instanceof Circle) {
+        return pointInCircle(point, collider);
+    } else {
+        return pointInPolygon(point, collider);
+    }
 }
 
 export const transformPolygon = (poly, dx = 0, dy = 0, sx = 1, sy = 1) =>

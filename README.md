@@ -19,10 +19,6 @@ See this page for [How to Play](src/how-to-play.md) this game.
     - land on spaceport
     - land on planet
 
-- shields
-    - around all turret locations
-    - PBase, Freighter, SpacePort shields
-
 - tutorial sector
     - only planet to colonize is a planet with defunct colony and fighter 
 

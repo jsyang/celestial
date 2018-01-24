@@ -15,6 +15,8 @@ import MoveToTargetComponent from './moveToColonizationTarget';
 import HarvestComponent from './harvest';
 import StoreMaterialComponent from './storeMaterials';
 import RepairComponent from './repair';
+import AnchorComponent from './anchor';
+import BeShieldedComponent from './beShielded';
 import RefineComponent from './refine';
 import ConstructComponent from './construct';
 import ExplodeComponent from './explode';
@@ -50,6 +52,7 @@ const ALL_COMPONENTS = [
     FlockComponent,
     DockPlanetComponent,
     DockSpacePortComponent,
+    AnchorComponent,
     OccupyPlanetComponent,
     OccupySpacePortComponent,
     AccelerateComponent,
@@ -86,7 +89,8 @@ const ALL_COMPONENTS = [
     DisplayHitComponent,
     ShimmerComponent,
     ExplodeComponent,
-    GravitateComponent
+    GravitateComponent,
+    BeShieldedComponent
 ];
 
 /**

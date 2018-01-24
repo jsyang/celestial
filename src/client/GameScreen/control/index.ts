@@ -21,7 +21,7 @@ function update() {
 
     // No controls if paused
     if (GameScreen.getIsPaused()) {
-        if (controlledEntity.modal) {
+        if (controlledEntity && controlledEntity.modal) {
             // Modals handled even during paused state
             controlActiveModal(controlledEntity, inputState);
         }

@@ -7,7 +7,6 @@ function enterPlanetOrbit(planet) {
     this.orbitRotation    = Entity.getAngleFromTo(planet, this);
     this.rotation         = this.orbitRotation + DEGREES90;
     this.planet           = planet;
-    this.target           = undefined;
 
     this.flameOff && this.flameOff();
 }
