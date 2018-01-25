@@ -35,7 +35,7 @@
     <img src="title.png"/>
 </center>
 
-_Celestial Combat is a game of galactic trade, colonization, and conquest._ 
+_Celestial Combat is a game of galactic conquest and colonization._ 
 
 ## Player controls
 
@@ -214,12 +214,13 @@ Storage         ||||......
 
 ## Acknowledgements
 
-Gameplay inspired by [Gravity Well v2.2 (circa 1995)](https://archive.org/details/GWELL22), the planetary 
-conquest game by David H. Hoeft of Software Engineering Inc.
+Gameplay inspired by [Gravity Well v2.2](https://archive.org/details/GWELL22), the planetary 
+conquest game by David H. Hoeft of Software Engineering Inc. Celestial Combat owes its existence to this
+classic 1995 masterpiece. 
 
 <script>
 
-// Collapse into sections
+// Collapse into section accordions
 
 var insertAfter = function(newNode, referenceNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);

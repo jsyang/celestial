@@ -23,6 +23,11 @@
     
 ## High priority
 
+- geometry editor upgrades
+    - save /load geometry with localstorage
+    - set grid cell size
+    - mouse wheel zoom for preview scaling 
+
 - networked gameplay
     - sectors fought over (rooms)
     - factions
