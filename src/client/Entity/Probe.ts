@@ -42,7 +42,7 @@ const GEO = {
 
 export default class Probe extends LivingEntity {
     type = 'Probe';
-    geo  = Geometry(GEO.body, {collisionPath: GEO.body.collisionPath});
+    geo  = Geometry(GEO.body);
 
     hp    = 2;
     maxHp = 2;

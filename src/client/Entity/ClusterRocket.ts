@@ -31,6 +31,7 @@ const GEO = {
 
 export default class ClusterRocket extends LivingEntity {
     type = 'ClusterRocket';
+    geo  = Geometry(GEO.missileBody);
 
     canExplode          = true;
     EXPLOSION_FRAGMENTS = 20;
@@ -45,8 +46,6 @@ export default class ClusterRocket extends LivingEntity {
 
     constructor(params: ClusterRocket) {
         super();
-
-        this.geo = Geometry(GEO.missileBody);
 
         this.geo.graphics.addChild(
             Geometry(GEO.missileFlame).graphics

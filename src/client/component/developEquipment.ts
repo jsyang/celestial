@@ -2,7 +2,7 @@ import Entity from "../Entity";
 import Random from "../Random";
 import {playSound} from '../assets/audio';
 import HUD from '../GameScreen/HUD';
-import {TEAM} from '../constants';
+import {isHumanTeam} from '../constants';
 
 // Chance of successfully developing equipment
 const DEVELOPABLE = {
@@ -16,11 +16,11 @@ const DEVELOPABLE = {
 const isShield = name => name === 'Shield';
 
 const DEFAULTS = {
-    developWeapon_installTimeMax: 150,
-    developWeapon_installTime:    150,
-    developWeapon_timeMax:        1600,
-    developWeapon_time:           1600,
-    developWeapon_weaponReady:    ''
+    developEquipment_installTimeMax: 150,
+    developEquipment_installTime:    150,
+    developEquipment_timeMax:        1600,
+    developEquipment_time:           1600,
+    developEquipment_equipmentReady: ''
 };
 
 /**
@@ -28,19 +28,19 @@ const DEFAULTS = {
  */
 function process(entity) {
     const {
-              developWeapon_time,
-              developWeapon_installTime,
-              developWeapon_installTimeMax,
-              developWeapon_timeMax,
-              developWeapon_weaponReady,
+              developEquipment_time,
+              developEquipment_installTime,
+              developEquipment_installTimeMax,
+              developEquipment_timeMax,
+              developEquipment_equipmentReady,
               team
           } = entity;
 
-    if (Boolean(developWeapon_weaponReady)) {
+    if (Boolean(developEquipment_equipmentReady)) {
         entity.isShimmering = true;
 
-        if (developWeapon_installTime > 0) {
-            entity.developWeapon_installTime--;
+        if (developEquipment_installTime > 0) {
+            entity.developEquipment_installTime--;
         } else {
             const installable: any = Entity.getNearestUnits(entity)
                 .find((fighter: any) => (
@@ -52,7 +52,7 @@ function process(entity) {
                 ));
 
             if (installable) {
-                if (isShield(developWeapon_weaponReady) && installable.canBeShielded && !installable.shield) {
+                if (isShield(developEquipment_equipmentReady) && !installable.shield) {
                     installable.shield = Entity.create(
                         'Shield',
                         {
@@ -61,48 +61,45 @@ function process(entity) {
                         }
                     );
 
-                    entity.developWeapon_weaponReady = '';
+                    entity.developEquipment_equipmentReady = '';
 
-                    // Only play sound if human team
-                    if (team === TEAM.MAGENTA) {
+                    if (isHumanTeam(team)) {
                         playSound('install');
 
                         if (!installable.isFighterAutoAccelerated) {
-                            HUD.displayText(team, `${developWeapon_weaponReady} installed.`);
+                            HUD.displayText(team, `${developEquipment_equipmentReady} installed.`);
                         }
                     }
                 } else if (installable.attackWeapon === 'Cannon') {
-                    installable.attackWeapon         = developWeapon_weaponReady;
-                    entity.developWeapon_weaponReady = '';
+                    installable.attackWeapon               = developEquipment_equipmentReady;
+                    entity.developEquipment_equipmentReady = '';
 
-                    // Only play sound if human team
-                    if (team === TEAM.MAGENTA) {
+                    if (isHumanTeam(team)) {
                         playSound('install');
 
                         if (!installable.isFighterAutoAccelerated) {
-                            HUD.displayText(team, `${developWeapon_weaponReady} installed.`);
+                            HUD.displayText(team, `${developEquipment_equipmentReady} installed.`);
                         }
                     }
                 }
             }
 
-            entity.developWeapon_installTime = developWeapon_installTimeMax;
+            entity.developEquipment_installTime = developEquipment_installTimeMax;
         }
     } else {
         entity.isShimmering = false;
 
-        if (developWeapon_time > 0) {
-            entity.developWeapon_time--;
+        if (developEquipment_time > 0) {
+            entity.developEquipment_time--;
         } else {
-            entity.developWeapon_time = developWeapon_timeMax;
+            entity.developEquipment_time = developEquipment_timeMax;
 
             const weaponToDevelop = Random.arrayElement(Object.keys(DEVELOPABLE));
             if (Math.random() < DEVELOPABLE[weaponToDevelop]) {
                 // Successfully developed this weapon
-                entity.developWeapon_weaponReady = weaponToDevelop;
+                entity.developEquipment_equipmentReady = weaponToDevelop;
 
-                // Only play sound if human team
-                if (team === TEAM.MAGENTA) {
+                if (isHumanTeam(team)) {
                     playSound('develop');
                     HUD.displayText(team, `New equipment: ${weaponToDevelop} available.`);
                 }
@@ -113,7 +110,7 @@ function process(entity) {
 }
 
 export default {
-    componentFlag: 'canDevelopWeapon',
+    componentFlag: 'candevelopEquipment',
     DEFAULTS,
     process
 }

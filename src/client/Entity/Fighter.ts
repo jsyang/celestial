@@ -106,10 +106,7 @@ const ATTACK_TURRET_POSITIONS = [
 
 export default class Fighter extends LivingEntity {
     type = 'Fighter';
-    geo  = Geometry(
-        GEO.body,
-        {collisionPath: GEO.body.collisionPath}
-    );
+    geo  = Geometry(GEO.body);
 
     mass     = 10;
     hp       = 4;
@@ -123,6 +120,7 @@ export default class Fighter extends LivingEntity {
     attackWeapon          = 'Cannon';
     attackTurretPositions = ATTACK_TURRET_POSITIONS;
 
+    canBeShielded         = true;
     canShootLaserBolt     = true;
     canShootCannon        = true;
     canShootHeavyCannon   = true;

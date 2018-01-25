@@ -1,8 +1,27 @@
 # Todos for Celestial Combat
 
+## Critical priority
 
+- win / loss tally
+- kill statistics (entity killed by XXX)
+- score (total battle value of enemies killed)
+- health bars for units receiving damage
+- save / load games
 
-## BACKLOG
+- Options screen + Custom key mapping
+    - keyboard
+    - gamepad calibration
+
+- Economy that matters
+    - raw materials and finished materials need affect gameplay
+    - ordering construction of Fighters and Freighters, significantly affecting material supply
+    - can run out of materials on planet
+    - can move materials from one planet to another via freighter
+    - freighter has 2 types of cargo: 
+        - finished materials (can be used for colonization)
+        - raw materials (cannot be used for colonization, but can be used to supply)
+    
+## High priority
 
 - networked gameplay
     - sectors fought over (rooms)
@@ -13,14 +32,14 @@
     - heroku host?
     - firebase host?
 
-- health bars for units receiving damage
 
-- kill statistics (entity killed by XXX)
+## BACKLOG
 
 - fix for higher-pixel density displays
 https://github.com/pixijs/pixi.js/issues/1841
 
 - drop off ground forces (probes) to attack enemy planet facilities
+    - ground forces cannot leave planet unless picked up
     - dedicated drop-ship unit
     - armies bounded to surface of a planet
 
@@ -42,16 +61,11 @@ https://github.com/pixijs/pixi.js/issues/1841
         - coordinated attack with fighters in groups
         - assign priority to targets
 
-- Custom key mapping
 
 - better HUD
     - landing speed indicator
     - nearest star / nearest planet is like the enemy indicator from XEvil (screen borders)
     - make a more advanced galaxy radar
-
-- special button when docked to planet:
-    - pick up unused upgrades
-    - drop unused upgrades
 
 - special button when near non-friendly planet
     - negotiate treaty
@@ -62,19 +76,21 @@ https://github.com/pixijs/pixi.js/issues/1841
 
 - vector win / loss symbols    
 
-- save / load games
-
 - probes (alien craft?)
 
 - more spacecraft
     - light fighter
     - escort guard 
     - heavy fighter
+    - assault carrier
+        - long range cluster rocket attacks
     - capital ships
     - viral (T4) shaped ships
 
 - mercenary gameplay
     - bid / accept jobs
+    - switch allegiances
+    - become a pirate (gray color?)!
     - manage fleet
     - purchase / upgrade facilities
 
@@ -88,7 +104,5 @@ https://github.com/pixijs/pixi.js/issues/1841
         - land saboteurs on planet to reduce production
         - land saboteurs on planet to reduce production
  
-
-- implement structure status displays
 - asteroids / uninhabitable worlds
 - ability to destroy planets

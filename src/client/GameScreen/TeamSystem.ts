@@ -5,7 +5,7 @@ import Focus from '../Graphics/Focus';
 import Starfield from '../Graphics/Starfield';
 import {playSound} from '../assets/audio';
 import HUD from './HUD';
-import {TEAM} from '../constants';
+import {isHumanTeam, TEAM} from '../constants';
 
 let humanTeamHomePlanet;
 
@@ -42,14 +42,12 @@ function filterByIdlePColony(entity) {
     return entity.pcolony && !entity.pcolony.isManufacturing;
 }
 
-const isTeamHuman = team => team === TEAM.MAGENTA;
-
 function constructOnRandomPlanet(team, idleTeamPlanet, type) {
     if (idleTeamPlanet) {
         let pcolony;
 
         // Attempt to manufacture on home planet for humans
-        if (isTeamHuman(team) && humanTeamHomePlanet) {
+        if (isHumanTeam(team) && humanTeamHomePlanet) {
             const preferredPColony = humanTeamHomePlanet.pcolony;
             if (preferredPColony && !preferredPColony.isManufacturing) {
                 pcolony = preferredPColony;
@@ -73,7 +71,7 @@ function repairRearmWhenDocked(fighter) {
     if (isDockedSpacePort) {
         // Repair
         if (fighter.hp < fighter.maxHp) {
-            isHumanTeamRepair = isTeamHuman(team);
+            isHumanTeamRepair = isHumanTeam(team);
             fighter.hp        = fighter.maxHp;
             HUD.displayText(fighter.team, 'Fully repaired.');
         }
@@ -91,7 +89,7 @@ function repairRearmWhenDocked(fighter) {
 
         // Repair
         if (fighter.hp < fighter.maxHp) {
-            isHumanTeamRepair = isTeamHuman(team);
+            isHumanTeamRepair = isHumanTeam(team);
             fighter.hp += 0.5;
             HUD.displayText(fighter.team, `Repairing: ${Math.round(fighter.hp / fighter.maxHp * 100)}%`);
         }
@@ -134,7 +132,7 @@ function sortByDockedToHomePlanet(f1, f2) {
 }
 
 function clearHumanTeamPlanetIfNotInTeam() {
-    if (humanTeamHomePlanet && !isTeamHuman(humanTeamHomePlanet.team)) {
+    if (humanTeamHomePlanet && !isHumanTeam(humanTeamHomePlanet.team)) {
         humanTeamHomePlanet = null;
     }
 }
@@ -171,7 +169,7 @@ function processTeam(team) {
         let fighter: any = Random.arrayElement(teamFighter);
 
         // Human control
-        if (isTeamHuman(team)) {
+        if (isHumanTeam(team)) {
             clearHumanTeamPlanetIfNotInTeam();
 
             if (!GameScreenControl.getControlledEntity()) {

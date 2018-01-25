@@ -40,7 +40,7 @@ import DockSpacePortComponent from './dockSpacePort';
 import CarryFighterComponent from './carryFighter';
 import ColonizePlanetComponent from './colonizePlanet';
 import ShimmerComponent from './shimmer';
-import DevelopWeaponComponent from './developWeapon';
+import DevelopEquipmentComponent from './developEquipment';
 import GravitateComponent from './gravitate';
 import FlockComponent from './flock';
 
@@ -70,7 +70,7 @@ const ALL_COMPONENTS = [
     StoreMaterialComponent,
     HarvestComponent,
     MineComponent,
-    DevelopWeaponComponent,
+    DevelopEquipmentComponent,
     RepairComponent,
     RefineComponent,
     ConstructComponent,

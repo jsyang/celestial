@@ -4,6 +4,9 @@ import JSZipUtils from 'jszip-utils';
 
 const SOUND_FILENAME = /(^sounds\/|\.ogg$)/gi;
 
+// Filter out stuff like .DS_Store
+const FILTER_SOUND_FILENAME = /\.ogg$/i;
+
 interface IZipObject {
     name: string;
     async: Function;
@@ -16,11 +19,13 @@ function loadAudioFromZip(zip: any): Promise<void> {
     zip.folder('sounds/')
         .forEach(
             (relativePath, file: IZipObject) => {
-                // Get sound name from sound file name
-                soundNames.push(file.name.replace(SOUND_FILENAME, ''));
+                if (FILTER_SOUND_FILENAME.test(relativePath)) {
+                    // Get sound name from sound file name
+                    soundNames.push(file.name.replace(SOUND_FILENAME, ''));
 
-                // Load sound buffers
-                loadAllSoundBuffers.push(file.async('arraybuffer'));
+                    // Load sound buffers
+                    loadAllSoundBuffers.push(file.async('arraybuffer'));
+                }
             }
         );
 

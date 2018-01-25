@@ -8,15 +8,15 @@ function create({fighter, onClickWeapon}) {
     const {attackWeapon} = fighter;
 
     // Fighter may be docked on SpacePort or on Planet, handle both cases
-    const planet          = fighter.planet ? fighter.planet : fighter.spaceport.planet;
-    const {plab}          = planet;
-    const availableWeapon = plab && plab.developWeapon_weaponReady;
+    const planet             = fighter.planet ? fighter.planet : fighter.spaceport.planet;
+    const {plab}             = planet;
+    const availableEquipment = plab && plab.developEquipment_equipmentReady;
 
     const modal = Modal.create({width: 400, height: 200});
 
     let buttonStackY = 200;
 
-    [DEFAULT_WEAPON, availableWeapon]
+    [DEFAULT_WEAPON, availableEquipment]
         .filter(Boolean)
         .map(weaponName => {
             buttonStackY -= 40 + 20;
@@ -26,9 +26,9 @@ function create({fighter, onClickWeapon}) {
                 onClick: () => {
                     // Swap only effective if Fighter is armed with something
                     // better than a Cannon
-                    if (plab && plab.developWeapon_weaponReady !== 'Shield') {
-                        fighter.attackWeapon           = plab.developWeapon_weaponReady || DEFAULT_WEAPON;
-                        plab.developWeapon_weaponReady = attackWeapon === DEFAULT_WEAPON ? '' : attackWeapon;
+                    if (plab && plab.developEquipment_equipmentReady !== 'Shield') {
+                        fighter.attackWeapon                 = plab.developEquipment_equipmentReady || DEFAULT_WEAPON;
+                        plab.developEquipment_equipmentReady = attackWeapon === DEFAULT_WEAPON ? '' : attackWeapon;
                     }
 
                     onClickWeapon();
@@ -41,6 +41,9 @@ function create({fighter, onClickWeapon}) {
             modal.modal.addChild(weaponButton);
             modal.buttons.push(weaponButton);
         });
+
+    // Since they stack from the bottom visually, the first added button should now be the last one in the array
+    modal.buttons.reverse();
 
     const label = new PIXI.Text(
         `Fighter is armed with ${fighter.attackWeapon}.`,

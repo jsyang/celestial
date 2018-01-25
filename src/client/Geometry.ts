@@ -75,10 +75,8 @@ export function testPointInEntity({x, y}: IPoint, entity) {
 export const transformPolygon = (poly, dx = 0, dy = 0, sx = 1, sy = 1) =>
     poly.map((coord, index) => index % 2 === 0 ? coord * sx + dx : coord * sy + dy);
 
-export default function Geometry(geometryDef, options: any = {}) {
-    geometryDef = {...geometryDef, options};
-
-    const {lineStyle, fill, path, radius, x, y, collisionPath} = geometryDef;
+export default function Geometry(geometryDef) {
+    const {lineStyle, fill, path, radius, x, y, collisionPath, collisionRadius, type} = geometryDef;
     let collider;
 
     // Graphics set up
@@ -99,9 +97,9 @@ export default function Geometry(geometryDef, options: any = {}) {
 
     const position = v(g.x, g.y);
 
-    if (geometryDef.type === 'circle') {
+    if (type === 'circle') {
         g.drawCircle(0, 0, radius);
-        collider = new Circle(position, radius);
+        collider = new Circle(position, collisionRadius || radius);
     } else {
         const polygonSAT: Vector[] = [];
 

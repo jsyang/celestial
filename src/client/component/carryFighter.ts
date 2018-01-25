@@ -1,7 +1,7 @@
 import {playSound} from '../assets/audio';
 import Entity from '../Entity';
 import {testPointInEntity} from '../Geometry';
-import {TEAM} from '../constants';
+import {isHumanTeam} from '../constants';
 
 const DEFAULTS = {
     fighter:           null,
@@ -18,7 +18,7 @@ function catchFighter(fighter): boolean {
         const speed2 = dx ** 2 + dy ** 2;
 
         if (speed2 <= DOCK_SPEED_MAX2) {
-            if (team === TEAM.MAGENTA) {
+            if (isHumanTeam(team)) {
                 playSound('repaired');
             }
             fighter.dockSpacePort(this);

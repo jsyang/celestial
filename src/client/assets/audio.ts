@@ -8,7 +8,6 @@ let audioBuffers = {};
 
 export function defineSound({name, arrayBuffer}) {
     try {
-        // https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/decodeAudioData
         audioContext.decodeAudioData(arrayBuffer)
             .then(decodedAudioBuffer => {
                 audioBuffers[name] = decodedAudioBuffer;

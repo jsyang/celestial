@@ -4,7 +4,7 @@ import RadarLocal from './RadarLocal';
 import RadarGalaxy from './RadarGalaxy';
 import PauseStatus from './PauseStatus';
 import TextContainer from './TextContainer';
-import {TEAM} from '../../constants';
+import {isHumanTeam} from '../../constants';
 
 function init() {
     TextContainer.init();
@@ -24,8 +24,7 @@ function update() {
 }
 
 function displayText(team, text) {
-    // Only display text for human team
-    if (team === TEAM.MAGENTA) {
+    if (isHumanTeam(team)) {
         TextContainer.displayText(text);
     }
 }

@@ -15,7 +15,7 @@ import GalaxyWonModal from '../UI/Modal/GalaxyWonModal';
 import GalaxyLostModal from '../UI/Modal/GalaxyLostModal';
 import {debounce} from '../debounce';
 import {playSound} from '../assets/audio';
-import {TEAM} from '../constants';
+import {isHumanTeam} from '../constants';
 
 let raf;  // requestAnimationFrame request
 let then; // Time stamp of last animation frame
@@ -87,7 +87,7 @@ function reinitAll() {
 }
 
 function onTeamLost(team) {
-    if (team === TEAM.MAGENTA) {
+    if (isHumanTeam(team)) {
         isPaused = true;
 
         const lostModal = GalaxyLostModal.create({
@@ -100,7 +100,7 @@ function onTeamLost(team) {
 }
 
 function onTeamWon(team) {
-    if (team === TEAM.MAGENTA) {
+    if (isHumanTeam(team)) {
         isPaused = true;
 
         const wonModal = GalaxyWonModal.create({

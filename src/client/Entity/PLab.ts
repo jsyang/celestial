@@ -32,11 +32,11 @@ export default class PLab extends LivingEntity {
     shimmerNormalColor: number;
     shimmerBlinkColor = 0x0ff00f;
 
-    canDevelopWeapon  = true;
-    canDisplayHit     = true;
-    canExplode        = true;
-    explosionOriginDx = 20;
-    explosionOriginDy = -52;
+    canDevelopEquipment = true;
+    canDisplayHit       = true;
+    canExplode          = true;
+    explosionOriginDx   = 20;
+    explosionOriginDy   = -52;
 
     canOccupyPlanet = true;
 
