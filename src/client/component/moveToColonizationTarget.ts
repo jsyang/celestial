@@ -1,4 +1,4 @@
-import Entity from '../Entity';
+import {getAngleFromTo, getDistSquared} from '../entityHelpers';
 
 const DEFAULTS = {
     TURN_RATE:  0.07,
@@ -10,7 +10,7 @@ const DIST_PLANET_ORBIT2 = 200 ** 2;
 
 function rotateToFaceColonizationTarget(entity) {
     let rotation          = entity.rotation;
-    const desiredRotation = Entity.getAngleFromTo(entity, entity.colonizationTarget);
+    const desiredRotation = getAngleFromTo(entity, entity.colonizationTarget);
 
     const turnMagnitude = Math.abs(desiredRotation - rotation);
     if (turnMagnitude > Math.PI) {
@@ -42,7 +42,7 @@ function process(entity) {
     let {isOrbitingPlanet, colonizationTarget, DIST_HALT2} = entity;
 
     if (!isOrbitingPlanet && colonizationTarget) {
-        const r2 = Entity.getDistSquared(entity, colonizationTarget);
+        const r2 = getDistSquared(entity, colonizationTarget);
 
         if (colonizationTarget.type === 'Planet') {
             DIST_HALT2 = DIST_PLANET_ORBIT2;

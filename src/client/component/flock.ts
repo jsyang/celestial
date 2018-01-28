@@ -1,4 +1,5 @@
 import Entity from '../Entity';
+import {getAngleFromTo, getDistSquared} from '../entityHelpers';
 
 /**
  * Exhibit boid-like flocking behavior
@@ -20,7 +21,7 @@ function repelFromOtherFlockMembers(entity) {
     Entity.getNearestUnits(entity)
         .filter((f: any) => f.canFlock && f !== entity)
         .forEach((otherFlocker: any) => {
-            const distance = Entity.getDistSquared(entity, otherFlocker);
+            const distance = getDistSquared(entity, otherFlocker);
 
             if (distance < REPEL_DIST_2) {
                 let factor = -REPEL_MAGNITUDE;
@@ -40,7 +41,7 @@ function attractToFlockPoint(entity) {
     const {flockPoint} = entity;
 
     if (flockPoint) {
-        const bearing = Entity.getAngleFromTo(entity, flockPoint);
+        const bearing = getAngleFromTo(entity, flockPoint);
 
         entity.dx += FLOCK_ATTRACT_TENDENCY * Math.cos(bearing);
         entity.dy += FLOCK_ATTRACT_TENDENCY * Math.sin(bearing);

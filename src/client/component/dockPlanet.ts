@@ -2,14 +2,13 @@
  * Sits docked on planet
  */
 
-import Entity from '../Entity';
-import Planet from "../Entity/Planet";
+import {getAngleFromTo} from '../entityHelpers';
 
-function dockPlanet(planet: Planet) {
+function dockPlanet(planet) {
     this.isDockedPlanet = true;
     this.dx             = 0;
     this.dy             = 0;
-    this.rotation       = Entity.getAngleFromTo(planet, this);
+    this.rotation       = getAngleFromTo(planet, this);
     this.planet         = planet;
 
     if (!planet.isOccupied()) {

@@ -3,6 +3,7 @@ import Random from '../Random';
 import {MAX_COORDINATE} from '../constants';
 import Planet from '../Entity/Planet';
 import Star from '../Entity/Star';
+import {getDistSquared} from '../entityHelpers';
 
 const MAX_PLANETS_PER_STAR      = 2;
 const CHANCE_STARS_HAVE_PLANETS = 0.8;
@@ -22,7 +23,7 @@ function isStarDistantFromOtherStars(star) {
     const otherStars = Entity.getByType('Star');
 
     for (let i = 0; i < otherStars.length; i++) {
-        if (otherStars[i] !== star && Entity.getDistSquared(star, otherStars[i]) < MIN_MARGIN_STARS2) {
+        if (otherStars[i] !== star && getDistSquared(star, otherStars[i]) < MIN_MARGIN_STARS2) {
             return false;
         }
     }

@@ -6,6 +6,7 @@ import Starfield from '../Graphics/Starfield';
 import {playSound} from '../assets/audio';
 import HUD from './HUD';
 import {isHumanTeam, TEAM} from '../constants';
+import {getDistSquared} from '../entityHelpers';
 
 let humanTeamHomePlanet;
 
@@ -107,7 +108,7 @@ function colonizeNearestPlanet(freighter) {
 
     Entity.getByType('Planet')
         .forEach(planet => {
-            const dist2 = Entity.getDistSquared(freighter, planet);
+            const dist2 = getDistSquared(freighter, planet);
 
             if (nearestDist2 > dist2) {
                 nearestPlanet = planet;

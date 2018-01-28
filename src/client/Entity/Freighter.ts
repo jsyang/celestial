@@ -1,9 +1,9 @@
 import Geometry from '../Geometry';
-import Entity from '.';
 import Planet from './Planet';
 import LivingEntity from './LivingEntity';
 import {TEAM_COLOR} from '../constants';
 import Random from '../Random';
+import {getAngleFromTo} from '../entityHelpers';
 
 const GEO = {
     "body":      {
@@ -146,7 +146,7 @@ const getTurretRotation = (freighter, x, y) => {
         y: attackTarget.y + targetDy * 24
     };
 
-    let rotation = Entity.getAngleFromTo(
+    let rotation = getAngleFromTo(
         {
             x: x + freighter.x,
             y: y + freighter.y

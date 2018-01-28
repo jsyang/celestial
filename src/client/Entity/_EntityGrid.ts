@@ -2,8 +2,8 @@
  * All updates to the grid are written on a per-frame basis.
  * The nextEntityGrid becomes the current entityGrid when EntityGrid.commit() is called.
  */
-import {getDistSquared} from '.';
 import {MAX_COORDINATE} from '../constants';
+import {getDistSquared} from '../entityHelpers';
 
 /**
  * Each cell within the entityGrid covers an area (1<<11) x (1<<11)

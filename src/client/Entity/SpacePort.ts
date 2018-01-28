@@ -1,8 +1,8 @@
 import Geometry from '../Geometry';
 import Planet from "./Planet";
 import LivingEntity from './LivingEntity';
-import Entity from '.';
 import Random from '../Random';
+import {getAngleFromTo} from '../entityHelpers';
 
 const GEO = {
     "_name":   "Space Port",
@@ -152,7 +152,7 @@ const getTurretRotation = (spaceport, x, y) => {
         y: attackTarget.y + targetDy * 20
     };
 
-    let rotation = Entity.getAngleFromTo(
+    let rotation = getAngleFromTo(
         {
             x: x + spaceport.x,
             y: y + spaceport.y

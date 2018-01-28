@@ -51,6 +51,7 @@ const TYPES_PROJECTILES = {
 // Celestial bodies
 import Planet from './Planet';
 import Star from './Star';
+import {getDistSquared} from '../entityHelpers';
 
 let bodies: any    = [];
 const TYPES_BODIES = {
@@ -84,18 +85,6 @@ function create(type, params) {
     }
 
     return entity;
-}
-
-export function getDistSquared(e1, e2) {
-    const dx = e2.x - e1.x;
-    const dy = e2.y - e1.y;
-    return dx ** 2 + dy ** 2;
-}
-
-export function getAngleFromTo(e1, e2) {
-    const dx = e2.x - e1.x;
-    const dy = e2.y - e1.y;
-    return Math.atan2(dy, dx);
 }
 
 function update(type: string) {
@@ -175,8 +164,5 @@ export default {
 
     clearAll,
     destroy:   DB.remove,
-    getByType: DB.getByType,
-
-    getDistSquared,
-    getAngleFromTo
+    getByType: DB.getByType
 };

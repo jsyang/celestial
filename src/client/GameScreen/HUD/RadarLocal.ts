@@ -4,6 +4,7 @@
 import * as PIXI from 'pixi.js';
 import Graphics from '../../Graphics';
 import Entity from '../../Entity';
+import {getAngleFromTo} from '../../entityHelpers';
 
 const DIAL_TRACK_ALPHA = 0.08;
 const DEGREES          = Math.PI / 180;
@@ -133,8 +134,8 @@ function update() {
 
             setRotations({
                 nearestEnemy:  undefined,
-                nearestPlanet: nearestPlanet && Entity.getAngleFromTo(origin, nearestPlanet),
-                nearestStar:   nearestStar && Entity.getAngleFromTo(origin, nearestStar)
+                nearestPlanet: nearestPlanet && getAngleFromTo(origin, nearestPlanet),
+                nearestStar:   nearestStar && getAngleFromTo(origin, nearestStar)
             });
 
             lastUpdateTime = now;

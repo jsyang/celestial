@@ -1,5 +1,5 @@
-import Entity from '../Entity';
 import Focus from '../Graphics/Focus';
+import {getDistSquared} from '../entityHelpers';
 
 let audioContext = new AudioContext();
 
@@ -32,7 +32,7 @@ const LN_INAUDIBLE_DIST2_FACTOR = 1 / Math.log(INAUDIBLE_DIST2);
 // Don't play sounds that are too far away from the focus
 export function playSoundLocalized(name: string, sourceEntity) {
     const focus = Focus.getFocus();
-    const dist2 = Math.max(Entity.getDistSquared(sourceEntity, focus), 1);
+    const dist2 = Math.max(getDistSquared(sourceEntity, focus), 1);
 
     if (dist2 < INAUDIBLE_DIST2) {
         const source   = audioContext.createBufferSource();

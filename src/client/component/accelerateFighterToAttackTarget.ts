@@ -1,5 +1,5 @@
-import Entity from '../Entity';
 import {ACCELERATION_FIGHTER, ACCELERATION_FIGHTER_UNDOCK, ROTATION_RATE_FIGHTER} from '../constants';
+import {getAngleFromTo, getDistSquared} from '../entityHelpers';
 
 /**
  * Move a fighter while avoiding planets and stars
@@ -49,7 +49,7 @@ function moveOrAttack(entity) {
         let rotation;
         let attackDist2;
 
-        let dist2    = Entity.getDistSquared(entity, attackTarget);
+        let dist2    = getDistSquared(entity, attackTarget);
         const speed2 = dx ** 2 + dy ** 2;
 
         if (attackTarget.type === 'PBase') {
@@ -58,7 +58,7 @@ function moveOrAttack(entity) {
             attackDist2 = ATTACK_DIST2;
         }
 
-        const idealRotation   = Entity.getAngleFromTo(entity, attackTarget);
+        const idealRotation   = getAngleFromTo(entity, attackTarget);
         const movementBearing = Math.atan2(dy, dx);
 
         // todo: simplify calculations

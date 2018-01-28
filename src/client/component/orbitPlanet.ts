@@ -1,10 +1,10 @@
-import Entity from '../Entity';
+import {getAngleFromTo} from '../entityHelpers';
 
 function enterPlanetOrbit(planet) {
     this.isOrbitingPlanet = true;
     this.dx               = 0;
     this.dy               = 0;
-    this.orbitRotation    = Entity.getAngleFromTo(planet, this);
+    this.orbitRotation    = getAngleFromTo(planet, this);
     this.rotation         = this.orbitRotation + DEGREES90;
     this.planet           = planet;
 
@@ -35,7 +35,7 @@ const DEGREES90 = Math.PI * 0.5;
 function process(entity) {
     if (entity.isOrbitingPlanet && entity.planet) {
         if (entity.type === 'SpacePort') {
-            entity.rotation = Entity.getAngleFromTo(entity.planet, entity);
+            entity.rotation = getAngleFromTo(entity.planet, entity);
         } else if (entity.type === 'Freighter') {
             entity.rotation += entity.D_ROTATION;
         }
