@@ -134,7 +134,7 @@ function init() {
 
 const togglePauseState = () => {
     isPaused = !isPaused;
-    playSound(isPaused ? 'pause' : 'electric-fizzle');
+    playSound('pause');
     HUD.setPauseVisible(isPaused);
 };
 

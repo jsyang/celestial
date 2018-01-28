@@ -2,6 +2,9 @@
 
 ## Critical priority
 
+- larger version of the RadarGalaxy
+    - show viewport bounds relative to galaxy space (rect)
+
 - win / loss tally
 - kill statistics (entity killed by XXX)
 - score (total battle value of enemies killed)
@@ -20,7 +23,9 @@
     - freighter has 2 types of cargo: 
         - finished materials (can be used for colonization)
         - raw materials (cannot be used for colonization, but can be used to supply)
-    
+
+- hardcore mode?
+
 ## High priority
 
 - geometry editor upgrades
@@ -39,6 +44,8 @@
 
 
 ## BACKLOG
+
+- galactic radar is ranged (update radius from comm centers)
 
 - fix for higher-pixel density displays
 https://github.com/pixijs/pixi.js/issues/1841
@@ -81,7 +88,7 @@ https://github.com/pixijs/pixi.js/issues/1841
 
 - vector win / loss symbols    
 
-- probes (alien craft?)
+- alien craft that is hostile to all factions?
 
 - more spacecraft
     - light fighter
