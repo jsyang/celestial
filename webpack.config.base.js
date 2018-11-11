@@ -1,7 +1,8 @@
-const child_process  = require('child_process');
-const path           = require('path');
-const webpack        = require('webpack');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const child_process              = require('child_process');
+const path                       = require('path');
+const webpack                    = require('webpack');
+const UglifyJsPlugin             = require('uglifyjs-webpack-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const isProd = (process.env.NODE_ENV === 'production');
 
@@ -16,7 +17,8 @@ const plugins = [
     new webpack.DefinePlugin({
         BUILD_DATE: JSON.stringify(now.toDateString()),
         BUILD_HASH: JSON.stringify(child_process.execSync('git rev-parse --short HEAD').toString())
-    })
+    }),
+    new ForkTsCheckerWebpackPlugin()
 ].filter(Boolean);
 
 module.exports = {
@@ -47,9 +49,12 @@ module.exports = {
                 test:    /\.tsx?$/,
                 include: path.join(__dirname, 'src'),
                 exclude: /node_modules/,
-                loaders: [
-                    'ts-loader?silent=true'
-                ]
+                use:     [{
+                    loader:  "ts-loader",
+                    options: {
+                        transpileOnly: true
+                    }
+                }]
             }
         ]
     }

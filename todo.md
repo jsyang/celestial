@@ -2,18 +2,11 @@
 
 ## Critical priority
 
-- larger version of the RadarGalaxy
-    - show viewport bounds relative to galaxy space (rect)
-
 - win / loss tally
 - kill statistics (entity killed by XXX)
 - score (total battle value of enemies killed)
 - health bars for units receiving damage
 - save / load games
-
-- Options screen + Custom key mapping
-    - keyboard
-    - gamepad calibration
 
 - Economy that matters
     - raw materials and finished materials need affect gameplay
@@ -41,7 +34,6 @@
     - leaderboard
     - heroku host?
     - firebase host?
-
 
 ## BACKLOG
 
@@ -118,3 +110,7 @@ https://github.com/pixijs/pixi.js/issues/1841
  
 - asteroids / uninhabitable worlds
 - ability to destroy planets
+
+- Options screen + Custom key mapping
+    - keyboard
+    - gamepad calibration

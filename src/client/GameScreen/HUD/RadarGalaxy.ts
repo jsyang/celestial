@@ -6,6 +6,9 @@ import * as PIXI from 'pixi.js';
 import Entity from '../../Entity';
 import Graphics from '../../Graphics';
 import {MAX_COORDINATE, TEAM_COLOR} from '../../constants';
+import RadarGalaxyExpanded from './RadarGalaxyExpanded';
+import {setClickable} from '../../UI/setClickable';
+import {playSound} from '../../assets/audio';
 
 const ALPHA_SCANNER_BORDER = 0.3;
 
@@ -24,9 +27,15 @@ const drawRadarBox = () => {
 scanner.x = MARGIN_EDGE;
 scanner.y = MARGIN_EDGE;
 
-const COORDINATE_TO_SCANNER_FACTOR = SIZE / MAX_COORDINATE;
+setClickable(
+    scanner,
+    () => {
+        RadarGalaxyExpanded.setVisible(true);
+        playSound('nav');
+    }
+);
 
-// todo: Make planet markers show the team owning them.
+const COORDINATE_TO_SCANNER_FACTOR = SIZE / MAX_COORDINATE;
 
 const drawMarker = entity => {
     const {type, team} = entity;

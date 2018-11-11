@@ -57,6 +57,32 @@ _Celestial Combat is a game of galactic conquest and colonization._
     Button 3            Pause / resume game
 ```
 
+### HUD (Heads Up Display)
+
+You can see vital information about the current situation in these regions of the
+game screen:
+
+![1](../hud.png)
+
+1. Galaxy radar is provided by friendly planets with Communications Centers. Markers indicate
+the positions of planets, stars, and spaceships: green, yellow, and other colors, respectively.
+
+You can click on this small display to expand the display to fill your screen:
+
+![1](../radar-expanded.png)
+
+2. Tactical radar is provided by the current spaceship being piloted by the player. Yellow and green
+arcs show the heading from the spaceship's location to the nearest star and planet.
+
+3. Spaceship type
+
+4. Spaceship health
+
+5. Active weapon: if the weapon requires an ammo supply, it is shown as a tally underneath the weapon name 
+
+6. Message log: as the battle wages on, you will receive progress messages here from the parts of your faction's
+war machine. Most recent messages are displayed at towards the top, leaving older messages to drop off below.
+
 ## Game play
 
 You begin with either an invasion fleet (1 x Fighter + 4 invasion Freighters) or

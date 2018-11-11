@@ -14,6 +14,8 @@ See this page for [How to Play](src/how-to-play.md) this game.
 
 ## TODOs to finish v1
 
+- expanded galactic radar should take you to selection rect's location in freelook
+
 - win streak tally
     - lose fully when 2 sectors have been lost
 
