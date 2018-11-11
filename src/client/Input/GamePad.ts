@@ -17,12 +17,14 @@ export interface IGamePadState {
 }
 
 const getEventsFromGamePad = ({left, right, up, analogAngle, button0, button1, button2, button3}: IGamePadState): IInputEvent => ({
-    TURN_LEFT:  Boolean(left),
-    TURN_RIGHT: Boolean(right),
-    ACCELERATE: Boolean(button3),
-    SPECIAL:    Boolean(button1),
-    SHOOT:      Boolean(button0),
-    PAUSE:      Boolean(button2),
+    TURN_LEFT:          Boolean(left),
+    TURN_RIGHT:         Boolean(right),
+    ACCELERATE:         Boolean(button3),
+    SPECIAL:            Boolean(button1),
+    SHOOT:              Boolean(button0),
+    PAUSE:              Boolean(button2),
+    NEXT_ENEMY_FIGHTER: false,
+    PREV_ENEMY_FIGHTER: false,
     analogAngle
 });
 

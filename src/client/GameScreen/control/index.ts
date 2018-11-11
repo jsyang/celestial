@@ -5,10 +5,16 @@ import controlActiveModal from './ActiveModal';
 import controlFighter from './Fighter';
 import FreelookIcon from '../../Graphics/Freelook';
 import Freelook from './Freelook';
+import {isHumanTeam} from '../../constants';
+import {IInputEvent} from '../../Input/Event';
+import Starfield from '../../Graphics/Starfield';
+import {getFighter} from './getFighter';
 
 let controlledEntity;
 const setControlledEntity = entity => controlledEntity = entity;
 const getControlledEntity = () => controlledEntity;
+
+let prevEvents: IInputEvent = {} as any;
 
 function update() {
     const device     = Input.getDevice();
@@ -35,10 +41,13 @@ function update() {
                 FreelookIcon.setIconVisible(false);
                 Focus.setFocus(controlledEntity);
 
-                switch (controlledEntity.type) {
-                    case 'Fighter':
-                        controlFighter(controlledEntity, events);
-                        break;
+                // Only allow player control if same faction
+                if (isHumanTeam(controlledEntity.team)) {
+                    switch (controlledEntity.type) {
+                        case 'Fighter':
+                            controlFighter(controlledEntity, events);
+                            break;
+                    }
                 }
             } else {
                 // Freelook if none
@@ -52,7 +61,29 @@ function update() {
 
             FreelookIcon.setIconVisible(true);
         }
+
+        // Select enemy fighters to focus on
+        if (events.NEXT_ENEMY_FIGHTER && !prevEvents.NEXT_ENEMY_FIGHTER) {
+            Starfield.process(false);
+
+            Focus.setFocus(
+                setControlledEntity(
+                    getFighter(true)
+                )
+            );
+
+        } else if (events.PREV_ENEMY_FIGHTER && !prevEvents.PREV_ENEMY_FIGHTER) {
+            Starfield.process(false);
+
+            Focus.setFocus(
+                setControlledEntity(
+                    getFighter(false)
+                )
+            );
+        }
     }
+
+    prevEvents = events;
 }
 
 export default {

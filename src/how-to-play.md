@@ -47,6 +47,8 @@ _Celestial Combat is a game of galactic conquest and colonization._
     F                   Fire primary weapon
     E                   Special action (when docked)
     P                   Pause / resume game
+    , (<)               Focus on previous fighter spaceship 
+    . (>)               Focus on next fighter spaceship
 
     
     GAMEPAD............ ACTION.............

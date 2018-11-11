@@ -2,8 +2,10 @@ import * as PIXI from 'pixi.js';
 
 import Entity from '../../Entity';
 import Graphics from '../../Graphics';
-import {MAX_COORDINATE, TEAM, TEAM_COLOR} from '../../constants';
+import {FOCUS_RETICLE, MAX_COORDINATE, TEAM, TEAM_COLOR} from '../../constants';
 import {setClickable} from '../../UI/setClickable';
+import GameScreenControl from '../../GameScreen/control';
+import {transformPolygon} from '../../Geometry';
 
 const ALPHA_SCANNER_BORDER = 0.25;
 
@@ -28,6 +30,11 @@ const drawRadarBox = () => {
 
 let COORDINATE_TO_SCANNER_FACTOR_X = 0;
 let COORDINATE_TO_SCANNER_FACTOR_Y = 0;
+
+const RETICLE_SCALE = 0.04;
+const RETICLE_EDGES = FOCUS_RETICLE.map(
+    poly => transformPolygon(poly, -200 * RETICLE_SCALE, -200 * RETICLE_SCALE, RETICLE_SCALE, RETICLE_SCALE)
+);
 
 let isVisible = false;
 
@@ -67,17 +74,24 @@ const drawMarker = entity => {
             break;
 
         case 'Fighter':
-
-        // todo: show heading direction
             color = TEAM_COLOR[team];
             size  = 2;
             scanner.beginFill(color, 1);
             scanner.lineStyle(1, color, 1);
             scanner.drawRect(x - size / 2, y - size / 2, size, size);
+
+            if (entity === controlledEntity) {
+                scanner.endFill();
+                scanner.beginFill(0, 0);
+                scanner.lineStyle(1, 0xffffff, 1);
+                RETICLE_EDGES.forEach(
+                    poly => scanner.drawPolygon(transformPolygon(poly, x, y))
+                );
+            }
+
             break;
         case 'Freighter':
         default:
-        // todo: show heading direction
             color = COLOR_MARKER_FREIGHTER;
             size  = 4;
             scanner.beginFill(0, 0);
@@ -96,6 +110,8 @@ const COLOR_MARKER_FREIGHTER = 0xaaaaaa;
 let lastUpdateTime = 0;
 const TIME_UPDATE  = 250;
 
+let controlledEntity;
+
 function update() {
     if (!isVisible) return;
 
@@ -104,6 +120,9 @@ function update() {
     if (now - lastUpdateTime > TIME_UPDATE) {
         scanner.clear();
         drawRadarBox();
+
+        // Put a reticle around it
+        controlledEntity = GameScreenControl.getControlledEntity();
 
         Entity.getByType('Star').forEach(drawMarker);
         Entity.getByType('Planet').forEach(drawMarker);

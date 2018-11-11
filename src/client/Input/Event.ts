@@ -4,7 +4,9 @@ export enum IEventType {
     ACCELERATE,
     SHOOT,
     SPECIAL,
-    PAUSE
+    PAUSE,
+    NEXT_ENEMY_FIGHTER,
+    PREV_ENEMY_FIGHTER
 }
 
 export interface IInputEvent {
@@ -14,5 +16,7 @@ export interface IInputEvent {
     TURN_RIGHT: boolean;
     ACCELERATE: boolean;
     SHOOT: boolean;
+    NEXT_ENEMY_FIGHTER: boolean;
+    PREV_ENEMY_FIGHTER: boolean;
     analogAngle?: number;
 }
