@@ -10,7 +10,12 @@ See this page for [How to Play](http://jsyang.ca/celestial/how-to-play) this gam
 
 - [Play Celestial Combat with keyboard](http://jsyang.ca/celestial)
 - [Play Celestial Combat with a game pad](http://jsyang.ca/celestial?gamepad)
+
+## Development
+
 - [Start Geometry editor](http://jsyang.ca/celestial?editor)<br><img src="how-to-play/editor.png">
+You can use the geometry editor to create polygons to be display inside the game engine.
+See `LETTERS` within `src/client/constants.ts` for example. 
 
 ## TODOs to finish v1
 
