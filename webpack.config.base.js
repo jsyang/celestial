@@ -6,13 +6,12 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const isProd = (process.env.NODE_ENV === 'production');
 
 const devtool = isProd ?
-    '' : 'inline-eval-cheap-source-map';
+    '' : 'cheap-eval-source-map';
 
 const now = new Date();
 
 const plugins = [
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.NoEmitOnErrorsPlugin(),
     isProd ? new UglifyJsPlugin() : null,
     new webpack.DefinePlugin({
         BUILD_DATE: JSON.stringify(now.toDateString()),

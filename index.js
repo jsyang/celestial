@@ -20,6 +20,6 @@ http.createServer(app).listen(3000, function (err) {
         throw err;
     }
 
-    const addr = this.address();
-    console.log('[server] Listening at http://%s:%d', addr.address, addr.port);
+    const {address, port} = this.address();
+    console.log(`[server] Listening at http://${address}:${port}`);
 });

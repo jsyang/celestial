@@ -29,12 +29,13 @@
     "marked": "^0.3.9",
     "pixi.js": "^4.6.1",
     "sat": "^0.6.0",
-    "ts-loader": "^3.1.1",
-    "tslint": "^5.9.1",
+    "ts-loader": "^5.3.0",
+    "tslint": "^5.11.0",
     "tslint-eslint-rules": "^4.1.1",
-    "typescript": "^2.6.1",
-    "uglifyjs-webpack-plugin": "^1.1.1",
-    "webpack": "^3.8.1",
+    "typescript": "^3.1.6",
+    "uglifyjs-webpack-plugin": "^2.0.1",
+    "webpack": "^4.25.1",
+    "webpack-cli": "^3.1.2",
     "webpack-config-assign": "^1.0.0",
     "webpack-dev-middleware": "^1.10.2"
   }
