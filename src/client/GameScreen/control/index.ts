@@ -16,6 +16,18 @@ const getControlledEntity = () => controlledEntity;
 
 let prevEvents: IInputEvent = {} as any;
 
+function revertControlToAI() {
+    if (controlledEntity && isHumanTeam(controlledEntity.team)) {
+        controlledEntity.isFighterAutoAccelerated = true;
+    }
+}
+
+function setControlToHuman() {
+    if (controlledEntity && isHumanTeam(controlledEntity.team)) {
+        controlledEntity.isFighterAutoAccelerated = false;
+    }
+}
+
 function update() {
     const device     = Input.getDevice();
     const events     = device.getEvents();
@@ -43,6 +55,8 @@ function update() {
 
                 // Only allow player control if same faction
                 if (isHumanTeam(controlledEntity.team)) {
+                    setControlToHuman();
+
                     switch (controlledEntity.type) {
                         case 'Fighter':
                             controlFighter(controlledEntity, events);
@@ -65,15 +79,16 @@ function update() {
         // Select enemy fighters to focus on
         if (events.NEXT_ENEMY_FIGHTER && !prevEvents.NEXT_ENEMY_FIGHTER) {
             Starfield.process(false);
+            revertControlToAI();
 
             Focus.setFocus(
                 setControlledEntity(
                     getFighter(true)
                 )
             );
-
         } else if (events.PREV_ENEMY_FIGHTER && !prevEvents.PREV_ENEMY_FIGHTER) {
             Starfield.process(false);
+            revertControlToAI();
 
             Focus.setFocus(
                 setControlledEntity(
