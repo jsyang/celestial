@@ -1,7 +1,10 @@
 let focus;
 
 const setFocus = entityOrPoint => focus = entityOrPoint;
-const getFocus = () => ({x: focus.x, y: focus.y});
+
+const getFocus = () => focus ?
+    {x: focus.x, y: focus.y} :
+    {x: 0, y: 0};
 
 export default {
     getFocus,

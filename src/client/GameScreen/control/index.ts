@@ -104,5 +104,7 @@ function update() {
 export default {
     update,
     getControlledEntity,
-    setControlledEntity
+    setControlledEntity,
+    revertControlToAI,
+    setControlToHuman
 }

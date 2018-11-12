@@ -6,37 +6,94 @@ import {FOCUS_RETICLE, MAX_COORDINATE, TEAM, TEAM_COLOR} from '../../constants';
 import {setClickable} from '../../UI/setClickable';
 import GameScreenControl from '../../GameScreen/control';
 import {transformPolygon} from '../../Geometry';
+import Focus from '../../Graphics/Focus';
+import Starfield from '../../Graphics/Starfield';
 
-const ALPHA_SCANNER_BORDER = 0.25;
+const MARGIN_EDGE            = 16;
+const ALPHA_SCANNER_BORDER   = 0.25;
+const COLOR_MARKER_STAR      = 0xffff00;
+const COLOR_MARKER_PLANET    = 0x00ff00;
+const COLOR_MARKER_FREIGHTER = 0xaaaaaa;
+const RETICLE_SCALE          = 0.04;
+const RETICLE_EDGES          = FOCUS_RETICLE.map(
+    poly => transformPolygon(
+        poly,
+        -200 * RETICLE_SCALE,
+        -200 * RETICLE_SCALE,
+        RETICLE_SCALE,
+        RETICLE_SCALE
+    )
+);
 
-const MARGIN_EDGE = 16;
+const TIME_UPDATE = 125;
+
+let isVisible             = false;
+let selectionRectPosition = {x: 0, y: 0};
+let RADAR_BOX_DIMENSIONS  = {x: 0, y: 0};
+
+let COORDINATE_TO_SCANNER_FACTOR_X = 0;
+let COORDINATE_TO_SCANNER_FACTOR_Y = 0;
+
+let lastUpdateTime = 0;
+let controlledEntity;
+
 
 const scanner = new PIXI.Graphics() as any;
 scanner.x     = MARGIN_EDGE;
 scanner.y     = MARGIN_EDGE;
 
-setClickable(scanner, () => setVisible(false));
+setClickable(scanner, ({data: {global: {x, y}}}) => {
+    setVisible(false);
+    const focalPoint = {
+        x: (x - MARGIN_EDGE) / COORDINATE_TO_SCANNER_FACTOR_X,
+        y: (y - MARGIN_EDGE) / COORDINATE_TO_SCANNER_FACTOR_Y
+    };
+
+    Focus.setFocus(focalPoint);
+    GameScreenControl.revertControlToAI();
+    // todo: shouldn't need to fake out the GameScreenControl
+    // unified UX model needs to be created for how the player
+    // interacts with game pieces
+    GameScreenControl.setControlledEntity({
+        ...focalPoint,
+        hp: 1
+    });
+
+    Starfield.init();
+});
 
 const drawRadarBox = () => {
     scanner.beginFill(0x080808, 1);
     scanner.lineStyle(1, 0xffffff, ALPHA_SCANNER_BORDER);
     scanner.drawRect(
         0, 0,
-        innerWidth - MARGIN_EDGE * 2, innerHeight - MARGIN_EDGE * 2
+        RADAR_BOX_DIMENSIONS.x, RADAR_BOX_DIMENSIONS.y
     );
     scanner.endFill();
 };
 
 
-let COORDINATE_TO_SCANNER_FACTOR_X = 0;
-let COORDINATE_TO_SCANNER_FACTOR_Y = 0;
+scanner.mousemove = ({data: {global: {x, y}}}) => {
+    if (isVisible) {
+        selectionRectPosition.x = x;
+        selectionRectPosition.y = y;
+    }
+};
 
-const RETICLE_SCALE = 0.04;
-const RETICLE_EDGES = FOCUS_RETICLE.map(
-    poly => transformPolygon(poly, -200 * RETICLE_SCALE, -200 * RETICLE_SCALE, RETICLE_SCALE, RETICLE_SCALE)
-);
+const drawSelectionRect = () => {
+    const {x, y} = selectionRectPosition;
 
-let isVisible = false;
+    scanner.beginFill(0, 0);
+    scanner.lineStyle(1, 0xcccccc, 1);
+    scanner.drawRect(
+        x - MARGIN_EDGE - RADAR_BOX_DIMENSIONS.x * 0.5 * COORDINATE_TO_SCANNER_FACTOR_X,
+        y - MARGIN_EDGE - RADAR_BOX_DIMENSIONS.y * 0.5 * COORDINATE_TO_SCANNER_FACTOR_Y,
+        (innerWidth) * COORDINATE_TO_SCANNER_FACTOR_X,
+        innerHeight * COORDINATE_TO_SCANNER_FACTOR_Y
+    );
+    scanner.endFill();
+};
+
 
 const drawMarker = entity => {
     const {type, team} = entity;
@@ -44,7 +101,6 @@ const drawMarker = entity => {
     let size, color;
     const x = entity.x * COORDINATE_TO_SCANNER_FACTOR_X;
     const y = entity.y * COORDINATE_TO_SCANNER_FACTOR_Y;
-
 
     switch (type) {
         case 'Planet':
@@ -103,15 +159,6 @@ const drawMarker = entity => {
 };
 
 
-const COLOR_MARKER_STAR      = 0xffff00;
-const COLOR_MARKER_PLANET    = 0x00ff00;
-const COLOR_MARKER_FREIGHTER = 0xaaaaaa;
-
-let lastUpdateTime = 0;
-const TIME_UPDATE  = 250;
-
-let controlledEntity;
-
 function update() {
     if (!isVisible) return;
 
@@ -121,7 +168,7 @@ function update() {
         scanner.clear();
         drawRadarBox();
 
-        // Put a reticle around it
+        // Track the controlled entity with a reticle
         controlledEntity = GameScreenControl.getControlledEntity();
 
         Entity.getByType('Star').forEach(drawMarker);
@@ -129,16 +176,19 @@ function update() {
         Entity.getByType('Freighter').forEach(drawMarker);
         Entity.getByType('Fighter').forEach(drawMarker);
 
+        // Click will set viewport to selection location
+        drawSelectionRect();
+
         lastUpdateTime = now;
     }
 }
 
 function onResize() {
-    COORDINATE_TO_SCANNER_FACTOR_X = (innerWidth - 2 * MARGIN_EDGE) / MAX_COORDINATE;
-    COORDINATE_TO_SCANNER_FACTOR_Y = (innerHeight - 2 * MARGIN_EDGE) / MAX_COORDINATE;
+    RADAR_BOX_DIMENSIONS.x         = innerWidth - 2 * MARGIN_EDGE;
+    RADAR_BOX_DIMENSIONS.y         = innerHeight - 2 * MARGIN_EDGE;
+    COORDINATE_TO_SCANNER_FACTOR_X = RADAR_BOX_DIMENSIONS.x / MAX_COORDINATE;
+    COORDINATE_TO_SCANNER_FACTOR_Y = RADAR_BOX_DIMENSIONS.y / MAX_COORDINATE;
 }
-
-// todo: use mouse selection rect to change focus for the game screen
 
 function setVisible(_isVisible: boolean) {
     if (_isVisible) {

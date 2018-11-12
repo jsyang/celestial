@@ -7,7 +7,7 @@ import {isHumanTeam} from '../constants';
 // Chance of successfully developing equipment
 const DEVELOPABLE = {
     'HeavyCannon':   0.6,
-    'ClusterRocket': 0.5,
+    'ClusterRocket': 0.3,
     'HomingMissile': 0.4,
     'LaserBolt':     0.2,
     'Shield':        0.7
@@ -18,8 +18,8 @@ const isShield = name => name === 'Shield';
 const DEFAULTS = {
     developEquipment_installTimeMax: 150,
     developEquipment_installTime:    150,
-    developEquipment_timeMax:        1600,
-    developEquipment_time:           1600,
+    developEquipment_timeMax:        2000,
+    developEquipment_time:           2000,
     developEquipment_equipmentReady: ''
 };
 
@@ -110,7 +110,7 @@ function process(entity) {
 }
 
 export default {
-    componentFlag: 'candevelopEquipment',
+    componentFlag: 'canDevelopEquipment',
     DEFAULTS,
     process
 }

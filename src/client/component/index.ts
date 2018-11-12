@@ -46,7 +46,6 @@ import FlockComponent from './flock';
 
 
 // In order of update() precedence
-// ExplodeComponent excluded for now
 const ALL_COMPONENTS = [
     // Change position
     FlockComponent,
