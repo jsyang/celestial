@@ -64,8 +64,8 @@ function update() {
             }
         }
     } else {
-        labelWeaponName.text = 'Freelook mode';
-        labelWeaponAmmo.text = 'ON';
+        labelWeaponName.text = '';
+        labelWeaponAmmo.text = '';
     }
 }
 

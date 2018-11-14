@@ -6,18 +6,21 @@ import PauseStatus from './PauseStatus';
 import TextContainer from './TextContainer';
 import RadarGalaxyExpanded from './RadarGalaxyExpanded';
 import {isHumanTeam} from '../../constants';
+import SpeedIndicator from './SpeedIndicator';
 
 function init() {
     RadarLocal.init();
     RadarGalaxy.init();
     UnitDisplay.init();
     WeaponsDisplay.init();
+    SpeedIndicator.init();
     RadarGalaxyExpanded.init();
     TextContainer.init();
     PauseStatus.init();
 }
 
 function update() {
+    SpeedIndicator.update();
     TextContainer.update();
     RadarGalaxy.update();
     RadarLocal.update();

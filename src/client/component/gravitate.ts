@@ -11,8 +11,8 @@ import {getAngleFromTo, getDistSquared} from '../entityHelpers';
 const DIST_MIN_STAR_GRAVITY2   = 1000 ** 2;
 const DIST_MIN_PLANET_GRAVITY2 = 800 ** 2;
 
-const ERROR_MARGIN_LANDING_ROTATION = Math.PI / 4;
-const ERROR_MARGIN_LANDING_SPEED2   = 2.1 ** 2;
+const ERROR_MARGIN_LANDING_ROTATION      = Math.PI / 4;
+export const ERROR_MARGIN_LANDING_SPEED2 = 2.1 ** 2;
 
 const PIPI = Math.PI * 2;
 
