@@ -6,6 +6,8 @@ const DEFAULTS = {
     damageHp: 1
 };
 
+// Also creates a lastDamagedByTeam property on the
+// target entity for tracking score
 function registerDamage(entity): boolean {
     const {team, damageHp} = this;
 
@@ -13,7 +15,8 @@ function registerDamage(entity): boolean {
         if (testPointInEntity(this, entity)) {
             playSoundLocalized(entity.AUDIO_HIT || 'hit', this);
             entity.hp -= damageHp;
-            entity.hitTime = 10;
+            entity.lastDamagedByTeam = team;
+            entity.hitTime           = 10;
             Entity.destroy(this);
 
             return true;

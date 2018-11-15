@@ -6,6 +6,8 @@ import Entity from '../Entity';
 import Planet from '../Entity/Planet';
 import Star from '../Entity/Star';
 import {getAngleFromTo, getDistSquared} from '../entityHelpers';
+import {isHumanTeam} from '../constants';
+import Score from '../Score';
 
 // Max distance that gravitation forces from this body affect other entities
 const DIST_MIN_STAR_GRAVITY2   = 1000 ** 2;
@@ -17,8 +19,12 @@ export const ERROR_MARGIN_LANDING_SPEED2 = 2.1 ** 2;
 const PIPI = Math.PI * 2;
 
 function crash(entity) {
-    entity.explode(entity);
+    entity.explode();
     Entity.destroy(entity);
+
+    if (isHumanTeam(entity.team)) {
+        Score.add(-10);
+    }
 }
 
 function attractToPlanet(p) {

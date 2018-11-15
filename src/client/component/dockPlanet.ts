@@ -3,6 +3,8 @@
  */
 
 import {getAngleFromTo} from '../entityHelpers';
+import {isHumanTeam} from '../constants';
+import Score from '../Score';
 
 function dockPlanet(planet) {
     this.isDockedPlanet = true;
@@ -11,7 +13,11 @@ function dockPlanet(planet) {
     this.rotation       = getAngleFromTo(planet, this);
     this.planet         = planet;
 
-    if (!planet.isOccupied()) {
+    if (!planet.isOccupied() && planet.team != this.team) {
+        if (isHumanTeam(this.team)) {
+            Score.add(20);
+        }
+
         planet.team = this.team;
         planet.updateFlagColor();
     }

@@ -13,16 +13,20 @@ See this page for [How to Play](http://jsyang.ca/celestial/how-to-play) this gam
 
 ## Development
 
-- [Start Geometry editor](http://jsyang.ca/celestial?editor)<br><img src="how-to-play/editor.png">
+This game implements the Entity-Component-System model of dealing with data and interactions
+between game pieces.
+
+#### Geometry Editor
 
 You can use the geometry editor to create polygons to be display inside the game engine.
 See `LETTERS` within `src/client/constants.ts` for example. 
+
+- [Start Geometry editor](http://jsyang.ca/celestial?editor)<br><img src="how-to-play/editor.png">
 
 ## TODOs to finish v1
 
 - win streak tally
     - lose fully when 2 sectors have been lost
-    - score system
 
 - complete basic fighter AI
     - retarget when current attackTarget is dead

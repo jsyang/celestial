@@ -43,6 +43,8 @@ import ShimmerComponent from './shimmer';
 import DevelopEquipmentComponent from './developEquipment';
 import GravitateComponent from './gravitate';
 import FlockComponent from './flock';
+import {isHumanTeam} from '../constants';
+import Score from '../Score';
 
 
 // In order of update() precedence
@@ -128,6 +130,20 @@ function update(entity) {
         Entity.commit(entity);
     } else {
         Entity.destroy(entity);
+
+        // Add to human score when enemy objects are destroyed
+
+        if (isHumanTeam(entity.team)) {
+            if (!isNaN(entity.lastDamagedByTeam) && !isHumanTeam(entity.lastDamagedByTeam)) {
+                Score.add(-2 * entity.maxHp);
+            }
+        } else {
+            if (isHumanTeam(entity.lastDamagedByTeam)) {
+                Score.add(entity.maxHp);
+            }
+        }
+
+
     }
 }
 

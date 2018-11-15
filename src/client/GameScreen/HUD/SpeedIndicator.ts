@@ -5,7 +5,7 @@ import {ERROR_MARGIN_LANDING_SPEED2} from '../../component/gravitate';
 
 const UPDATE_TIME_MAX = 5;
 const WIDTH           = 100;
-const HEIGHT          = 15;
+const HEIGHT          = 14;
 const MARGIN_EDGE     = 4;
 const PROGRESS_FACTOR = 1 / ERROR_MARGIN_LANDING_SPEED2;
 
@@ -14,11 +14,11 @@ speedIndicator.y     = (MARGIN_EDGE + 100) * 2 + 14 * 4 + 4 * MARGIN_EDGE;
 speedIndicator.x     = MARGIN_EDGE;
 
 speedIndicator.addChild(new PIXI.Text(
-    '  Landing Speed',
+    'Landing Speed',
     {
         fontFamily: 'arial',
         fontSize:   12,
-        fill:       0
+        fill:       0xffffff
     }
 ));
 
@@ -46,7 +46,7 @@ function update(): void {
                 const currentWidth  = speedProgress * WIDTH;
 
                 speedIndicator.beginFill(0x444444, 1);
-                speedIndicator.drawRect(0, 0, WIDTH, HEIGHT);
+                speedIndicator.drawRect(0, 14, WIDTH, HEIGHT);
                 speedIndicator.endFill();
 
                 if (speedProgress > 0.3) {
@@ -66,7 +66,7 @@ function update(): void {
                 }
 
                 speedIndicator.beginFill(color, 1);
-                speedIndicator.drawRect(0, 0, currentWidth, HEIGHT);
+                speedIndicator.drawRect(0, 14, currentWidth, HEIGHT);
                 speedIndicator.endFill();
             }
         }

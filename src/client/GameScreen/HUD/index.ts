@@ -7,6 +7,7 @@ import TextContainer from './TextContainer';
 import RadarGalaxyExpanded from './RadarGalaxyExpanded';
 import {isHumanTeam} from '../../constants';
 import SpeedIndicator from './SpeedIndicator';
+import ScoreRankDisplay from './ScoreRankDisplay';
 
 function init() {
     RadarLocal.init();
@@ -14,6 +15,7 @@ function init() {
     UnitDisplay.init();
     WeaponsDisplay.init();
     SpeedIndicator.init();
+    ScoreRankDisplay.init();
     RadarGalaxyExpanded.init();
     TextContainer.init();
     PauseStatus.init();
@@ -26,6 +28,7 @@ function update() {
     RadarLocal.update();
     UnitDisplay.update();
     WeaponsDisplay.update();
+    ScoreRankDisplay.update();
     RadarGalaxyExpanded.update();
 }
 

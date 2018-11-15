@@ -89,12 +89,14 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
             planet: startingLocation
         };
 
+        startingLocation.team = team;
+        startingLocation.updateFlagColor();
+
         const fighter = Entity.create('Fighter', {
             isFighterAutoAccelerated: !isHumanTeam(team),
             team
         });
         fighter.dockPlanet(startingLocation);
-
 
         startingLocation.pbase     = Entity.create('PBase', planetStructureParams);
         startingLocation.pcolony   = Entity.create('PColony', planetStructureParams);
@@ -110,8 +112,6 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
         startingLocation.spacedock   = Entity.create('SpaceDock', spaceportStructureParams);
         startingLocation.sensorarray = Entity.create('SensorArray', spaceportStructureParams);
 
-        startingLocation.team = team;
-        startingLocation.updateFlagColor();
 
         // Find other planets in solar system and mark them as friendly
         Entity.getByType('Planet')

@@ -2,12 +2,14 @@ import Entity from '../Entity';
 import {playSound} from '../assets/audio';
 import HUD from '../GameScreen/HUD';
 import {isHumanTeam} from '../constants';
+import Score from '../Score';
 
 function createPBase(entity) {
     const {planet, team} = entity;
 
     if (isHumanTeam(team)) {
         playSound('nav');
+        Score.add(200);
     }
 
     planet.pbase = Entity.create('PBase', {
@@ -26,6 +28,7 @@ function createPColony(entity) {
 
     if (isHumanTeam(team)) {
         playSound('nav');
+        Score.add(20);
     }
 
     planet.pcolony = Entity.create('PColony', {
@@ -44,6 +47,7 @@ function createSpacePort(entity) {
 
     if (isHumanTeam(team)) {
         playSound('nav');
+        Score.add(50);
     }
 
     planet.spaceport = Entity.create('SpacePort', {

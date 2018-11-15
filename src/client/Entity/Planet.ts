@@ -87,10 +87,8 @@ export default class Planet extends LivingEntity {
         if (this.team === TEAM.NONE) {
             flag.visible = false;
         } else {
-            (window as any).foo = flag;
-            (window as any).doo = this;
-            flag.visible        = true;
-            flag.tint           = TEAM_COLOR[this.team];
+            flag.visible = true;
+            flag.tint    = TEAM_COLOR[this.team];
         }
 
     }

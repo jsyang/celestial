@@ -4,12 +4,11 @@
 
 - win / loss tally
 - kill statistics (entity killed by XXX)
-- score (total battle value of enemies killed)
 - health bars for units receiving damage
 - save / load games
 
 - Economy that matters
-    - raw materials and finished materials need affect gameplay
+    - raw materials and finished materials need to affect gameplay (they do already but invisibly)
     - ordering construction of Fighters and Freighters, significantly affecting material supply
     - can run out of materials on planet
     - can move materials from one planet to another via freighter

@@ -59,7 +59,7 @@ function update() {
                 case 'HeavyCannon':
                 case 'Cannon':
                 default:
-                    labelWeaponAmmo.text = '';
+                    labelWeaponAmmo.text = 'Infinite ammo supply';
                     break
             }
         }
