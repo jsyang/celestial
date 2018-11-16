@@ -25,9 +25,6 @@ See `LETTERS` within `src/client/constants.ts` for example.
 
 ## TODOs to finish v1
 
-- win streak tally
-    - lose fully when 2 sectors have been lost
-
 - complete basic fighter AI
     - retarget when current attackTarget is dead
     - avoid stars

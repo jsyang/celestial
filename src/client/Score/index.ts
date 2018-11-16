@@ -12,7 +12,19 @@ function getScoreRank() {
     return {rank, score};
 }
 
+let consecutiveSectorWins = 0;
+
+function addSectorResult(result: -1 | 1) {
+    consecutiveSectorWins += result;
+}
+
+function getIsGameOver() {
+    return consecutiveSectorWins < -1;
+}
+
 export default {
     add,
+    addSectorResult,
+    getIsGameOver,
     getScoreRank
 }

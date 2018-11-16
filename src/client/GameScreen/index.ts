@@ -16,6 +16,8 @@ import GalaxyLostModal from '../UI/Modal/GalaxyLostModal';
 import {debounce} from '../debounce';
 import {playSound} from '../assets/audio';
 import {isHumanTeam} from '../constants';
+import Score from '../Score';
+import GameOverModal from '../UI/Modal/GameOverModal';
 
 let raf;  // requestAnimationFrame request
 let then; // Time stamp of last animation frame
@@ -89,11 +91,29 @@ function reinitAll() {
 
 function onTeamLost(team) {
     if (isHumanTeam(team)) {
+        Score.addSectorResult(-1);
         isPaused = true;
 
-        const lostModal = GalaxyLostModal.create({
-            onClickContinue: reinitAll
-        });
+        let onClickContinue;
+
+        if (Score.getIsGameOver()) {
+            onClickContinue = () => {
+                const gameOverModal = GameOverModal.create({
+                    // a bit of a hack for now
+                    // todo: make this properly destroy the GameScreen
+                    // and go back to the main screen
+                    onClickContinue: () => location.reload()
+                });
+
+                Graphics.addChildToHUD(gameOverModal.modal);
+                GameScreenControl.setControlledEntity(gameOverModal);
+            };
+
+        } else {
+            onClickContinue = reinitAll;
+        }
+
+        const lostModal = GalaxyLostModal.create({onClickContinue});
 
         Graphics.addChildToHUD(lostModal.modal);
         GameScreenControl.setControlledEntity(lostModal);
@@ -103,6 +123,7 @@ function onTeamLost(team) {
 function onTeamWon(team) {
     if (isHumanTeam(team)) {
         isPaused = true;
+        Score.addSectorResult(1);
 
         const wonModal = GalaxyWonModal.create({
             onClickContinue: reinitAll
