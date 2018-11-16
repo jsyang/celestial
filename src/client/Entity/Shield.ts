@@ -1,8 +1,8 @@
-import Geometry from '../Geometry';
+import Geometry, {GeometryType} from '../Geometry';
 import LivingEntity from './LivingEntity';
 
 const GEO = {
-    type:            "circle",
+    type:            GeometryType.Circle,
     radius:          20,
     collisionRadius: 10,
     fill:            {

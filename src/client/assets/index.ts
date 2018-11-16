@@ -13,8 +13,8 @@ interface IZipObject {
 }
 
 function loadAudioFromZip(zip: any): Promise<void> {
-    let soundNames: string[]                             = [];
-    let loadAllSoundBuffers: Array<Promise<ArrayBuffer>> = [];
+    const soundNames: string[]                        = [];
+    const loadAllSoundBuffers: Promise<ArrayBuffer>[] = [];
 
     zip.folder('sounds/')
         .forEach(
@@ -45,7 +45,7 @@ function load(): Promise<void> {
     // Load zip file into memory
         .then(data => JSZip.loadAsync(data))
         // Load audio into memory
-        .then(zip => loadAudioFromZip(zip));
+        .then(loadAudioFromZip);
 }
 
 export default {load};

@@ -1,9 +1,17 @@
 import * as PIXI from 'pixi.js';
 import Random from '../Random';
+import {IPoint} from '../types';
 
-const stars: Array<PIXI.Graphics> = [];
+const stars: PIXI.Graphics[] = [];
 
-function createStar({color, size, x, y}): PIXI.Graphics {
+interface ICreateStarParams {
+    color: number;
+    size: number;
+    x: number;
+    y: number;
+}
+
+function createStar({color, size, x, y}: ICreateStarParams): PIXI.Graphics {
     const g = new PIXI.Graphics();
 
     g.beginFill(color);
@@ -39,11 +47,9 @@ const STAR: any = {
 let width2  = innerWidth >> 1;
 let height2 = innerHeight >> 1;
 
-function onResize() {
+function onResize(): void {
     lastCenter = null;
 }
-
-let onStarfieldResize;
 
 function init(): PIXI.Graphics[] {
     let i;
@@ -58,18 +64,16 @@ function init(): PIXI.Graphics[] {
             stars.push(createStar(STAR.BRIGHT));
         }
     } else {
-        // Reinitialize
-        process(null);
+        onResize();
     }
 
-    if (!onStarfieldResize) {
-        onStarfieldResize = addEventListener('resize', onResize);
-    }
+    removeEventListener('resize', onResize);
+    addEventListener('resize', onResize);
 
     return stars;
 }
 
-function reinit(point) {
+function reinit(point: IPoint): void {
     width2  = innerWidth >> 1;
     height2 = innerHeight >> 1;
 
@@ -79,7 +83,7 @@ function reinit(point) {
     });
 }
 
-function moveStar(dx, dy, center, star) {
+function moveStar(dx: number, dy: number, center: IPoint, star: PIXI.Graphics): void {
     if (star.lineWidth === 1) {
         dx *= STAR.DIM.speed;
         dy *= STAR.DIM.speed;
@@ -106,11 +110,12 @@ function moveStar(dx, dy, center, star) {
 
 let lastCenter: any = null;
 
-function process(center) {
+function process(center: IPoint | null): void {
     if (center) {
         const {x, y} = center;
 
-        let dx = 0, dy = 0;
+        let dx = 0;
+        let dy = 0;
 
         if (lastCenter) {
             dx = x - lastCenter.x;

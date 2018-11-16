@@ -1,19 +1,19 @@
-import Geometry from '../Geometry';
-import Planet from "./Planet";
+import Geometry, {GeometryType} from '../Geometry';
+import Planet from './Planet';
 import LivingEntity from './LivingEntity';
 import Random from '../Random';
 import {getAngleFromTo} from '../entityHelpers';
 
 const GEO = {
-    "_name":   "Space Port",
-    "body":    {
-        "type":      "polygon",
-        "lineStyle": {
-            "width": 1,
-            "color": 255,
-            "alpha": 1
+    '_name':   'Space Port',
+    'body':    {
+        'type':      GeometryType.Polygon,
+        'lineStyle': {
+            'width': 1,
+            'color': 255,
+            'alpha': 1
         },
-        "path":      [
+        'path':      [
             -2, 0,
             -6, -20,
             -6, -36,
@@ -30,107 +30,107 @@ const GEO = {
             -2, 0
         ]
     },
-    "turret1": {
-        "type":      "polygon",
-        "lineStyle": {
-            "width": 1,
-            "color": 65535,
-            "alpha": 0.5
+    'turret1': {
+        'type':      GeometryType.Polygon,
+        'lineStyle': {
+            'width': 1,
+            'color': 65535,
+            'alpha': 0.5
         },
-        "path":      [
+        'path':      [
             0, 28,
             4, 26,
             4, 30,
             0, 28
         ]
     },
-    "turret2": {
-        "type":      "polygon",
-        "lineStyle": {
-            "width": 1,
-            "color": 65535,
-            "alpha": 0.5
+    'turret2': {
+        'type':      GeometryType.Polygon,
+        'lineStyle': {
+            'width': 1,
+            'color': 65535,
+            'alpha': 0.5
         },
-        "path":      [
+        'path':      [
             0, -28,
             4, -26,
             4, -30,
             0, -28
         ]
     },
-    "turret3": {
-        "type":      "polygon",
-        "lineStyle": {
-            "width": 1,
-            "color": 65535,
-            "alpha": 0.5
+    'turret3': {
+        'type':      GeometryType.Polygon,
+        'lineStyle': {
+            'width': 1,
+            'color': 65535,
+            'alpha': 0.5
         },
-        "path":      [
+        'path':      [
             4, 44,
             2, 48,
             0, 44
         ]
     },
-    "turret4": {
-        "type":      "polygon",
-        "lineStyle": {
-            "width": 1,
-            "color": 65535,
-            "alpha": 0.5
+    'turret4': {
+        'type':      GeometryType.Polygon,
+        'lineStyle': {
+            'width': 1,
+            'color': 65535,
+            'alpha': 0.5
         },
-        "path":      [
+        'path':      [
             4, -44,
             2, -48,
             0, -44
         ]
     },
-    "flame1":  {
-        "type":      "polygon",
-        "lineStyle": {
-            "width": 1,
-            "color": 65535,
-            "alpha": 1
+    'flame1':  {
+        'type':      GeometryType.Polygon,
+        'lineStyle': {
+            'width': 1,
+            'color': 65535,
+            'alpha': 1
         },
-        "path":      [
+        'path':      [
             -6, 20,
             -12, 22,
             -6, 24
         ]
     },
-    "flame2":  {
-        "type":      "polygon",
-        "lineStyle": {
-            "width": 1,
-            "color": 65535,
-            "alpha": 1
+    'flame2':  {
+        'type':      GeometryType.Polygon,
+        'lineStyle': {
+            'width': 1,
+            'color': 65535,
+            'alpha': 1
         },
-        "path":      [
+        'path':      [
             -6, -24,
             -12, -22,
             -6, -20
         ]
     },
-    "flame3":  {
-        "type":      "polygon",
-        "lineStyle": {
-            "width": 1,
-            "color": 65535,
-            "alpha": 1
+    'flame3':  {
+        'type':      GeometryType.Polygon,
+        'lineStyle': {
+            'width': 1,
+            'color': 65535,
+            'alpha': 1
         },
-        "path":      [
+        'path':      [
             -6, 32,
             -12, 34,
             -6, 36
         ]
     },
-    "flame4":  {
-        "type":      "polygon",
-        "lineStyle": {
-            "width": 1,
-            "color": 65535,
-            "alpha": 1
+    'flame4':  {
+        'type':      GeometryType.Polygon,
+        'lineStyle': {
+            'width': 1,
+            'color': 65535,
+            'alpha': 1
         },
-        "path":      [
+        'path':      [
             -6, -36,
             -12, -34,
             -6, -32

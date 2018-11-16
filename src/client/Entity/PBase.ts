@@ -1,4 +1,4 @@
-import Geometry from '../Geometry';
+import Geometry, {GeometryType} from '../Geometry';
 import Planet from "./Planet";
 import LivingEntity from './LivingEntity';
 import Random from '../Random';
@@ -7,7 +7,7 @@ import {getAngleFromTo} from '../entityHelpers';
 const GEO = {
     "_name":   "Planetary Base",
     "body":    {
-        "type":      "polygon",
+        "type":      GeometryType.Polygon,
         "lineStyle": {
             "width": 1,
             "color": 255,
@@ -22,7 +22,7 @@ const GEO = {
         ]
     },
     "turret1": {
-        "type":      "polygon",
+        "type":      GeometryType.Polygon,
         "lineStyle": {
             "width": 1,
             "color": 65280,
@@ -36,7 +36,7 @@ const GEO = {
         ]
     },
     "turret2": {
-        "type":      "polygon",
+        "type":      GeometryType.Polygon,
         "lineStyle": {
             "width": 1,
             "color": 65280,
@@ -50,7 +50,7 @@ const GEO = {
         ]
     },
     "turret3": {
-        "type":      "polygon",
+        "type":      GeometryType.Polygon,
         "lineStyle": {
             "width": 1,
             "color": 65280,
@@ -64,7 +64,7 @@ const GEO = {
         ]
     },
     "turret4": {
-        "type":      "polygon",
+        "type":      GeometryType.Polygon,
         "lineStyle": {
             "width": 1,
             "color": 65280,

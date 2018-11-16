@@ -1,11 +1,11 @@
-import Geometry from '../Geometry';
+import Geometry, {GeometryType} from '../Geometry';
 import Planet from "./Planet";
 import LivingEntity from './LivingEntity';
 import SpacePort from './SpacePort';
 
 const GEO = {
     "_name":     "Space Dock",
-    "type":      "polygon",
+    "type":      GeometryType.Polygon,
     "lineStyle": {
         "width": 1,
         "color": 255,

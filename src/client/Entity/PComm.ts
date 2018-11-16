@@ -1,9 +1,9 @@
-import Geometry from '../Geometry';
+import Geometry, {GeometryType} from '../Geometry';
 import Planet from "./Planet";
 import LivingEntity from './LivingEntity';
 
 const GEO = {
-    "type":      "polygon",
+    "type":      GeometryType.Polygon,
     "_name":     "Planetary Communications Center",
     "lineStyle": {
         "width": 1,

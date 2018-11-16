@@ -31,7 +31,7 @@ function remove(entity) {
         delete entity.fighter;
     }
 
-    if(entity.anchor) {
+    if (entity.anchor) {
         // Break reference to shield holder
         entity.anchor.shield = null;
         delete entity.anchor;
@@ -51,6 +51,15 @@ function remove(entity) {
     Graphics.removeChild(entity.geo.graphics);
 }
 
+function getAll() {
+    let allEntities = [];
+
+    // [].push is fastest
+    Object.keys(byType).forEach(entityType => Array.prototype.push.apply(allEntities, byType[entityType]));
+
+    return allEntities;
+}
+
 function clearAll() {
     Object.keys(byType).forEach(
         type => {
@@ -63,6 +72,7 @@ function clearAll() {
 export default {
     add,
     remove,
+    getAll,
     clearAll,
     getByType
-}
+};

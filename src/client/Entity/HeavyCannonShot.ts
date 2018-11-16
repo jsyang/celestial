@@ -1,8 +1,8 @@
-import Geometry from '../Geometry';
+import Geometry, {GeometryType} from '../Geometry';
 import LivingEntity from './LivingEntity';
 
 const GEO = {
-    "type":      "polygon",
+    "type":      GeometryType.Polygon,
     "lineStyle": {
         "width": 2,
         "color": 0xffffff,

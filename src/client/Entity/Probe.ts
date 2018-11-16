@@ -1,9 +1,9 @@
-import Geometry from '../Geometry';
+import Geometry, {GeometryType} from '../Geometry';
 import LivingEntity from './LivingEntity';
 
 const GEO = {
     "body":  {
-        "type":          "polygon",
+        "type":          GeometryType.Polygon,
         "lineStyle":     {
             "width": 1,
             "color": 16711935,
@@ -26,7 +26,7 @@ const GEO = {
         ]
     },
     "flame": {
-        "type":      "polygon",
+        "type":      GeometryType.Polygon,
         "lineStyle": {
             "width": 1,
             "color": 65535,

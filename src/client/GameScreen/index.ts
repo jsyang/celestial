@@ -61,6 +61,7 @@ function step() {
             Graphics.centerOn(focus);
         }
 
+        Graphics.cullRenderable();
         Starfield.process(focus);
         HUD.update();
         Graphics.render();
@@ -182,4 +183,4 @@ export default {
     showDockedModal,
     togglePause: debounce(togglePauseState, 250),
     getIsPaused: () => isPaused
-}
+};

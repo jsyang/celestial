@@ -1,8 +1,8 @@
-import Geometry from '../Geometry';
+import Geometry, {GeometryType} from '../Geometry';
 import LivingEntity from './LivingEntity';
 
 const GEO = {
-    "type": "polygon",
+    "type": GeometryType.Polygon,
     "fill": {
         "color": 16777215,
         "alpha": 1

@@ -1,16 +1,17 @@
-import Geometry from '../Geometry';
-import Planet from "./Planet";
+import Geometry, {GeometryType} from '../Geometry';
+import Planet from './Planet';
 import LivingEntity from './LivingEntity';
+import {TEAM_NONE_COLOR} from '../constants';
 
 const GEO = {
-    "type":      "polygon",
-    "_name":     "Planetary Lab",
-    "lineStyle": {
-        "width": 1,
-        "color": 0xffffff,
-        "alpha": 1
+    'type':      GeometryType.Polygon,
+    '_name':     'Planetary Lab',
+    'lineStyle': {
+        'width': 1,
+        'color': 0xffffff,
+        'alpha': 1
     },
-    "path":      [
+    'path':      [
         0, -40,
         0, -70,
         50, -70,
@@ -46,6 +47,6 @@ export default class PLab extends LivingEntity {
         Object.assign(this, params);
 
         const teamColor         = this.assignTeamColor();
-        this.shimmerNormalColor = teamColor;
+        this.shimmerNormalColor = teamColor || TEAM_NONE_COLOR;
     }
 }

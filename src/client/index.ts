@@ -4,15 +4,15 @@ import TitleScreen from './TitleScreen';
 import Assets from './assets';
 import Input from './Input';
 
-function onTitleScreenFadeout() {
+const onTitleScreenFadeout = () => {
     GameScreen.init();
     GameScreen.start();
-}
+};
 
 const isGameScreenStart         = location.search.match(/game$/);
 const isGeometryEditScreenStart = location.search.match(/editor$/);
 
-function onDOMContentLoaded() {
+const onDOMContentLoaded = () => {
     let onAssetsLoad;
 
     if (isGameScreenStart) {
@@ -29,6 +29,6 @@ function onDOMContentLoaded() {
     Assets
         .load()
         .then(onAssetsLoad);
-}
+};
 
 addEventListener('DOMContentLoaded', onDOMContentLoaded);

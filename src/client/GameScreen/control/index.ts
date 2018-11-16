@@ -78,7 +78,7 @@ function update() {
 
         // Select enemy fighters to focus on
         if (events.NEXT_ENEMY_FIGHTER && !prevEvents.NEXT_ENEMY_FIGHTER) {
-            Starfield.process(false);
+            Starfield.process(null);
             revertControlToAI();
 
             Focus.setFocus(
@@ -87,7 +87,7 @@ function update() {
                 )
             );
         } else if (events.PREV_ENEMY_FIGHTER && !prevEvents.PREV_ENEMY_FIGHTER) {
-            Starfield.process(false);
+            Starfield.process(null);
             revertControlToAI();
 
             Focus.setFocus(

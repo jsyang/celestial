@@ -1,12 +1,18 @@
 import Focus from '../Graphics/Focus';
 import {getDistSquared} from '../entityHelpers';
+import {IPoint} from '../types';
 
-let audioContext = new AudioContext();
+const audioContext = new AudioContext();
 
 // Dictionary of audio clips, keyed by clip name
-let audioBuffers = {};
+const audioBuffers: Record<string, any> = {};
 
-export function defineSound({name, arrayBuffer}) {
+interface IAudioFile {
+    name: string;
+    arrayBuffer: ArrayBuffer;
+}
+
+export function defineSound({name, arrayBuffer}: IAudioFile): void {
     try {
         audioContext.decodeAudioData(arrayBuffer)
             .then(decodedAudioBuffer => {
@@ -15,10 +21,9 @@ export function defineSound({name, arrayBuffer}) {
     } catch (e) {
         console.warn(`Failed to decode audio file "${name}"! ${e.toString()}`);
     }
-
 }
 
-export function playSound(name: string) {
+export function playSound(name: string): void {
     const source  = audioContext.createBufferSource();
     source.buffer = audioBuffers[name];
     source.connect(audioContext.destination);
@@ -30,7 +35,7 @@ const LN_INAUDIBLE_DIST2_FACTOR = 1 / Math.log(INAUDIBLE_DIST2);
 
 // Sound sources farther away are quieter
 // Don't play sounds that are too far away from the focus
-export function playSoundLocalized(name: string, sourceEntity) {
+export function playSoundLocalized(name: string, sourceEntity: IPoint): void {
     const focus = Focus.getFocus();
     const dist2 = Math.max(getDistSquared(sourceEntity, focus), 1);
 

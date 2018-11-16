@@ -1,9 +1,9 @@
-import Geometry from '../Geometry';
+import Geometry, {GeometryType} from '../Geometry';
 import LivingEntity from './LivingEntity';
 import Random from '../Random';
 
 const GEO = {
-    "type":      "polygon",
+    "type":      GeometryType.Polygon,
     "lineStyle": {
         "width": 1,
         "color": 0xffff00,

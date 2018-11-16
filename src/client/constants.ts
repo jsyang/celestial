@@ -64,4 +64,6 @@ export const TEAM_COLOR = [
     0xff00ff
 ];
 
+export const TEAM_NONE_COLOR = 0x999999;
+
 export const isHumanTeam = team => team === TEAM.MAGENTA;

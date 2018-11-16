@@ -1,4 +1,4 @@
-import Geometry from '../Geometry';
+import Geometry, {GeometryType} from '../Geometry';
 import Planet from './Planet';
 import LivingEntity from './LivingEntity';
 import {TEAM_COLOR} from '../constants';
@@ -7,7 +7,7 @@ import {getAngleFromTo} from '../entityHelpers';
 
 const GEO = {
     "body":      {
-        "type":          "polygon",
+        "type":          GeometryType.Polygon,
         "lineStyle":     {
             "width": 1,
             "color": 15658734,
@@ -42,7 +42,7 @@ const GEO = {
         ]
     },
     "cargopodL": {
-        "type":      "polygon",
+        "type":      GeometryType.Polygon,
         "lineStyle": {
             "width": 1,
             "color": 15658734,
@@ -60,7 +60,7 @@ const GEO = {
         ]
     },
     "cargopodR": {
-        "type":      "polygon",
+        "type":      GeometryType.Polygon,
         "lineStyle": {
             "width": 1,
             "color": 15658734,
@@ -78,7 +78,7 @@ const GEO = {
         ]
     },
     "flag":      {
-        "type":      "polygon",
+        "type":      GeometryType.Polygon,
         "lineStyle": {
             "width": 2,
             "color": 255,
@@ -90,7 +90,7 @@ const GEO = {
         ]
     },
     "turret1":   {
-        "type":      "polygon",
+        "type":      GeometryType.Polygon,
         "lineStyle": {
             "width": 1,
             "color": 65535,
@@ -104,7 +104,7 @@ const GEO = {
         ]
     },
     "turret2":   {
-        "type":      "polygon",
+        "type":      GeometryType.Polygon,
         "lineStyle": {
             "width": 1,
             "color": 65535,
@@ -118,7 +118,7 @@ const GEO = {
         ]
     },
     "flame":     {
-        "type":      "polygon",
+        "type":      GeometryType.Polygon,
         "lineStyle": {
             "width": 1,
             "color": 65535,

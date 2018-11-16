@@ -1,5 +1,5 @@
 import {TEAM, TEAM_COLOR} from '../constants';
-import Geometry from '../Geometry';
+import Geometry, {GeometryType} from '../Geometry';
 import Star from './Star';
 import PBase from './PBase';
 import PLab from './PLab';
@@ -12,7 +12,7 @@ import LivingEntity from './LivingEntity';
 
 const GEO = {
     body: {
-        type:      "circle",
+        type:      GeometryType.Circle,
         radius:    100,
         fill:      {
             color: 0,
@@ -25,7 +25,7 @@ const GEO = {
         }
     },
     flag: {
-        type: "polygon",
+        type: GeometryType.Polygon,
         fill: {
             color: 0xffffff,
             alpha: 1
@@ -82,7 +82,7 @@ export default class Planet extends LivingEntity {
     };
 
     updateFlagColor() {
-        const flag = this.geo.graphics.children[0];
+        const flag = this.geo.graphics.children[0] as any;
 
         if (this.team === TEAM.NONE) {
             flag.visible = false;

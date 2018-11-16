@@ -47,7 +47,6 @@ const TYPES_PROJECTILES = {
     ClusterRocket
 };
 
-
 // Celestial bodies
 import Planet from './Planet';
 import Star from './Star';
@@ -163,6 +162,7 @@ export default {
     getNearestUnits,
 
     clearAll,
+    getAll:    DB.getAll,
     destroy:   DB.remove,
     getByType: DB.getByType
 };

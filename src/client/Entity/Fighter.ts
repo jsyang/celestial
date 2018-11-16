@@ -1,4 +1,4 @@
-import Geometry from '../Geometry';
+import Geometry, {GeometryType} from '../Geometry';
 import LivingEntity from './LivingEntity';
 
 /* Bomber
@@ -38,7 +38,7 @@ import LivingEntity from './LivingEntity';
 
 const GEO = {
     "body":   {
-        "type": "polygon",
+        "type": GeometryType.Polygon,
 
         "lineStyle": {
             "width": 1,
@@ -69,7 +69,7 @@ const GEO = {
         ]
     },
     "flame1": {
-        "type":      "polygon",
+        "type":      GeometryType.Polygon,
         "lineStyle": {
             "width": 1,
             "color": 65535,
@@ -82,7 +82,7 @@ const GEO = {
         ]
     },
     "flame2": {
-        "type":      "polygon",
+        "type":      GeometryType.Polygon,
         "lineStyle": {
             "width": 1,
             "color": 65535,
