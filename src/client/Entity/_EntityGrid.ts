@@ -13,7 +13,7 @@ import {getDistSquared} from '../entityHelpers';
  * ex: celestial bodies would be much less than number of cells to keep track of them.
  * i.e. they could all sit in the same cell / array
  */
-const GRID_SIZE_BIT_SHIFT = 10;
+const GRID_SIZE_BIT_SHIFT = 8;
 const GRID_WIDTH          = MAX_COORDINATE >> GRID_SIZE_BIT_SHIFT;
 
 
@@ -64,7 +64,9 @@ export default class EntityGrid {
     get1CellRadiusAroundEntity(entity) {
         const {grid} = this;
 
-        return [].concat(
+        const allEntitiesInRadius = [];
+
+        const cells = [
             grid[getEntityToGridIndex(entity, -1, -1)],
             grid[getEntityToGridIndex(entity, 0, -1)],
             grid[getEntityToGridIndex(entity, 1, -1)],
@@ -74,7 +76,16 @@ export default class EntityGrid {
             grid[getEntityToGridIndex(entity, 0, 1)],
             grid[getEntityToGridIndex(entity, -1, 1)],
             grid[getEntityToGridIndex(entity, 1, 1)]
-        ).filter(Boolean);
+        ];
+
+        // for loop is much faster here
+        for (let i = cells.length - 1; i >= 0; i--) {
+            if (cells[i] && cells[i].length > 0) {
+                Array.prototype.push.apply(allEntitiesInRadius, cells[i]);
+            }
+        }
+
+        return allEntitiesInRadius;
     }
 
     getNearestEnemy(entity, searchDist2 = Infinity) {
