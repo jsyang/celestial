@@ -12,4 +12,3 @@ export function getFighter(isNext: boolean) {
     }
     return enemyFighters[fighterIndex];
 }
-

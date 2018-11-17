@@ -34,7 +34,7 @@ function create({onClickNewGame}) {
 
     modalStackY -= 20 + 40;
     const buttonGitHub = Button.create({
-        text:    'GitHub project',
+        text:    'Source code',
         onClick: onClickGitHub
     });
     buttonGitHub.x     = 20;

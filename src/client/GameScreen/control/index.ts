@@ -3,8 +3,6 @@ import Input from '../../Input';
 import Focus from '../../Graphics/Focus';
 import controlActiveModal from './ActiveModal';
 import controlFighter from './Fighter';
-import FreelookIcon from '../../Graphics/Freelook';
-import Freelook from './Freelook';
 import {isHumanTeam} from '../../constants';
 import {IInputEvent} from '../../Input/Event';
 import Starfield from '../../Graphics/Starfield';
@@ -50,7 +48,6 @@ function update() {
                 controlActiveModal(controlledEntity, inputState);
             } else if (controlledEntity.hp > 0) {
                 // Any controlled entities
-                FreelookIcon.setIconVisible(false);
                 Focus.setFocus(controlledEntity);
 
                 // Only allow player control if same faction
@@ -64,16 +61,8 @@ function update() {
                     }
                 }
             } else {
-                // Freelook if none
-                Freelook.setPosition(controlledEntity);
                 setControlledEntity(null);
             }
-        } else {
-            Focus.setFocus(
-                Freelook.update(inputState)
-            );
-
-            FreelookIcon.setIconVisible(true);
         }
 
         // Select enemy fighters to focus on

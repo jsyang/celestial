@@ -8,7 +8,6 @@ import Entity from '../Entity';
 
 import HUD from './HUD';
 import TeamSystem from './TeamSystem';
-import Freelook from '../Graphics/Freelook';
 import DockedModal from '../UI/Modal/DockedModal';
 import SwapWeaponModal from '../UI/Modal/SwapWeaponModal';
 import GalaxyWonModal from '../UI/Modal/GalaxyWonModal';
@@ -140,7 +139,6 @@ function init() {
 
     Entity.clearAll();
     Graphics.init();
-    Freelook.init();
 
     Starfield
         .init()
