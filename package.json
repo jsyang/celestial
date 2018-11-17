@@ -1,7 +1,7 @@
 {
   "name": "celestialcombat",
-  "version": "0.0.1",
-  "description": "Conquer your sector",
+  "version": "1.0.0",
+  "description": "Top-down 2D space shooter -- galactic conquest and colonization",
   "author": {
     "name": "jsyang.ca@gmail.com",
     "url": "http://jsyang.ca/"

@@ -23,15 +23,34 @@ See `LETTERS` within `src/client/constants.ts` for example.
 
 - [Start Geometry editor](http://jsyang.ca/celestial?editor)<br><img src="how-to-play/editor.png">
 
-## TODOs to finish v1
+## TODO for v1.1
 
-- complete basic fighter AI
+- change nearest planet and star indicator to HUD outside of a box
+    - update nearest every 20 cycles
+- only show landing speed indicator for when close to planets
+- add hotkey for show / hide expanded radar
+- add hotkey for targeting (enemy units and structures)
+- add rank insignia and progress bar for next rank
+
+- improve fighter AI
     - retarget when current attackTarget is dead
+    - avoid hovering too long near planet when attacking
+    - different attack patterns for different targets
     - avoid stars
-    - land on spaceport
     - land on planet
-    
+
+## TODO for v1.2
 - unified UX model for game
+
+- score tied to lifetime of pilot? (instead of full team)
+- radar not available when comm center is destroyed
+
+- extend fighter AI
+    - land on spaceport
+    - traits of pilots
+    - aggression (proximity to attack target)
+    - self-preservation (health threshold before retreating for repair)
+
 ---
 
 Copyright (c) 2018 Jim Yang <jsyang.ca@gmail.com>

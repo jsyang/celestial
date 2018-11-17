@@ -38,7 +38,6 @@
 "@types/sat@^0.0.30":
   version "0.0.30"
   resolved "https://registry.yarnpkg.com/@types/sat/-/sat-0.0.30.tgz#c31fc6e64f1cee0447de443d8424fd9f2191aa38"
-  integrity sha512-5bxW/WpM/yfCKMJZyZOwjHUnw3bPzwkyIgVl5SmVKPjTFME7y3OaheUJNyenW2kspWqkE6JXwk+CJ63iZ0Hyjg==
 
 "@types/serve-static@*":
   version "1.13.1"
