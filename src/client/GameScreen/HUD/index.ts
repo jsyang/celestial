@@ -35,6 +35,7 @@ function update() {
 function onResize() {
     // Pointers.onResize();
     RadarGalaxyExpanded.onResize();
+    SpeedIndicator.onResize();
     TextContainer.onResize();
     PauseStatus.onResize();
 }

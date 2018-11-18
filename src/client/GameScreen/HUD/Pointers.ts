@@ -4,7 +4,11 @@
 import * as PIXI from 'pixi.js';
 import Graphics from '../../Graphics';
 import Entity from '../../Entity';
-import {getAngleFromTo} from '../../entityHelpers';
+import {getAngleFromTo, getDistSquared} from '../../entityHelpers';
+import SpeedIndicator from './SpeedIndicator';
+import GameScreenControl from '../control';
+
+const LANDING_SPEED_VISIBLE_AT_DIST2 = 300 ** 2;
 
 const DIAL_TRACK_ALPHA = 0.08;
 const DEGREES          = Math.PI / 180;
@@ -137,6 +141,18 @@ function update() {
                 nearestPlanet: nearestPlanet && getAngleFromTo(origin, nearestPlanet),
                 nearestStar:   nearestStar && getAngleFromTo(origin, nearestStar)
             });
+
+            const controlledEntity = GameScreenControl.getControlledEntity();
+
+            if (nearestPlanet && controlledEntity && controlledEntity.type === 'Fighter') {
+                const {isDockedPlanet, isDockedSpacePort} = controlledEntity;
+                const isDocked                            = isDockedPlanet || isDockedSpacePort;
+                const isNearPlanet                        = getDistSquared(controlledEntity, nearestPlanet) <= LANDING_SPEED_VISIBLE_AT_DIST2;
+
+                SpeedIndicator.setVisible(isNearPlanet && !isDocked);
+            } else {
+                SpeedIndicator.setVisible(false)
+            }
 
             lastUpdateTime = now;
         }
