@@ -193,9 +193,6 @@ function onResize() {
 function setVisible(_isVisible: boolean) {
     if (_isVisible) {
         onResize();
-        addEventListener('resize', onResize);
-    } else {
-        removeEventListener('resize', onResize);
     }
 
     scanner.visible = _isVisible;
@@ -209,5 +206,6 @@ function init() {
 export default {
     init,
     update,
+    onResize,
     setVisible
 }

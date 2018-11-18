@@ -12,7 +12,9 @@ const onTitleScreenFadeout = () => {
 const isGameScreenStart         = location.search.match(/game$/);
 const isGeometryEditScreenStart = location.search.match(/editor$/);
 
-const onDOMContentLoaded = () => {
+function onDOMContentLoaded() {
+    removeEventListener('DOMContentLoaded', onDOMContentLoaded);
+
     let onAssetsLoad;
 
     if (isGameScreenStart) {
@@ -29,6 +31,6 @@ const onDOMContentLoaded = () => {
     Assets
         .load()
         .then(onAssetsLoad);
-};
+}
 
 addEventListener('DOMContentLoaded', onDOMContentLoaded);

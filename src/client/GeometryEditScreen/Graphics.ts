@@ -23,7 +23,6 @@ function init() {
     removeAllChildren();
 
     if (typeof renderer === 'undefined') {
-        addEventListener('resize', onResize);
         onResize();
         renderer = new PIXI.WebGLRenderer(width, height);
         document.body.appendChild(renderer.view);
@@ -43,6 +42,6 @@ export default {
     init,
     addChild,
     removeChild,
-    removeAllChildren,
+    onResize,
     render
 };

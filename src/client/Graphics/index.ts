@@ -12,10 +12,15 @@ let height;
 let height2;
 
 // Scene is the graphic container for all the objects rendered as part of the game
+// HUD and UI elements included
 const scene = new PIXI.Container();
 
-// Stage is the graphics container for all the interactive game entities
+// Stage is the graphics container for all the game entities
+// Spaceships, projectiles, etc.
 const stage = new PIXI.Container();
+
+// Dict of modals and HUD elements that need to be updated
+let sceneChildrenOnResizeFuncs: Record<string, Function> = {};
 
 function onResize(): void {
     width   = innerWidth;
@@ -25,10 +30,16 @@ function onResize(): void {
 
     if (renderer) {
         renderer.resize(width, height);
+
+        Object.values(sceneChildrenOnResizeFuncs).forEach(
+            func => func()
+        );
     }
 }
 
 const removeAllChildren = () => {
+    sceneChildrenOnResizeFuncs = {};
+
     while (stage.children[0]) {
         stage.removeChild(stage.children[0]);
     }
@@ -42,8 +53,8 @@ const removeAllChildren = () => {
 
 function init(): void {
     removeAllChildren();
+
     if (typeof renderer === 'undefined') {
-        addEventListener('resize', onResize);
         onResize();
         scene.addChild(stage);
         renderer = new PIXI.WebGLRenderer(width, height);
@@ -52,10 +63,30 @@ function init(): void {
 }
 
 const setGlobalAlpha = alpha => scene.alpha = alpha;
-export const addChildToHUD      = child => scene.addChild(child);
-export const removeChildFromHUD = child => scene.removeChild(child);
-export const addChild           = child => stage.addChild(child);
-export const removeChild        = child => stage.removeChild(child);
+
+export const addChildToHUD = child => {
+    if (child.modal) {
+        const {modal, id, onResize} = child;
+        scene.addChild(modal);
+        sceneChildrenOnResizeFuncs[id] = onResize;
+    } else {
+        scene.addChild(child);
+    }
+};
+
+export const removeChildFromHUD = child => {
+    if (child.modal) {
+        const {modal, id} = child;
+
+        scene.removeChild(modal);
+        delete sceneChildrenOnResizeFuncs[id];
+    } else {
+        scene.removeChild(child);
+    }
+};
+
+export const addChild    = child => stage.addChild(child);
+export const removeChild = child => stage.removeChild(child);
 
 export const render = () => renderer.render(scene);
 
@@ -91,5 +122,6 @@ export default {
     centerOn,
     addChildToHUD,
     removeChildFromHUD,
-    cullRenderable
+    cullRenderable,
+    onResize
 };

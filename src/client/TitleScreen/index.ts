@@ -65,20 +65,27 @@ const modal = TitleScreenModal.create({
 });
 
 function start() {
+    addEventListener('resize', onResize);
+
     Graphics.init();
     Starfield.init()
         .forEach(Graphics.addChild);
 
-    Graphics.addChildToHUD(modal.modal);
+    Graphics.addChildToHUD(modal);
 
     then = Date.now();
     step();
+}
+
+function onResize() {
+    Graphics.onResize();
 }
 
 function stop() {
     cancelAnimationFrame(raf);
 
     if (onFadeOutComplete) {
+        removeEventListener('resize', onResize);
         onFadeOutComplete();
     }
 }
@@ -91,6 +98,5 @@ function setFadeOutCallback(cb) {
 
 export default {
     setFadeOutCallback,
-    start,
-    stop
+    start
 }

@@ -1,6 +1,6 @@
 import UnitDisplay from './UnitDisplay';
 import WeaponsDisplay from './WeaponsDisplay';
-import RadarLocal from './RadarLocal';
+import Pointers from './Pointers';
 import RadarGalaxy from './RadarGalaxy';
 import PauseStatus from './PauseStatus';
 import TextContainer from './TextContainer';
@@ -10,7 +10,7 @@ import SpeedIndicator from './SpeedIndicator';
 import ScoreRankDisplay from './ScoreRankDisplay';
 
 function init() {
-    RadarLocal.init();
+    Pointers.init();
     RadarGalaxy.init();
     UnitDisplay.init();
     WeaponsDisplay.init();
@@ -25,11 +25,18 @@ function update() {
     SpeedIndicator.update();
     TextContainer.update();
     RadarGalaxy.update();
-    RadarLocal.update();
+    Pointers.update();
     UnitDisplay.update();
     WeaponsDisplay.update();
     ScoreRankDisplay.update();
     RadarGalaxyExpanded.update();
+}
+
+function onResize() {
+    // Pointers.onResize();
+    RadarGalaxyExpanded.onResize();
+    TextContainer.onResize();
+    PauseStatus.onResize();
 }
 
 function displayText(team, text) {
@@ -42,6 +49,7 @@ export default {
     init,
     update,
     displayText,
-    setFocus:        RadarLocal.setOrigin,
+    onResize,
+    setFocus:        Pointers.setOrigin,
     setPauseVisible: PauseStatus.setVisible
 }

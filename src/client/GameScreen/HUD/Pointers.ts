@@ -1,4 +1,4 @@
-// Proximity radar
+// HUD pointers
 // Available to any unit
 
 import * as PIXI from 'pixi.js';

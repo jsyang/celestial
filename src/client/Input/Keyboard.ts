@@ -45,10 +45,8 @@ function onKeyDown({which}) {
     inputState[CODE_TO_KEY[which]] = true;
 }
 
-if (window) {
-    window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('keyup', onKeyUp);
-}
+addEventListener('keydown', onKeyDown);
+addEventListener('keyup', onKeyUp);
 
 export const getEvents = (): IInputEvent => ({
     PAUSE:              Boolean(inputState.p),

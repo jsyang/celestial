@@ -67,9 +67,6 @@ function init(): PIXI.Graphics[] {
         onResize();
     }
 
-    removeEventListener('resize', onResize);
-    addEventListener('resize', onResize);
-
     return stars;
 }
 
@@ -134,5 +131,6 @@ function process(center: IPoint | null): void {
 
 export default {
     init,
-    process
+    process,
+    onResize
 };

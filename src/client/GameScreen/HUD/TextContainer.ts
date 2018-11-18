@@ -36,14 +36,8 @@ function init() {
     updateTextRows();
 
     Graphics.addChildToHUD(textContainer);
-    addEventListener('resize', onResize);
     onResize();
 }
-
-function destroy() {
-    removeEventListener('resize', onResize);
-}
-
 
 const SHIFT_TIME_MAX = 400;
 let shiftTime        = SHIFT_TIME_MAX;
@@ -78,7 +72,7 @@ function displayText(text = '') {
 
 export default {
     init,
-    destroy,
     update,
+    onResize,
     displayText
 }

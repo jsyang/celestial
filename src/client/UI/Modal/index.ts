@@ -53,9 +53,9 @@ function create({width = 640, height = 480}) {
     };
 
     onResize();
-    addEventListener('resize', onResize);
 
     return {
+        id: Date.now().toString(16),
         modal,
         onResize,
 
@@ -69,9 +69,8 @@ function create({width = 640, height = 480}) {
     };
 }
 
-function destroy({modal, onResize}) {
+function destroy({modal}) {
     Graphics.removeChildFromHUD(modal);
-    removeEventListener('resize', onResize);
 }
 
 export default {

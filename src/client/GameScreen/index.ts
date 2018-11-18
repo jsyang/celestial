@@ -134,6 +134,8 @@ function onTeamWon(team) {
 }
 
 function init() {
+    addEventListener('resize', onResize);
+
     isFadingIn      = true;
     gameScreenAlpha = 0;
 
@@ -150,6 +152,12 @@ function init() {
     TeamSystem.init();
     TeamSystem.setOnTeamLostCallback(onTeamLost);
     TeamSystem.setOnTeamWinCallback(onTeamWon);
+}
+
+function onResize() {
+    HUD.onResize();
+    Starfield.onResize();
+    Graphics.onResize();
 }
 
 const togglePauseState = () => {

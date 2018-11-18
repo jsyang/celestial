@@ -40,9 +40,6 @@ function setVisible(isVisible) {
 
     if (isVisible) {
         onResize();
-        addEventListener('resize', onResize);
-    } else {
-        removeEventListener('resize', onResize);
     }
 }
 
@@ -53,5 +50,6 @@ function init() {
 
 export default {
     init,
-    setVisible
+    setVisible,
+    onResize
 }
