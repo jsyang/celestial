@@ -24,7 +24,7 @@ const getEventsFromGamePad = ({left, right, up, analogAngle, button0, button1, b
     SHOOT:              Boolean(button0),
     PAUSE:              Boolean(button2),
     NEXT_ENEMY_FIGHTER: false,
-    PREV_ENEMY_FIGHTER: false,
+    TOGGLE_RADAR:       false,
     analogAngle
 });
 

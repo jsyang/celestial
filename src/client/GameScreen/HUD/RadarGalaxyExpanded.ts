@@ -203,9 +203,14 @@ function init() {
     Graphics.addChildToHUD(scanner);
 }
 
+function getIsVisible() {
+    return isVisible;
+}
+
 export default {
     init,
     update,
     onResize,
+    getIsVisible,
     setVisible
 }

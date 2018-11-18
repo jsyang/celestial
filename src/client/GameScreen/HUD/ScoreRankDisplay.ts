@@ -7,7 +7,7 @@ const HEIGHT          = 14;
 const MARGIN_EDGE     = 4;
 
 const scoreRankDisplay = new PIXI.Graphics();
-scoreRankDisplay.y     = (MARGIN_EDGE + 100) * 2 + 14 * 6 + 5 * MARGIN_EDGE;
+scoreRankDisplay.y     = (MARGIN_EDGE + 100) * 2 + 14 * 4 + 3 * MARGIN_EDGE;
 scoreRankDisplay.x     = MARGIN_EDGE;
 
 const TEXT_STYLE = {

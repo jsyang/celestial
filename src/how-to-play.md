@@ -47,7 +47,7 @@ _Celestial Combat is a game of galactic conquest and colonization._
     F                   Fire primary weapon
     E                   Special action (when docked)
     P                   Pause / resume game
-    , (<)               Focus on previous fighter spaceship 
+    M                   Toggle galaxy radar display
     . (>)               Focus on next fighter spaceship
 
     
@@ -68,7 +68,7 @@ game screen:
 
 1. Galaxy radar is provided by friendly planets with Communications Centers. Markers indicate
 the positions of planets, stars, and spaceships: green, yellow, and other colors, respectively.
-You can click on this small display to expand the display to fill your screen.
+You can press M or click on this small display to expand the display to fill your screen.
 
 2. Tactical radar is provided by the current spaceship being piloted by the player. Yellow and green
 arcs show the heading from the spaceship's location to the nearest star and planet.
@@ -96,11 +96,13 @@ To win, you need to destroy all enemy production, combat facilities, and spacecr
 #### Landing on planets
 Before colonization can begin, you must land on a planet to secure your colonization
 beacon. Approach the planet at slow speed and rotate the craft to face outwards from 
-the planet's center. Failing to do this the Fighter will be destroyed.
+the planet's center. A landing speed indicator will be shown as you approach the planet.
+Failing to correctly orient and slow the Fighter will destroy it on contact with the planet's
+surface.
 
 **When you land on a friendly planet, your weapons will be rearmed and your ship repaired.**
 
-Note: you cannot land on stars. Fighters are affected by gravity from planets and stars. 
+Note: you cannot land on stars. Fighters are affected by gravity from both planets and stars. 
 
 #### Landing on a friendly spaceport
 Much like landing on a planet, you must approach the spaceport slowly and aim for the center of

@@ -27,7 +27,6 @@ See `LETTERS` within `src/client/constants.ts` for example.
 
 - change nearest planet and star indicator to HUD outside of a box
     - update nearest every 20 cycles
-- add hotkey for show / hide expanded radar
 - add hotkey for targeting (enemy units and structures)
 - add rank insignia and progress bar for next rank
 

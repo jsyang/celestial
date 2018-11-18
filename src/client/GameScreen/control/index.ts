@@ -7,6 +7,7 @@ import {isHumanTeam} from '../../constants';
 import {IInputEvent} from '../../Input/Event';
 import Starfield from '../../Graphics/Starfield';
 import {getFighter} from './getFighter';
+import RadarGalaxyExpanded from '../HUD/RadarGalaxyExpanded';
 
 let controlledEntity;
 const setControlledEntity = entity => controlledEntity = entity;
@@ -75,14 +76,11 @@ function update() {
                     getFighter(true)
                 )
             );
-        } else if (events.PREV_ENEMY_FIGHTER && !prevEvents.PREV_ENEMY_FIGHTER) {
-            Starfield.process(null);
-            revertControlToAI();
+        }
 
-            Focus.setFocus(
-                setControlledEntity(
-                    getFighter(false)
-                )
+        if (events.TOGGLE_RADAR && !prevEvents.TOGGLE_RADAR) {
+            RadarGalaxyExpanded.setVisible(
+                !RadarGalaxyExpanded.getIsVisible()
             );
         }
     }
