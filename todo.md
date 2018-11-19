@@ -2,8 +2,8 @@
 
 ## Critical priority
 
-- win / loss tally
-- kill statistics (entity killed by XXX)
+- comm center provides radar galaxy (no functionality if destroyed!)
+
 - health bars for units receiving damage
 - save / load games
 
@@ -16,14 +16,7 @@
         - finished materials (can be used for colonization)
         - raw materials (cannot be used for colonization, but can be used to supply)
 
-- hardcore mode?
-
 ## High priority
-
-- geometry editor upgrades
-    - save /load geometry with localstorage
-    - set grid cell size
-    - mouse wheel zoom for preview scaling 
 
 - networked gameplay
     - sectors fought over (rooms)
@@ -64,11 +57,6 @@ https://github.com/pixijs/pixi.js/issues/1841
         - coordinated attack with fighters in groups
         - assign priority to targets
 
-
-- better HUD
-    - landing speed indicator
-    - nearest star / nearest planet is like the enemy indicator from XEvil (screen borders)
-    - make a more advanced galaxy radar
 
 - special button when near non-friendly planet
     - negotiate treaty
