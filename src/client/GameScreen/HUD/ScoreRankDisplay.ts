@@ -37,16 +37,15 @@ function update(): void {
         updateTime--;
 
     } else {
-        const {rank, score, nextRank: {scoreNeeded}} = Score.getScoreRank();
-        rankText.text                                = rank;
-
+        const {rank, score, nextRank} = Score.getScoreRank();
+        rankText.text                 = rank.name;
 
         scoreRankDisplay.beginFill(0x444444, 1);
         scoreRankDisplay.drawRect(0, HEIGHT + 2, WIDTH, HEIGHT);
         scoreRankDisplay.endFill();
 
         scoreRankDisplay.beginFill(0x00ffff, 1);
-        scoreRankDisplay.drawRect(0, HEIGHT + 2, WIDTH * (score / scoreNeeded), HEIGHT);
+        scoreRankDisplay.drawRect(0, HEIGHT + 2, WIDTH * ((score - rank.scoreNeeded) / nextRank.scoreNeeded), HEIGHT);
         scoreRankDisplay.endFill();
 
         updateTime = UPDATE_TIME_MAX;

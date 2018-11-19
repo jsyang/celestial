@@ -18,7 +18,7 @@ const RANK_MIN_SCORE_NEEDED = [
 export const getRankByScore = (score: number) =>
     RANK_MIN_SCORE_NEEDED[
     RANK_MIN_SCORE_NEEDED.findIndex(rank => score < rank.scoreNeeded) - 1
-        ].name;
+        ];
 
 export const getNextRankByScore = (score: number) =>
     RANK_MIN_SCORE_NEEDED[
