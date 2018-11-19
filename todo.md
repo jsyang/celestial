@@ -1,12 +1,6 @@
-# Todos for Celestial Combat
+# Todo / idea list
 
-## Critical priority
-
-- comm center provides radar galaxy (no functionality if destroyed!)
-
-- health bars for units receiving damage
-- save / load games
-
+### Core Gameplay
 - Economy that matters
     - raw materials and finished materials need to affect gameplay (they do already but invisibly)
     - ordering construction of Fighters and Freighters, significantly affecting material supply
@@ -16,24 +10,7 @@
         - finished materials (can be used for colonization)
         - raw materials (cannot be used for colonization, but can be used to supply)
 
-## High priority
-
-- networked gameplay
-    - sectors fought over (rooms)
-    - factions
-    - kill ratios
-    - veterancy
-    - leaderboard
-    - heroku host?
-    - firebase host?
-
-## BACKLOG
-
 - galactic radar is ranged (update radius from comm centers)
-
-- fix for higher-pixel density displays
-https://github.com/pixijs/pixi.js/issues/1841
-
 - drop off ground forces (probes) to attack enemy planet facilities
     - ground forces cannot leave planet unless picked up
     - dedicated drop-ship unit
@@ -57,18 +34,40 @@ https://github.com/pixijs/pixi.js/issues/1841
         - coordinated attack with fighters in groups
         - assign priority to targets
 
+### Persistence
+- save / load games
+- networked gameplay
+    - sectors fought over (rooms)
+    - factions
+    - kill ratios
+    - veterancy
+    - leaderboard
+    - heroku host?
+    - firebase host?
+- Options screen + Custom key mapping
+    - keyboard
+    - gamepad calibration
 
-- special button when near non-friendly planet
+### Score
+- score tied to lifetime of pilot? (instead of full team)
+- add rank insignia
+
+### Display
+- health bars for units receiving damage
+- comm center provides radar galaxy (no functionality if destroyed!)
+- fix for higher-pixel density displays
+https://github.com/pixijs/pixi.js/issues/1841
+- vector win / loss symbols
+
+### Nebulous 
+- special button when near non-friendly (but not hostile) planet
     - negotiate treaty
     - buy / sell resources
 
 - cloaking device
     - one time use (actively cloaked until ship is damaged or fires a weapon)
 
-- vector win / loss symbols    
-
 - alien craft that is hostile to all factions?
-
 - more spacecraft
     - light fighter
     - escort guard 
@@ -97,7 +96,3 @@ https://github.com/pixijs/pixi.js/issues/1841
  
 - asteroids / uninhabitable worlds
 - ability to destroy planets
-
-- Options screen + Custom key mapping
-    - keyboard
-    - gamepad calibration

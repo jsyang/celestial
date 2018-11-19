@@ -1,8 +1,9 @@
 import GameScreen from '..';
 import {IInputEvent} from '../../Input/Event';
 import {ACCELERATION_FIGHTER, ACCELERATION_FIGHTER_UNDOCK, ROTATION_RATE_FIGHTER} from '../../constants';
+import NavBeaconHuman from '../../Graphics/NavBeaconHuman';
 
-export default function controlFighter(controlledEntity, events: IInputEvent) {
+export default function controlFighter(controlledEntity, events: IInputEvent, prevEvents: IInputEvent) {
     const {isDockedPlanet, isDockedSpacePort, team, planet, spaceport} = controlledEntity;
 
     const isDocked = isDockedPlanet || isDockedSpacePort;
@@ -27,6 +28,20 @@ export default function controlFighter(controlledEntity, events: IInputEvent) {
         }
 
         controlledEntity.isAttacking = events.SHOOT;
+
+        // Navigation aids
+        if (events.NAV_POINT_SET && !prevEvents.NAV_POINT_SET) {
+            const point = {
+                x: controlledEntity.x,
+                y: controlledEntity.y
+            };
+
+            NavBeaconHuman.setNavPoint(point);
+        }
+
+        if (events.NAV_POINT_CLEAR && !prevEvents.NAV_POINT_CLEAR) {
+            NavBeaconHuman.clear();
+        }
     }
 
     if (events.ACCELERATE) {

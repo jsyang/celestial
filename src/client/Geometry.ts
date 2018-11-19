@@ -76,7 +76,12 @@ export function testPointInEntity({x, y}: IPoint, entity: LivingEntity): boolean
     const point      = v(x, y);
 
     if (collider instanceof Circle) {
-        return pointInCircle(point, collider);
+        // Doesn't collide with anything
+        if (collider.r === 0) {
+            return false;
+        } else {
+            return pointInCircle(point, collider);
+        }
     } else {
         return pointInPolygon(point, collider);
     }

@@ -57,7 +57,7 @@ function update() {
 
                     switch (controlledEntity.type) {
                         case 'Fighter':
-                            controlFighter(controlledEntity, events);
+                            controlFighter(controlledEntity, events, prevEvents);
                             break;
                     }
                 }
@@ -67,7 +67,7 @@ function update() {
         }
 
         // Select enemy fighters to focus on
-        if (events.NEXT_ENEMY_FIGHTER && !prevEvents.NEXT_ENEMY_FIGHTER) {
+        if (events.FOCUS_NEXT_ENEMY && !prevEvents.FOCUS_NEXT_ENEMY) {
             Starfield.process(null);
             revertControlToAI();
 

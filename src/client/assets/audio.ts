@@ -23,7 +23,11 @@ export function defineSound({name, arrayBuffer}: IAudioFile): void {
     }
 }
 
+let isAudioEnabled = location.search.indexOf('mute') === -1;
+
 export function playSound(name: string): void {
+    if (!isAudioEnabled) return;
+
     const source  = audioContext.createBufferSource();
     source.buffer = audioBuffers[name];
     source.connect(audioContext.destination);
@@ -36,6 +40,8 @@ const LN_INAUDIBLE_DIST2_FACTOR = 1 / Math.log(INAUDIBLE_DIST2);
 // Sound sources farther away are quieter
 // Don't play sounds that are too far away from the focus
 export function playSoundLocalized(name: string, sourceEntity: IPoint): void {
+    if (!isAudioEnabled) return;
+
     const focus = Focus.getFocus();
     const dist2 = Math.max(getDistSquared(sourceEntity, focus), 1);
 

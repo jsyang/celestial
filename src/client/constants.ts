@@ -41,7 +41,29 @@ export const LETTERS = {
 };
 
 // For HUD indicators
-export const POINTER = transformPolygon([200, 0, 0, 200, 200, 400, 400, 200, 200, 0], 0, 0, 0.02, 0.02);
+const HUD_POINTER_SCALE = 0.02;
+
+export const POINTER = transformPolygon([200, 0, 0, 200, 200, 400, 400, 200, 200, 0], 0, 0, HUD_POINTER_SCALE, HUD_POINTER_SCALE);
+
+export const POINTER_TARGET = transformPolygon(
+    [0, 0, 100, 100, 300, 100, 400, 0, 300, 100, 300, 300, 400, 400, 300, 300, 100, 300, 0, 400, 100, 300, 100, 100],
+    0, 0, HUD_POINTER_SCALE, HUD_POINTER_SCALE
+);
+
+export const POINTER_NAV = [
+    [0, 400, 33.333333333333336, 0, 366.6666666666667, 400, 400, 0],
+    [0, 400, 266.6666666666667, 0, 400, 400, 333.33333333333337, 200, 133.33333333333334, 200],
+    [0, 0, 100, 400, 400, 0]
+].map((poly, i) => transformPolygon(
+    poly, i * 9, 0, HUD_POINTER_SCALE, HUD_POINTER_SCALE
+));
+
+export const TARGET_RETICLE = [
+    [200, 400, 200, 200, 0, 0, 200, 200, 400, 200],
+    [0, 200, 200, 200, 400, 0, 200, 200, 200, 400],
+    [200, 0, 200, 200, 400, 400, 200, 200, 0, 200],
+    [400, 200, 200, 200, 0, 400, 200, 200, 200, 0]
+];
 
 export const FOCUS_RETICLE = [
     [100, 0, 0, 0, 0, 100],

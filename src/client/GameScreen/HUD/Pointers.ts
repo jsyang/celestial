@@ -7,8 +7,9 @@ import Entity from '../../Entity';
 import {AVOID_DIVZERO_VALUE, getDistSquared} from '../../entityHelpers';
 import SpeedIndicator from './SpeedIndicator';
 import GameScreenControl from '../control';
-import {POINTER} from '../../constants';
+import {POINTER, POINTER_NAV, POINTER_TARGET} from '../../constants';
 import {transformPolygon} from '../../Geometry';
+import NavBeaconHuman from '../../Graphics/NavBeaconHuman';
 
 const LANDING_SPEED_VISIBLE_AT_DIST2 = 300 ** 2;
 
@@ -28,7 +29,26 @@ pointerPlanet.drawPolygon(transformPolygon(POINTER, -10, -10));
 pointerPlanet.endFill();
 pointerPlanet.visible = false;
 
-pointerContainer.addChild(pointerStar, pointerPlanet);
+
+const pointerTarget = new PIXI.Graphics();
+pointerTarget.beginFill(0, 0);
+pointerTarget.lineStyle(1, 0xffffff, 1);
+pointerTarget.drawPolygon(transformPolygon(POINTER_TARGET, -10, -10));
+pointerTarget.endFill();
+pointerTarget.visible = false;
+
+// Shimmer function
+(pointerTarget as any).shimmer = () => pointerTarget.tint = updateCycle % 10 ? 0xff0000 : 0xffffff;
+
+const pointerNav = new PIXI.Graphics();
+pointerNav.beginFill(0, 0);
+pointerNav.lineStyle(2, 0x00ffff, 1);
+pointerNav.drawPolygon(transformPolygon(POINTER_NAV[0], -10, -10));
+pointerNav.endFill();
+pointerNav.visible = false;
+
+
+pointerContainer.addChild(pointerStar, pointerPlanet, pointerTarget, pointerNav);
 
 const POINTER_WIDTH2  = 12;
 const POINTER_HEIGHT2 = 12;
@@ -115,6 +135,7 @@ function update() {
         if (updateCycle % 2) {
             drawPointerFor(nearestPlanet, pointerPlanet);
             drawPointerFor(nearestStar, pointerStar);
+            drawPointerFor(NavBeaconHuman.getNavPoint(), pointerNav);
         }
     }
 }

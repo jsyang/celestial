@@ -25,8 +25,6 @@ See `LETTERS` within `src/client/constants.ts` for example.
 
 ## TODO for v1.1
 
-- add hotkey for targeting (enemy units and structures)
-
 - improve fighter AI
     - retarget when current attackTarget is dead
     - avoid hovering too long near planet when attacking
@@ -35,10 +33,12 @@ See `LETTERS` within `src/client/constants.ts` for example.
     - land on planet
 
 ## TODO for v1.2
-- add rank insignia
+
+- add functionality for targeting (enemy units and structures)
+    - add HomingMissile functionality for targeting
+
 - unified UX model for game
 
-- score tied to lifetime of pilot? (instead of full team)
 - radar not available when comm center is destroyed
 
 - extend fighter AI

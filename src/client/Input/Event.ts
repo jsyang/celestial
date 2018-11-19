@@ -5,7 +5,10 @@ export interface IInputEvent {
     TURN_RIGHT: boolean;
     ACCELERATE: boolean;
     SHOOT: boolean;
-    NEXT_ENEMY_FIGHTER: boolean;
+    FOCUS_NEXT_ENEMY: boolean;
+    TARGET_NEXT_ENEMY: boolean;
     TOGGLE_RADAR: boolean;
+    NAV_POINT_SET: boolean;
+    NAV_POINT_CLEAR: boolean;
     analogAngle?: number;
 }

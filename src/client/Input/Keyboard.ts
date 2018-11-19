@@ -9,7 +9,9 @@ const CODE_TO_KEY = {
     80:  'p',
     70:  'f',
     77:  'm',
-    190: '.' // >
+    190: '.', // >
+    13:  'enter',
+    8:   'backspace'
 };
 
 
@@ -23,6 +25,8 @@ export interface IKeyboardState {
     f?: boolean;
     m?: boolean;
     '.'?: boolean;
+    backspace?: boolean;
+    enter?: boolean;
 }
 
 const inputState: IKeyboardState = {
@@ -34,7 +38,9 @@ const inputState: IKeyboardState = {
     e:           false,
     f:           false,
     m:           false,
-    '.':         false
+    '.':         false,
+    backspace:   false,
+    enter:       false
 };
 
 function onKeyUp({which}) {
@@ -49,14 +55,17 @@ addEventListener('keydown', onKeyDown);
 addEventListener('keyup', onKeyUp);
 
 export const getEvents = (): IInputEvent => ({
-    PAUSE:              Boolean(inputState.p),
-    SPECIAL:            Boolean(inputState.e),
-    TURN_LEFT:          Boolean(inputState.left_arrow),
-    TURN_RIGHT:         Boolean(inputState.right_arrow),
-    ACCELERATE:         Boolean(inputState.up_arrow),
-    SHOOT:              Boolean(inputState.f),
-    NEXT_ENEMY_FIGHTER: Boolean(inputState['.']),
-    TOGGLE_RADAR:       Boolean(inputState.m)
+    PAUSE:             Boolean(inputState.p),
+    SPECIAL:           Boolean(inputState.e),
+    TURN_LEFT:         Boolean(inputState.left_arrow),
+    TURN_RIGHT:        Boolean(inputState.right_arrow),
+    ACCELERATE:        Boolean(inputState.up_arrow),
+    SHOOT:             Boolean(inputState.f),
+    FOCUS_NEXT_ENEMY:  Boolean(inputState['.']),
+    TARGET_NEXT_ENEMY: false,
+    TOGGLE_RADAR:      Boolean(inputState.m),
+    NAV_POINT_SET:     Boolean(inputState.enter),
+    NAV_POINT_CLEAR:   Boolean(inputState.backspace)
 });
 
 const getInputState = () => ({...inputState});

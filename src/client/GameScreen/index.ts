@@ -17,6 +17,7 @@ import {playSound} from '../assets/audio';
 import {isHumanTeam} from '../constants';
 import Score from '../Score';
 import GameOverModal from '../UI/Modal/GameOverModal';
+import NavBeaconHuman from '../Graphics/NavBeaconHuman';
 
 let raf;  // requestAnimationFrame request
 let then; // Time stamp of last animation frame
@@ -90,6 +91,7 @@ function reinitAll() {
 
 function onTeamLost(team) {
     if (isHumanTeam(team)) {
+        NavBeaconHuman.clear();
         Score.addSectorResult(-1);
         isPaused = true;
 
@@ -121,6 +123,7 @@ function onTeamLost(team) {
 
 function onTeamWon(team) {
     if (isHumanTeam(team)) {
+        NavBeaconHuman.clear();
         isPaused = true;
         Score.addSectorResult(1);
 
@@ -142,9 +145,10 @@ function init() {
     Entity.clearAll();
     Graphics.init();
 
-    Starfield
-        .init()
+    Starfield.init()
         .forEach(Graphics.addChild);
+
+    NavBeaconHuman.init();
 
     HUD.init();
     Galaxy.init();
