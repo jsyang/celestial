@@ -2,56 +2,28 @@ import * as PIXI from 'pixi.js';
 import Graphics from '../../Graphics';
 import Score from '../../Score';
 
-const UPDATE_TIME_MAX = 10;
+const UPDATE_TIME_MAX = 20;
+const MARGIN_EDGE     = 12;
 const HEIGHT          = 14;
-const MARGIN_EDGE     = 4;
+const WIDTH           = 100;
+
 
 const scoreRankDisplay = new PIXI.Graphics();
-scoreRankDisplay.y     = (MARGIN_EDGE + 100) * 2 + 14 * 4 + 3 * MARGIN_EDGE;
 scoreRankDisplay.x     = MARGIN_EDGE;
+scoreRankDisplay.y     = MARGIN_EDGE * 2 + WIDTH;
 
 const TEXT_STYLE = {
     fontFamily: 'arial',
     fontSize:   12
 };
 
-let y = 0;
-
-const rankLabel = new PIXI.Text(
-    'Rank',
-    {...TEXT_STYLE, fill: 0x888888}
-);
-
-rankLabel.y = y;
-y += HEIGHT;
-
 const rankText = new PIXI.Text(
     '<rank>',
     {...TEXT_STYLE, fill: 0xffffff}
 );
 
-rankText.y = y;
-y += HEIGHT;
-
-const scoreLabel = new PIXI.Text(
-    'Score',
-    {...TEXT_STYLE, fill: 0x888888}
-);
-scoreLabel.y     = y;
-y += HEIGHT;
-
-
-const scoreText = new PIXI.Text(
-    '<score>',
-    {...TEXT_STYLE, fill: 0xffffff}
-);
-scoreText.y     = y;
-
 scoreRankDisplay.addChild(
-    rankLabel,
-    rankText,
-    scoreLabel,
-    scoreText
+    rankText
 );
 
 let updateTime = 0;
@@ -65,9 +37,17 @@ function update(): void {
         updateTime--;
 
     } else {
-        const {rank, score} = Score.getScoreRank();
-        rankText.text       = rank;
-        scoreText.text      = score.toString();
+        const {rank, score, nextRank: {scoreNeeded}} = Score.getScoreRank();
+        rankText.text                                = rank;
+
+
+        scoreRankDisplay.beginFill(0x444444, 1);
+        scoreRankDisplay.drawRect(0, HEIGHT + 2, WIDTH, HEIGHT);
+        scoreRankDisplay.endFill();
+
+        scoreRankDisplay.beginFill(0x00ffff, 1);
+        scoreRankDisplay.drawRect(0, HEIGHT + 2, WIDTH * (score / scoreNeeded), HEIGHT);
+        scoreRankDisplay.endFill();
 
         updateTime = UPDATE_TIME_MAX;
     }

@@ -82,8 +82,8 @@ export function testPointInEntity({x, y}: IPoint, entity: LivingEntity): boolean
     }
 }
 
-export const transformPolygon = (poly: number[], dx = 0, dy = 0, sx = 1, sy = 1) =>
-    poly.map((coord: number, index) => index % 2 === 0 ? coord * sx + dx : coord * sy + dy);
+export const transformPolygon = (poly: number[], dx = 0, dy = 0, scaleX = 1, scaleY = 1) =>
+    poly.map((coord: number, index) => index % 2 === 0 ? coord * scaleX + dx : coord * scaleY + dy);
 
 
 export enum GeometryType {

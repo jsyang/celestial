@@ -33,7 +33,7 @@ function update() {
 }
 
 function onResize() {
-    // Pointers.onResize();
+    Pointers.onResize();
     RadarGalaxyExpanded.onResize();
     SpeedIndicator.onResize();
     TextContainer.onResize();

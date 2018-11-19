@@ -2,161 +2,131 @@
 // Available to any unit
 
 import * as PIXI from 'pixi.js';
-import Graphics from '../../Graphics';
+import Graphics, {isOutsideViewport} from '../../Graphics';
 import Entity from '../../Entity';
-import {getAngleFromTo, getDistSquared} from '../../entityHelpers';
+import {AVOID_DIVZERO_VALUE, getDistSquared} from '../../entityHelpers';
 import SpeedIndicator from './SpeedIndicator';
 import GameScreenControl from '../control';
+import {POINTER} from '../../constants';
+import {transformPolygon} from '../../Geometry';
 
 const LANDING_SPEED_VISIBLE_AT_DIST2 = 300 ** 2;
 
-const DIAL_TRACK_ALPHA = 0.08;
-const DEGREES          = Math.PI / 180;
+const pointerContainer = new PIXI.Graphics();
 
-function createDialAndTrack({trackWidth, trackColor, trackRadius, dialColor, dialSize}) {
-    // Circular track
-    const g = new PIXI.Graphics();
-    g.beginFill(0, 0);
-    g.lineStyle(trackWidth, trackColor, DIAL_TRACK_ALPHA);
-    g.drawCircle(0, 0, trackRadius);
-    g.endFill();
+const pointerStar = new PIXI.Graphics();
+pointerStar.beginFill(0, 0);
+pointerStar.lineStyle(2, 0xffff00, 1);
+pointerStar.drawPolygon(transformPolygon(POINTER, -10, -10));
+pointerStar.endFill();
+pointerStar.visible = false;
 
-    g.x = 0;
-    g.y = 0;
+const pointerPlanet = new PIXI.Graphics();
+pointerPlanet.beginFill(0, 0);
+pointerPlanet.lineStyle(2, 0x00ff00, 1);
+pointerPlanet.drawPolygon(transformPolygon(POINTER, -10, -10));
+pointerPlanet.endFill();
+pointerPlanet.visible = false;
 
-    // Colored dial
-    const d = new PIXI.Graphics();
-    d.beginFill(0, 0);
-    d.lineStyle(trackWidth, dialColor, 1);
+pointerContainer.addChild(pointerStar, pointerPlanet);
 
-    const halfDialSize = 0.5 * dialSize;
-    d.arc(0, 0, trackRadius, -halfDialSize * DEGREES, halfDialSize * DEGREES);
-    d.endFill();
+const POINTER_WIDTH2  = 12;
+const POINTER_HEIGHT2 = 12;
 
-    d.x = 0;
-    d.y = 0;
+let width   = 0;
+let width2  = 0;
+let height  = 0;
+let height2 = 0;
 
-    g.addChild(d);
-    return g;
-}
+let aspectRatio = 1;
 
-let dials;
-const MARGIN_EDGE = 4;
-
-let dialNearestEnemy;
-let dialNearestPlanet;
-let dialNearestStar;
+let nearestPlanet, nearestStar;
 
 function init() {
-    dialNearestPlanet = createDialAndTrack({
-        trackWidth:  4,
-        trackRadius: 45,
-        trackColor:  0xffffff,
-        dialColor:   0x00ff00,
-        dialSize:    6
-    });
+    onResize();
+    Graphics.addChildToHUD(pointerContainer);
+}
 
-    dialNearestStar = createDialAndTrack({
-        trackWidth:  4,
-        trackRadius: 50,
-        trackColor:  0xffffff,
-        dialColor:   0xffff00,
-        dialSize:    12
-    });
+let updateCycle        = 0;
+const UPDATE_CYCLE_MAX = 20;
 
-    dialNearestEnemy = createDialAndTrack({
-        trackWidth:  1,
-        trackRadius: 50,
-        trackColor:  0xffffff,
-        dialColor:   0xff0000,
-        dialSize:    2
-    });
+function setSpeedIndicatorBasedOnNearestPlanet() {
+    const controlledEntity = GameScreenControl.getControlledEntity();
 
-    const centerLabel = new PIXI.Text(
-        'Tactical Radar',
-        {
-            fontFamily: 'arial',
-            fontSize:   8,
-            fill:       0xf8f8f8,
-            align:      'center'
+    if (nearestPlanet && controlledEntity && controlledEntity.type === 'Fighter') {
+        const {isDockedPlanet, isDockedSpacePort} = controlledEntity;
+        const isDocked                            = isDockedPlanet || isDockedSpacePort;
+        const isNearPlanet                        = getDistSquared(controlledEntity, nearestPlanet) <= LANDING_SPEED_VISIBLE_AT_DIST2;
+
+        SpeedIndicator.setVisible(isNearPlanet && !isDocked);
+    } else {
+        SpeedIndicator.setVisible(false)
+    }
+}
+
+function drawPointerFor(entity, pointer) {
+    if (entity) {
+        if (isOutsideViewport(entity)) {
+            pointer.visible = true;
+
+            const dx = (entity.x - origin.x) + AVOID_DIVZERO_VALUE;
+            const dy = (entity.y - origin.y) + AVOID_DIVZERO_VALUE;
+
+            const dx_dy     = dx / dy;
+            const abs_dx_dy = Math.abs(dx_dy);
+
+            if (abs_dx_dy > aspectRatio) {
+                if (dx > 0) {
+                    pointer.x = width2;
+                } else {
+                    pointer.x = -width2 + POINTER_WIDTH2;
+                }
+                pointer.y = 1 / dx_dy * pointer.x;
+            } else if (dx_dy < aspectRatio) {
+                if (dy > 0) {
+                    pointer.y = height2;
+                } else {
+                    pointer.y = -height2 + POINTER_HEIGHT2;
+                }
+                pointer.x = dx_dy * pointer.y;
+            }
+        } else {
+            pointer.visible = false;
         }
-    );
-    centerLabel.x     = -centerLabel.width >> 1;
-    centerLabel.y     = -centerLabel.height >> 1;
-
-    dials = new PIXI.Container();
-    dials.addChild(
-        dialNearestPlanet,
-        dialNearestStar,
-        dialNearestEnemy,
-        centerLabel
-    );
-
-    dials.x       = MARGIN_EDGE + 50;
-    dials.y       = 100 + MARGIN_EDGE * 3 + 50;
-    dials.visible = true;
-
-    Graphics.addChildToHUD(dials);
-}
-
-let radarEnabled = true;
-
-
-function setRotations(rotation) {
-    if (rotation.nearestEnemy) {
-        dialNearestEnemy.visible  = true;
-        dialNearestEnemy.rotation = rotation.nearestEnemy;
-    } else {
-        dialNearestEnemy.visible = false;
-    }
-
-    if (rotation.nearestStar) {
-        dialNearestStar.visible  = true;
-        dialNearestStar.rotation = rotation.nearestStar;
-    } else {
-        dialNearestStar.visible = false;
-    }
-
-    if (rotation.nearestPlanet) {
-        dialNearestPlanet.visible  = true;
-        dialNearestPlanet.rotation = rotation.nearestPlanet;
-    } else {
-        dialNearestPlanet.visible = false;
     }
 }
 
-let lastUpdateTime = 0;
-const TIME_UPDATE  = 500;
 
 function update() {
-    if (origin && radarEnabled) {
-        const now = Date.now();
+    if (origin) {
+        // Update which entities are the
+        if (updateCycle === 0) {
+            updateCycle = UPDATE_CYCLE_MAX;
 
-        if (now - lastUpdateTime > TIME_UPDATE) {
-            const nearestPlanet = Entity.getAbsoluteNearestByBodyType(origin, 'Planet');
-            const nearestStar   = Entity.getAbsoluteNearestByBodyType(origin, 'Star');
+            nearestPlanet = Entity.getAbsoluteNearestByBodyType(origin, 'Planet');
+            nearestStar   = Entity.getAbsoluteNearestByBodyType(origin, 'Star');
 
-            setRotations({
-                nearestEnemy:  undefined,
-                nearestPlanet: nearestPlanet && getAngleFromTo(origin, nearestPlanet),
-                nearestStar:   nearestStar && getAngleFromTo(origin, nearestStar)
-            });
+            setSpeedIndicatorBasedOnNearestPlanet();
+        } else {
+            updateCycle--;
+        }
 
-            const controlledEntity = GameScreenControl.getControlledEntity();
-
-            if (nearestPlanet && controlledEntity && controlledEntity.type === 'Fighter') {
-                const {isDockedPlanet, isDockedSpacePort} = controlledEntity;
-                const isDocked                            = isDockedPlanet || isDockedSpacePort;
-                const isNearPlanet                        = getDistSquared(controlledEntity, nearestPlanet) <= LANDING_SPEED_VISIBLE_AT_DIST2;
-
-                SpeedIndicator.setVisible(isNearPlanet && !isDocked);
-            } else {
-                SpeedIndicator.setVisible(false)
-            }
-
-            lastUpdateTime = now;
+        // Update indicators every other frame
+        if (updateCycle % 2) {
+            drawPointerFor(nearestPlanet, pointerPlanet);
+            drawPointerFor(nearestStar, pointerStar);
         }
     }
+}
+
+function onResize() {
+    width              = innerWidth;
+    height             = innerHeight;
+    aspectRatio        = width / height;
+    width2             = width / 2;
+    height2            = height / 2;
+    pointerContainer.x = width2;
+    pointerContainer.y = height2;
 }
 
 let origin;
@@ -165,14 +135,6 @@ const setOrigin = ({x, y}) => origin = {x, y};
 export default {
     init,
     update,
-
     setOrigin,
-
-    set isEnabled(isEnabled) {
-        radarEnabled  = isEnabled;
-        dials.visible = isEnabled;
-    },
-    get isEnabled() {
-        return radarEnabled;
-    }
+    onResize
 };

@@ -70,16 +70,19 @@ game screen:
 the positions of planets, stars, and spaceships: green, yellow, and other colors, respectively.
 You can press M or click on this small display to expand the display to fill your screen.
 
-2. Tactical radar is provided by the current spaceship being piloted by the player. Yellow and green
-arcs show the heading from the spaceship's location to the nearest star and planet.
+2. Your rank is display along with current progress to next highest rank.
 
-3. Spaceship type
+3. Spaceship type and damage level 
 
-4. Spaceship health
+4. Active weapon: if the weapon requires an ammo supply, it is shown as a tally underneath the weapon name 
 
-5. Active weapon: if the weapon requires an ammo supply, it is shown as a tally underneath the weapon name 
+5. Pointer to nearest star (yellow)
 
-6. Message log: as the battle wages on, you will receive progress messages here from the parts of your faction's
+6. Pointer to nearest planet (green)
+ 
+** A message log is shown at the bottom right corner of the HUD. **
+
+As the battle wages on, you will receive progress messages here from the parts of your faction's
 war machine. Most recent messages are displayed at towards the top, leaving older messages to drop off below.
 
 ## Game play
@@ -117,13 +120,13 @@ catch your fighter craft. Rearming and repairing aboard the spaceport is much fa
 - **Heavy Cannon**<br>Focusing the emitters of the standard cannon allowed us to create a weapon that 
 delivers twice the energy per projectile.<br>`Damage: 2 per hit`
   
-- **Cluster Rocket**<br>Packed with high explosive shells, this unguided rocket can deliver 20
-shells to the recipient for maximum destruction.<br>`Damage: 1 per hit x 20 shells + 0.5 impact damage`
+- **Cluster Rocket**<br>Packed with explosive shells, this unguided rocket can deliver a bundle of 20
+to the recipient for maximum destruction.<br>`Damage: 1 per hit x 20 shells + 0.5 impact damage`
    
 - **Homing Missile**<br>We have developed cheap, miniaturized, biological prey-seeking intelligence
 that is installed into every mass produced homing missile; a highly destructive weapon.<br>`Damage: 6 per hit`
     
-- **Laser Bolt**<br>Fast discharge ultra-capacitors have enabled our technicians to pack a devastating laser weapon
+- **Laser Bolt**<br>Fast discharge ultra-capacitors have enabled our technicians to build a devastating laser weapon
 into a small space.<br>`Damage: 30 per hit, ranged` 
 
 ## Units

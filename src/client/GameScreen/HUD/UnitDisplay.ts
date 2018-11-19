@@ -2,13 +2,13 @@ import * as PIXI from 'pixi.js';
 import Graphics from '../../Graphics';
 import GameScreenControl from '../control';
 
-const MARGIN_EDGE = 4;
+const MARGIN_EDGE = 12;
 const WIDTH       = 100;
 const HEIGHT      = 12;
 
 const display = new PIXI.Graphics();
 display.x     = MARGIN_EDGE;
-display.y     = (MARGIN_EDGE + WIDTH) * 2 + 2 * MARGIN_EDGE;
+display.y     = MARGIN_EDGE + 100 + 14 * 2 + 2 * MARGIN_EDGE;
 
 const labelUnitName = new PIXI.Text(
     'Unknown',
@@ -54,12 +54,25 @@ function updateHealthAndDamage(entity) {
     barDamage.x = healthWidth;
 }
 
-function update() {
-    const entity = GameScreenControl.getControlledEntity();
+let updateCycle        = 0;
+const UPDATE_CYCLE_MAX = 10;
 
-    if (entity) {
-        labelUnitName.text = entity.type;
-        updateHealthAndDamage(entity);
+function update() {
+    if (updateCycle > 0) {
+        updateCycle--;
+    } else {
+        updateCycle = UPDATE_CYCLE_MAX;
+
+        const entity = GameScreenControl.getControlledEntity();
+
+        if (entity) {
+            labelUnitName.text = entity.type;
+            updateHealthAndDamage(entity);
+        } else {
+            labelUnitName.text = '';
+            barHealth.clear();
+            barDamage.clear();
+        }
     }
 }
 

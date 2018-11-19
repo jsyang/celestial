@@ -13,7 +13,7 @@ import {playSound} from '../../assets/audio';
 const ALPHA_SCANNER_BORDER = 0.3;
 
 const SIZE        = 100;
-const MARGIN_EDGE = 4;
+const MARGIN_EDGE = 12;
 
 const scanner = new PIXI.Graphics();
 

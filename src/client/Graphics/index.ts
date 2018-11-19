@@ -92,7 +92,7 @@ export const render = () => renderer.render(scene);
 
 const RENDER_CULLING_MARGIN = 200;
 
-const isOutsideViewport = ({x, y}) => (
+export const isOutsideViewport = ({x, y}) => (
     x < -stage.x - RENDER_CULLING_MARGIN ||
     x > -stage.x + width + RENDER_CULLING_MARGIN ||
     y < -stage.y - RENDER_CULLING_MARGIN ||

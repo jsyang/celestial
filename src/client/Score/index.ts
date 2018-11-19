@@ -1,15 +1,17 @@
-import {getRankByScore} from './rank';
+import {getNextRankByScore, getRankByScore} from './rank';
 
-let score = 0;
-let rank  = getRankByScore(0);
+let score    = 0;
+let rank     = getRankByScore(0);
+let nextRank = getNextRankByScore(0);
 
 function add(delta: number): void {
     score += delta;
-    rank = getRankByScore(score);
+    rank     = getRankByScore(score);
+    nextRank = getNextRankByScore(score);
 }
 
 function getScoreRank() {
-    return {rank, score};
+    return {rank, score, nextRank};
 }
 
 let consecutiveSectorWins = 0;

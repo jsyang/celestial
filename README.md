@@ -25,10 +25,7 @@ See `LETTERS` within `src/client/constants.ts` for example.
 
 ## TODO for v1.1
 
-- change nearest planet and star indicator to HUD outside of a box
-    - update nearest every 20 cycles
 - add hotkey for targeting (enemy units and structures)
-- add rank insignia and progress bar for next rank
 
 - improve fighter AI
     - retarget when current attackTarget is dead
@@ -38,6 +35,7 @@ See `LETTERS` within `src/client/constants.ts` for example.
     - land on planet
 
 ## TODO for v1.2
+- add rank insignia
 - unified UX model for game
 
 - score tied to lifetime of pilot? (instead of full team)

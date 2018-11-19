@@ -1,3 +1,5 @@
+import {transformPolygon} from './Geometry';
+
 export const MAX_COORDINATE = 1 << 15;
 
 export const ROTATION_RATE_FIGHTER       = 0.05;
@@ -37,6 +39,9 @@ export const LETTERS = {
         [33.333333333333336, 66.66666666666667, 366.6666666666667, 333.33333333333337]
     ]
 };
+
+// For HUD indicators
+export const POINTER = transformPolygon([200, 0, 0, 200, 200, 400, 400, 200, 200, 0], 0, 0, 0.02, 0.02);
 
 export const FOCUS_RETICLE = [
     [100, 0, 0, 0, 0, 100],
