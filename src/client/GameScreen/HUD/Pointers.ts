@@ -42,8 +42,8 @@ pointerTarget.visible = false;
 
 const pointerNav = new PIXI.Graphics();
 pointerNav.beginFill(0, 0);
-pointerNav.lineStyle(2, 0x00ffff, 1);
-pointerNav.drawPolygon(transformPolygon(POINTER_NAV[0], -10, -10));
+pointerNav.lineStyle(1.5, 0x00ffff, 1);
+pointerNav.drawPolygon(transformPolygon(POINTER_NAV, -10, -10));
 pointerNav.endFill();
 pointerNav.visible = false;
 

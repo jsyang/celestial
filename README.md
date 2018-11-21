@@ -25,17 +25,24 @@ See `LETTERS` within `src/client/constants.ts` for example.
 
 ## TODO for v1.1
 
+- add functionality for targeting (enemy units and structures)
+    - add HomingMissile functionality for targeting
+
+- set up querystring for "testing sector"
+    - load different sectors in?
+    - briefing text? 
+    - contains entities used for testing
+    
 - improve fighter AI
     - retarget when current attackTarget is dead
     - avoid hovering too long near planet when attacking
-    - different attack patterns for different targets
+    - aggression (proximity to attack target)
     - avoid stars
     - land on planet
 
 ## TODO for v1.2
 
-- add functionality for targeting (enemy units and structures)
-    - add HomingMissile functionality for targeting
+- make small RadarGalaxy more useful for controlledEntity
 
 - unified UX model for game
 
@@ -44,7 +51,7 @@ See `LETTERS` within `src/client/constants.ts` for example.
 - extend fighter AI
     - land on spaceport
     - traits of pilots
-    - aggression (proximity to attack target)
+    - different attack patterns for different targets
     - self-preservation (health threshold before retreating for repair)
 
 ---

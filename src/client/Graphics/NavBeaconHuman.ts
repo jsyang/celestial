@@ -1,31 +1,31 @@
 import {IPoint} from '../types';
-import {transformPolygon} from '../Geometry';
 import Graphics from '.';
 
+const RADIUS_MAX         = 60;
+const RADIUS_GROWTH_RATE = 0.5;
+const beacon             = new PIXI.Graphics();
+beacon.visible           = false;
+
 let navPoint;
+let radius = 0;
 
-const beacon = new PIXI.Graphics();
-beacon.beginFill(0x00ffff, 0.05);
-beacon.drawCircle(0, 0, 60);
-beacon.endFill();
+function update() {
+    if (!beacon.visible) return;
 
-const SCALE = 0.05;
+    if (radius > RADIUS_MAX) {
+        radius = 0;
+    } else {
+        radius += RADIUS_GROWTH_RATE;
+    }
 
-// "NAV"
-[
-    [0, 400, 33.333333333333336, 0, 366.6666666666667, 400, 400, 0],
-    [0, 400, 266.6666666666667, 0, 400, 400, 333.33333333333337, 200, 133.33333333333334, 200],
-    [0, 0, 100, 400, 400, 0]
-].map((poly, i) => {
+    beacon.clear();
+    beacon.lineStyle(1, 0x00ffff, 0.4);
     beacon.beginFill(0, 0);
-    beacon.lineStyle(1, 0x00aaaa, 1);
-    beacon.drawPolygon(
-        transformPolygon(poly, i * 20 - 30, -10, SCALE, SCALE)
-    );
+    beacon.drawCircle(0, 0, radius);
+    beacon.drawCircle(0, 0, RADIUS_MAX - radius);
     beacon.endFill();
-});
+}
 
-beacon.visible = false;
 
 export default {
     init: () => Graphics.addChild(beacon),
@@ -36,6 +36,8 @@ export default {
         beacon.y       = point.y;
         beacon.visible = true;
     },
+
+    update,
 
     getNavPoint: () => ({...navPoint}),
 

@@ -96,3 +96,13 @@ https://github.com/pixijs/pixi.js/issues/1841
  
 - asteroids / uninhabitable worlds
 - ability to destroy planets
+
+### Software
+- `webpack-bundle-analyzer` to pare down dependencies
+- profile funcs using most CPU time
+- find out how to reduce major GC events
+    - avoid creating destroying objects
+    - https://stackoverflow.com/questions/18364175
+    - https://stackoverflow.com/questions/18800440    
+- use gpu.js for parallel ops
+ 

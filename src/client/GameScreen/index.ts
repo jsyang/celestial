@@ -63,6 +63,7 @@ function step() {
             Graphics.centerOn(focus);
         }
 
+        NavBeaconHuman.update();
         Graphics.cullRenderable();
         Starfield.process(focus);
         HUD.update();
