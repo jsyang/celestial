@@ -2,18 +2,21 @@
 
 enum GameFeature {
     AudioMuted          = 'mute',
-    GeometryEditorInUse = 'editor',
+    GamePadInUse        = 'gamepad',
+
     SkipTitleScreen     = 'game',
-    GamePadInUse        = 'gamepad'
+    GeometryEditorInUse = 'editor',
+    TestSectorInUse     = 'testsector'
 }
 
-// Store all feature toggles
-const queryStringOptions = location.search.slice(1).split('&');
-const featureToggle      = {};
-for (let i = queryStringOptions.length - 1; i >= 0; i--) {
-    let [key, value]   = queryStringOptions[i].split('=');
-    featureToggle[key] = value;
-}
+const featureToggle: Record<string, any> = {};
+
+// Populate dictionary of game feature toggles
+location.search.slice(1).split('&')
+    .forEach(keyValue => {
+        let [key, value]   = keyValue.split('=');
+        featureToggle[key] = value;
+    });
 
 const getToggleStatus = (feature: GameFeature) => featureToggle.hasOwnProperty(feature);
 
@@ -22,5 +25,6 @@ export default {
     isGamePadInUse: getToggleStatus(GameFeature.GamePadInUse),
 
     shouldSkipTitleScreen: getToggleStatus(GameFeature.SkipTitleScreen),
+    isTestSectorInUse:     getToggleStatus(GameFeature.TestSectorInUse),
     isGeometryEditorInUse: getToggleStatus(GameFeature.GeometryEditorInUse)
 };

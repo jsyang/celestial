@@ -14,7 +14,9 @@ function onDOMContentLoaded() {
 
     let onAssetsLoad;
 
-    if (startupOptions.shouldSkipTitleScreen) {
+    if (startupOptions.isTestSectorInUse) {
+        onAssetsLoad = onTitleScreenFadeout;
+    } else if (startupOptions.shouldSkipTitleScreen) {
         onAssetsLoad = onTitleScreenFadeout;
     } else if (startupOptions.isGeometryEditorInUse) {
         onAssetsLoad = GeometryEditScreen.start;

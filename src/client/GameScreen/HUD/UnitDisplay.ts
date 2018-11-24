@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import Graphics from '../../Graphics';
 import GameScreenControl from '../control';
+import {isHumanTeam} from '../../constants';
 
 const MARGIN_EDGE = 12;
 const WIDTH       = 100;
@@ -66,7 +67,12 @@ function update() {
         const entity = GameScreenControl.getControlledEntity();
 
         if (entity) {
-            labelUnitName.text = entity.type;
+            if (isHumanTeam(entity.team)) {
+                labelUnitName.text = entity.type;
+            } else {
+                labelUnitName.text = `Enemy ${entity.type}`;
+            }
+
             updateHealthAndDamage(entity);
         } else {
             labelUnitName.text = '';
