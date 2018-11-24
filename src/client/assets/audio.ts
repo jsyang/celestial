@@ -2,6 +2,7 @@ import Focus from '../Graphics/Focus';
 import {getDistSquared} from '../entityHelpers';
 import {IPoint} from '../types';
 import memoize from 'fast-memoize';
+import startupOptions from '../startupOptions';
 
 const audioContext = new AudioContext();
 
@@ -24,7 +25,7 @@ export function defineSound({name, arrayBuffer}: IAudioFile): void {
     }
 }
 
-let isAudioEnabled = location.search.indexOf('mute') === -1;
+const isAudioEnabled = !startupOptions.isAudioMuted;
 
 export function playSound(name: string): void {
     if (!isAudioEnabled) return;
