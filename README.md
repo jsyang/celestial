@@ -16,7 +16,37 @@ See this page for [How to Play](http://jsyang.ca/celestial/how-to-play) this gam
 This game implements the Entity-Component-System model of dealing with data and interactions
 between game pieces.
 
-#### Geometry Editor
+#### Feature toggles
+
+You have the option of toggling game functionality via the URL you use to access the game.
+The toggles are activated by the presence / absence of URL query strings: for instance,
+to turn off all game audio you may do:
+ 
+1. `yarn dev`
+1. http://localhost:3000/?mute
+
+or if you want to turn off all audio AND skip the title screen:
+
+1. `yarn dev`
+1. http://localhost:3000/?mute&game
+
+See `src/client/startupOptions.ts` for a full list of feature toggles.
+
+#### Scenario tests
+
+Often times it is difficult to reliably recreate a situation or circumstance
+within the regular gameplay where a certain class of behaviors presents itself.
+
+Using the scenario test mode of the game, you can establish a controlled environment 
+where you can set exactly what the starting state is and see the emergent behaviors of
+your system unfold.
+
+1. `yarn dev`
+2. http://localhost:3000/?test
+3. Edit `src/client/TestScreen/ScenarioSystem.ts` to create the scenario's initial conditions
+4. Edit `src/client/component/*.ts` to tweak components that implement the behavior 
+
+#### Geometry editor
 
 You can use the geometry editor to create polygons to be display inside the game engine.
 See `LETTERS` within `src/client/constants.ts` for example. 
@@ -27,11 +57,6 @@ See `LETTERS` within `src/client/constants.ts` for example.
 
 - add functionality for targeting (enemy units and structures)
     - add HomingMissile functionality for targeting
-
-- set up querystring for "testing sector"
-    - load different sectors in?
-    - briefing text? 
-    - contains entities used for testing
     
 - improve fighter AI
     - retarget when current attackTarget is dead

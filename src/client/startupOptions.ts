@@ -6,7 +6,7 @@ enum GameFeature {
 
     SkipTitleScreen     = 'game',
     GeometryEditorInUse = 'editor',
-    TestSectorInUse     = 'testsector'
+    TestSectorInUse     = 'test'
 }
 
 const featureToggle: Record<string, any> = {};
