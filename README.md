@@ -1,8 +1,8 @@
-<img src="how-to-play/title.png" align="center">
+<img style="filter: invert(1);" src="how-to-play/title.png" align="center">
 
 # Celestial Combat
 
-Celestial Combat is a game of galactic /* trade */, conquest, and colonization. 
+Celestial Combat is a game of galactic conquest and colonization. 
 
 See this page for [How to Play](http://jsyang.ca/celestial/how-to-play) this game.
 
@@ -53,6 +53,8 @@ See `LETTERS` within `src/client/constants.ts` for example.
 
 - [Start Geometry editor](http://jsyang.ca/celestial?editor)<br><img src="how-to-play/editor.png">
 
+---
+
 ## TODO for v1.1
 
 - add functionality for targeting (enemy units and structures)
@@ -81,4 +83,4 @@ See `LETTERS` within `src/client/constants.ts` for example.
 
 ---
 
-Copyright (c) 2018 Jim Yang <jsyang.ca@gmail.com>
+Copyright (c) jsyang.ca@gmail.com
