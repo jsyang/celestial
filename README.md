@@ -48,10 +48,13 @@ your system unfold.
 
 #### Geometry editor
 
-You can use the geometry editor to create polygons to be display inside the game engine.
-See `LETTERS` within `src/client/constants.ts` for example. 
+You can use the geometry editor to create polygons to be displayed inside the game engine.
+See `LETTERS` within `src/client/constants.ts` for an example. 
 
-- [Start Geometry editor](http://jsyang.ca/celestial?editor)<br><img src="how-to-play/editor.png">
+- [Start Geometry editor](http://jsyang.ca/celestial?editor)<br><br><img src="how-to-play/editor.png">
+
+1. `yarn dev`
+2. http://localhost:3000/?editor
 
 ---
 
@@ -59,13 +62,6 @@ See `LETTERS` within `src/client/constants.ts` for example.
 
 - add functionality for targeting (enemy units and structures)
     - add HomingMissile functionality for targeting
-    
-- improve fighter AI
-    - retarget when current attackTarget is dead
-    - avoid hovering too long near planet when attacking
-    - aggression (proximity to attack target)
-    - avoid stars
-    - land on planet
 
 ## TODO for v1.2
 
@@ -75,11 +71,17 @@ See `LETTERS` within `src/client/constants.ts` for example.
 
 - radar not available when comm center is destroyed
 
-- extend fighter AI
+- improve + extend fighter AI
+    - retarget when current attackTarget is dead
+    - avoid hovering too long near planet when attacking
+    - aggression level (proximity to target)
+    - avoid stars
+    - land on planet
     - land on spaceport
-    - traits of pilots
+    - traits of pilots: antagonistic, neutral, submissive (will they listen to your commands?)
     - different attack patterns for different targets
     - self-preservation (health threshold before retreating for repair)
+    - preferred weapon
 
 ---
 
