@@ -9,14 +9,14 @@ import {isHumanTeam} from '../../constants';
 import SpeedIndicator from './SpeedIndicator';
 import ScoreRankDisplay from './ScoreRankDisplay';
 
-function init() {
+function init(controlInstance?) {
     Pointers.init();
     RadarGalaxy.init();
     UnitDisplay.init();
     WeaponsDisplay.init();
     SpeedIndicator.init();
     ScoreRankDisplay.init();
-    RadarGalaxyExpanded.init();
+    RadarGalaxyExpanded.init(controlInstance);
     TextContainer.init();
     PauseStatus.init();
 }

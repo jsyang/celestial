@@ -35,6 +35,7 @@ let COORDINATE_TO_SCANNER_FACTOR_X = 0;
 let COORDINATE_TO_SCANNER_FACTOR_Y = 0;
 
 let lastUpdateTime = 0;
+let controlInstance; // Either TestScreenControl or GameScreenControl
 let controlledEntity;
 
 
@@ -50,11 +51,13 @@ setClickable(scanner, ({data: {global: {x, y}}}) => {
     };
 
     Focus.setFocus(focalPoint);
-    GameScreenControl.revertControlToAI();
-    // todo: shouldn't need to fake out the GameScreenControl
+    if (controlInstance.revertControlToAI) {
+        controlInstance.revertControlToAI();
+    }
+    // todo: shouldn't need to fake out the GameScreenControl / TestScreenControl
     // unified UX model needs to be created for how the player
     // interacts with game pieces
-    GameScreenControl.setControlledEntity({
+    controlInstance.setControlledEntity({
         ...focalPoint,
         hp: 1
     });
@@ -169,7 +172,7 @@ function update() {
         drawRadarBox();
 
         // Track the controlled entity with a reticle
-        controlledEntity = GameScreenControl.getControlledEntity();
+        controlledEntity = controlInstance.getControlledEntity();
 
         Entity.getByType('Star').forEach(drawMarker);
         Entity.getByType('Planet').forEach(drawMarker);
@@ -199,7 +202,8 @@ function setVisible(_isVisible: boolean) {
     isVisible       = _isVisible;
 }
 
-function init() {
+function init(_controlInstance = GameScreenControl) {
+    controlInstance = _controlInstance;
     Graphics.addChildToHUD(scanner);
 }
 

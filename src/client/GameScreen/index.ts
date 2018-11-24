@@ -12,7 +12,6 @@ import DockedModal from '../UI/Modal/DockedModal';
 import SwapWeaponModal from '../UI/Modal/SwapWeaponModal';
 import GalaxyWonModal from '../UI/Modal/GalaxyWonModal';
 import GalaxyLostModal from '../UI/Modal/GalaxyLostModal';
-import {debounce} from '../debounce';
 import {playSound} from '../assets/audio';
 import {isHumanTeam} from '../constants';
 import Score from '../Score';
@@ -165,7 +164,7 @@ function onResize() {
     Graphics.onResize();
 }
 
-const togglePauseState = () => {
+const togglePause = () => {
     isPaused = !isPaused;
     playSound('pause');
     HUD.setPauseVisible(isPaused);
@@ -213,6 +212,6 @@ export default {
     start,
     stop,
     showDockedModal,
-    togglePause: debounce(togglePauseState, 250),
+    togglePause,
     getIsPaused: () => isPaused
 };

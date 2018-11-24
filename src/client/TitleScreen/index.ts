@@ -14,8 +14,8 @@ const DISTANCE = 600;
 let angle      = 0;
 const SPEED    = Math.PI / 180 * 0.02;
 
-let titleScreenAlpha = 1;
 const FADE_RATE      = 0.05;
+let titleScreenAlpha = 1;
 let isFadingOut      = false;
 
 

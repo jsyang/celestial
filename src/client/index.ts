@@ -3,6 +3,7 @@ import GameScreen from './GameScreen';
 import TitleScreen from './TitleScreen';
 import Assets from './assets';
 import startupOptions from './startupOptions';
+import TestScreen from './TestScreen';
 
 const onTitleScreenFadeout = () => {
     GameScreen.init();
@@ -15,7 +16,10 @@ function onDOMContentLoaded() {
     let onAssetsLoad;
 
     if (startupOptions.isTestSectorInUse) {
-        onAssetsLoad = onTitleScreenFadeout;
+        onAssetsLoad = () => {
+            TestScreen.init();
+            TestScreen.start();
+        };
     } else if (startupOptions.shouldSkipTitleScreen) {
         onAssetsLoad = onTitleScreenFadeout;
     } else if (startupOptions.isGeometryEditorInUse) {

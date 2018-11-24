@@ -32,7 +32,7 @@ function update() {
     const events     = device.getEvents();
     const inputState = device.getInputState();
 
-    if (events.PAUSE) {
+    if (events.PAUSE && !prevEvents.PAUSE) {
         GameScreen.togglePause();
     }
 
