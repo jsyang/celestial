@@ -98,24 +98,33 @@ https://github.com/pixijs/pixi.js/issues/1841
 - ability to destroy planets
 
 ### Similar games
--https://www.myabandonware.com/game/conquest-frontier-wars-cvk
--https://www.myabandonware.com/game/dark-star-6ye
+- https://www.myabandonware.com/game/conquest-frontier-wars-cvk
+- https://www.myabandonware.com/game/dark-star-6ye
 
--https://en.wikipedia.org/wiki/Starflight
--https://www.mobygames.com/game/starflight-2-trade-routes-of-the-cloud-nebula/screenshots
+- https://en.wikipedia.org/wiki/Starflight
+- https://www.mobygames.com/game/starflight-2-trade-routes-of-the-cloud-nebula/screenshots
 
--http://wiki.uqm.stack.nl/Main_Page
--https://www.myabandonware.com/game/star-control-1w1
--https://www.myabandonware.com/game/star-control-ii-1ve
--https://www.myabandonware.com/game/star-control-3-c9u
+Star control
+
+- http://wiki.uqm.stack.nl/Main_Page
+- https://www.myabandonware.com/game/star-control-1w1
+- https://www.myabandonware.com/game/star-control-ii-1ve
+- https://www.myabandonware.com/game/star-control-3-c9u
+
+- http://zero-k.info/
+
+### Game UI blogs / repos
+- http://freegamer.blogspot.com/
+- http://www.polarorbit.net/2015/02/building-a-better-rts-introduction/
+- http://www.indieretronews.com/search/label/OPEN%20SOURCE
 
 
 ### Software
 - `webpack-bundle-analyzer` to pare down dependencies
+    - dependencies: especially pixi.js is not being tree-shaken correctly
 - profile funcs using most CPU time
 - find out how to reduce major GC events
     - avoid creating destroying objects
     - https://stackoverflow.com/questions/18364175
     - https://stackoverflow.com/questions/18800440    
 - use gpu.js for parallel ops
- 
