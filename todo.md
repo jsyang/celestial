@@ -97,6 +97,19 @@ https://github.com/pixijs/pixi.js/issues/1841
 - asteroids / uninhabitable worlds
 - ability to destroy planets
 
+### Similar games
+-https://www.myabandonware.com/game/conquest-frontier-wars-cvk
+-https://www.myabandonware.com/game/dark-star-6ye
+
+-https://en.wikipedia.org/wiki/Starflight
+-https://www.mobygames.com/game/starflight-2-trade-routes-of-the-cloud-nebula/screenshots
+
+-http://wiki.uqm.stack.nl/Main_Page
+-https://www.myabandonware.com/game/star-control-1w1
+-https://www.myabandonware.com/game/star-control-ii-1ve
+-https://www.myabandonware.com/game/star-control-3-c9u
+
+
 ### Software
 - `webpack-bundle-analyzer` to pare down dependencies
 - profile funcs using most CPU time

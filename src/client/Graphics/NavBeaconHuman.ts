@@ -26,7 +26,6 @@ function update() {
     beacon.endFill();
 }
 
-
 export default {
     init: () => Graphics.addChild(beacon),
 
