@@ -1,6 +1,19 @@
 # Todo / idea list
 
 ### Core Gameplay
+- unified UX model for game
+- radar not available when comm center is destroyed
+
+- upgrade PBase weaponry
+- upgrade structures to have shields
+- upgrade spaceport: spaceport 2 (larger)
+- show all options available to all ranks (but cannot execute if not high enough)
+- wingmen control
+- ammo supply freighter
+- repair ship
+- planets have finite resources?
+    - resources regenerate at a linear rate?
+
 - Economy that matters
     - raw materials and finished materials need to affect gameplay (they do already but invisibly)
     - ordering construction of Fighters and Freighters, significantly affecting material supply

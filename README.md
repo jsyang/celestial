@@ -60,11 +60,14 @@ See `LETTERS` within `src/client/constants.ts` for an example.
 
 ## TODO for v1.2
 
+- units receiving damage show health bars
+
 - make small RadarGalaxy more useful for controlledEntity
+    - blinking dot to indicate player entity
+    - border blinking when player is dead?
+    - localized RadarGalaxy?
 
-- unified UX model for game
-
-- radar not available when comm center is destroyed
+- order wingmen to attack your target
 
 - improve + extend fighter AI
     - retarget when current attackTarget is dead
