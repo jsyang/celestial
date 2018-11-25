@@ -45,7 +45,7 @@ export default class HomingMissile extends LivingEntity {
     canAttack                   = true;
 
     hp       = 60;
-    damageHp = 6;
+    damageHp = 7;
 
     constructor(params: HomingMissile) {
         super();

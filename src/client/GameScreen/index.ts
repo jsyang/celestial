@@ -94,6 +94,7 @@ function onTeamLost(team) {
         NavBeaconHuman.clear();
         Score.addSectorResult(-1);
         isPaused = true;
+        playSound('galaxy-lose');
 
         let onClickContinue;
 
@@ -126,6 +127,7 @@ function onTeamWon(team) {
         NavBeaconHuman.clear();
         isPaused = true;
         Score.addSectorResult(1);
+        playSound('galaxy-win');
 
         const wonModal = GalaxyWonModal.create({
             onClickContinue: reinitAll

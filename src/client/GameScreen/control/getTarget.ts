@@ -1,5 +1,6 @@
 import Entity from "../../Entity";
 import {isHumanTeam} from '../../constants';
+import {playSound} from '../../assets/audio';
 
 let targetIndex = 0;
 
@@ -10,9 +11,9 @@ const TARGETABLE_TYPES = [
     'PColony',
     'PComm',
     'PLab',
-    //'SensorArray',
-    //'SpacePort',
-    'SpaceDock'
+    //'SensorArray' // SpacePort child
+    //'SpaceDock' // SpacePort child
+    'SpacePort'
 ].join(',');
 
 const getIsTargetable = e => (
@@ -30,5 +31,11 @@ export function getTargetNearEntity(entity) {
         targetIndex = 0;
     }
 
-    return potentialTargets[targetIndex];
+    const newTarget = potentialTargets[targetIndex];
+
+    if (newTarget) {
+        playSound('bopp');
+    }
+
+    return newTarget;
 }

@@ -37,7 +37,7 @@ function reload_HomingMissile(isGradual = true) {
     }
 }
 
-const RELOAD_TIME = 400;
+const RELOAD_TIME = 300;
 
 const DEFAULTS = {
     reload_HomingMissile,

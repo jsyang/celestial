@@ -31,7 +31,7 @@ setClickable(
     scanner,
     () => {
         RadarGalaxyExpanded.setVisible(true);
-        playSound('nav');
+        playSound('expand-detail');
     }
 );
 
