@@ -66,7 +66,7 @@ function update() {
 
         const entity = GameScreenControl.getControlledEntity();
 
-        if (entity) {
+        if (entity && entity.type) {
             if (isHumanTeam(entity.team)) {
                 labelUnitName.text = entity.type;
             } else {

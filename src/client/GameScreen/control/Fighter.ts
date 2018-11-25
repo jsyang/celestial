@@ -2,6 +2,7 @@ import GameScreen from '..';
 import {IInputEvent} from '../../Input/Event';
 import {ACCELERATION_FIGHTER, ACCELERATION_FIGHTER_UNDOCK, ROTATION_RATE_FIGHTER} from '../../constants';
 import NavBeaconHuman from '../../Graphics/NavBeaconHuman';
+import {getTargetNearEntity} from './getTarget';
 
 export default function controlFighter(controlledEntity, events: IInputEvent, prevEvents: IInputEvent) {
     const {isDockedPlanet, isDockedSpacePort, team, planet, spaceport} = controlledEntity;
@@ -37,10 +38,15 @@ export default function controlFighter(controlledEntity, events: IInputEvent, pr
             };
 
             NavBeaconHuman.setNavPoint(point);
+        } else if (events.NAV_POINT_CLEAR && !prevEvents.NAV_POINT_CLEAR) {
+            NavBeaconHuman.clear();
         }
 
-        if (events.NAV_POINT_CLEAR && !prevEvents.NAV_POINT_CLEAR) {
-            NavBeaconHuman.clear();
+        // Targeting
+        if (events.TARGET_NEXT_ENEMY && !prevEvents.TARGET_NEXT_ENEMY) {
+            controlledEntity.attackTarget = getTargetNearEntity(controlledEntity);
+        } else if (events.TARGET_CLEAR && !prevEvents.TARGET_CLEAR) {
+            controlledEntity.attackTarget = null;
         }
     }
 
@@ -63,4 +69,8 @@ export default function controlFighter(controlledEntity, events: IInputEvent, pr
         controlledEntity.flameOff();
     }
 
+    // Deselect targets if dead
+    if (controlledEntity.attackTarget && controlledEntity.attackTarget.hp <= 0) {
+        controlledEntity.attackTarget = null;
+    }
 }

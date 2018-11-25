@@ -27,6 +27,9 @@ export default class PComm extends LivingEntity {
     geo  = Geometry(GEO);
     planet: Planet;
 
+    reticleOffsetX = 31;
+    reticleOffsetY = 33;
+
     hp    = 7;
     maxHp = 7;
 

@@ -37,7 +37,7 @@ function reload_HomingMissile(isGradual = true) {
     }
 }
 
-const RELOAD_TIME = 200;
+const RELOAD_TIME = 400;
 
 const DEFAULTS = {
     reload_HomingMissile,
@@ -47,7 +47,8 @@ const DEFAULTS = {
 };
 
 const SOUND_SHOOT     = 'missile';
-const TARGETING_DIST2 = 800 * 800;
+// re-enable for auto-tracked homing missiles
+// const TARGETING_DIST2 = 800 * 800;
 
 function process(entity) {
     const {isAttacking, ammo_HomingMissile, attackWeapon} = entity;
@@ -57,7 +58,8 @@ function process(entity) {
 
         if (now - entity.lastShotTime_HomingMissile >= RELOAD_TIME) {
             if (ammo_HomingMissile > 0) {
-                entity.attackTarget = Entity.getNearestEnemyUnit(entity, TARGETING_DIST2);
+                // auto-tracking homing missiles
+                // entity.attackTarget = Entity.getNearestEnemyUnit(entity, TARGETING_DIST2);
 
                 entity.attackTurretPositions
                     .forEach(shoot.bind(entity));

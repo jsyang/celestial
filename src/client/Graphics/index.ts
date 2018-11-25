@@ -106,6 +106,13 @@ export const centerOn = (point: IPoint) => {
     }
 };
 
+function getSceneCoordFromStageCoord(x, y) {
+    return {
+        x: x + stage.x,
+        y: y + stage.y
+    };
+}
+
 // Cull entities outside of viewport
 function cullRenderable() {
     Entity.getAll().forEach(
@@ -123,5 +130,6 @@ export default {
     addChildToHUD,
     removeChildFromHUD,
     cullRenderable,
-    onResize
+    onResize,
+    getSceneCoordFromStageCoord
 };

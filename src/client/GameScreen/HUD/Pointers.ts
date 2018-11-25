@@ -29,16 +29,12 @@ pointerPlanet.drawPolygon(transformPolygon(POINTER, -10, -10));
 pointerPlanet.endFill();
 pointerPlanet.visible = false;
 
-
 const pointerTarget = new PIXI.Graphics();
 pointerTarget.beginFill(0, 0);
-pointerTarget.lineStyle(1, 0xffffff, 1);
+pointerTarget.lineStyle(1, 0xff0000, 1);
 pointerTarget.drawPolygon(transformPolygon(POINTER_TARGET, -10, -10));
 pointerTarget.endFill();
 pointerTarget.visible = false;
-
-// Shimmer function
-(pointerTarget as any).shimmer = () => pointerTarget.tint = updateCycle % 10 ? 0xff0000 : 0xffffff;
 
 const pointerNav = new PIXI.Graphics();
 pointerNav.beginFill(0, 0);
@@ -46,7 +42,6 @@ pointerNav.lineStyle(1.5, 0x00ffff, 1);
 pointerNav.drawPolygon(transformPolygon(POINTER_NAV, -10, -10));
 pointerNav.endFill();
 pointerNav.visible = false;
-
 
 pointerContainer.addChild(pointerStar, pointerPlanet, pointerTarget, pointerNav);
 
@@ -70,9 +65,7 @@ function init() {
 let updateCycle        = 0;
 const UPDATE_CYCLE_MAX = 20;
 
-function setSpeedIndicatorBasedOnNearestPlanet() {
-    const controlledEntity = GameScreenControl.getControlledEntity();
-
+function setSpeedIndicatorBasedOnNearestPlanet(controlledEntity) {
     if (nearestPlanet && controlledEntity && controlledEntity.type === 'Fighter') {
         const {isDockedPlanet, isDockedSpacePort} = controlledEntity;
         const isDocked                            = isDockedPlanet || isDockedSpacePort;
@@ -119,6 +112,8 @@ function drawPointerFor(entity, pointer) {
 
 function update() {
     if (origin) {
+        const controlledEntity = GameScreenControl.getControlledEntity();
+
         // Update which entities are the
         if (updateCycle === 0) {
             updateCycle = UPDATE_CYCLE_MAX;
@@ -126,7 +121,7 @@ function update() {
             nearestPlanet = Entity.getAbsoluteNearestByBodyType(origin, 'Planet');
             nearestStar   = Entity.getAbsoluteNearestByBodyType(origin, 'Star');
 
-            setSpeedIndicatorBasedOnNearestPlanet();
+            setSpeedIndicatorBasedOnNearestPlanet(controlledEntity);
         } else {
             updateCycle--;
         }
@@ -136,6 +131,12 @@ function update() {
             drawPointerFor(nearestPlanet, pointerPlanet);
             drawPointerFor(nearestStar, pointerStar);
             drawPointerFor(NavBeaconHuman.getNavPoint(), pointerNav);
+
+            if (controlledEntity && controlledEntity.attackTarget) {
+                drawPointerFor(controlledEntity.attackTarget, pointerTarget);
+            } else {
+                pointerTarget.visible = false;
+            }
         }
     }
 }

@@ -25,6 +25,9 @@ export default class PLab extends LivingEntity {
     geo  = Geometry(GEO);
     planet: Planet;
 
+    reticleOffsetX = 25;
+    reticleOffsetY = -55;
+
     hp    = 10;
     maxHp = 10;
 
@@ -36,8 +39,8 @@ export default class PLab extends LivingEntity {
     canDevelopEquipment = true;
     canDisplayHit       = true;
     canExplode          = true;
-    explosionOriginDx   = 20;
-    explosionOriginDy   = -52;
+    explosionOriginDx   = 25;
+    explosionOriginDy   = -55;
 
     canOccupyPlanet = true;
 

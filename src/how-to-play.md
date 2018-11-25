@@ -49,6 +49,9 @@ _Celestial Combat is a game of galactic conquest and colonization._
     P                   Pause / resume game
     M                   Toggle galaxy radar display
     . (>)               Focus on next fighter spaceship
+    
+    T                   Targeting: select next enemy
+    X                   Targeting: clear selection
 
     
     GAMEPAD............ ACTION.............
@@ -123,8 +126,9 @@ delivers twice the energy per projectile.<br>`Damage: 2 per hit`
 - **Cluster Rocket**<br>Packed with explosive shells, this unguided rocket can deliver a bundle of 20
 to the recipient for maximum destruction.<br>`Damage: 1 per hit x 20 shells + 0.5 impact damage`
    
-- **Homing Missile**<br>We have developed cheap, miniaturized, biological prey-seeking intelligence
-that is installed into every mass produced homing missile; a highly destructive weapon.<br>`Damage: 6 per hit`
+- **Homing Missile**<br>We have refined a biological seeking intelligence
+that is installed into every mass-produced homing missile: a highly destructive weapon.<br><br>
+Ensure your targeting system has locked onto an enemy before firing.<br>`Damage: 6 per hit`
     
 - **Laser Bolt**<br>Fast discharge ultra-capacitors have enabled our technicians to build a devastating laser weapon
 into a small space.<br>`Damage: 30 per hit, ranged` 

@@ -8,7 +8,7 @@ See this page for [How to Play](http://jsyang.ca/celestial/how-to-play) this gam
 
 ## Launching the game
 
-- [Play Celestial Combat with keyboard](http://jsyang.ca/celestial)
+- [Play Celestial Combat with keyboard + mouse](http://jsyang.ca/celestial)
 - [Play Celestial Combat with a game pad](http://jsyang.ca/celestial?gamepad)
 
 ## Development
@@ -57,11 +57,6 @@ See `LETTERS` within `src/client/constants.ts` for an example.
 2. http://localhost:3000/?editor
 
 ---
-
-## TODO for v1.1
-
-- add functionality for targeting (enemy units and structures)
-    - add HomingMissile functionality for targeting
 
 ## TODO for v1.2
 

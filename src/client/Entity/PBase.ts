@@ -118,6 +118,9 @@ export default class PBase extends LivingEntity {
     type = 'PBase';
     geo  = Geometry(GEO.body);
 
+    reticleWidth2  = 30;
+    reticleHeight2 = 30;
+
     hp    = 20;
     maxHp = 20;
 

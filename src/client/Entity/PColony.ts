@@ -24,6 +24,9 @@ export default class PColony extends LivingEntity {
     geo  = Geometry(GEO);
     planet: Planet;
 
+    reticleOffsetX = -50;
+    reticleOffsetY = 0;
+
     hp    = 15;
     maxHp = 15;
 

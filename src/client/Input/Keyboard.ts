@@ -9,6 +9,8 @@ const CODE_TO_KEY = {
     80:  'p',
     70:  'f',
     77:  'm',
+    84:  't',
+    88:  'x',
     190: '.', // >
     13:  'enter',
     8:   'backspace'
@@ -24,6 +26,8 @@ export interface IKeyboardState {
     e?: boolean;
     f?: boolean;
     m?: boolean;
+    t?: boolean;
+    x?: boolean;
     '.'?: boolean;
     backspace?: boolean;
     enter?: boolean;
@@ -38,6 +42,8 @@ const inputState: IKeyboardState = {
     e:           false,
     f:           false,
     m:           false,
+    t:           false,
+    x:           false,
     '.':         false,
     backspace:   false,
     enter:       false
@@ -62,7 +68,8 @@ export const getEvents = (): IInputEvent => ({
     ACCELERATE:        Boolean(inputState.up_arrow),
     SHOOT:             Boolean(inputState.f),
     FOCUS_NEXT_ENEMY:  Boolean(inputState['.']),
-    TARGET_NEXT_ENEMY: false,
+    TARGET_NEXT_ENEMY: Boolean(inputState.t),
+    TARGET_CLEAR:      Boolean(inputState.x),
     TOGGLE_RADAR:      Boolean(inputState.m),
     NAV_POINT_SET:     Boolean(inputState.enter),
     NAV_POINT_CLEAR:   Boolean(inputState.backspace)

@@ -8,6 +8,7 @@ import RadarGalaxyExpanded from './RadarGalaxyExpanded';
 import {isHumanTeam} from '../../constants';
 import SpeedIndicator from './SpeedIndicator';
 import ScoreRankDisplay from './ScoreRankDisplay';
+import Reticles from './Reticles';
 
 function init(controlInstance?) {
     Pointers.init();
@@ -19,6 +20,7 @@ function init(controlInstance?) {
     RadarGalaxyExpanded.init(controlInstance);
     TextContainer.init();
     PauseStatus.init();
+    Reticles.init();
 }
 
 function update() {
@@ -30,6 +32,7 @@ function update() {
     WeaponsDisplay.update();
     ScoreRankDisplay.update();
     RadarGalaxyExpanded.update();
+    Reticles.update();
 }
 
 function onResize() {
