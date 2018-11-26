@@ -11,6 +11,7 @@ const CODE_TO_KEY = {
     77:  'm',
     84:  't',
     88:  'x',
+    81:  'q',
     190: '.', // >
     13:  'enter',
     8:   'backspace'
@@ -23,6 +24,7 @@ export interface IKeyboardState {
     up_arrow?: boolean;
     down_arrow?: boolean;
     p?: boolean;
+    q?: boolean;
     e?: boolean;
     f?: boolean;
     m?: boolean;
@@ -39,6 +41,7 @@ const inputState: IKeyboardState = {
     up_arrow:    false,
     down_arrow:  false,
     p:           false,
+    q:           false,
     e:           false,
     f:           false,
     m:           false,
@@ -61,18 +64,19 @@ addEventListener('keydown', onKeyDown);
 addEventListener('keyup', onKeyUp);
 
 export const getEvents = (): IInputEvent => ({
-    PAUSE:             Boolean(inputState.p),
-    SPECIAL:           Boolean(inputState.e),
-    TURN_LEFT:         Boolean(inputState.left_arrow),
-    TURN_RIGHT:        Boolean(inputState.right_arrow),
-    ACCELERATE:        Boolean(inputState.up_arrow),
-    SHOOT:             Boolean(inputState.f),
-    FOCUS_NEXT_ENEMY:  Boolean(inputState['.']),
-    TARGET_NEXT_ENEMY: Boolean(inputState.t),
-    TARGET_CLEAR:      Boolean(inputState.x),
-    TOGGLE_RADAR:      Boolean(inputState.m),
-    NAV_POINT_SET:     Boolean(inputState.enter),
-    NAV_POINT_CLEAR:   Boolean(inputState.backspace)
+    PAUSE:                 Boolean(inputState.p),
+    SPECIAL:               Boolean(inputState.e),
+    TURN_LEFT:             Boolean(inputState.left_arrow),
+    TURN_RIGHT:            Boolean(inputState.right_arrow),
+    ACCELERATE:            Boolean(inputState.up_arrow),
+    SHOOT:                 Boolean(inputState.f),
+    FOCUS_NEXT_ENEMY:      Boolean(inputState['.']),
+    TARGET_NEXT_ENEMY:     Boolean(inputState.t),
+    TARGET_CLEAR:          Boolean(inputState.x),
+    TOGGLE_RADAR:          Boolean(inputState.m),
+    NAV_POINT_SET:         Boolean(inputState.enter),
+    NAV_POINT_CLEAR:       Boolean(inputState.backspace),
+    WINGMEN_ATTACK_TARGET: Boolean(inputState.q)
 });
 
 const getInputState = () => ({...inputState});

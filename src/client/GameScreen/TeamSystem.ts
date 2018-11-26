@@ -223,6 +223,18 @@ function setHumanTeamHomePlanet(planet) {
     humanTeamHomePlanet = planet;
 }
 
+function setHumanFightersTarget(attackTarget) {
+    Entity.getByType('Fighter')
+        .forEach(e => {
+            if (isHumanTeam(e.team)) {
+                e.attackTarget = attackTarget;
+            }
+        });
+
+    playSound('alert');
+    HUD.displayText(TEAM.MAGENTA, 'All fighters attacking your target!');
+}
+
 const STRATEGY_UPDATE_TIMEOUT  = 3000;
 let lastTeamStrategyUpdateTime = 0;
 
@@ -263,6 +275,7 @@ function init() {
 export default {
     init,
     update,
+    setHumanFightersTarget,
     setHumanTeamHomePlanet,
     setOnTeamLostCallback,
     setOnTeamWinCallback

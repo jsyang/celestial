@@ -11,5 +11,6 @@ export interface IInputEvent {
     TOGGLE_RADAR: boolean;
     NAV_POINT_SET: boolean;
     NAV_POINT_CLEAR: boolean;
+    WINGMEN_ATTACK_TARGET: boolean;
     analogAngle?: number;
 }

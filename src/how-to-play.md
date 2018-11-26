@@ -52,6 +52,7 @@ _Celestial Combat is a game of galactic conquest and colonization._
     
     T                   Targeting: select next enemy
     X                   Targeting: clear selection
+    Q                   Order: friendly fighters attack my target
 
     
     GAMEPAD............ ACTION.............

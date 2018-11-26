@@ -67,8 +67,6 @@ See `LETTERS` within `src/client/constants.ts` for an example.
     - border blinking when player is dead?
     - localized RadarGalaxy?
 
-- order wingmen to attack your target
-
 - improve + extend fighter AI
     - retarget when current attackTarget is dead
     - avoid hovering too long near planet when attacking

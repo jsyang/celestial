@@ -3,9 +3,10 @@ import {IInputEvent} from '../../Input/Event';
 import {ACCELERATION_FIGHTER, ACCELERATION_FIGHTER_UNDOCK, ROTATION_RATE_FIGHTER} from '../../constants';
 import NavBeaconHuman from '../../Graphics/NavBeaconHuman';
 import {getTargetNearEntity} from './getTarget';
+import TeamSystem from '../TeamSystem';
 
 export default function controlFighter(controlledEntity, events: IInputEvent, prevEvents: IInputEvent) {
-    const {isDockedPlanet, isDockedSpacePort, team, planet, spaceport} = controlledEntity;
+    const {isDockedPlanet, isDockedSpacePort, team, planet, spaceport, attackTarget} = controlledEntity;
 
     const isDocked = isDockedPlanet || isDockedSpacePort;
 
@@ -69,8 +70,14 @@ export default function controlFighter(controlledEntity, events: IInputEvent, pr
         controlledEntity.flameOff();
     }
 
+    if (events.WINGMEN_ATTACK_TARGET && !prevEvents.WINGMEN_ATTACK_TARGET) {
+        if (attackTarget && attackTarget.hp > 0) {
+            TeamSystem.setHumanFightersTarget(attackTarget);
+        }
+    }
+
     // Deselect targets if dead
-    if (controlledEntity.attackTarget && controlledEntity.attackTarget.hp <= 0) {
+    if (attackTarget && attackTarget.hp <= 0) {
         controlledEntity.attackTarget = null;
     }
 }
