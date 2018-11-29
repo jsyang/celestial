@@ -43,9 +43,9 @@ function createMutableGeoInterface(graphics: Graphics, collider: Collider): IMut
             this.collider.pos.y = _y;
         },
         set rotation(_rotation: number) {
-            if (_rotation > PIPI) {
+            if (_rotation > Math.PI) {
                 _rotation -= PIPI;
-            } else if (_rotation < -PIPI) {
+            } else if (_rotation < -Math.PI) {
                 _rotation += PIPI;
             }
 
