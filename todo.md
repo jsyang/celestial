@@ -9,6 +9,7 @@
 - upgrade spaceport: spaceport 2 (larger)
 - show all options available to all ranks (but cannot execute if not high enough)
 - wingmen control
+    - traits of pilots: antagonistic, neutral, submissive (will they listen to your commands?)
 - ammo supply freighter
 - repair ship
 - planets have finite resources?
@@ -23,7 +24,11 @@
         - finished materials (can be used for colonization)
         - raw materials (cannot be used for colonization, but can be used to supply)
 
-- galactic radar is ranged (update radius from comm centers)
+- galactic radar is ranged
+    - update radius from comm centers (if < global coverage threshold)
+    - completely covered if > 3 comm centers
+    - localized Radar for immediate area around ship if no comm center
+     
 - drop off ground forces (probes) to attack enemy planet facilities
     - ground forces cannot leave planet unless picked up
     - dedicated drop-ship unit
