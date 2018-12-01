@@ -1,6 +1,19 @@
 import {IInputEvent} from './Event';
 
 const CODE_TO_KEY = {
+    27: 'escape',
+    32: 'spacebar',
+    49: '1',
+    50: '2',
+    51: '3',
+    52: '4',
+    53: '5',
+    54: '6',
+    55: '7',
+    56: '8',
+    57: '9',
+    58: '0',
+
     37:  'left_arrow',
     38:  'up_arrow',
     39:  'right_arrow',

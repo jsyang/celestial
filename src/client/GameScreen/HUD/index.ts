@@ -9,6 +9,7 @@ import {isHumanTeam} from '../../constants';
 import SpeedIndicator from './SpeedIndicator';
 import ScoreRankDisplay from './ScoreRankDisplay';
 import Reticles from './Reticles';
+import CommandTextContainer from './CommandTextContainer';
 
 function init(controlInstance?) {
     Pointers.init();
@@ -19,6 +20,7 @@ function init(controlInstance?) {
     ScoreRankDisplay.init();
     RadarGalaxyExpanded.init(controlInstance);
     TextContainer.init();
+    CommandTextContainer.init();
     PauseStatus.init();
     Reticles.init();
 }
@@ -40,6 +42,7 @@ function onResize() {
     RadarGalaxyExpanded.onResize();
     SpeedIndicator.onResize();
     TextContainer.onResize();
+    CommandTextContainer.onResize();
     PauseStatus.onResize();
 }
 
@@ -54,6 +57,7 @@ export default {
     update,
     displayText,
     onResize,
-    setFocus:        Pointers.setOrigin,
-    setPauseVisible: PauseStatus.setVisible
+    displayCommandText: CommandTextContainer.displayText,
+    setFocus:           Pointers.setOrigin,
+    setPauseVisible:    PauseStatus.setVisible
 }
