@@ -5,27 +5,22 @@ import * as PIXI from 'pixi.js';
 
 import Entity from '../../Entity';
 import Graphics from '../../Graphics';
+import GameScreenControl from '../control';
 import {MAX_COORDINATE, TEAM_COLOR} from '../../constants';
 import RadarGalaxyExpanded from './RadarGalaxyExpanded';
 import {setClickable} from '../../UI/setClickable';
 import {playSound} from '../../assets/audio';
 
 const ALPHA_SCANNER_BORDER = 0.3;
+const SIZE                 = 100;
+const MARGIN_EDGE          = 12;
+const UPDATE_CYCLE_MAX     = 12;
+let updateCycle            = 0;
 
-const SIZE        = 100;
-const MARGIN_EDGE = 12;
 
 const scanner = new PIXI.Graphics();
-
-const drawRadarBox = () => {
-    scanner.beginFill(0, 1);
-    scanner.lineStyle(1, 0xffffff, ALPHA_SCANNER_BORDER);
-    scanner.drawRect(0, 0, SIZE, SIZE);
-    scanner.endFill();
-};
-
-scanner.x = MARGIN_EDGE;
-scanner.y = MARGIN_EDGE;
+scanner.x     = MARGIN_EDGE;
+scanner.y     = MARGIN_EDGE;
 
 setClickable(
     scanner,
@@ -34,6 +29,30 @@ setClickable(
         playSound('expand-detail');
     }
 );
+
+function drawRadarBox() {
+    scanner.beginFill(0, 1);
+    scanner.lineStyle(1, 0xffffff, ALPHA_SCANNER_BORDER);
+    scanner.drawRect(0, 0, SIZE, SIZE);
+    scanner.endFill();
+}
+
+/* Blink border if no controlled entity
+const UPDATE_CYCLE_TO_BORDER_COLOR_FACTOR = 0x22 / UPDATE_CYCLE_MAX;
+function drawBorderIfNoControlledEntity() {
+    if (!controlledEntity) {
+        const borderColor = 0x010101 *
+            Math.floor(
+                updateCycle * UPDATE_CYCLE_TO_BORDER_COLOR_FACTOR
+            );
+
+        scanner.beginFill(0, 0);
+        scanner.lineStyle(1, borderColor, ALPHA_SCANNER_BORDER);
+        scanner.drawRect(0, 0, SIZE, SIZE);
+        scanner.endFill();
+    }
+}
+*/
 
 const COORDINATE_TO_SCANNER_FACTOR = SIZE / MAX_COORDINATE;
 
@@ -51,8 +70,13 @@ const drawMarker = entity => {
             size  = 2;
             break;
         case 'Fighter':
-            color = TEAM_COLOR[team];
-            size  = 2;
+            // Blink controlled fighter marker
+            if (entity === controlledEntity && updateCycle > 6) {
+                color = 0xffffff;
+            } else {
+                color = TEAM_COLOR[team];
+            }
+            size = 2;
             break;
         case 'Freighter':
         default:
@@ -75,23 +99,35 @@ const COLOR_MARKER_STAR      = 0xffff00;
 const COLOR_MARKER_PLANET    = 0x00ff00;
 const COLOR_MARKER_FREIGHTER = 0xaaaaaa;
 
-let lastUpdateTime = 0;
-const TIME_UPDATE  = 500;
+let controlledEntity;
+
+function pruneControlledEntityIfDead() {
+    if (controlledEntity) {
+        if (!controlledEntity.type || controlledEntity.hp <= 0) {
+            controlledEntity = null;
+        }
+    }
+}
 
 function update() {
-    const now = Date.now();
+    if (updateCycle > 0) {
+        updateCycle--;
+    } else {
+        controlledEntity = GameScreenControl.getControlledEntity();
 
-    if (now - lastUpdateTime > TIME_UPDATE) {
+        updateCycle = UPDATE_CYCLE_MAX;
+
         scanner.clear();
         drawRadarBox();
 
         Entity.getByType('Star').forEach(drawMarker);
         Entity.getByType('Planet').forEach(drawMarker);
         Entity.getByType('Freighter').forEach(drawMarker);
-        Entity.getByType('Fighter').forEach(drawMarker);
-
-        lastUpdateTime = now;
     }
+
+    Entity.getByType('Fighter').forEach(drawMarker);
+    //drawBorderIfNoControlledEntity();
+    pruneControlledEntityIfDead();
 }
 
 function init() {

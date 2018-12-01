@@ -60,24 +60,20 @@ See `LETTERS` within `src/client/constants.ts` for an example.
 
 ## TODO for v1.2
 
-- make small RadarGalaxy more useful for controlledEntity
-    - blinking dot to indicate player entity
-    - border blinking when player is dead?
-
 - improve + extend fighter AI
     - retarget when current attackTarget is dead
     - aggression level (proximity to target)
     - land on planet
     - land on spaceport
-    - different attack patterns for different targets
-    - self-preservation (health threshold before retreating for repair)
-    - preferred weapon
 
 ## TODO for v1.3
 
 - units receiving damage show health bars
 - improve + extend fighter AI
     - avoid stars
+    - different attack patterns for different targets
+    - self-preservation (health threshold before retreating for repair)
+    - preferred weapon
 
 ---
 
