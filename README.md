@@ -61,8 +61,6 @@ See `LETTERS` within `src/client/constants.ts` for an example.
 ## TODO for v1.2
 
 - improve + extend fighter AI
-    - retarget when current attackTarget is dead
-    - aggression level (proximity to target)
     - land on planet
     - land on spaceport
 
@@ -70,6 +68,8 @@ See `LETTERS` within `src/client/constants.ts` for an example.
 
 - units receiving damage show health bars
 - improve + extend fighter AI
+    - aggression level (proximity to target)
+    - retarget when current attackTarget is dead / objective met
     - avoid stars
     - different attack patterns for different targets
     - self-preservation (health threshold before retreating for repair)
