@@ -60,16 +60,22 @@ See `LETTERS` within `src/client/constants.ts` for an example.
 
 ## TODO for v1.2
 
-- friendly units show stats
-    - receiving damage = show health bars
-    - manufacturing / refining = show progress bar
-
 - improve + extend fighter AI
     - land on planet
     - land on spaceport
     - move to point and be at rest
 
 ## TODO for v1.3
+
+- friendly units show stats
+    - indicator to show currently active wingmates (and their objectives)
+    - activity indicator?
+        - producing
+        - repairing
+        - manufacturing
+        - developing
+    - receiving damage = show health bars
+    - manufacturing / refining = show progress bar
 
 - improve + extend fighter AI
     - aggression level (proximity to target)
@@ -78,6 +84,19 @@ See `LETTERS` within `src/client/constants.ts` for an example.
     - different attack patterns for different targets
     - self-preservation (health threshold before retreating for repair)
     - preferred weapon
+
+## TODO for v1.4
+
+- sectors are generated before game begins
+    - retreat / advance / develop sector
+
+- save game / load games
+    - from cloud?
+
+- strategic AI
+    - combined arms
+    - spearhead operations
+    - logistically minded
 
 ---
 
