@@ -44,6 +44,17 @@ export interface IKeyboardState {
     t?: boolean;
     x?: boolean;
     '.'?: boolean;
+    '1': false,
+    '2': false,
+    '3': false,
+    '4': false,
+    '5': false,
+    '6': false,
+    '7': false,
+    '8': false,
+    '9': false,
+    '0': false,
+    spacebar?: boolean;
     backspace?: boolean;
     enter?: boolean;
 }
@@ -61,6 +72,17 @@ const inputState: IKeyboardState = {
     t:           false,
     x:           false,
     '.':         false,
+    '1':         false,
+    '2':         false,
+    '3':         false,
+    '4':         false,
+    '5':         false,
+    '6':         false,
+    '7':         false,
+    '8':         false,
+    '9':         false,
+    '0':         false,
+    spacebar:    false,
     backspace:   false,
     enter:       false
 };
@@ -77,19 +99,29 @@ addEventListener('keydown', onKeyDown);
 addEventListener('keyup', onKeyUp);
 
 export const getEvents = (): IInputEvent => ({
-    PAUSE:                 Boolean(inputState.p),
-    SPECIAL:               Boolean(inputState.e),
-    TURN_LEFT:             Boolean(inputState.left_arrow),
-    TURN_RIGHT:            Boolean(inputState.right_arrow),
-    ACCELERATE:            Boolean(inputState.up_arrow),
-    SHOOT:                 Boolean(inputState.f),
-    FOCUS_NEXT_ENEMY:      Boolean(inputState['.']),
-    TARGET_NEXT_ENEMY:     Boolean(inputState.t),
-    TARGET_CLEAR:          Boolean(inputState.x),
-    TOGGLE_RADAR:          Boolean(inputState.m),
-    NAV_POINT_SET:         Boolean(inputState.enter),
-    NAV_POINT_CLEAR:       Boolean(inputState.backspace),
-    WINGMEN_ATTACK_TARGET: Boolean(inputState.q)
+    PAUSE:             Boolean(inputState.p),
+    TURN_LEFT:         Boolean(inputState.left_arrow),
+    TURN_RIGHT:        Boolean(inputState.right_arrow),
+    ACCELERATE:        Boolean(inputState.up_arrow),
+    SHOOT:             Boolean(inputState.f),
+    FOCUS_NEXT_ENEMY:  Boolean(inputState['.']),
+    TARGET_NEXT_ENEMY: Boolean(inputState.t),
+    TOGGLE_RADAR:      Boolean(inputState.m),
+    NAV_POINT_SET:     Boolean(inputState.enter),
+    NAV_POINT_CLEAR:   Boolean(inputState.backspace),
+
+    // Command menu
+    SPECIAL: Boolean(inputState.spacebar),
+    OPTION1: Boolean(inputState['1']),
+    OPTION2: Boolean(inputState['2']),
+    OPTION3: Boolean(inputState['3']),
+    OPTION4: Boolean(inputState['4']),
+    OPTION5: Boolean(inputState['5']),
+    OPTION6: Boolean(inputState['6']),
+    OPTION7: Boolean(inputState['7']),
+    OPTION8: Boolean(inputState['8']),
+    OPTION9: Boolean(inputState['9']),
+    OPTION0: Boolean(inputState['0'])
 });
 
 const getInputState = () => ({...inputState});

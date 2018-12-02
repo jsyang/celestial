@@ -45,15 +45,12 @@ _Celestial Combat is a game of galactic conquest and colonization._
     Right arrow key     Turn right
     Up arrow key        Accelerate
     F                   Fire primary weapon
-    E                   Special action (when docked)
     P                   Pause / resume game
     M                   Toggle galaxy radar display
     . (>)               Focus on next fighter spaceship
     
-    T                   Targeting: select next enemy
-    X                   Targeting: clear selection
-    Q                   Order: friendly fighters attack my target
-
+    Spacebar            Command menu
+    T                   Targeting: select next enemy nearby
     
     GAMEPAD............ ACTION.............
     Analog stick        Set craft direction

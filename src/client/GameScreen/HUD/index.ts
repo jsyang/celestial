@@ -18,8 +18,8 @@ function init(controlInstance?) {
     WeaponsDisplay.init();
     SpeedIndicator.init();
     ScoreRankDisplay.init();
-    RadarGalaxyExpanded.init(controlInstance);
     TextContainer.init();
+    RadarGalaxyExpanded.init(controlInstance);
     CommandTextContainer.init();
     PauseStatus.init();
     Reticles.init();

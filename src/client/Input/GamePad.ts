@@ -25,11 +25,9 @@ const getEventsFromGamePad = ({left, right, up, analogAngle, button0, button1, b
     PAUSE:                 Boolean(button2),
     FOCUS_NEXT_ENEMY:      false,
     TARGET_NEXT_ENEMY:     false,
-    TARGET_CLEAR:          false,
     TOGGLE_RADAR:          false,
     NAV_POINT_SET:         false,
     NAV_POINT_CLEAR:       false,
-    WINGMEN_ATTACK_TARGET: false,
     analogAngle
 });
 

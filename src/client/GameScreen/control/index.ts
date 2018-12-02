@@ -8,6 +8,7 @@ import {IInputEvent} from '../../Input/Event';
 import Starfield from '../../Graphics/Starfield';
 import {getFighter} from './getFighter';
 import RadarGalaxyExpanded from '../HUD/RadarGalaxyExpanded';
+import command from './command';
 
 let controlledEntity;
 const setControlledEntity = entity => controlledEntity = entity;
@@ -62,6 +63,7 @@ function update() {
                     }
                 }
             } else {
+                command.reset(); // todo more sophisticated cancelling of commands
                 setControlledEntity(null);
             }
         }
@@ -83,6 +85,8 @@ function update() {
                 !RadarGalaxyExpanded.getIsVisible()
             );
         }
+
+        command.update(controlledEntity, events, prevEvents);
     }
 
     prevEvents = events;
@@ -92,6 +96,5 @@ export default {
     update,
     getControlledEntity,
     setControlledEntity,
-    revertControlToAI,
-    setControlToHuman
+    revertControlToAI
 }

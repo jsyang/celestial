@@ -1,23 +1,15 @@
-import GameScreen from '..';
 import {IInputEvent} from '../../Input/Event';
 import {ACCELERATION_FIGHTER, ACCELERATION_FIGHTER_UNDOCK, ROTATION_RATE_FIGHTER} from '../../constants';
 import NavBeaconHuman from '../../Graphics/NavBeaconHuman';
 import {getTargetNearEntity} from './getTarget';
-import TeamSystem from '../TeamSystem';
+import command from './command';
 
 export default function controlFighter(controlledEntity, events: IInputEvent, prevEvents: IInputEvent) {
-    const {isDockedPlanet, isDockedSpacePort, team, planet, spaceport, attackTarget} = controlledEntity;
+    const {isDockedPlanet, isDockedSpacePort, attackTarget} = controlledEntity;
 
     const isDocked = isDockedPlanet || isDockedSpacePort;
 
-    if (isDocked) {
-        if (events.SPECIAL) {
-            if ((isDockedPlanet && planet.team === team) ||
-                (isDockedSpacePort && spaceport.team === team)) {
-                GameScreen.showDockedModal();
-            }
-        }
-    } else {
+    if (!isDocked) {
         // Update fighter rotation
         if (typeof events.analogAngle === 'number') {
             controlledEntity.rotation = events.analogAngle;
@@ -46,8 +38,6 @@ export default function controlFighter(controlledEntity, events: IInputEvent, pr
         // Targeting
         if (events.TARGET_NEXT_ENEMY && !prevEvents.TARGET_NEXT_ENEMY) {
             controlledEntity.attackTarget = getTargetNearEntity(controlledEntity);
-        } else if (events.TARGET_CLEAR && !prevEvents.TARGET_CLEAR) {
-            controlledEntity.attackTarget = null;
         }
     }
 
@@ -61,6 +51,7 @@ export default function controlFighter(controlledEntity, events: IInputEvent, pr
             }
             // Escape acceleration
             controlledEntity.accelerate(ACCELERATION_FIGHTER_UNDOCK);
+            command.reset(); // todo more sophisticated cancelling of commands
         }
 
         controlledEntity.flameOn();
@@ -70,14 +61,9 @@ export default function controlFighter(controlledEntity, events: IInputEvent, pr
         controlledEntity.flameOff();
     }
 
-    if (events.WINGMEN_ATTACK_TARGET && !prevEvents.WINGMEN_ATTACK_TARGET) {
-        if (attackTarget && attackTarget.hp > 0) {
-            TeamSystem.setHumanFightersTarget(attackTarget);
-        }
-    }
-
     // Deselect targets if dead
     if (attackTarget && attackTarget.hp <= 0) {
         controlledEntity.attackTarget = null;
+        command.reset(); // todo more sophisticated cancelling of commands
     }
 }

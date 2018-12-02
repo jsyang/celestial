@@ -220,6 +220,7 @@ function processTeam(team) {
 }
 
 function setHumanTeamHomePlanet(planet) {
+    playSound('install');
     humanTeamHomePlanet = planet;
 }
 

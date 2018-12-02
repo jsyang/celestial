@@ -1,4 +1,4 @@
-<img style="filter: invert(1);" src="how-to-play/title.png" align="center">
+<img src="how-to-play/title.png" align="center">
 
 # Celestial Combat
 
@@ -60,13 +60,17 @@ See `LETTERS` within `src/client/constants.ts` for an example.
 
 ## TODO for v1.2
 
+- friendly units show stats
+    - receiving damage = show health bars
+    - manufacturing / refining = show progress bar
+
 - improve + extend fighter AI
     - land on planet
     - land on spaceport
+    - move to point and be at rest
 
 ## TODO for v1.3
 
-- units receiving damage show health bars
 - improve + extend fighter AI
     - aggression level (proximity to target)
     - retarget when current attackTarget is dead / objective met

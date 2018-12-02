@@ -138,8 +138,10 @@ Star control
 
 
 ### Software
+- re-organize HUD components that are shown in the 4 corners to be stackable (vs hard-coded X,Y)
 - `webpack-bundle-analyzer` to pare down dependencies
     - dependencies: especially pixi.js is not being tree-shaken correctly
+    - use parcel instead?
 - profile funcs using most CPU time
 - find out how to reduce major GC events
     - avoid creating destroying objects

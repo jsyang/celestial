@@ -3,7 +3,7 @@ import Graphics from '../../Graphics';
 import {TEAM, TEAM_COLOR} from '../../constants';
 
 const textContainer = new PIXI.Container();
-const ROWS          = 8;
+const ROWS          = 4;
 const MARGIN_EDGE   = 12;
 
 function onResize() {
@@ -39,7 +39,7 @@ const CLEAR_ROWS = ' '.repeat(ROWS).split('');
 
 function displayText(newRows = CLEAR_ROWS) {
     for (let i = ROWS - 1; i >= 0; i--) {
-        (textContainer.children[i] as PIXI.Text).text = newRows[ROWS - i] || '';
+        (textContainer.children[i] as PIXI.Text).text = newRows[ROWS - i - 1] || '';
     }
 }
 
