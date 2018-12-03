@@ -14,8 +14,8 @@
   "scripts": {
     "ts-watch": "tsc --noEmit -w -p .",
     "generate-env": "node generateDotEnv.js",
-    "watch": "yarn generate-env ; parcel dev.html --port 3000",
-    "bundle-js": "yarn generate-env ; NODE_ENV=production parcel build src/client/index.ts --experimental-scope-hoisting --out-dir client",
+    "watch": "yarn generate-env ; parcel _dev.html --port 3000",
+    "bundle-js": "yarn generate-env ; NODE_ENV=production parcel build _prod.html --experimental-scope-hoisting --out-dir . ; git checkout _prod.html ; mv client.*.js celestialcombat.js",
     "zip-assets": "cd assets ; rm -r .DS_Store ; rm assets.zip ; zip -x '.DS_Store' -r -X ../assets.zip . ",
     "generate-how-to-play-page": "marked -o how-to-play/index.html < src/how-to-play.md",
     "build": "yarn bundle-js ; yarn generate-how-to-play-page ; yarn zip-assets"
