@@ -3,6 +3,7 @@ import Planet from "./Planet";
 import LivingEntity from './LivingEntity';
 import Random from '../Random';
 import {getAngleFromTo} from '../entityHelpers';
+import Entity from '.';
 
 const GEO = {
     "_name":   "Planetary Base",
@@ -114,6 +115,8 @@ const ATTACK_TURRET_POSITIONS = [
     pbase => ({x: -65, y: 65, rotation: getTurretRotation(pbase, -65, 65)})
 ];
 
+const SHIELDED_CHANCE = 0.4;
+
 export default class PBase extends LivingEntity {
     type = 'PBase';
     geo  = Geometry(GEO.body);
@@ -124,6 +127,7 @@ export default class PBase extends LivingEntity {
     hp    = 20;
     maxHp = 20;
 
+    canBeShielded   = true;
     canDisplayHit   = true;
     canExplode      = true;
     canHarvest      = true;
@@ -159,5 +163,15 @@ export default class PBase extends LivingEntity {
             Geometry(GEO.turret3).graphics,
             Geometry(GEO.turret4).graphics
         );
+
+        if (Math.random() < SHIELDED_CHANCE) {
+            (this as any).shield = Entity.create(
+                'PShield',
+                {
+                    team:   params.team,
+                    anchor: this
+                }
+            );
+        }
     }
 }

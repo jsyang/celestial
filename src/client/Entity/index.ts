@@ -10,6 +10,7 @@ import PBase from './PBase';
 import PColony from './PColony';
 import PComm from './PComm';
 import PLab from './PLab';
+import PShield from './PShield';
 import Probe from './Probe';
 import SensorArray from './SensorArray';
 import SpaceDock from './SpaceDock';
@@ -23,6 +24,7 @@ const TYPES_UNITS = {
     PColony,
     PComm,
     PLab,
+    PShield,
     SpacePort,
     SpaceDock,
     SensorArray,

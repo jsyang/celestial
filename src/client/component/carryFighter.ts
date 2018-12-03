@@ -8,13 +8,17 @@ const DEFAULTS = {
     isCarryingFighter: false
 };
 
-// Fighter must approach dock under this speed to successfully be caught
-const DOCK_SPEED_MAX2 = 7 ** 2;
+const DOCK_SPEED_MAX2       = 8 ** 2;   // Only catch Fighter going no faster than this speed
+const CATCH_ANGLE_MAGNITUDE = 0.1;      // Only catch Fighter that correctly rotated
 
 function catchFighter(fighter): boolean {
-    const {dx, dy, type, team, canDockSpacePort} = fighter;
+    const {dx, dy, type, team, canDockSpacePort, rotation, isDockedSpacePort} = fighter;
 
-    if (type === 'Fighter' && team === this.team && canDockSpacePort && testPointInEntity(this, fighter)) {
+    if (type === 'Fighter' && team === this.team &&
+        canDockSpacePort && !isDockedSpacePort &&
+        testPointInEntity(fighter, this) &&
+        Math.abs(Math.cos(rotation) - Math.cos(this.rotation)) < CATCH_ANGLE_MAGNITUDE
+    ) {
         const speed2 = dx ** 2 + dy ** 2;
 
         if (speed2 <= DOCK_SPEED_MAX2) {

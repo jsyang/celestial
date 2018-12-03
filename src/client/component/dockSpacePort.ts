@@ -15,10 +15,13 @@ function dockSpacePort(spaceport: SpacePort) {
 }
 
 function undockSpacePort() {
+    this.isDockedSpacePort           = false;
     this.spaceport.fighter           = null;
     this.spaceport.isCarryingFighter = false;
     this.spaceport                   = null;
-    this.isDockedSpacePort           = false;
+    // Ensure the spaceport does not catch it immediately after undocking
+    this.x += Math.cos(this.rotation);
+    this.y += Math.cos(this.rotation);
 }
 
 const DIST_SPACEPORT_DOCK = 211;
