@@ -10,14 +10,11 @@ const onClickGitHub    = () => window.open('http://github.com/jsyang/celestial',
 const width  = 340;
 const height = 360;
 
-declare const BUILD_DATE: string;
-declare const BUILD_HASH: string;
-
 function create({onClickNewGame}) {
     const modal = Modal.create({width, height});
 
     const label = new PIXI.Text(
-        `Build: ${BUILD_DATE} -- ${BUILD_HASH}`,
+        `Build: ${process.env.BUILD_DATE} -- ${process.env.BUILD_HASH}`,
         {
             fontFamily: 'arial',
             fontSize:   12,

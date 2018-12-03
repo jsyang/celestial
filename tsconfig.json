@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "skipLibCheck": true,
-    "target": "es5",
+    "target": "es6",
     "module": "es6",
     "allowSyntheticDefaultImports": true,
     "alwaysStrict": true,
