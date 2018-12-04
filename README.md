@@ -22,12 +22,12 @@ You have the option of toggling game functionality via the URL you use to access
 The toggles are activated by the presence / absence of URL query strings: for instance,
 to turn off all game audio you may do:
  
-1. `yarn dev`
+1. `yarn watch`
 1. http://localhost:3000/?mute
 
 or if you want to turn off all audio AND skip the title screen:
 
-1. `yarn dev`
+1. `yarn watch`
 1. http://localhost:3000/?mute&game
 
 See `src/client/startupOptions.ts` for a full list of feature toggles.
@@ -41,7 +41,7 @@ Using the scenario test mode of the game, you can establish a controlled environ
 where you can set exactly what the starting state is and see the emergent behaviors of
 your system unfold.
 
-1. `yarn dev`
+1. `yarn watch`
 2. http://localhost:3000/?test
 3. Edit `src/client/TestScreen/ScenarioSystem.ts` to create the scenario's initial conditions
 4. Edit `src/client/component/*.ts` to tweak components that implement the behavior 
@@ -53,7 +53,7 @@ See `LETTERS` within `src/client/constants.ts` for an example.
 
 - [Start Geometry editor](http://jsyang.ca/celestial?editor)<br><br><img src="how-to-play/editor.png">
 
-1. `yarn dev`
+1. `yarn watch`
 2. http://localhost:3000/?editor
 
 ---
