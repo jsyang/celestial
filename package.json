@@ -14,15 +14,13 @@
   "scripts": {
     "ts-watch": "tsc --noEmit -w -p .",
     "generate-env": "node generateDotEnv.js",
-    "watch": "yarn generate-env ; parcel _dev.html --port 3000",
-    "bundle-js": "yarn generate-env ; NODE_ENV=production parcel build _prod.html --out-dir . ; git checkout _prod.html ; mv client.*.js celestialcombat.js ; rm *.map",
-    "zip-assets": "cd assets ; rm -r .DS_Store ; rm assets.zip ; zip -x '.DS_Store' -r -X ../assets.zip . ",
+    "watch": "yarn regen-sounds; yarn generate-env ; parcel _dev.html --port 3000 --no-hmr --no-source-maps",
+    "bundle-js": "yarn regen-sounds; yarn generate-env ; NODE_ENV=production parcel build _dev.html --out-dir . ; yarn cleanup",
+    "cleanup": "git checkout _dev.html ; mv client.*.js celestialcombat.js ; rm *.map *.ogg",
+    "regen-sounds": "node generateSoundsList.js",
     "generate-how-to-play-page": "marked -o how-to-play/index.html < src/how-to-play.md",
-    "build": "yarn bundle-js ; yarn generate-how-to-play-page ; yarn zip-assets"
+    "build": "yarn bundle-js ; yarn generate-how-to-play-page"
   },
-  "staticPath": [
-    "client"
-  ],
   "dependencies": {
     "@types/pixi.js": "^4.6.0",
     "@types/sat": "^0.0.30",
