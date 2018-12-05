@@ -21,7 +21,7 @@
     "regen-html": "node scripts/generateHowToPlay.js ",
     "build": "yarn regen-js ; yarn regen-html"
   },
-  "dependencies": {
+  "devDependencies": {
     "@types/pixi.js": "^4.6.0",
     "@types/sat": "^0.0.30",
     "fast-memoize": "^2.5.1",
