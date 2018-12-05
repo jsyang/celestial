@@ -1,6 +1,6 @@
 {
   "name": "celestialcombat",
-  "version": "1.0.0",
+  "version": "1.1",
   "description": "Top-down 2D space shooter -- galactic conquest and colonization",
   "author": {
     "name": "jsyang.ca@gmail.com",
@@ -10,25 +10,25 @@
     "type": "git",
     "url": "git://github.com/jsyang/celestial.git"
   },
-  "main": "index.js",
+  "main": "celestialcombat.js",
   "scripts": {
     "ts-watch": "tsc --noEmit -w -p .",
-    "generate-env": "node generateDotEnv.js",
-    "watch": "yarn regen-sounds; yarn generate-env ; parcel _dev.html --port 3000 --no-hmr --no-source-maps",
-    "bundle-js": "yarn regen-sounds; yarn generate-env ; NODE_ENV=production parcel build _dev.html --out-dir . ; yarn cleanup",
+    "regen-env": "node scripts/generateDotEnv.js",
+    "watch": "yarn regen-sounds; yarn regen-env ; parcel _dev.html --port 3000 --no-hmr --no-source-maps",
+    "regen-js": "yarn regen-sounds; yarn regen-env ; parcel build _dev.html --out-dir . ; yarn cleanup",
     "cleanup": "git checkout _dev.html ; mv client.*.js celestialcombat.js ; rm *.map *.ogg",
-    "regen-sounds": "node generateSoundsList.js",
-    "generate-how-to-play-page": "marked -o how-to-play/index.html < src/how-to-play.md",
-    "build": "yarn bundle-js ; yarn generate-how-to-play-page"
+    "regen-sounds": "node scripts/generateSoundsList.js",
+    "regen-html": "node scripts/generateHowToPlay.js ",
+    "build": "yarn regen-js ; yarn regen-html"
   },
   "dependencies": {
     "@types/pixi.js": "^4.6.0",
     "@types/sat": "^0.0.30",
     "fast-memoize": "^2.5.1",
-    "marked": "^0.3.9",
     "parcel-bundler": "^1.10.3",
     "pixi.js": "^4.8.2",
     "sat": "^0.6.0",
+    "snarkdown": "^1.2.2",
     "typescript": "^3.2.1"
   }
 }

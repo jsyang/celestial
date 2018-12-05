@@ -1,6 +1,4 @@
-<img src="how-to-play/title.png" align="center">
-
-# Celestial Combat
+# Celestial Combat ![](favicon.png)
 
 Celestial Combat is a game of galactic conquest and colonization. 
 

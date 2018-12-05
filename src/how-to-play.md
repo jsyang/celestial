@@ -1,39 +1,4 @@
-<style>
-    body {
-        background: #121212;
-        color: #c8c8c8;
-        font-family: sans-serif;
-    }
-    
-    section {
-        padding-left: 2em;
-        transition: all 0.3s ease;
-        overflow: hidden;
-    }
-    
-    section.hide {
-        height: 0px;
-    }
-    
-    h2 {
-        user-select: none;
-        cursor: pointer;
-        color: #2288aa;
-        margin-bottom: 0;
-    }
-    
-    h2:before {
-        content: '↑ ';
-    }
-    
-    h2.hide:before {
-        content: '↓ ';
-    }
-</style>
-
-<center>
-    <img src="title.png"/>
-</center>
+# Celestial Combat ![](../favicon.png)
 
 _Celestial Combat is a game of galactic conquest and colonization._ 
 
@@ -67,24 +32,21 @@ game screen:
 
 ![1](hud.png)
 
-1. Galaxy radar is provided by friendly planets with Communications Centers. Markers indicate
-the positions of planets, stars, and spaceships: green, yellow, and other colors, respectively.
-You can press M or click on this small display to expand the display to fill your screen.
+(1) -- Galaxy radar is provided by friendly planets with Communications Centers. Markers indicate the positions of planets, stars, and spaceships: green, yellow, and other colors, respectively. You can press M or click on this small display to expand the display to fill your screen.
 
-2. Your rank is display along with current progress to next highest rank.
+(2) -- Your rank is display along with current progress to next highest rank.
 
-3. Spaceship type and damage level 
+(3) -- Spaceship type and damage level 
 
-4. Active weapon: if the weapon requires an ammo supply, it is shown as a tally underneath the weapon name 
+(4) -- Active weapon: if the weapon requires an ammo supply, it is shown as a tally underneath the weapon name 
 
-5. Pointer to nearest star (yellow)
+(5) -- Pointer to nearest star (yellow)
 
-6. Pointer to nearest planet (green)
- 
-** A message log is shown at the bottom right corner of the HUD. **
+(6) -- Pointer to nearest planet (green)
 
-As the battle wages on, you will receive progress messages here from the parts of your faction's
-war machine. Most recent messages are displayed at towards the top, leaving older messages to drop off below.
+> A message log is shown at the bottom right corner of the HUD.
+> As the battle wages on, you will receive progress messages here from the parts of your faction's
+> war machine. Most recent messages are displayed at towards the top, leaving older messages to drop off below.
 
 ## Game play
 
@@ -97,7 +59,7 @@ and raw materials sent to construct facilities on the planet.
 
 To win, you need to destroy all enemy production, combat facilities, and spacecraft.
 
-#### Landing on planets
+### Landing on planets
 Before colonization can begin, you must land on a planet to secure your colonization
 beacon. Approach the planet at slow speed and rotate the craft to face outwards from 
 the planet's center. A landing speed indicator will be shown as you approach the planet.
@@ -108,32 +70,42 @@ surface.
 
 Note: you cannot land on stars. Fighters are affected by gravity from both planets and stars. 
 
-#### Landing on a friendly spaceport
+### Landing on a friendly spaceport
 Much like landing on a planet, you must approach the spaceport slowly and aim for the center of
 the spaceport to trigger the docking sequence. Once this is achieved, the spaceport will
 catch your fighter craft. Rearming and repairing aboard the spaceport is much faster than on a planet surface.
 
 ## Weapons
 
-- **Cannon**<br>The standard energy weapon supplied by the same power plant that drives
- a spacecraft's propulsion system.<br>`Damage: 1 per hit`
+### Cannon
+The standard energy weapon supplied by the same power plant that drives
+ a spacecraft's propulsion system.
+ `Damage: 1 per hit`
  
-- **Heavy Cannon**<br>Focusing the emitters of the standard cannon allowed us to create a weapon that 
-delivers twice the energy per projectile.<br>`Damage: 2 per hit`
+### Heavy Cannon
+Focusing the emitters of the standard cannon allowed us to create a weapon that 
+delivers twice the energy per projectile.
+`Damage: 2 per hit`
   
-- **Cluster Rocket**<br>Packed with explosive shells, this unguided rocket can deliver a bundle of 20
-to the recipient for maximum destruction.<br>`Damage: 1 per hit x 20 shells + 0.5 impact damage`
+### Cluster Rocket 
+Packed with explosive shells, this unguided rocket can deliver a bundle of 20
+to the recipient for maximum destruction.
+`Damage: 1 per hit x 20 shells + 0.5 impact damage`
    
-- **Homing Missile**<br>We have refined a biological seeking intelligence
-that is installed into every mass-produced homing missile: a highly destructive weapon.<br><br>
-Ensure your targeting system has locked onto an enemy before firing.<br>`Damage: 6 per hit`
+### Homing Missile
+We have refined a biological seeking intelligence
+that is installed into every mass-produced homing missile: a highly destructive weapon.
+Ensure your targeting system has locked onto an enemy before firing.
+`Damage: 6 per hit`
     
-- **Laser Bolt**<br>Fast discharge ultra-capacitors have enabled our technicians to build a devastating laser weapon
-into a small space.<br>`Damage: 30 per hit, ranged` 
+### Laser Bolt 
+Fast discharge ultra-capacitors have enabled our technicians to build a devastating laser weapon
+into a small space.
+`Damage: 30 per hit, ranged` 
 
 ## Units
 
-##### Fighter
+### Fighter
 
 ![1](fighter.png)
 
@@ -148,7 +120,7 @@ Armor           |||.......
 Storage         |.........
 ```
 
-##### Freighter 
+### Freighter 
 
 ![1](freighter.png)
 
@@ -170,7 +142,7 @@ Storage         ||||||||||
 
 A typical planet with a full complement of facilities.
 
-##### PBase
+### PBase
 
 ![1](pbase.png)
 
@@ -186,7 +158,7 @@ Armor           ||||||||..
 Storage         ||||......
 ```
 
-##### PColony
+### PColony
 
 ![1](pcolony.png)
 
@@ -201,7 +173,7 @@ Armor           |||.......
 Storage         |||||||...
 ```
 
-#### PComm
+### PComm
 
 ![1](pcomm.png)
 
@@ -216,7 +188,7 @@ Armor           ||........
 Storage         ..........
 ```
  
-#### PLab
+### PLab
 
 ![1](plab.png)
 
@@ -228,65 +200,24 @@ Speed           ..........
 Firepower       .......... 
 Armor           |.........
 Storage         ||........
-```  
+```
 
-#### Spaceport, SpaceDock, SensorArray
+### Spaceport, SpaceDock, SensorArray
 
 ![1](spaceport.png)
 
 The orbital Spaceport and its facilities allow the Fighter craft to be swiftly repaired and
-rearmed. As it is the first point of defense for a planet, it is heavily armed and armored.  
+rearmed. As it is the first point of defense for a planet, it is heavily armed and armored.
 
 ```
 Speed           |.........
 Firepower       ||||||.... 
 Armor           |||||||...
 Storage         ||||......
-```  
+```
 
 ## Acknowledgements
 
 Gameplay inspired by [Gravity Well v2.2](https://archive.org/details/GWELL22), the planetary 
 conquest game by David H. Hoeft of Software Engineering Inc. Celestial Combat owes its existence to this
 classic 1995 masterpiece. 
-
-<script>
-
-// Collapse into section accordions
-
-var insertAfter = function(newNode, referenceNode) {
-    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-}
-
-var $ = document.querySelectorAll.bind(document);
-
-Array.from($('h2'))
-    .forEach(function(h2) {
-        var section = document.createElement('section');
-        var sectionEls = [];
-        var el = h2;
-        
-        while(1) {
-            el = el.nextElementSibling;
-        
-            if(!el || el.tagName === 'H2' || el.tagName === 'SCRIPT') {
-                break;
-            } else {
-                section.innerHTML += el.outerHTML;
-                sectionEls.push(el);
-            }
-        }
-
-        section.classList.toggle('hide');
-        insertAfter(section, h2);
-        sectionEls.forEach(function(r){ r.remove();});
-        
-        h2.classList.add('hide');
-        
-        h2.onclick = function(e) {
-            e.target.nextElementSibling.classList.toggle('hide');
-            e.target.classList.toggle('hide');
-        };
-    });
-
-</script> 

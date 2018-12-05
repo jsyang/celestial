@@ -1,229 +1,96 @@
-<style>
-    body {
-        background: #121212;
-        color: #c8c8c8;
-        font-family: sans-serif;
-    }
-
-    section {
-        padding-left: 2em;
-        transition: all 0.3s ease;
-        overflow: hidden;
-    }
-
-    section.hide {
-        height: 0px;
-    }
-
-    h2 {
-        user-select: none;
-        cursor: pointer;
-        color: #2288aa;
-        margin-bottom: 0;
-    }
-
-    h2:before {
-        content: '↑ ';
-    }
-
-    h2.hide:before {
-        content: '↓ ';
-    }
-</style>
-
-<center>
-    <img src="title.png"/>
-</center>
-
-<p><em>Celestial Combat is a game of galactic conquest and colonization.</em> </p>
-<h2 id="player-controls">Player controls</h2>
-<pre><code>    KEYBOARD........... ACTION.............
-    Left arrow key      Turn left
-    Right arrow key     Turn right
-    Up arrow key        Accelerate
-    F                   Fire primary weapon
-    P                   Pause / resume game
-    M                   Toggle galaxy radar display
-    . (&gt;)               Focus on next fighter spaceship
-
-    Spacebar            Command menu
-    T                   Targeting: select next enemy nearby
-
-    GAMEPAD............ ACTION.............
-    Analog stick        Set craft direction
-    Button 0            Fire primary weapon
-    Button 1            Special action (when docked)
-    Button 2            Accelerate
-    Button 3            Pause / resume game
-</code></pre><h3 id="hud-heads-up-display-">HUD (Heads Up Display)</h3>
-<p>You can see vital information about the current situation in these regions of the
-game screen:</p>
-<p><img src="hud.png" alt="1"></p>
-<ol>
-<li><p>Galaxy radar is provided by friendly planets with Communications Centers. Markers indicate
-the positions of planets, stars, and spaceships: green, yellow, and other colors, respectively.
-You can press M or click on this small display to expand the display to fill your screen.</p>
-</li>
-<li><p>Your rank is display along with current progress to next highest rank.</p>
-</li>
-<li><p>Spaceship type and damage level </p>
-</li>
-<li><p>Active weapon: if the weapon requires an ammo supply, it is shown as a tally underneath the weapon name </p>
-</li>
-<li><p>Pointer to nearest star (yellow)</p>
-</li>
-<li><p>Pointer to nearest planet (green)</p>
-</li>
-</ol>
-<p><strong> A message log is shown at the bottom right corner of the HUD. </strong></p>
-<p>As the battle wages on, you will receive progress messages here from the parts of your faction&#39;s
-war machine. Most recent messages are displayed at towards the top, leaving older messages to drop off below.</p>
-<h2 id="game-play">Game play</h2>
-<p>You begin with either an invasion fleet (1 x Fighter + 4 invasion Freighters) or
-a single occupied planet.</p>
-<p>To colonize planets, you must land on them when they are unoccupied with your 
-Fighter. The landing will plant a beacon, starting the flow of Freighters 
-and raw materials sent to construct facilities on the planet. </p>
-<p>To win, you need to destroy all enemy production, combat facilities, and spacecraft.</p>
-<h4 id="landing-on-planets">Landing on planets</h4>
-<p>Before colonization can begin, you must land on a planet to secure your colonization
-beacon. Approach the planet at slow speed and rotate the craft to face outwards from 
-the planet&#39;s center. A landing speed indicator will be shown as you approach the planet.
-Failing to correctly orient and slow the Fighter will destroy it on contact with the planet&#39;s
-surface.</p>
-<p><strong>When you land on a friendly planet, your weapons will be rearmed and your ship repaired.</strong></p>
-<p>Note: you cannot land on stars. Fighters are affected by gravity from both planets and stars. </p>
-<h4 id="landing-on-a-friendly-spaceport">Landing on a friendly spaceport</h4>
-<p>Much like landing on a planet, you must approach the spaceport slowly and aim for the center of
-the spaceport to trigger the docking sequence. Once this is achieved, the spaceport will
-catch your fighter craft. Rearming and repairing aboard the spaceport is much faster than on a planet surface.</p>
-<h2 id="weapons">Weapons</h2>
-<ul>
-<li><p><strong>Cannon</strong><br>The standard energy weapon supplied by the same power plant that drives
-a spacecraft&#39;s propulsion system.<br><code>Damage: 1 per hit</code></p>
-</li>
-<li><p><strong>Heavy Cannon</strong><br>Focusing the emitters of the standard cannon allowed us to create a weapon that 
-delivers twice the energy per projectile.<br><code>Damage: 2 per hit</code></p>
-</li>
-<li><p><strong>Cluster Rocket</strong><br>Packed with explosive shells, this unguided rocket can deliver a bundle of 20
-to the recipient for maximum destruction.<br><code>Damage: 1 per hit x 20 shells + 0.5 impact damage</code></p>
-</li>
-<li><p><strong>Homing Missile</strong><br>We have refined a biological seeking intelligence
-that is installed into every mass-produced homing missile: a highly destructive weapon.<br><br>
-Ensure your targeting system has locked onto an enemy before firing.<br><code>Damage: 6 per hit</code></p>
-</li>
-<li><p><strong>Laser Bolt</strong><br>Fast discharge ultra-capacitors have enabled our technicians to build a devastating laser weapon
-into a small space.<br><code>Damage: 30 per hit, ranged</code> </p>
-</li>
-</ul>
-<h2 id="units">Units</h2>
-<h5 id="fighter">Fighter</h5>
-<p><img src="fighter.png" alt="1"></p>
-<p>The backbone of an offensive fighting force is the standard GHX-12 Fighter
-craft armed with a rapid-fire cannon. Fighters can lay claim to unoccupied
-planets.</p>
-<pre><code>Speed           ||||||||||
-Firepower       |||||||...
-Armor           |||.......
-Storage         |.........
-</code></pre><h5 id="freighter">Freighter</h5>
-<p><img src="freighter.png" alt="1"></p>
-<p>Transport for raw and finished materials is provided primarily by Freighters.
-They carry the capability to speed up construction of essential 
-fortifications and facilities. Freighters are the only craft capable of constructing
-a Planetary Base (PBase).</p>
-<pre><code>Speed           ||........
-Firepower       |||....... 
-Armor           ||||......
-Storage         ||||||||||
-</code></pre><h2 id="facilities">Facilities</h2>
-<p><img src="planet.png" alt="1"></p>
-<p>A typical planet with a full complement of facilities.</p>
-<h5 id="pbase">PBase</h5>
-<p><img src="pbase.png" alt="1"></p>
-<p>A Planetary Base (PBase) provides a planet with basic production and mining operations.
-It can harvest and store raw materials on the planet. It can construct a Communications
-Center and a Planetary Lab. It also provides defensive weapons, allowing the planet to </p>
-<p>defend itself from attackers. </p>
-<pre><code>Speed           ..........
-Firepower       |||||..... 
-Armor           ||||||||..
-Storage         ||||......
-</code></pre><h5 id="pcolony">PColony</h5>
-<p><img src="pcolony.png" alt="1"></p>
-<p>A Planetary Colony (PColony) is the most efficient way for a planet to produce finished
-materials from raw materials. It can construct spacecraft and other facilities; its operation
-is critical to the maintenance demands of a planet. </p>
-<pre><code>Speed           ..........
-Firepower       .......... 
-Armor           |||.......
-Storage         |||||||...
-</code></pre><h4 id="pcomm">PComm</h4>
-<p><img src="pcomm.png" alt="1"></p>
-<p>Galactic scanners installed in the Planetary Communications (PComm) allow
-empires to track precise locations of other worlds. A galactic radar display is
-active when your faction owns at least one functional PComm.</p>
-<pre><code>Speed           ..........
-Firepower       .......... 
-Armor           ||........
-Storage         ..........
-</code></pre><h4 id="plab">PLab</h4>
-<p><img src="plab.png" alt="1"></p>
-<p>Weapons technology research and new weapon installation is carried out from the 
-Planetary Lab.</p>
-<pre><code>Speed           ..........
-Firepower       .......... 
-Armor           |.........
-Storage         ||........
-</code></pre><h4 id="spaceport-spacedock-sensorarray">Spaceport, SpaceDock, SensorArray</h4>
-<p><img src="spaceport.png" alt="1"></p>
-<p>The orbital Spaceport and its facilities allow the Fighter craft to be swiftly repaired and
-rearmed. As it is the first point of defense for a planet, it is heavily armed and armored.  </p>
-<pre><code>Speed           |.........
-Firepower       ||||||.... 
-Armor           |||||||...
-Storage         ||||......
-</code></pre><h2 id="acknowledgements">Acknowledgements</h2>
-<p>Gameplay inspired by <a href="https://archive.org/details/GWELL22">Gravity Well v2.2</a>, the planetary 
-conquest game by David H. Hoeft of Software Engineering Inc. Celestial Combat owes its existence to this
-classic 1995 masterpiece. </p>
-<script>
-
-// Collapse into section accordions
-
-var insertAfter = function(newNode, referenceNode) {
-    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+<html><style>body {
+    padding: 0 2.5%;
+    background: black;
+    color: #c8c8c8;
+    font-family: sans-serif;
 }
 
-var $ = document.querySelectorAll.bind(document);
+section {
+    padding-left: 2em;
+}
 
-Array.from($('h2'))
-    .forEach(function(h2) {
-        var section = document.createElement('section');
-        var sectionEls = [];
-        var el = h2;
+h2 {
+    color: #2288aa;
+    margin-bottom: 0.5em;
+}</style><body><h1>Celestial Combat <img src="../favicon.png" alt=""></h1><em>Celestial Combat is a game of galactic conquest and colonization.</em> <h2>Player controls</h2><pre class="code ">KEYBOARD........... ACTION.............
+Left arrow key      Turn left
+Right arrow key     Turn right
+Up arrow key        Accelerate
+F                   Fire primary weapon
+P                   Pause / resume game
+M                   Toggle galaxy radar display
+. (&gt;)               Focus on next fighter spaceship
 
-        while(1) {
-            el = el.nextElementSibling;
+Spacebar            Command menu
+T                   Targeting: select next enemy nearby
 
-            if(!el || el.tagName === 'H2' || el.tagName === 'SCRIPT') {
-                break;
-            } else {
-                section.innerHTML += el.outerHTML;
-                sectionEls.push(el);
-            }
-        }
-
-        section.classList.toggle('hide');
-        insertAfter(section, h2);
-        sectionEls.forEach(function(r){ r.remove();});
-
-        h2.classList.add('hide');
-
-        h2.onclick = function(e) {
-            e.target.nextElementSibling.classList.toggle('hide');
-            e.target.classList.toggle('hide');
-        };
-    });
-
-</script> 
+GAMEPAD............ ACTION.............
+Analog stick        Set craft direction
+Button 0            Fire primary weapon
+Button 1            Special action (when docked)
+Button 2            Accelerate
+Button 3            Pause / resume game</pre><h3>HUD (Heads Up Display)</h3>You can see vital information about the current situation in these regions of the
+game screen:<br /><img src="hud.png" alt="1"><br />(1) -- Galaxy radar is provided by friendly planets with Communications Centers. Markers indicate the positions of planets, stars, and spaceships: green, yellow, and other colors, respectively. You can press M or click on this small display to expand the display to fill your screen.<br />(2) -- Your rank is display along with current progress to next highest rank.<br />(3) -- Spaceship type and damage level <br />(4) -- Active weapon: if the weapon requires an ammo supply, it is shown as a tally underneath the weapon name <br />(5) -- Pointer to nearest star (yellow)<br />(6) -- Pointer to nearest planet (green)<br /><blockquote>A message log is shown at the bottom right corner of the HUD.
+As the battle wages on, you will receive progress messages here from the parts of your faction's
+war machine. Most recent messages are displayed at towards the top, leaving older messages to drop off below.</blockquote><h2>Game play</h2>You begin with either an invasion fleet (1 x Fighter + 4 invasion Freighters) or
+a single occupied planet.<br />To colonize planets, you must land on them when they are unoccupied with your 
+Fighter. The landing will plant a beacon, starting the flow of Freighters 
+and raw materials sent to construct facilities on the planet. <br />To win, you need to destroy all enemy production, combat facilities, and spacecraft.<h3>Landing on planets</h3>Before colonization can begin, you must land on a planet to secure your colonization
+beacon. Approach the planet at slow speed and rotate the craft to face outwards from 
+the planet's center. A landing speed indicator will be shown as you approach the planet.
+Failing to correctly orient and slow the Fighter will destroy it on contact with the planet's
+surface.<br /><strong>When you land on a friendly planet, your weapons will be rearmed and your ship repaired.</strong><br />Note: you cannot land on stars. Fighters are affected by gravity from both planets and stars. <h3>Landing on a friendly spaceport</h3>Much like landing on a planet, you must approach the spaceport slowly and aim for the center of
+the spaceport to trigger the docking sequence. Once this is achieved, the spaceport will
+catch your fighter craft. Rearming and repairing aboard the spaceport is much faster than on a planet surface.<h2>Weapons</h2><h3>Cannon</h3>The standard energy weapon supplied by the same power plant that drives
+ a spacecraft's propulsion system.
+ <code>Damage: 1 per hit</code>
+ <h3>Heavy Cannon</h3>Focusing the emitters of the standard cannon allowed us to create a weapon that 
+delivers twice the energy per projectile.
+<code>Damage: 2 per hit</code>
+<br /><h3>Cluster Rocket</h3>Packed with explosive shells, this unguided rocket can deliver a bundle of 20
+to the recipient for maximum destruction.
+<code>Damage: 1 per hit x 20 shells + 0.5 impact damage</code>
+ <br /><h3>Homing Missile</h3>We have refined a biological seeking intelligence
+that is installed into every mass-produced homing missile: a highly destructive weapon.
+Ensure your targeting system has locked onto an enemy before firing.
+<code>Damage: 6 per hit</code><pre class="code poetry"></pre><h3>Laser Bolt</h3>Fast discharge ultra-capacitors have enabled our technicians to build a devastating laser weapon
+into a small space.
+<code>Damage: 30 per hit, ranged</code> <h2>Units</h2><h3>Fighter</h3><img src="fighter.png" alt="1"><br />The backbone of an offensive fighting force is the standard GHX-12 Fighter
+craft armed with a rapid-fire cannon. Fighters can lay claim to unoccupied
+planets.<br /><pre class="code ">Speed           ||||||||||
+Firepower       |||||||...
+Armor           |||.......
+Storage         |.........</pre><h3>Freighter</h3><img src="freighter.png" alt="1"><br />Transport for raw and finished materials is provided primarily by Freighters.
+They carry the capability to speed up construction of essential 
+fortifications and facilities. Freighters are the only craft capable of constructing
+a Planetary Base (PBase).<br /><pre class="code ">Speed           ||........
+Firepower       |||....... 
+Armor           ||||......
+Storage         ||||||||||</pre><h2>Facilities</h2><img src="planet.png" alt="1"><br />A typical planet with a full complement of facilities.<h3>PBase</h3><img src="pbase.png" alt="1"><br />A Planetary Base (PBase) provides a planet with basic production and mining operations.
+It can harvest and store raw materials on the planet. It can construct a Communications
+Center and a Planetary Lab. It also provides defensive weapons, allowing the planet to 
+defend itself from attackers. <br /><pre class="code ">Speed           ..........
+Firepower       |||||..... 
+Armor           ||||||||..
+Storage         ||||......</pre><h3>PColony</h3><img src="pcolony.png" alt="1"><br />A Planetary Colony (PColony) is the most efficient way for a planet to produce finished
+materials from raw materials. It can construct spacecraft and other facilities; its operation
+is critical to the maintenance demands of a planet. <br /><pre class="code ">Speed           ..........
+Firepower       .......... 
+Armor           |||.......
+Storage         |||||||...</pre><h3>PComm</h3><img src="pcomm.png" alt="1"><br />Galactic scanners installed in the Planetary Communications (PComm) allow
+empires to track precise locations of other worlds. A galactic radar display is
+active when your faction owns at least one functional PComm.<br /><pre class="code ">Speed           ..........
+Firepower       .......... 
+Armor           ||........
+Storage         ..........</pre>
+ <h3>PLab</h3><img src="plab.png" alt="1"><br />Weapons technology research and new weapon installation is carried out from the 
+Planetary Lab.<br /><pre class="code ">Speed           ..........
+Firepower       .......... 
+Armor           |.........
+Storage         ||........</pre><h3>Spaceport, SpaceDock, SensorArray</h3><img src="spaceport.png" alt="1"><br />The orbital Spaceport and its facilities allow the Fighter craft to be swiftly repaired and
+rearmed. As it is the first point of defense for a planet, it is heavily armed and armored.<br /><pre class="code ">Speed           |.........
+Firepower       ||||||.... 
+Armor           |||||||...
+Storage         ||||......</pre><h2>Acknowledgements</h2>Gameplay inspired by <a href="https://archive.org/details/GWELL22">Gravity Well v2.2</a>, the planetary 
+conquest game by David H. Hoeft of Software Engineering Inc. Celestial Combat owes its existence to this
+classic 1995 masterpiece.</body></html>

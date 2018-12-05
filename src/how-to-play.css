@@ -1,0 +1,15 @@
+body {
+    padding: 0 2.5%;
+    background: black;
+    color: #c8c8c8;
+    font-family: sans-serif;
+}
+
+section {
+    padding-left: 2em;
+}
+
+h2 {
+    color: #2288aa;
+    margin-bottom: 0.5em;
+}
