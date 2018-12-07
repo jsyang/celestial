@@ -6,6 +6,13 @@ const IGNORE_KEYS = new RegExp([
     'mass',
 
     // Entity references need to be handled specially for serialization / de-serialization
+    'pbase',
+    'plab',
+    'pcolony',
+    'sensorarray',
+    'spacedock',
+    'pcomm',
+    'target',
     'attackTarget',
     'anchor',
     'attackTurretPositions',
@@ -13,24 +20,33 @@ const IGNORE_KEYS = new RegExp([
     'fighter',
     'colonizationTarget',
     'planet',
+    'star',
     'spaceport'
 ].join('|'));
 
 export function serialize(): string {
-    const allEntities       = Entity.getByType('Fighter');
-    const objects: object[] = [];
+    const allEntities    = Entity.getAll();
+    const objects: any[] = [];
 
     // Fastest as nested for loops, rather than composable
     let objectified;
+    let entity;
+
     for (let i = allEntities.length - 1; i >= 0; i--) {
         objectified = {};
-        let entity  = allEntities[i];
+        entity      = allEntities[i];
 
         for (let key in entity) {
             if (IGNORE_KEYS.test(key)) continue;
 
             let value = entity[key];
             if (typeof value !== 'function') {
+                // Uncomment to find potential circular references
+                /*
+                if (typeof value === 'object') {
+                    console.log(key, value);
+                }
+                */
                 objectified[key] = value;
             }
         }

@@ -628,7 +628,136 @@ function e(e,t){var r=t&&t.cache?t.cache:h,n=t&&t.serializer?t.serializer:u;retu
 },{"../Geometry":"e9yM","./LivingEntity":"WJ1g"}],"Nm3e":[function(require,module,exports) {
 "use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var e=r(require("../Geometry")),t=o(require("./LivingEntity"));function o(e){return e&&e.__esModule?e:{default:e}}function r(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var o in e)if(Object.prototype.hasOwnProperty.call(e,o)){var r=Object.defineProperty&&Object.getOwnPropertyDescriptor?Object.getOwnPropertyDescriptor(e,o):{};r.get||r.set?Object.defineProperty(t,o,r):t[o]=e[o]}return t.default=e,t}function n(e){return(n="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e})(e)}function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function c(e,t){return!t||"object"!==n(t)&&"function"!=typeof t?f(e):t}function u(e){return(u=Object.setPrototypeOf?Object.getPrototypeOf:function(e){return e.__proto__||Object.getPrototypeOf(e)})(e)}function a(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function");e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,writable:!0,configurable:!0}}),t&&l(e,t)}function l(e,t){return(l=Object.setPrototypeOf||function(e,t){return e.__proto__=t,e})(e,t)}function f(e){if(void 0===e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return e}var p={missileBody:{type:e.GeometryType.Polygon,lineStyle:{width:2,color:4474111,alpha:1},path:[0,0,8,0]},missileFlame:{type:e.GeometryType.Polygon,lineStyle:{width:1,color:16776960,alpha:1},path:[0,0,-2,0]}},y=function(o){function r(t){var o;return i(this,r),(o=c(this,u(r).call(this))).type="ClusterRocket",o.geo=(0,e.default)(p.missileBody),o.canExplode=!0,o.EXPLOSION_FRAGMENTS=20,o.EXPLOSION_SOUND="fire-heavy",o.canMoveLinearly=!0,o.canDamage=!0,o.canMetabolize=!0,o.canAttack=!0,o.hp=45,o.damageHp=.5,o.geo.graphics.addChild((0,e.default)(p.missileFlame).graphics),Object.assign(f(f(o)),t),o}return a(r,t.default),r}();exports.default=y;
 },{"../Geometry":"e9yM","./LivingEntity":"WJ1g"}],"ut18":[function(require,module,exports) {
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var e=A(require("../component")),t=A(require("./_DB")),r=A(require("./_EntityGrid")),n=A(require("./Fighter")),a=A(require("./Freighter")),u=A(require("./PBase")),i=A(require("./PColony")),o=A(require("./PComm")),l=A(require("./PLab")),f=A(require("./PShield")),d=A(require("./Probe")),c=A(require("./SensorArray")),s=A(require("./SpaceDock")),y=A(require("./SpacePort")),p=A(require("./Shield")),g=A(require("./CannonShot")),q=A(require("./HeavyCannonShot")),h=A(require("./LaserBolt")),S=A(require("./HomingMissile")),m=A(require("./ClusterRocket")),v=A(require("./Planet")),P=A(require("./Star")),b=require("../entityHelpers");function A(e){return e&&e.__esModule?e:{default:e}}function B(e){return E(e)||j(e)||C()}function C(){throw new TypeError("Invalid attempt to spread non-iterable instance")}function j(e){if(Symbol.iterator in Object(e)||"[object Arguments]"===Object.prototype.toString.call(e))return Array.from(e)}function E(e){if(Array.isArray(e)){for(var t=0,r=new Array(e.length);t<e.length;t++)r[t]=e[t];return r}}var k=new r.default,O={Probe:d.default,PBase:u.default,PColony:i.default,PComm:o.default,PLab:l.default,PShield:f.default,SpacePort:y.default,SpaceDock:s.default,SensorArray:c.default,Fighter:n.default,Freighter:a.default,Shield:p.default},_=[],w={CannonShot:g.default,HeavyCannonShot:q.default,LaserBolt:h.default,HomingMissile:S.default,ClusterRocket:m.default},N=[],x={Star:P.default,Planet:v.default},D=Object.assign({},x,O,w),H=B(Object.keys(x)).concat(B(Object.keys(O)),B(Object.keys(w)));function T(r,n){var a;return r in D&&(a=new D[r](n),e.default.init(a),t.default.add(a),r in x&&N.push(a)),a._createdAt=Date.now(),a}function F(r){var n=t.default.getByType(r);n&&n.forEach(e.default.update)}function L(){H.forEach(F)}function M(){for(var e=0;e<4;e++)U();N=[],t.default.clearAll()}var R=function(e){return e.hp>0};function U(){k.prepareNext(),_=_.filter(R)}function G(e){e.type in O&&k.commit(e)}function I(){return N}function z(e,t){var r,n=1/0;return N.filter(function(e){return e.type===t}).forEach(function(t){var a=(0,b.getDistSquared)(e,t);a<n&&(n=a,r=t)}),r}function J(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:1/0;return k.getNearestEnemy(e,t)}function K(e){return k.get1CellRadiusAroundEntity(e)}var Q={create:T,updateAll:L,commit:G,prepareNext:U,getBodies:I,getAbsoluteNearestByBodyType:z,getNearestEnemyUnit:J,getNearestUnits:K,clearAll:M,getAll:t.default.getAll,destroy:t.default.remove,getByType:t.default.getByType};exports.default=Q;
+        "use strict";
+        Object.defineProperty(exports, "__esModule", {value: !0}), exports.default = void 0;
+        var e = A(require("../component")), t = A(require("./_DB")), r = A(require("./_EntityGrid")),
+            n = A(require("./Fighter")), u = A(require("./Freighter")), a = A(require("./PBase")),
+            i = A(require("./PColony")), o = A(require("./PComm")), l = A(require("./PLab")),
+            f = A(require("./PShield")), d = A(require("./Probe")), c = A(require("./SensorArray")),
+            s = A(require("./SpaceDock")), y = A(require("./SpacePort")), p = A(require("./Shield")),
+            g = A(require("./CannonShot")), q = A(require("./HeavyCannonShot")), h = A(require("./LaserBolt")),
+            S = A(require("./HomingMissile")), m = A(require("./ClusterRocket")), v = A(require("./Planet")),
+            P = A(require("./Star")), b = require("../entityHelpers");
+
+        function A(e) {
+            return e && e.__esModule ? e : {default: e}
+        }
+
+        function C(e) {
+            return E(e) || j(e) || B()
+        }
+
+        function B() {
+            throw new TypeError("Invalid attempt to spread non-iterable instance")
+        }
+
+        function j(e) {
+            if (Symbol.iterator in Object(e) || "[object Arguments]" === Object.prototype.toString.call(e)) return Array.from(e)
+        }
+
+        function E(e) {
+            if (Array.isArray(e)) {
+                for (var t = 0, r = new Array(e.length); t < e.length; t++) r[t] = e[t];
+                return r
+            }
+        }
+
+        var k = new r.default, O = {
+                Probe:       d.default,
+                PBase:       a.default,
+                PColony:     i.default,
+                PComm:       o.default,
+                PLab:        l.default,
+                PShield:     f.default,
+                SpacePort:   y.default,
+                SpaceDock:   s.default,
+                SensorArray: c.default,
+                Fighter:     n.default,
+                Freighter:   u.default,
+                Shield:      p.default
+            }, _ = [], N = {
+                CannonShot:      g.default,
+                HeavyCannonShot: q.default,
+                LaserBolt:       h.default,
+                HomingMissile:   S.default,
+                ClusterRocket:   m.default
+            }, w = [], x = {Star: P.default, Planet: v.default}, H = Object.assign({}, x, O, N),
+            T = C(Object.keys(x)).concat(C(Object.keys(O)), C(Object.keys(N))), D = 1;
+
+        function F(e) {
+            D = e
+        }
+
+        function L(r, n) {
+            var u;
+            return r in H && (u = new H[r](n), e.default.init(u), t.default.add(u), r in x && w.push(u)), u._creationId = D++, u
+        }
+
+        function M(r) {
+            var n = t.default.getByType(r);
+            n && n.forEach(e.default.update)
+        }
+
+        function I() {
+            T.forEach(M)
+        }
+
+        function R() {
+            for (var e = 0; e < 4; e++) G();
+            w = [], t.default.clearAll()
+        }
+
+        var U = function (e) {
+            return e.hp > 0
+        };
+
+        function G() {
+            k.prepareNext(), _ = _.filter(U)
+        }
+
+        function z(e) {
+            e.type in O && k.commit(e)
+        }
+
+        function J() {
+            return w
+        }
+
+        function K(e, t) {
+            var r, n = 1 / 0;
+            return w.filter(function (e) {
+                return e.type === t
+            }).forEach(function (t) {
+                var u = (0, b.getDistSquared)(e, t);
+                u < n && (n = u, r = t)
+            }), r
+        }
+
+        function Q(e) {
+            var t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 1 / 0;
+            return k.getNearestEnemy(e, t)
+        }
+
+        function V(e) {
+            return k.get1CellRadiusAroundEntity(e)
+        }
+
+        var W           = {
+            setCreationId:                F,
+            create:                       L,
+            updateAll:                    I,
+            commit:                       z,
+            prepareNext:                  G,
+            getBodies:                    J,
+            getAbsoluteNearestByBodyType: K,
+            getNearestEnemyUnit:          Q,
+            getNearestUnits:              V,
+            clearAll:                     R,
+            getAll:                       t.default.getAll,
+            destroy:                      t.default.remove,
+            getByType:                    t.default.getByType
+        };
+        exports.default = W;
 },{"../component":"3ShI","./_DB":"nBmM","./_EntityGrid":"6Uqs","./Fighter":"X885","./Freighter":"I/pz","./PBase":"XTbD","./PColony":"J4oX","./PComm":"KGpJ","./PLab":"72jP","./PShield":"KEKj","./Probe":"dfA4","./SensorArray":"P31I","./SpaceDock":"/lK5","./SpacePort":"PmZP","./Shield":"1Kle","./CannonShot":"pK8x","./HeavyCannonShot":"/X4k","./LaserBolt":"8eSA","./HomingMissile":"XBd1","./ClusterRocket":"Nm3e","./Planet":"PUm7","./Star":"x+xP","../entityHelpers":"IAoB"}],"Oi2H":[function(require,module,exports) {
 "use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=exports.centerOn=exports.isOutsideViewport=exports.render=exports.removeChild=exports.addChild=exports.removeChildFromHUD=exports.addChildToHUD=void 0;var e,r,t,o,n,i=a(require("pixi.js")),d=l(require("../Entity"));function l(e){return e&&e.__esModule?e:{default:e}}function a(e){if(e&&e.__esModule)return e;var r={};if(null!=e)for(var t in e)if(Object.prototype.hasOwnProperty.call(e,t)){var o=Object.defineProperty&&Object.getOwnPropertyDescriptor?Object.getOwnPropertyDescriptor(e,t):{};o.get||o.set?Object.defineProperty(r,t,o):r[t]=e[t]}return r.default=e,r}i.settings.SCALE_MODE=i.SCALE_MODES.NEAREST;var u=new i.Container,s=new i.Container,c={};function f(){r=innerWidth,o=innerHeight,t=r>>1,n=o>>1,e&&(e.resize(r,o),Object.values(c).forEach(function(e){return e()}))}var h=function(){for(c={};s.children[0];)s.removeChild(s.children[0]);for(;u.children[0];)u.removeChild(u.children[0]);u.addChild(s)};function p(){h(),void 0===e&&(f(),u.addChild(s),e=new i.WebGLRenderer(r,o),document.body.appendChild(e.view))}var v=function(e){return u.alpha=e},C=function(e){if(e.modal){var r=e.modal,t=e.id,o=e.onResize;u.addChild(r),c[t]=o}else u.addChild(e)};exports.addChildToHUD=C;var x=function(e){if(e.modal){var r=e.modal,t=e.id;u.removeChild(r),delete c[t]}else u.removeChild(e)};exports.removeChildFromHUD=x;var m=function(e){return s.addChild(e)};exports.addChild=m;var O=function(e){return s.removeChild(e)};exports.removeChild=O;var y=function(){return e.render(u)};exports.render=y;var b=200,g=function(e){var t=e.x,n=e.y;return t<-s.x-b||t>-s.x+r+b||n<-s.y-b||n>-s.y+o+b};exports.isOutsideViewport=g;var D=function(e){e&&(s.x=-(e.x-t),s.y=-(e.y-n))};function w(e,r){return{x:e+s.x,y:r+s.y}}function E(){d.default.getAll().forEach(function(e){return e.geo.graphics.visible=!g(e)})}exports.centerOn=D;var j={init:p,setGlobalAlpha:v,addChild:m,removeChild:O,render:y,centerOn:D,addChildToHUD:C,removeChildFromHUD:x,cullRenderable:E,onResize:f,getSceneCoordFromStageCoord:w};exports.default=j;
 },{"pixi.js":"5hn+","../Entity":"ut18"}],"dCX1":[function(require,module,exports) {
@@ -646,15 +775,126 @@ function e(e,t){var r=t&&t.cache?t.cache:h,n=t&&t.serializer?t.serializer:u;retu
 },{"pixi.js":"5hn+",".":"Q7na","../Button":"xE1Y"}],"FP5D":[function(require,module,exports) {
 "use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var e=a(require("pixi.js")),t=i(require(".")),r=i(require("../Button"));function i(e){return e&&e.__esModule?e:{default:e}}function a(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var r in e)if(Object.prototype.hasOwnProperty.call(e,r)){var i=Object.defineProperty&&Object.getOwnPropertyDescriptor?Object.getOwnPropertyDescriptor(e,r):{};i.get||i.set?Object.defineProperty(t,r,i):t[r]=e[r]}return t.default=e,t}var n="GALAXY LOST\n\nFriendly forces have been vanquished!\nYour empire has failed to establish\na foothold in this galaxy.";function o(i){var a=i.onClickContinue,o=t.default.create({width:400,height:200});var d=r.default.create({text:"Retreat to a different sector",width:360,onClick:function(){t.default.destroy(o),a()}});d.x=20,d.y=140;var l=new e.Text(n,{fontFamily:"arial",fontSize:12,fill:16777215,align:"center"});return l.x=(400-l.width)/2,l.y=30,o.buttons.push(d),o.modal.addChild(d),o.modal.addChild(l),o}var d={create:o};exports.default=d;
 },{"pixi.js":"5hn+",".":"Q7na","../Button":"xE1Y"}],"MR2i":[function(require,module,exports) {
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var e=i(require("pixi.js")),t=o(require(".")),r=o(require("../Button")),n=o(require("../../Score"));function o(e){return e&&e.__esModule?e:{default:e}}function i(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var r in e)if(Object.prototype.hasOwnProperty.call(e,r)){var n=Object.defineProperty&&Object.getOwnPropertyDescriptor?Object.getOwnPropertyDescriptor(e,r):{};n.get||n.set?Object.defineProperty(t,r,n):t[r]=e[r]}return t.default=e,t}function a(o){var i=o.onClickContinue,a=t.default.create({width:400,height:200});var u=r.default.create({text:"Return to main menu",width:360,onClick:function(){t.default.destroy(a),i()}});u.x=20,u.y=140;var c=n.default.getScoreRank(),l=c.rank,d=c.score,f=new e.Text(["GAME OVER\n","Your career ends with a forced","retirement after recent losses.\n","Your final rank is ".concat(l,"."),"Your final score is ".concat(d,".")].join("\n"),{fontFamily:"arial",fontSize:12,fill:16777215,align:"center"});return f.x=(400-f.width)/2,f.y=30,a.buttons.push(u),a.modal.addChild(u),a.modal.addChild(f),a}var u={create:a};exports.default=u;
+        "use strict";
+        Object.defineProperty(exports, "__esModule", {value: !0}), exports.default = void 0;
+        var e = i(require("pixi.js")), t = o(require(".")), r = o(require("../Button")), n = o(require("../../Score"));
+
+        function o(e) {
+            return e && e.__esModule ? e : {default: e}
+        }
+
+        function i(e) {
+            if (e && e.__esModule) return e;
+            var t = {};
+            if (null != e) for (var r in e) if (Object.prototype.hasOwnProperty.call(e, r)) {
+                var n = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(e, r) : {};
+                n.get || n.set ? Object.defineProperty(t, r, n) : t[r] = e[r]
+            }
+            return t.default = e, t
+        }
+
+        function a(o) {
+            var i = o.onClickContinue, a = t.default.create({width: 400, height: 200});
+            var u = r.default.create({
+                text: "Return to main menu", width: 360, onClick: function () {
+                    t.default.destroy(a), i()
+                }
+            });
+            u.x = 20, u.y = 140;
+            var c = n.default.getScoreRank(), l = c.rank, d = c.score,
+                f = new e.Text(["GAME OVER\n", "Your career ends with a forced", "retirement after recent losses.\n", "Your final rank is ".concat(l.name, "."), "Your final score is ".concat(d, ".")].join("\n"), {
+                    fontFamily: "arial",
+                    fontSize:   12,
+                    fill:       16777215,
+                    align:      "center"
+                });
+            return f.x = (400 - f.width) / 2, f.y = 30, a.buttons.push(u), a.modal.addChild(u), a.modal.addChild(f), a
+        }
+
+        var u           = {create: a};
+        exports.default = u;
 },{"pixi.js":"5hn+",".":"Q7na","../Button":"xE1Y","../../Score":"C3sm"}],"3EI6":[function(require,module,exports) {
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.serialize=o;var t=e(require("../Entity"));function e(t){return t&&t.__esModule?t:{default:t}}var r=new RegExp(["geo","mass","attackTarget","anchor","attackTurretPositions","shield","fighter","colonizationTarget","planet","spaceport"].join("|"));function o(){for(var e,o=t.default.getByType("Fighter"),a=[],i=o.length-1;i>=0;i--){e={};var n=o[i];for(var s in n)if(!r.test(s)){var u=n[s];"function"!=typeof u&&(e[s]=u)}e.x=n.x,e.y=n.y,e.rotation=n.rotation,a.push(e)}return JSON.stringify(a,null,2)}
+        "use strict";
+        Object.defineProperty(exports, "__esModule", {value: !0}), exports.serialize = a;
+        var t = e(require("../Entity"));
+
+        function e(t) {
+            return t && t.__esModule ? t : {default: t}
+        }
+
+        var r = new RegExp(["geo", "mass", "pbase", "plab", "pcolony", "sensorarray", "spacedock", "pcomm", "target", "attackTarget", "anchor", "attackTurretPositions", "shield", "fighter", "colonizationTarget", "planet", "star", "spaceport"].join("|"));
+
+        function a() {
+            for (var e, a, o = t.default.getAll(), n = [], i = o.length - 1; i >= 0; i--) {
+                for (var s in e = {}, a = o[i]) if (!r.test(s)) {
+                    var l = a[s];
+                    "function" != typeof l && (e[s] = l)
+                }
+                e.x = a.x, e.y = a.y, e.rotation = a.rotation, n.push(e)
+            }
+            return JSON.stringify(n, null, 2)
+        }
 },{"../Entity":"ut18"}],"3Rht":[function(require,module,exports) {
 "use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var e,a,t=y(require("../Graphics/Starfield")),l=y(require("../Graphics")),u=y(require("../Graphics/Focus")),d=y(require("./control")),i=y(require("../Galaxy")),n=y(require("../Entity")),r=y(require("./HUD")),o=y(require("./TeamSystem")),f=y(require("../UI/Modal/GalaxyWonModal")),s=y(require("../UI/Modal/GalaxyLostModal")),c=require("../assets/audio"),p=require("../constants"),m=y(require("../Score")),q=y(require("../UI/Modal/GameOverModal")),C=y(require("../Graphics/NavBeaconHuman")),v=require("../GameState/serialize");function y(e){return e&&e.__esModule?e:{default:e}}var G=60,h=1e3/G,x=!0,S=0,M=.05,T=!1;function g(){o.default.update(),n.default.updateAll(),n.default.prepareNext()}function E(){var i=Date.now(),n=i-a;if(!T&&g(),d.default.update(),n>h){x&&(S<1?S+=M:(S=1,x=!1),l.default.setGlobalAlpha(S));var o=u.default.getFocus();o&&(r.default.setFocus(o),l.default.centerOn(o)),C.default.update(),l.default.cullRenderable(),t.default.process(o),r.default.update(),l.default.render(),a=i-n%h}e=requestAnimationFrame(E)}function H(){a=Date.now(),E()}function U(){cancelAnimationFrame(e)}function b(){T=!1,O(),d.default.setControlledEntity(null)}function z(e){if((0,p.isHumanTeam)(e)){var a;C.default.clear(),m.default.addSectorResult(-1),T=!0,(0,c.playSound)("galaxy-lose"),a=m.default.getIsGameOver()?function(){var e=q.default.create({onClickContinue:function(){return location.reload()}});l.default.addChildToHUD(e.modal),d.default.setControlledEntity(e)}:b;var t=s.default.create({onClickContinue:a});l.default.addChildToHUD(t.modal),d.default.setControlledEntity(t)}}function D(e){if((0,p.isHumanTeam)(e)){C.default.clear(),T=!0,m.default.addSectorResult(1),(0,c.playSound)("galaxy-win");var a=f.default.create({onClickContinue:b});l.default.addChildToHUD(a.modal),d.default.setControlledEntity(a)}}function O(){window.foo=v.serialize,addEventListener("resize",R),x=!0,S=0,n.default.clearAll(),l.default.init(),t.default.init().forEach(l.default.addChild),C.default.init(),r.default.init(),i.default.init(),o.default.init(),o.default.setOnTeamLostCallback(z),o.default.setOnTeamWinCallback(D)}function R(){r.default.onResize(),t.default.onResize(),l.default.onResize()}var k=function(){T=!T,(0,c.playSound)("pause"),r.default.setPauseVisible(T)},w={init:O,start:H,stop:U,togglePause:k,getIsPaused:function(){return T}};exports.default=w;
 },{"../Graphics/Starfield":"SAW4","../Graphics":"Oi2H","../Graphics/Focus":"xtCw","./control":"p4gg","../Galaxy":"6GJp","../Entity":"ut18","./HUD":"ACUy","./TeamSystem":"WGVz","../UI/Modal/GalaxyWonModal":"qSa1","../UI/Modal/GalaxyLostModal":"FP5D","../assets/audio":"WovT","../constants":"PH7Q","../Score":"C3sm","../UI/Modal/GameOverModal":"MR2i","../Graphics/NavBeaconHuman":"4+dV","../GameState/serialize":"3EI6"}],"Nuqc":[function(require,module,exports) {
 "use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var t=e(require("../Input"));function e(t){return t&&t.__esModule?t:{default:t}}var u=0,o=16,r=1e3/o;function n(e){var o=Date.now(),n=o-u;if(n>r){var a=t.default.getDevice(),d=a.getInputState;(0,a.getEvents)();var v=d();v.up||v.up_arrow?e.prevButton():v.down||v.down_arrow?e.nextButton():(v.f||v.button0||v.button1||v.button2||v.button3)&&e.clickButton(),u=o-n%r}}var a={update:n};exports.default=a;
 },{"../Input":"zA7B"}],"MGd9":[function(require,module,exports) {
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var e=l(require("pixi.js")),t=n(require(".")),r=n(require("../Button")),o=require("../../constants"),a=require("../../Geometry");function n(e){return e&&e.__esModule?e:{default:e}}function l(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var r in e)if(Object.prototype.hasOwnProperty.call(e,r)){var o=Object.defineProperty&&Object.getOwnPropertyDescriptor?Object.getOwnPropertyDescriptor(e,r):{};o.get||o.set?Object.defineProperty(t,r,o):t[r]=e[r]}return t.default=e,t}var i=function(){return window.open("how-to-play","_blank")},d=function(){return window.open("http://github.com/jsyang/celestial","_blank")},c=340,u=360;function s(n){var l=n.onClickNewGame,s=t.default.create({width:c,height:u}),f=new e.Text("Build: ".concat("2018-12-07T00:35:38.355Z"," -- ").concat("92489c3"),{fontFamily:"arial",fontSize:12,fill:1122833,align:"left"});f.x=0,f.y=u+10,s.modal.addChild(f);var y=360;y-=60;var p=r.default.create({text:"Source code",onClick:d});p.x=20,p.y=y,s.modal.addChild(p),y-=60;var h=r.default.create({text:"How to play",onClick:i});h.x=20,h.y=y,s.modal.addChild(h),y-=60;var w=r.default.create({text:"New game",onClick:l});w.x=20,w.y=y,s.modal.addChild(w),s.buttons.push(w),s.buttons.push(h),s.buttons.push(p);var m,g,v=new e.Graphics;v.lineStyle(2,16776960,1);var b=.0625,P=.05;m=40,g=60,"celestial".split("").forEach(function(e){v.drawPolygon((0,a.transformPolygon)(o.LETTERS[e],m,g,b,P)),m+=30}),m=90,g=100,"combat".split("").forEach(function(e){v.drawPolygon((0,a.transformPolygon)(o.LETTERS[e],m,g,b,P)),m+=30});var x=new e.Graphics;return m=190,g=20,b=1/3,P=1/3,x.lineStyle(12,3355392,1),x.drawPolygon((0,a.transformPolygon)(o.LETTERS.symbol[0],m,g,b,P)),x.lineStyle(32,3355392,1),x.drawPolygon((0,a.transformPolygon)(o.LETTERS.symbol[1],m,g,b,P)),s.modal.addChild(x),s.modal.addChild(v),s}var f={create:s};exports.default=f;
+        "use strict";
+        Object.defineProperty(exports, "__esModule", {value: !0}), exports.default = void 0;
+        var e = l(require("pixi.js")), t = n(require(".")), r = n(require("../Button")), o = require("../../constants"),
+            a = require("../../Geometry");
+
+        function n(e) {
+            return e && e.__esModule ? e : {default: e}
+        }
+
+        function l(e) {
+            if (e && e.__esModule) return e;
+            var t = {};
+            if (null != e) for (var r in e) if (Object.prototype.hasOwnProperty.call(e, r)) {
+                var o = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(e, r) : {};
+                o.get || o.set ? Object.defineProperty(t, r, o) : t[r] = e[r]
+            }
+            return t.default = e, t
+        }
+
+        var i = function () {
+            return window.open("how-to-play", "_blank")
+        }, d  = function () {
+            return window.open("http://github.com/jsyang/celestial", "_blank")
+        }, c  = 340, u = 360;
+
+        function s(n) {
+            var l = n.onClickNewGame, s = t.default.create({width: c, height: u}),
+                f = new e.Text("Build: ".concat("2018-12-07T23:36:41.712Z", " -- ").concat("bc58793"), {
+                    fontFamily: "arial",
+                    fontSize:   12,
+                    fill:       1122833,
+                    align:      "left"
+                });
+            f.x = 0, f.y = u + 10, s.modal.addChild(f);
+            var y = 360;
+            y -= 60;
+            var p = r.default.create({text: "Source code", onClick: d});
+            p.x = 20, p.y = y, s.modal.addChild(p), y -= 60;
+            var h = r.default.create({text: "How to play", onClick: i});
+            h.x = 20, h.y = y, s.modal.addChild(h), y -= 60;
+            var w = r.default.create({text: "New game", onClick: l});
+            w.x = 20, w.y = y, s.modal.addChild(w), s.buttons.push(w), s.buttons.push(h), s.buttons.push(p);
+            var m, b, g = new e.Graphics;
+            g.lineStyle(2, 16776960, 1);
+            var v = .0625, P = .05;
+            m = 40, b = 60, "celestial".split("").forEach(function (e) {
+                g.drawPolygon((0, a.transformPolygon)(o.LETTERS[e], m, b, v, P)), m += 30
+            }), m = 90, b = 100, "combat".split("").forEach(function (e) {
+                g.drawPolygon((0, a.transformPolygon)(o.LETTERS[e], m, b, v, P)), m += 30
+            });
+            var x = new e.Graphics;
+            return m = 190, b = 20, v = 1 / 3, P = 1 / 3, x.lineStyle(12, 3355392, 1), x.drawPolygon((0, a.transformPolygon)(o.LETTERS.symbol[0], m, b, v, P)), x.lineStyle(32, 3355392, 1), x.drawPolygon((0, a.transformPolygon)(o.LETTERS.symbol[1], m, b, v, P)), s.modal.addChild(x), s.modal.addChild(g), s
+        }
+
+        var f           = {create: s};
+        exports.default = f;
 },{"pixi.js":"5hn+",".":"Q7na","../Button":"xE1Y","../../constants":"PH7Q","../../Geometry":"e9yM"}],"qtxK":[function(require,module,exports) {
 "use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var e,t,a=u(require("../Graphics")),r=u(require("../Graphics/Starfield")),n=u(require("./control")),i=u(require("../UI/Modal/TitleScreenModal"));function u(e){return e&&e.__esModule?e:{default:e}}var d=60,l=1e3/d,o={x:0,y:0},f=600,c=0,s=Math.PI/180*.02,v=.05,h=1,p=!1;function M(){var i=Date.now(),u=i-t,d=!0;p||n.default.update(q),u>l&&(p?(a.default.setGlobalAlpha(h),h>0?h-=v:(h=1,d=!1)):(o.x=Math.cos(c)*f,o.y=Math.sin(c)*f,c+=s,a.default.centerOn(o),r.default.process(o)),a.default.render(),t=i-u%l),d?e=requestAnimationFrame(M):G()}var m,q=i.default.create({onClickNewGame:function(){return p=!0}});function x(){addEventListener("resize",C),a.default.init(),r.default.init().forEach(a.default.addChild),a.default.addChildToHUD(q),t=Date.now(),M()}function C(){a.default.onResize()}function G(){cancelAnimationFrame(e),m&&(removeEventListener("resize",C),m())}function _(e){m=e}var b={setFadeOutCallback:_,start:x};exports.default=b;
 },{"../Graphics":"Oi2H","../Graphics/Starfield":"SAW4","./control":"Nuqc","../UI/Modal/TitleScreenModal":"MGd9"}],"9VZu":[function(require,module,exports) {
@@ -718,4 +958,4 @@ module.exports="/switch-flick.48748ac9.ogg";
 },{"../Graphics/Starfield":"SAW4","../Graphics":"Oi2H","../Graphics/Focus":"xtCw","./control":"EBhS","../Entity":"ut18","../GameScreen/HUD":"ACUy","./ScenarioSystem":"rX71"}],"Md9U":[function(require,module,exports) {
 "use strict";var e=i(require("./GeometryEditScreen")),t=i(require("./GameScreen")),r=i(require("./TitleScreen")),a=i(require("./assets")),n=i(require("./startupOptions")),u=i(require("./TestScreen"));function i(e){return e&&e.__esModule?e:{default:e}}var d=function(){t.default.init(),t.default.start()};function s(){var t;removeEventListener("DOMContentLoaded",s),n.default.isTestSectorInUse?t=function(){u.default.init(),u.default.start()}:n.default.shouldSkipTitleScreen?t=d:n.default.isGeometryEditorInUse?t=e.default.start:(r.default.setFadeOutCallback(d),t=r.default.start),a.default.load().then(t)}addEventListener("DOMContentLoaded",s);
 },{"./GeometryEditScreen":"o5Bo","./GameScreen":"3Rht","./TitleScreen":"qtxK","./assets":"IHy0","./startupOptions":"Y848","./TestScreen":"RNXT"}]},{},["Md9U"], null)
-//# sourceMappingURL=/client.4a8e44c4.map
+//# sourceMappingURL=/client.0443a9e6.map

@@ -27,7 +27,7 @@ function create({onClickContinue}) {
             'GAME OVER\n',
             'Your career ends with a forced',
             'retirement after recent losses.\n',
-            `Your final rank is ${rank}.`,
+            `Your final rank is ${rank.name}.`,
             `Your final score is ${score}.`
 
         ].join('\n'),

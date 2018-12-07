@@ -72,6 +72,13 @@ const UPDATE_ALL_ENTITIES_SEQUENCE = [
     ...Object.keys(TYPES_PROJECTILES)
 ];
 
+// Manage serialization references by unique ids for every entity
+let _creationId = 1;
+
+function setCreationId(newCreationId) {
+    _creationId = newCreationId;
+}
+
 function create(type, params) {
     let entity;
     if (type in ALL_ENTITIES) {
@@ -86,7 +93,7 @@ function create(type, params) {
     }
 
     // Record creation time for serialization / deserialization
-    entity._createdAt = Date.now();
+    entity._creationId = _creationId++;
 
     return entity;
 }
@@ -156,6 +163,7 @@ function getNearestUnits(entity) {
 }
 
 export default {
+    setCreationId,
     create,
     updateAll,
 
