@@ -97,8 +97,6 @@ function attractToBody(body) {
     }
 }
 
-const DEFAULTS = {};
-
 function process(entity) {
     const {isDockedPlanet, isDockedSpacePort, hp} = entity;
 
@@ -110,6 +108,5 @@ function process(entity) {
 
 export default {
     componentFlag: 'canGravitate',
-    DEFAULTS,
     process
 }

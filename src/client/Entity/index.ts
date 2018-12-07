@@ -85,6 +85,9 @@ function create(type, params) {
         }
     }
 
+    // Record creation time for serialization / deserialization
+    entity._createdAt = Date.now();
+
     return entity;
 }
 
