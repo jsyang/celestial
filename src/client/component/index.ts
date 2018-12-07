@@ -31,7 +31,6 @@ import ShootLaserBoltComponent from './shootLaserBolt';
 import ShootHomingMissileComponent from './shootHomingMissile';
 import ShootClusterRocketComponent from './shootClusterRocket';
 import LimitSpeedComponent from './limitSpeed';
-import AccelerateComponent from './accelerate';
 import AccelerateToAttackTargetComponent from './accelerateToAttackTarget';
 import AccelerateFighterToAttackTargetComponent from './accelerateFighterToAttackTarget';
 import DisplayHitComponent from './displayHit';
@@ -43,9 +42,9 @@ import ShimmerComponent from './shimmer';
 import DevelopEquipmentComponent from './developEquipment';
 import GravitateComponent from './gravitate';
 import FlockComponent from './flock';
+
 import {isHumanTeam} from '../constants';
 import Score from '../Score';
-
 
 // In order of update() precedence
 const ALL_COMPONENTS = [
@@ -56,7 +55,6 @@ const ALL_COMPONENTS = [
     AnchorComponent,
     OccupyPlanetComponent,
     OccupySpacePortComponent,
-    AccelerateComponent,
     AccelerateToAttackTargetComponent,
     AccelerateFighterToAttackTargetComponent,
     MoveLinearlyComponent,
@@ -142,8 +140,6 @@ function update(entity) {
                 Score.add(entity.maxHp);
             }
         }
-
-
     }
 }
 

@@ -6,6 +6,8 @@ export default class LivingEntity {
     hitTime: number;
     geo: IMutableGeometry;
     team: number = TEAM.NONE;
+    dx: number;
+    dy: number;
 
     // This is probably over complicated... getters and setters
     // operating on another level of getters and setters is probably 
@@ -61,5 +63,10 @@ export default class LivingEntity {
             this.hitTime            = -1;
             this.geo.graphics.alpha = 1;
         }
+    }
+
+    accelerate(acceleration): void {
+        this.dx += Math.cos(this.rotation) * acceleration;
+        this.dy += Math.sin(this.rotation) * acceleration;
     }
 }
