@@ -62,7 +62,6 @@ See `LETTERS` within `src/client/constants.ts` for an example.
     - WIP still need to serialize the refs to other entities
     - create save / load game options modal
     - WIP inflate serialized state to running game state 
-    - WIP add inflator / deflator to serializer pipeline
 
 - improve + extend fighter AI
     - land on planet
