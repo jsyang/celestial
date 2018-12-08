@@ -1,15 +1,11 @@
 import Entity from '../Entity';
 import {TEAM} from '../constants';
 import Focus from '../Graphics/Focus';
-import {serialize} from '../GameState';
 
 let focusTeam = TEAM.MAGENTA;
 let enemyTeam = TEAM.BLUE;
 
 function init() {
-    // todo: create a save / load game modal where this can be triggered instead
-    (window as any).foo = serialize;
-
     // Create a base to attack
 
     const star = Entity.create('Star', {x: 5000, y: 5000});

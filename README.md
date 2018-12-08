@@ -59,9 +59,9 @@ See `LETTERS` within `src/client/constants.ts` for an example.
 ## TODO for v1.2
 
 - save game / load games
-    - WIP still need to serialize the refs to other entities
+    - controlledEntity / focus
+    - score / rank
     - create save / load game options modal
-    - WIP inflate serialized state to running game state 
 
 - improve + extend fighter AI
     - land on planet

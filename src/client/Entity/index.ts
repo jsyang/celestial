@@ -81,6 +81,17 @@ function resetCreationId(newCreationId = 1) {
 
 function create(type, params) {
     let entity;
+
+    // Break any refs to previous params used by other entities
+    // by not reusing the params for a previous entity creation
+    // even if they're passed in
+    params = {...params};
+
+    // Record creation time for serialization / deserialization
+    if (!params._creationId) {
+        params._creationId = _creationId++;
+    }
+
     if (type in ALL_ENTITIES) {
         entity = new ALL_ENTITIES[type](params);
         Component.init(entity);
@@ -91,9 +102,6 @@ function create(type, params) {
             bodies.push(entity);
         }
     }
-
-    // Record creation time for serialization / deserialization
-    entity._creationId = _creationId++;
 
     return entity;
 }

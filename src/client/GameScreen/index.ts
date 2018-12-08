@@ -15,7 +15,7 @@ import {isHumanTeam} from '../constants';
 import Score from '../Score';
 import GameOverModal from '../UI/Modal/GameOverModal';
 import NavBeaconHuman from '../Graphics/NavBeaconHuman';
-import {serialize} from '../GameState';
+import {restoreFromLocalStorage, saveToLocalStorage} from '../GameState';
 
 let raf;  // requestAnimationFrame request
 let then; // Time stamp of last animation frame
@@ -139,7 +139,9 @@ function onTeamWon(team) {
 
 function init() {
     // todo: create a save / load game modal where this can be triggered instead
-    (window as any).foo = serialize;
+    (window as any).foo = saveToLocalStorage;
+    (window as any).bar = restoreFromLocalStorage;
+
     addEventListener('resize', onResize);
 
     isFadingIn      = true;

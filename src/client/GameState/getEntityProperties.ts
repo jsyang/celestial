@@ -8,7 +8,7 @@ const F_base = 'type,team,x,y,hp,maxHp,rotation,_creationId';
 const F_ = {
     accelerateFighterToAttackTarget: 'isFighterPreviouslyDocked,isFighterAutoAccelerated',
     accelerateToAttackTarget:        'delayBeforeTracking',
-    anchor:                          'anchor',
+    anchor:                          'anchor,anchorOffsetX,anchorOffsetY',
     attack:                          'attackTarget,attackWeapon,isAttacking',
     autoTargetEnemy:                 'autoTargetSearchDist2,autoTargetLastSearchTime',
     beShielded:                      'shield',
@@ -114,6 +114,13 @@ const FIELDS_BY_ENTITY: any = {
         F_.repair,
         F_.beShielded
     ],
+    PLab:        [
+        F_.occupyPlanet,
+        F_.explode,
+        F_.displayHit,
+        F_.developEquipment,
+        F_.shimmer
+    ],
     SensorArray: [
         F_.occupySpacePort,
         F_.explode,
@@ -161,9 +168,26 @@ export default function getEntityProperties(entity): any {
         if (entity[f] instanceof LivingEntity) {
             properties[f] = entity[f]._creationId;
         } else {
-            properties[f] = entity[f]
+            properties[f] = entity[f];
         }
     });
 
     return properties;
 }
+
+export const PROPERTY_IS_REFERENCE = new RegExp(`^${[
+    'star',
+    'planet',
+    'pbase',
+    'pcolony',
+    'plab',
+    'pcomm',
+    'spacedock',
+    'spaceport',
+    'sensorarray',
+    'fighter',
+    'attackTarget',
+    'shield',
+    'colonizationTarget',
+    'anchor'
+].join('|')}$`);
