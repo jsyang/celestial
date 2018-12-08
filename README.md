@@ -58,6 +58,12 @@ See `LETTERS` within `src/client/constants.ts` for an example.
 
 ## TODO for v1.2
 
+- save game / load games
+    - WIP still need to serialize the refs to other entities
+    - create save / load game options modal
+    - WIP inflate serialized state to running game state 
+    - WIP add inflator / deflator to serializer pipeline
+
 - improve + extend fighter AI
     - land on planet
     - land on spaceport
@@ -88,8 +94,7 @@ See `LETTERS` within `src/client/constants.ts` for an example.
 - sectors are generated before game begins
     - retreat / advance / develop sector
 
-- save game / load games
-    - from cloud?
+- save game / load games from cloud?
 
 - strategic AI
     - combined arms

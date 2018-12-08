@@ -39,7 +39,6 @@ export default class ClusterRocket extends LivingEntity {
     canMoveLinearly     = true;
     canDamage           = true;
     canMetabolize       = true;
-    canAttack           = true;
 
     hp       = 45;
     damageHp = 0.5;

@@ -75,7 +75,7 @@ const UPDATE_ALL_ENTITIES_SEQUENCE = [
 // Manage serialization references by unique ids for every entity
 let _creationId = 1;
 
-function setCreationId(newCreationId) {
+function resetCreationId(newCreationId = 1) {
     _creationId = newCreationId;
 }
 
@@ -163,7 +163,7 @@ function getNearestUnits(entity) {
 }
 
 export default {
-    setCreationId,
+    resetCreationId,
     create,
     updateAll,
 

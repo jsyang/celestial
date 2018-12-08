@@ -15,7 +15,7 @@ import {isHumanTeam} from '../constants';
 import Score from '../Score';
 import GameOverModal from '../UI/Modal/GameOverModal';
 import NavBeaconHuman from '../Graphics/NavBeaconHuman';
-import {serialize} from '../GameState/serialize';
+import {serialize} from '../GameState';
 
 let raf;  // requestAnimationFrame request
 let then; // Time stamp of last animation frame

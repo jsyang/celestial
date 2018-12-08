@@ -17,8 +17,8 @@ const GEO = {
 };
 
 export default class CannonShot extends LivingEntity {
-    type = 'CannonShot';
-
+    type            = 'CannonShot';
+    geo             = Geometry(GEO);
     canMoveLinearly = true;
     canDamage       = true;
     canMetabolize   = true;
@@ -29,7 +29,6 @@ export default class CannonShot extends LivingEntity {
     constructor(params: CannonShot) {
         super();
 
-        this.geo = Geometry(GEO);
         Object.assign(this, params);
     }
 }

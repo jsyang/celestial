@@ -129,7 +129,6 @@ export default class Fighter extends LivingEntity {
 
     canLimitSpeed                      = true;
     canMoveLinearly                    = true;
-    canAccelerate                      = true;
     canDockPlanet                      = true;
     canDockSpacePort                   = true;
     canAccelerateFighterToAttackTarget = true;

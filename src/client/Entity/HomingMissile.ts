@@ -31,6 +31,7 @@ const GEO = {
 
 export default class HomingMissile extends LivingEntity {
     type = 'HomingMissile';
+    geo  = Geometry(GEO.missileBody);
 
     canShimmer         = true;
     shimmerNormalColor = 0xee0000;
@@ -49,8 +50,6 @@ export default class HomingMissile extends LivingEntity {
 
     constructor(params: HomingMissile) {
         super();
-
-        this.geo = Geometry(GEO.missileBody);
 
         this.geo.graphics.addChild(
             Geometry(GEO.missileFlame).graphics

@@ -16,8 +16,8 @@ const GEO = {
 };
 
 export default class LaserBolt extends LivingEntity {
-    type = 'LaserBolt';
-
+    type            = 'LaserBolt';
+    geo             = Geometry(GEO);
     canMoveLinearly = true;
     canDamage       = true;
     canMetabolize   = true;
@@ -28,7 +28,6 @@ export default class LaserBolt extends LivingEntity {
     constructor(params: LaserBolt) {
         super();
 
-        this.geo = Geometry(GEO);
         Object.assign(this, params);
     }
 }

@@ -40,9 +40,10 @@ const GEO = {
 };
 
 export default class Planet extends LivingEntity {
-    type = 'Planet';
-
     static DIST_SURFACE2 = 105 * 105;
+
+    type = 'Planet';
+    geo  = Geometry(GEO.body);
 
     orbitDistance: number;
     orbitRotation: number;
@@ -65,7 +66,7 @@ export default class Planet extends LivingEntity {
 
     constructor(params: Planet) {
         super();
-        this.geo = Geometry(GEO.body);
+
         this.geo.graphics.addChild(Geometry(GEO.flag).graphics);
 
         Object.assign(this, params);

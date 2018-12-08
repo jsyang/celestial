@@ -5,7 +5,6 @@ import {evalSelector} from '../behaviorTreeHelper';
 /**
  * Move a fighter while avoiding planets and stars
  * Needs:
- *      canAccelerate
  *      canLimitSpeed
  *      canAttack
  *      canDockPlanet

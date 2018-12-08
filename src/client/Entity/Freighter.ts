@@ -198,7 +198,6 @@ export default class Freighter extends LivingEntity {
     materialsFinished = 500;
 
     canAutoTargetEnemy    = true;
-    autoTargetSearchDist2 = 400 * 400;
     canAttack             = true;
     attackTurretPositions = ATTACK_TURRET_POSITIONS;
 
