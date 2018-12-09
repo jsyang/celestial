@@ -8,6 +8,12 @@ import LivingEntity from '../Entity/LivingEntity';
 import Focus from '../Graphics/Focus';
 import TeamSystem from '../GameScreen/TeamSystem';
 
+export enum StorageGameState {
+    Scores           = 'score',
+    Entities         = 'entities',
+    ControlledEntity = 'controlledEntity'
+}
+
 export function serialize(): string {
     return JSON.stringify(
         Entity.getAll().map(getEntityProperties),
@@ -51,22 +57,22 @@ export function deserialize(json: string): void {
 
 export function saveToLocalStorage() {
     const json = serialize();
-    localStorage.setItem('entities', compress(json));
+    localStorage.setItem(StorageGameState.Entities, compress(json));
 
     const controlledEntity = GameScreenControl.getLastControlledLivingEntity();
     if (controlledEntity && controlledEntity instanceof LivingEntity) {
-        localStorage.setItem('controlledEntity', (controlledEntity as any)._creationId);
+        localStorage.setItem(StorageGameState.ControlledEntity, (controlledEntity as any)._creationId);
     }
 
     const score = Score.getAll();
-    localStorage.setItem('score', compress(JSON.stringify(score)));
+    localStorage.setItem(StorageGameState.Scores, compress(JSON.stringify(score)));
 }
 
 export function restoreFromLocalStorage() {
-    const json = decompress(localStorage.getItem('entities'));
+    const json = decompress(localStorage.getItem(StorageGameState.Entities));
     deserialize(json);
 
-    const controlledEntityId  = parseFloat(localStorage.getItem('controlledEntity') || '');
+    const controlledEntityId  = parseFloat(localStorage.getItem(StorageGameState.ControlledEntity) || '');
     const newControlledEntity = Entity.getAll().find((e: any) => e._creationId === controlledEntityId);
     if (newControlledEntity) {
         GameScreenControl.setControlledEntity(newControlledEntity);
@@ -74,6 +80,6 @@ export function restoreFromLocalStorage() {
         Focus.setFocus(newControlledEntity);
     }
 
-    const savedScores = JSON.parse(decompress(localStorage.getItem('score')));
+    const savedScores = JSON.parse(decompress(localStorage.getItem(StorageGameState.Scores)));
     Score.setAll(savedScores.score, savedScores.battleResults);
 }

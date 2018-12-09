@@ -1,25 +1,30 @@
 import Graphics from '../../Graphics';
 import GameOptionsModal from '../../UI/Modal/GameOptionsModal';
 
-const modal = GameOptionsModal.create();
+let modal;
 
 function onResize() {
-    modal.modal.x = (innerWidth - modal.modal.width) * 0.5;
-    modal.modal.y = (innerHeight - modal.modal.height) * 0.5;
+    if (modal) {
+        modal.modal.x = (innerWidth - modal.modal.width) * 0.5;
+        modal.modal.y = (innerHeight - modal.modal.height) * 0.5;
+    }
 }
 
 function setVisible(isVisible) {
-    modal.modal.renderable = isVisible;
-    modal.buttons.forEach(b => b.interactive = isVisible);
-
     if (isVisible) {
+        modal = GameOptionsModal.create();
+        Graphics.addChildToHUD(modal.modal);
         onResize();
+    } else {
+        if (modal) {
+            Graphics.removeChildFromHUD(modal);
+        }
+        modal = null;
     }
 }
 
 function init() {
     setVisible(false);
-    Graphics.addChildToHUD(modal.modal);
 }
 
 const UPDATE_CYCLE_MAX = Math.PI * 2;
@@ -28,7 +33,7 @@ const HALF_COLOR       = 0xff >> 1;
 let updateCycle        = 0;
 
 function update() {
-    if (modal.modal.renderable) {
+    if (modal && modal.modal.renderable) {
         updateCycle += updateCycle >= UPDATE_CYCLE_MAX ?
             -UPDATE_CYCLE_MAX : UPDATE_INCREMENT;
 
@@ -41,7 +46,7 @@ function update() {
 }
 
 export default {
-    modal,
+    getModal: () => modal,
     init,
     update,
     setVisible,

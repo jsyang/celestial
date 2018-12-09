@@ -3,6 +3,7 @@ import Modal from '.';
 import Button from '../Button';
 import {LETTERS} from '../../constants';
 import {transformPolygon} from '../../Geometry';
+import {StorageGameState} from '../../GameState';
 
 const onClickHowToPlay = () => window.open('how-to-play', '_blank');
 const onClickGitHub    = () => window.open('http://github.com/jsyang/celestial', '_blank');
@@ -11,7 +12,8 @@ const width  = 340;
 const height = 420;
 
 function create({onClickNewGame, onClickLoadGame}) {
-    const modal = Modal.create({width, height});
+    const hasSavedGame = localStorage.getItem(StorageGameState.Scores);
+    const modal        = Modal.create({width, height});
 
     const label = new PIXI.Text(
         `Build: ${process.env.BUILD_DATE} -- ${process.env.BUILD_HASH}`,
@@ -53,6 +55,11 @@ function create({onClickNewGame, onClickLoadGame}) {
     });
     buttonLoadGame.x     = 20;
     buttonLoadGame.y     = modalStackY;
+    if (!hasSavedGame) {
+        buttonLoadGame.children[0].tint = 0x222222;
+        buttonLoadGame.tint             = 0x333333;
+        buttonLoadGame.interactive      = false;
+    }
     modal.modal.addChild(buttonLoadGame);
 
     modalStackY -= 20 + 40;
@@ -65,7 +72,9 @@ function create({onClickNewGame, onClickLoadGame}) {
     modal.modal.addChild(buttonNewGame);
 
     modal.buttons.push(buttonNewGame);
-    modal.buttons.push(buttonLoadGame);
+    if (hasSavedGame) {
+        modal.buttons.push(buttonLoadGame);
+    }
     modal.buttons.push(buttonHowToPlay);
     modal.buttons.push(buttonGitHub);
 

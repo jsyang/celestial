@@ -1,14 +1,15 @@
 import * as PIXI from 'pixi.js';
 import Modal from '.';
 import Button from '../Button';
-import {restoreFromLocalStorage, saveToLocalStorage} from '../../GameState';
+import {restoreFromLocalStorage, saveToLocalStorage, StorageGameState} from '../../GameState';
 import GameScreen from '../../GameScreen';
 
 const width  = 340;
 const height = 240;
 
 function create() {
-    const modal = Modal.create({width, height});
+    const hasSavedGame = localStorage.getItem(StorageGameState.Scores);
+    const modal        = Modal.create({width, height});
 
     const label = new PIXI.Text(
         'Game options',
@@ -47,6 +48,11 @@ function create() {
     });
     buttonLoadGame.x     = 20;
     buttonLoadGame.y     = modalStackY;
+    if (!hasSavedGame) {
+        buttonLoadGame.children[0].tint = 0x222222;
+        buttonLoadGame.tint             = 0x333333;
+        buttonLoadGame.interactive      = false;
+    }
     modal.modal.addChild(buttonLoadGame);
 
     modalStackY -= 20 + 40;
@@ -59,7 +65,9 @@ function create() {
     modal.modal.addChild(buttonReturnToGame);
 
     modal.buttons.push(buttonReturnToGame);
-    modal.buttons.push(buttonLoadGame);
+    if (hasSavedGame) {
+        modal.buttons.push(buttonLoadGame);
+    }
     modal.buttons.push(buttonSaveGame);
 
     return modal;

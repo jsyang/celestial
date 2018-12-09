@@ -61,5 +61,5 @@ export default {
     displayCommandText: CommandTextContainer.displayText,
     setFocus:           Pointers.setOrigin,
     setPauseVisible:    PauseModal.setVisible,
-    pauseModal:         PauseModal.modal
+    getPauseModal:      PauseModal.getModal
 }

@@ -172,16 +172,16 @@ function onResize() {
 const togglePause = () => {
     isPaused = !isPaused;
 
+    playSound('pause');
+    HUD.setPauseVisible(isPaused);
+
     if (isPaused) {
-        GameScreenControl.setControlledEntity(HUD.pauseModal);
+        GameScreenControl.setControlledEntity(HUD.getPauseModal());
     } else {
         GameScreenControl.setControlledEntity(
             GameScreenControl.getLastControlledLivingEntity()
         );
     }
-
-    playSound('pause');
-    HUD.setPauseVisible(isPaused);
 };
 
 export default {
