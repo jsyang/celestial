@@ -2,7 +2,6 @@ import Entity from '../Entity/index';
 import GameScreenControl from './control/index';
 import Random from '../Random';
 import Focus from '../Graphics/Focus';
-import Starfield from '../Graphics/Starfield';
 import {playSound} from '../assets/audio';
 import HUD from './HUD';
 import {isHumanTeam, TEAM} from '../constants';
@@ -177,10 +176,9 @@ function processTeam(team) {
                 fighter = teamFighter.filter(f => !f.isFighterAutoAccelerated || (!f.attackTarget && (f.planet || f.spaceport))).sort(sortByDockedToHomePlanet)[0];
 
                 if (fighter) {
-                    fighter.isFighterAutoAccelerated = false;
                     GameScreenControl.setControlledEntity(fighter);
+                    GameScreenControl.setControlToHuman();
                     Focus.setFocus(fighter);
-                    Starfield.init();
                 }
             }
         }

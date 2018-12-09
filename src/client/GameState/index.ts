@@ -5,6 +5,7 @@ import getEntityProperties, {PROPERTY_IS_REFERENCE} from './getEntityProperties'
 import Score from "../Score";
 import GameScreenControl from "../GameScreen/control";
 import LivingEntity from '../Entity/LivingEntity';
+import Focus from '../Graphics/Focus';
 
 export function serialize(): string {
     return JSON.stringify(
@@ -52,7 +53,6 @@ export function saveToLocalStorage() {
 
     const controlledEntity = GameScreenControl.getLastControlledLivingEntity();
     if (controlledEntity && controlledEntity instanceof LivingEntity) {
-        console.log(controlledEntity);
         localStorage.setItem('controlledEntity', (controlledEntity as any)._creationId);
     }
 
@@ -68,6 +68,8 @@ export function restoreFromLocalStorage() {
     const newControlledEntity = Entity.getAll().find((e: any) => e._creationId === controlledEntityId);
     if (newControlledEntity) {
         GameScreenControl.setControlledEntity(newControlledEntity);
+        GameScreenControl.setControlToHuman();
+        Focus.setFocus(newControlledEntity);
     }
 
     const savedScores = JSON.parse(decompress(localStorage.getItem('score')));

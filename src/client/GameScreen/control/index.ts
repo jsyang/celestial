@@ -25,6 +25,8 @@ const setControlledEntity = entity => {
         lastControlledLivingEntity = entity;
         Focus.setFocus(entity);
     }
+
+    return entity;
 };
 
 const getControlledEntity           = () => controlledEntity;
@@ -65,9 +67,6 @@ function update() {
                 // Modals handled first
                 controlActiveModal(controlledEntity, inputState);
             } else if (controlledEntity.hp > 0) {
-                // Any controlled entities
-                Focus.setFocus(controlledEntity);
-
                 // Only allow player control if same faction
                 if (isHumanTeam(controlledEntity.team)) {
                     setControlToHuman();
@@ -86,14 +85,18 @@ function update() {
 
         // Select enemy fighters to focus on
         if (events.FOCUS_NEXT_ENEMY && !prevEvents.FOCUS_NEXT_ENEMY) {
-            Starfield.process(null);
-            revertControlToAI();
+            const nextFocusedFighter = getFighter(true);
 
-            Focus.setFocus(
-                setControlledEntity(
-                    getFighter(true)
-                )
-            );
+            if (nextFocusedFighter !== getControlledEntity()) {
+                revertControlToAI();
+                Starfield.process(null);
+
+                Focus.setFocus(
+                    setControlledEntity(
+                        nextFocusedFighter
+                    )
+                );
+            }
         }
 
         if (events.TOGGLE_RADAR && !prevEvents.TOGGLE_RADAR) {
@@ -113,5 +116,6 @@ export default {
     getLastControlledLivingEntity,
     getControlledEntity,
     setControlledEntity,
-    revertControlToAI
+    revertControlToAI,
+    setControlToHuman
 }

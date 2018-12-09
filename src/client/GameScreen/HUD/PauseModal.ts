@@ -10,6 +10,7 @@ function onResize() {
 
 function setVisible(isVisible) {
     modal.modal.renderable = isVisible;
+    modal.buttons.forEach(b => b.interactive = isVisible);
 
     if (isVisible) {
         onResize();
@@ -17,7 +18,7 @@ function setVisible(isVisible) {
 }
 
 function init() {
-    modal.modal.renderable = false;
+    setVisible(false);
     Graphics.addChildToHUD(modal.modal);
 }
 
