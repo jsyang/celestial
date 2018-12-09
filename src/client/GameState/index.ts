@@ -6,6 +6,7 @@ import Score from "../Score";
 import GameScreenControl from "../GameScreen/control";
 import LivingEntity from '../Entity/LivingEntity';
 import Focus from '../Graphics/Focus';
+import TeamSystem from '../GameScreen/TeamSystem';
 
 export function serialize(): string {
     return JSON.stringify(
@@ -45,6 +46,7 @@ export function deserialize(json: string): void {
 
     // Second pass, inflate references
     Entity.getAll().forEach(inflateReferencesForEntity);
+    TeamSystem.init();
 }
 
 export function saveToLocalStorage() {

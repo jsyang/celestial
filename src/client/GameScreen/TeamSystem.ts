@@ -268,7 +268,15 @@ const setOnTeamLostCallback = cb => onTeamLost = cb;
 const setOnTeamWinCallback = cb => onTeamWin = cb;
 
 function init() {
-    teamsRemaining = [...TEAMS];
+    // If loading a previous game ensure this
+    // system is in sync with loaded game state
+    const allEntities = Entity.getAll();
+    if (allEntities.length > 0) {
+        teamsRemaining = new Set(allEntities.map((e: any) => e.team));
+        teamsRemaining = [...teamsRemaining].filter(t => t > -1);
+    } else {
+        teamsRemaining = [...TEAMS];
+    }
 }
 
 export default {

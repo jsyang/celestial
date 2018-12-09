@@ -8,9 +8,9 @@ const onClickHowToPlay = () => window.open('how-to-play', '_blank');
 const onClickGitHub    = () => window.open('http://github.com/jsyang/celestial', '_blank');
 
 const width  = 340;
-const height = 360;
+const height = 420;
 
-function create({onClickNewGame}) {
+function create({onClickNewGame, onClickLoadGame}) {
     const modal = Modal.create({width, height});
 
     const label = new PIXI.Text(
@@ -26,8 +26,7 @@ function create({onClickNewGame}) {
     label.y     = height + 10;
     modal.modal.addChild(label);
 
-
-    let modalStackY = 360;
+    let modalStackY = height;
 
     modalStackY -= 20 + 40;
     const buttonGitHub = Button.create({
@@ -37,7 +36,6 @@ function create({onClickNewGame}) {
     buttonGitHub.x     = 20;
     buttonGitHub.y     = modalStackY;
     modal.modal.addChild(buttonGitHub);
-
 
     modalStackY -= 20 + 40;
     const buttonHowToPlay = Button.create({
@@ -49,6 +47,15 @@ function create({onClickNewGame}) {
     modal.modal.addChild(buttonHowToPlay);
 
     modalStackY -= 20 + 40;
+    const buttonLoadGame = Button.create({
+        text:    'Load game',
+        onClick: onClickLoadGame
+    });
+    buttonLoadGame.x     = 20;
+    buttonLoadGame.y     = modalStackY;
+    modal.modal.addChild(buttonLoadGame);
+
+    modalStackY -= 20 + 40;
     const buttonNewGame = Button.create({
         text:    'New game',
         onClick: onClickNewGame
@@ -58,6 +65,7 @@ function create({onClickNewGame}) {
     modal.modal.addChild(buttonNewGame);
 
     modal.buttons.push(buttonNewGame);
+    modal.buttons.push(buttonLoadGame);
     modal.buttons.push(buttonHowToPlay);
     modal.buttons.push(buttonGitHub);
 

@@ -2,6 +2,8 @@ import Graphics from '../Graphics';
 import Starfield from '../Graphics/Starfield';
 import TitleScreenControl from './control';
 import TitleScreenModal from '../UI/Modal/TitleScreenModal';
+import GameScreen from '../GameScreen';
+import {restoreFromLocalStorage} from '../GameState';
 
 let raf;  // requestAnimationFrame request
 let then; // Time stamp of last animation frame
@@ -17,7 +19,6 @@ const SPEED    = Math.PI / 180 * 0.02;
 const FADE_RATE      = 0.05;
 let titleScreenAlpha = 1;
 let isFadingOut      = false;
-
 
 function step() {
     const now         = Date.now();
@@ -61,7 +62,15 @@ function step() {
 }
 
 const modal = TitleScreenModal.create({
-    onClickNewGame: () => isFadingOut = true
+    onClickNewGame:  () => isFadingOut = true,
+    onClickLoadGame: () => {
+        setFadeOutCallback(() => {
+            GameScreen.init(false);
+            restoreFromLocalStorage();
+            GameScreen.start();
+        });
+        isFadingOut = true;
+    }
 });
 
 function start() {

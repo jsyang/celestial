@@ -22,12 +22,11 @@ let then; // Time stamp of last animation frame
 const FPS          = 60;
 const FPS_INTERVAL = 1000 / FPS;
 
-let isFadingIn      = true;
-let gameScreenAlpha = 0;
-let FADE_RATE       = 0.05;
+const FADE_RATE     = 0.05;
+let isFadingIn      = false;
+let gameScreenAlpha = 1;
 
 let isPaused = false;
-let prevControlledEntity;
 
 function update() {
     TeamSystem.update();
@@ -137,13 +136,16 @@ function onTeamWon(team) {
     }
 }
 
-function init() {
+function init(isNewGame = true) {
     addEventListener('resize', onResize);
 
     isFadingIn      = true;
     gameScreenAlpha = 0;
 
-    Entity.clearAll();
+    if (isNewGame) {
+        Entity.clearAll();
+    }
+
     Graphics.init();
 
     Starfield.init()
@@ -152,7 +154,9 @@ function init() {
     NavBeaconHuman.init();
 
     HUD.init();
-    Galaxy.init();
+    if (isNewGame) {
+        Galaxy.init();
+    }
 
     TeamSystem.init();
     TeamSystem.setOnTeamLostCallback(onTeamLost);
@@ -169,11 +173,11 @@ const togglePause = () => {
     isPaused = !isPaused;
 
     if (isPaused) {
-        prevControlledEntity = GameScreenControl.getControlledEntity();
         GameScreenControl.setControlledEntity(HUD.pauseModal);
     } else {
-        GameScreenControl.setControlledEntity(prevControlledEntity);
-        prevControlledEntity = null;
+        GameScreenControl.setControlledEntity(
+            GameScreenControl.getLastControlledLivingEntity()
+        );
     }
 
     playSound('pause');
