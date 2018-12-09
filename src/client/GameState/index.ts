@@ -3,6 +3,8 @@ import {compress, decompress} from "lz-string";
 import Entity from "../Entity";
 import getEntityProperties, {PROPERTY_IS_REFERENCE} from './getEntityProperties';
 import Score from "../Score";
+import GameScreenControl from "../GameScreen/control";
+import LivingEntity from '../Entity/LivingEntity';
 
 export function serialize(): string {
     return JSON.stringify(
@@ -40,15 +42,19 @@ export function deserialize(json: string): void {
     // Avoid potential creationId duplicates
     Entity.resetCreationId(maxCreationId + 10);
 
-    const allEntities = Entity.getAll();
-
     // Second pass, inflate references
-    allEntities.forEach(inflateReferencesForEntity);
+    Entity.getAll().forEach(inflateReferencesForEntity);
 }
 
 export function saveToLocalStorage() {
     const json = serialize();
     localStorage.setItem('entities', compress(json));
+
+    const controlledEntity = GameScreenControl.getLastControlledLivingEntity();
+    if (controlledEntity && controlledEntity instanceof LivingEntity) {
+        console.log(controlledEntity);
+        localStorage.setItem('controlledEntity', (controlledEntity as any)._creationId);
+    }
 
     const score = Score.getAll();
     localStorage.setItem('score', compress(JSON.stringify(score)));
@@ -57,6 +63,12 @@ export function saveToLocalStorage() {
 export function restoreFromLocalStorage() {
     const json = decompress(localStorage.getItem('entities'));
     deserialize(json);
+
+    const controlledEntityId  = parseFloat(localStorage.getItem('controlledEntity') || '');
+    const newControlledEntity = Entity.getAll().find((e: any) => e._creationId === controlledEntityId);
+    if (newControlledEntity) {
+        GameScreenControl.setControlledEntity(newControlledEntity);
+    }
 
     const savedScores = JSON.parse(decompress(localStorage.getItem('score')));
     Score.setAll(savedScores.score, savedScores.battleResults);

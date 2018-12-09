@@ -9,10 +9,26 @@ import Starfield from '../../Graphics/Starfield';
 import {getFighter} from './getFighter';
 import RadarGalaxyExpanded from '../HUD/RadarGalaxyExpanded';
 import command from './command';
+import LivingEntity from '../../Entity/LivingEntity';
 
+// Need to handle living entities separate from modals / other controlled things
 let controlledEntity;
-const setControlledEntity = entity => controlledEntity = entity;
-const getControlledEntity = () => controlledEntity;
+let lastControlledLivingEntity;
+const setControlledEntity = entity => {
+    controlledEntity = entity;
+
+    if (!entity) {
+        lastControlledLivingEntity = null;
+    }
+
+    if (entity instanceof LivingEntity) {
+        lastControlledLivingEntity = entity;
+        Focus.setFocus(entity);
+    }
+};
+
+const getControlledEntity           = () => controlledEntity;
+const getLastControlledLivingEntity = () => lastControlledLivingEntity;
 
 let prevEvents: IInputEvent = {} as any;
 
@@ -94,6 +110,7 @@ function update() {
 
 export default {
     update,
+    getLastControlledLivingEntity,
     getControlledEntity,
     setControlledEntity,
     revertControlToAI

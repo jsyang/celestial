@@ -58,9 +58,6 @@ See `LETTERS` within `src/client/constants.ts` for an example.
 
 ## TODO for v1.2
 
-- save game / load games
-    - controlledEntity / focus
-
 - improve + extend fighter AI
     - land on planet
     - land on spaceport
