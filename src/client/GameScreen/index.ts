@@ -15,7 +15,6 @@ import {isHumanTeam} from '../constants';
 import Score from '../Score';
 import GameOverModal from '../UI/Modal/GameOverModal';
 import NavBeaconHuman from '../Graphics/NavBeaconHuman';
-import {restoreFromLocalStorage, saveToLocalStorage} from '../GameState';
 
 let raf;  // requestAnimationFrame request
 let then; // Time stamp of last animation frame
@@ -28,6 +27,7 @@ let gameScreenAlpha = 0;
 let FADE_RATE       = 0.05;
 
 let isPaused = false;
+let prevControlledEntity;
 
 function update() {
     TeamSystem.update();
@@ -91,7 +91,7 @@ function reinitAll() {
 function onTeamLost(team) {
     if (isHumanTeam(team)) {
         NavBeaconHuman.clear();
-        Score.addSectorResult(-1);
+        Score.addBattleResult(-1);
         isPaused = true;
         playSound('galaxy-lose');
 
@@ -125,7 +125,7 @@ function onTeamWon(team) {
     if (isHumanTeam(team)) {
         NavBeaconHuman.clear();
         isPaused = true;
-        Score.addSectorResult(1);
+        Score.addBattleResult(1);
         playSound('galaxy-win');
 
         const wonModal = GalaxyWonModal.create({
@@ -138,10 +138,6 @@ function onTeamWon(team) {
 }
 
 function init() {
-    // todo: create a save / load game modal where this can be triggered instead
-    (window as any).foo = saveToLocalStorage;
-    (window as any).bar = restoreFromLocalStorage;
-
     addEventListener('resize', onResize);
 
     isFadingIn      = true;
@@ -171,6 +167,15 @@ function onResize() {
 
 const togglePause = () => {
     isPaused = !isPaused;
+
+    if (isPaused) {
+        prevControlledEntity = GameScreenControl.getControlledEntity();
+        GameScreenControl.setControlledEntity(HUD.pauseModal);
+    } else {
+        GameScreenControl.setControlledEntity(prevControlledEntity);
+        prevControlledEntity = null;
+    }
+
     playSound('pause');
     HUD.setPauseVisible(isPaused);
 };

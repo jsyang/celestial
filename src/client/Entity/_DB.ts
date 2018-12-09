@@ -61,12 +61,10 @@ function getAll() {
 }
 
 function clearAll() {
-    Object.keys(byType).forEach(
-        type => {
-            byType[type].forEach(remove);
-            delete byType[type];
-        }
-    );
+    getAll().forEach(remove);
+
+    Object.keys(byType)
+        .forEach(type => delete byType[type]);
 }
 
 export default {

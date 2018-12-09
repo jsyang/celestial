@@ -6,6 +6,10 @@ let nextRank = getNextRankByScore(0);
 
 function add(delta: number): void {
     score += delta;
+    updateByScore();
+}
+
+function updateByScore() {
     rank     = getRankByScore(score);
     nextRank = getNextRankByScore(score);
 }
@@ -14,19 +18,28 @@ function getScoreRank() {
     return {rank, score, nextRank};
 }
 
-let consecutiveSectorWins = 0;
+let battleResults = [0, 0];
 
-function addSectorResult(result: -1 | 1) {
-    consecutiveSectorWins += result;
+function addBattleResult(result: -1 | 1) {
+    battleResults.push(result);
+    battleResults.shift();
 }
 
 function getIsGameOver() {
-    return consecutiveSectorWins < -1;
+    return (battleResults[0] + battleResults[1]) === -2;
+}
+
+function setAll(_score, _battleResults) {
+    battleResults = [..._battleResults];
+    score         = _score;
+    updateByScore();
 }
 
 export default {
     add,
-    addSectorResult,
+    setAll,
+    addBattleResult,
     getIsGameOver,
-    getScoreRank
+    getScoreRank,
+    getAll: () => ({score, battleResults})
 }

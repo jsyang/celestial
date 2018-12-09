@@ -116,16 +116,13 @@ function updateAll() {
 }
 
 function clearAll() {
-    // Clear projectiles and units
-    for (let i = 0; i < 4; i++) {
-        prepareNext();
-    }
-
-    // Clear celestial bodies
-    bodies = [];
-
-    // Clear entity db
     DB.clearAll();
+
+    gridUnits.grid     = [];
+    gridUnits.nextGrid = [];
+
+    bodies      = [];
+    projectiles = [];
 }
 
 const isHPAbove0 = (e: any) => e.hp > 0;

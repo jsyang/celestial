@@ -2,12 +2,9 @@ import {compress, decompress} from "lz-string";
 
 import Entity from "../Entity";
 import getEntityProperties, {PROPERTY_IS_REFERENCE} from './getEntityProperties';
-import Tally from '../Tally';
+import Score from "../Score";
 
 export function serialize(): string {
-    const creationIds = new Tally();
-    Entity.getAll().forEach((e: any) => creationIds.add(e._creationId));
-
     return JSON.stringify(
         Entity.getAll().map(getEntityProperties),
         null, 2
@@ -41,7 +38,7 @@ export function deserialize(json: string): void {
     });
 
     // Avoid potential creationId duplicates
-    Entity.resetCreationId(maxCreationId + 1);
+    Entity.resetCreationId(maxCreationId + 10);
 
     const allEntities = Entity.getAll();
 
@@ -52,9 +49,15 @@ export function deserialize(json: string): void {
 export function saveToLocalStorage() {
     const json = serialize();
     localStorage.setItem('entities', compress(json));
+
+    const score = Score.getAll();
+    localStorage.setItem('score', compress(JSON.stringify(score)));
 }
 
 export function restoreFromLocalStorage() {
     const json = decompress(localStorage.getItem('entities'));
     deserialize(json);
+
+    const savedScores = JSON.parse(decompress(localStorage.getItem('score')));
+    Score.setAll(savedScores.score, savedScores.battleResults);
 }

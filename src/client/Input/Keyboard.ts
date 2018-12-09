@@ -57,6 +57,7 @@ export interface IKeyboardState {
     spacebar?: boolean;
     backspace?: boolean;
     enter?: boolean;
+    escape?: boolean;
 }
 
 const inputState: IKeyboardState = {
@@ -84,6 +85,7 @@ const inputState: IKeyboardState = {
     '0':         false,
     spacebar:    false,
     backspace:   false,
+    escape:      false,
     enter:       false
 };
 
@@ -99,7 +101,7 @@ addEventListener('keydown', onKeyDown);
 addEventListener('keyup', onKeyUp);
 
 export const getEvents = (): IInputEvent => ({
-    PAUSE:             Boolean(inputState.p),
+    PAUSE:             Boolean(inputState.escape),
     TURN_LEFT:         Boolean(inputState.left_arrow),
     TURN_RIGHT:        Boolean(inputState.right_arrow),
     ACCELERATE:        Boolean(inputState.up_arrow),

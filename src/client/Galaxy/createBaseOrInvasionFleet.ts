@@ -98,10 +98,32 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
         });
         fighter.dockPlanet(startingLocation);
 
-        startingLocation.pbase     = Entity.create('PBase', planetStructureParams);
-        startingLocation.pcolony   = Entity.create('PColony', planetStructureParams);
-        startingLocation.plab      = Entity.create('PLab', planetStructureParams);
+        let SHIELDED_CHANCE    = 0.4;
+        startingLocation.pbase = Entity.create('PBase', planetStructureParams);
+        if (Math.random() < SHIELDED_CHANCE) {
+            startingLocation.pbase.shield = Entity.create(
+                'PShield',
+                {
+                    team,
+                    anchor: startingLocation.pbase
+                }
+            );
+        }
+
+        startingLocation.pcolony = Entity.create('PColony', planetStructureParams);
+        startingLocation.plab    = Entity.create('PLab', planetStructureParams);
+
+        SHIELDED_CHANCE            = 0.15;
         startingLocation.pcomm     = Entity.create('PComm', planetStructureParams);
+        if (Math.random() < SHIELDED_CHANCE) {
+            startingLocation.pcomm.shield = Entity.create(
+                'PShield',
+                {
+                    team,
+                    anchor: startingLocation.pcomm
+                }
+            );
+        }
         startingLocation.spaceport = Entity.create('SpacePort', planetStructureParams);
 
         const spaceportStructureParams = {

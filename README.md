@@ -60,8 +60,6 @@ See `LETTERS` within `src/client/constants.ts` for an example.
 
 - save game / load games
     - controlledEntity / focus
-    - score / rank
-    - create save / load game options modal
 
 - improve + extend fighter AI
     - land on planet

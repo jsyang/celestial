@@ -42,7 +42,7 @@ function clickButton() {
 
 function create({width = 640, height = 480}) {
     const modal = new PIXI.Graphics();
-    modal.lineStyle(1, 0x00ff00, 1);
+    modal.lineStyle(1, 0xffffff, 1);
     modal.beginFill(0, 1);
     modal.drawRect(0, 0, width, height);
     modal.endFill();

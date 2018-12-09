@@ -6,11 +6,11 @@ _Celestial Combat is a game of galactic conquest and colonization._
 
 ```
     KEYBOARD........... ACTION.............
+    Escape key          Save / load game
     Left arrow key      Turn left
     Right arrow key     Turn right
     Up arrow key        Accelerate
     F                   Fire primary weapon
-    P                   Pause / resume game
     M                   Toggle galaxy radar display
     . (>)               Focus on next fighter spaceship
     
@@ -22,7 +22,7 @@ _Celestial Combat is a game of galactic conquest and colonization._
     Button 0            Fire primary weapon
     Button 1            Special action (when docked)
     Button 2            Accelerate
-    Button 3            Pause / resume game
+    Button 3            Save / load game
 ```
 
 ### HUD (Heads Up Display)
