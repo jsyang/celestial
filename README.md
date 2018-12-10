@@ -88,7 +88,14 @@ See `LETTERS` within `src/client/constants.ts` for an example.
 - sectors are generated before game begins
     - retreat / advance / develop sector
 
-- save game / load games from cloud?
+- persist saved games in cloud?
+    - player auth
+    - maximum of 3 saved games
+    - highest score yet
+    - playtime of saved game (in real elapsed time, only count minutes)
+    - site to browse saved games
+    - upload avatar
+    - simple forum
 
 - strategic AI
     - combined arms
