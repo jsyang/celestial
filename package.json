@@ -15,7 +15,7 @@
     "ts-watch": "tsc --noEmit -w -p .",
     "regen-env": "node scripts/generateDotEnv.js",
     "watch": "yarn regen-sounds; yarn regen-env ; parcel _dev.html --port 3000 --no-hmr --no-source-maps",
-    "regen-js": "yarn regen-sounds; yarn regen-env ; parcel build _dev.html --out-dir . ; yarn cleanup",
+    "regen-js": "rm -rf .cache ; yarn regen-sounds; yarn regen-env ; parcel build _dev.html --out-dir . ; yarn cleanup",
     "cleanup": "git checkout _dev.html ; mv client.*.js celestialcombat.js ; rm *.map *.ogg",
     "regen-sounds": "node scripts/generateSoundsList.js",
     "regen-html": "node scripts/generateHowToPlay.js ",
