@@ -1,3 +1,4 @@
+import fscreen from 'fscreen';
 import * as PIXI from 'pixi.js';
 import {IPoint} from '../types';
 import Entity from '../Entity';
@@ -51,6 +52,28 @@ const removeAllChildren = () => {
     scene.addChild(stage);
 };
 
+function getIsMobile(): boolean {
+    return /mobile/ig.test(navigator.userAgent);
+}
+
+function transformViewToMatchPhysicalPixels() {
+    // Resize to use physical pixels
+    // from https://stackoverflow.com/questions/45610164/set-viewport-to-match-physical-pixels
+    const clientWidth = document.documentElement.clientWidth * window.devicePixelRatio;
+    document.querySelector('meta[name=viewport]')!
+        .setAttribute('content', `width=${clientWidth}, minimum-scale: 1`);
+
+    document.documentElement.style.transform       = `scale(${1 / window.devicePixelRatio})`;
+    document.documentElement.style.transformOrigin = 'top left';
+}
+
+function goFullScreen() {
+    if (!fscreen.fullscreenElement) {
+        fscreen.requestFullscreen(renderer.view);
+        transformViewToMatchPhysicalPixels();
+    }
+}
+
 function init(): void {
     removeAllChildren();
 
@@ -59,6 +82,10 @@ function init(): void {
         scene.addChild(stage);
         renderer = new PIXI.WebGLRenderer(width, height);
         document.body.appendChild(renderer.view);
+
+        if (getIsMobile()) {
+            renderer.view.addEventListener('touchstart', goFullScreen);
+        }
     }
 }
 

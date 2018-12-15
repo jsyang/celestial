@@ -1,5 +1,6 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from 'pixi.js';
 import {playSound} from '../assets/audio';
+import {setClickable} from './setClickable';
 
 function create({text, width = 300, height = 40, onClick}) {
     const button = new PIXI.Graphics() as any;
@@ -21,10 +22,12 @@ function create({text, width = 300, height = 40, onClick}) {
 
     button.addChild(label);
 
-    button.interactive         = true;
-    button.interactiveChildren = false;
-    button.buttonMode          = true;
-    button.hitArea             = new PIXI.Rectangle(0, 0, width, height);
+    setClickable(button, () => {
+        onClick();
+        playSound('nav');
+    });
+
+    button.hitArea = new PIXI.Rectangle(0, 0, width, height);
 
     // Doing this instead of .on('mouseover', ...) to
     // avoid needing to re-export the event handlers
@@ -45,15 +48,10 @@ function create({text, width = 300, height = 40, onClick}) {
         text.tint             = 0xffffff;
     };
 
-    button.click = () => {
-        onClick();
-        playSound('nav');
-    };
-
     return button;
 }
 
 
 export default {
     create
-}
+};
