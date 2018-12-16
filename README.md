@@ -56,13 +56,6 @@ See `LETTERS` within `src/client/constants.ts` for an example.
 
 ---
 
-## TODO for v1.2
-
-- improve + extend fighter AI
-    - land on planet
-    - land on spaceport
-    - move to point and be at rest
-
 ## TODO for v1.3
 
 - friendly units show stats
@@ -76,6 +69,8 @@ See `LETTERS` within `src/client/constants.ts` for an example.
     - manufacturing / refining = show progress bar
 
 - improve + extend fighter AI
+    - land on spaceport
+    - move to point and be at rest
     - aggression level (proximity to target)
     - retarget when current attackTarget is dead / objective met
     - avoid stars

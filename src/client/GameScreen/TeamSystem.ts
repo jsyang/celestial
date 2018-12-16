@@ -138,8 +138,9 @@ function clearHumanTeamPlanetIfNotInTeam() {
 }
 
 function processTeam(team) {
-    const friendlyOnly = (e: any) => e.team === team;
-    const enemyOnly    = (e: any) => e.team !== team;
+    const friendlyOnly               = (e: any) => e.team === team;
+    const enemyOnly                  = (e: any) => e.team !== team;
+    const unoccupiedEnemyPlanetsOnly = (e: any) => e.type === 'Planet' && enemyOnly(e) && !e.isOccupied();
 
     let teamPlanet    = Entity.getByType('Planet').filter(friendlyOnly);
     let teamPColony   = Entity.getByType('PColony').filter(friendlyOnly);
@@ -187,19 +188,24 @@ function processTeam(team) {
         if (fighter && !fighter.attackTarget && fighter.isFighterAutoAccelerated) {
             const whichAttackType = Math.random();
             let potentialTarget;
+            let messageText;
 
             if (whichAttackType < 0.1) {
                 potentialTarget = Random.arrayElement(Entity.getByType('Freighter').filter(enemyOnly));
-                HUD.displayText(team, 'Friendly Fighter targeting enemy Freighter!');
+                messageText     = 'Friendly Fighter targeting enemy Freighter!';
 
             } else if (whichAttackType < 0.3) {
                 potentialTarget = Random.arrayElement(Entity.getByType('PBase').filter(enemyOnly));
-                HUD.displayText(team, 'Friendly Fighter targeting enemy planet!');
+                messageText     = 'Friendly Fighter targeting enemy base!';
 
+            } else if (whichAttackType < 0.5) {
+                potentialTarget = Random.arrayElement(Entity.getBodies().filter(unoccupiedEnemyPlanetsOnly));
+                messageText     = 'Friendly Fighter moving to secure planet!';
             }
 
             if (potentialTarget) {
                 fighter.attackTarget = potentialTarget;
+                HUD.displayText(team, messageText);
             }
         }
     }

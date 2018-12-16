@@ -3,11 +3,9 @@ import {TEAM} from '../constants';
 import Focus from '../Graphics/Focus';
 
 let focusTeam = TEAM.MAGENTA;
-let enemyTeam = TEAM.BLUE;
+let enemyTeam = TEAM.NONE;
 
 function init() {
-    // Create a base to attack
-
     const star = Entity.create('Star', {x: 5000, y: 5000});
 
     const planet = Entity.create('Planet', {
@@ -19,21 +17,13 @@ function init() {
     planet.team = enemyTeam;
     planet.updateFlagColor();
 
-    const planetStructureParams = {
-        team: planet.team,
-        planet
-    };
-
-    planet.pbase = Entity.create('PBase', planetStructureParams);
-
-
     // Create an attacker
     const fighter = Entity.create('Fighter', {
         x:                        15000,
         y:                        15000,
         isFighterAutoAccelerated: true,
         team:                     focusTeam,
-        attackTarget:             planet.pbase
+        attackTarget:             planet
     });
 
     Focus.setFocus(fighter);

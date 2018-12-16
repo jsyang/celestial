@@ -16,6 +16,7 @@ const ROTATION_RATE_AI_FIGHTER     = ROTATION_RATE_FIGHTER * 2;
 const FRAMES_TO_TURN      = Math.PI / ROTATION_RATE_FIGHTER;
 const ATTACK_DIST2        = 500 ** 2;
 const ATTACK_PLANET_DIST2 = 400 ** 2;
+const LAND_PLANET_DIST2   = 200 ** 2;
 
 const KEEP_AWAY_PLANET_DIST2     = (200 ** 2) / 1.4;
 const FRAMES_DECELERATION_MARGIN = 5;
@@ -134,9 +135,70 @@ function moveOrAttack(entity) {
     }
 }
 
+function moveOrLand(entity) {
+    const {attackTarget, dx, dy, hasFighterSlowedForLanding} = entity;
+
+    let rotation;
+    let shouldAccelerate = true;
+
+    let dist2    = getDistSquared(entity, attackTarget);
+    const speed2 = dx ** 2 + dy ** 2;
+
+    const idealRotation   = getAngleFromTo(entity, attackTarget);
+    const movementBearing = Math.atan2(dy, dx);
+
+    entity.isFighterPreviouslyDocked = false;
+    entity.isAttacking               = false;
+
+    if (dist2 < LAND_PLANET_DIST2) {
+        if (!hasFighterSlowedForLanding && speed2 > 4) {
+            rotation = movementBearing + Math.PI;
+        } else {
+            entity.hasFighterSlowedForLanding = true;
+            rotation                          = Math.PI + idealRotation;
+            shouldAccelerate                  = speed2 > 4;
+        }
+    } else {
+        entity.hasFighterSlowedForLanding = false;
+        // Too far to land, move closer
+        const framesToSlowDown            = Math.sqrt(Math.sqrt(dist2) / ACCELERATION_FIGHTER) + FRAMES_TO_TURN + FRAMES_DECELERATION_MARGIN;
+        const numberOfFramesAwayFromPoint = Math.sqrt(dist2 / speed2);
+
+        if (numberOfFramesAwayFromPoint < framesToSlowDown) {
+            // Decelerate when approaching target point
+            rotation = movementBearing + Math.PI;
+        } else {
+            // Accelerate towards target
+            rotation = idealRotation;
+        }
+    }
+
+    rotate(entity, rotation);
+
+    // Only accelerate when not attacking and in the correct angle
+    if (shouldAccelerate && Math.abs(Math.cos(rotation) - Math.cos(entity.rotation)) < ACCELERATION_ANGLE_MAGNITUDE) {
+        accelerateFlameOn(entity);
+    }
+}
+
+function clearTargetIfDockedAtTarget(entity) {
+    const {isDockedPlanet, attackTarget, planet} = entity;
+    if (isDockedPlanet && attackTarget === planet) {
+        entity.attackTarget = null;
+        return true;
+    }
+    return false;
+}
+
 const ATTACK_SELECTOR = [
     undockIfDocked,
     moveOrAttack
+];
+
+const LAND_ON_PLANET_SELECTOR = [
+    clearTargetIfDockedAtTarget,
+    undockIfDocked,
+    moveOrLand
 ];
 
 function moveToAttackTarget(entity) {
@@ -146,7 +208,11 @@ function moveToAttackTarget(entity) {
 
     if (attackTarget) {
         if (attackTarget.hp > 0) {
-            evalSelector(ATTACK_SELECTOR, entity);
+            if (attackTarget.type === 'Planet') {
+                evalSelector(LAND_ON_PLANET_SELECTOR, entity);
+            } else {
+                evalSelector(ATTACK_SELECTOR, entity);
+            }
         } else {
             entity.attackTarget = null;
             entity.isAttacking  = false;
@@ -161,8 +227,9 @@ function process(entity) {
 }
 
 const DEFAULTS = {
-    isFighterPreviouslyDocked: false,
-    isFighterAutoAccelerated:  true
+    hasFighterSlowedForLanding: false,
+    isFighterPreviouslyDocked:  false,
+    isFighterAutoAccelerated:   true
 };
 
 export default {

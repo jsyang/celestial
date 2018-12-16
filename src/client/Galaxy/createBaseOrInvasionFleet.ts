@@ -93,6 +93,9 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
         startingLocation.updateFlagColor();
 
         const fighter = Entity.create('Fighter', {
+            x: startingLocation.x + Random.float(-10, 10),
+            y: startingLocation.x + Random.float(-10, 10),
+
             isFighterAutoAccelerated: !isHumanTeam(team),
             team
         });
@@ -113,8 +116,8 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
         startingLocation.pcolony = Entity.create('PColony', planetStructureParams);
         startingLocation.plab    = Entity.create('PLab', planetStructureParams);
 
-        SHIELDED_CHANCE            = 0.15;
-        startingLocation.pcomm     = Entity.create('PComm', planetStructureParams);
+        SHIELDED_CHANCE        = 0.15;
+        startingLocation.pcomm = Entity.create('PComm', planetStructureParams);
         if (Math.random() < SHIELDED_CHANCE) {
             startingLocation.pcomm.shield = Entity.create(
                 'PShield',
@@ -124,7 +127,10 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
                 }
             );
         }
-        startingLocation.spaceport = Entity.create('SpacePort', planetStructureParams);
+        startingLocation.spaceport = Entity.create('SpacePort', {
+            ...planetStructureParams,
+            orbitRotation: Random.float(-Math.PI, Math.PI)
+        });
 
         const spaceportStructureParams = {
             ...planetStructureParams,

@@ -434,7 +434,157 @@ function e(e,t){var r=t&&t.cache?t.cache:h,n=t&&t.serializer?t.serializer:u;retu
 },{"../Graphics/Focus":"xtCw","../entityHelpers":"IAoB","fast-memoize":"njTh","../startupOptions":"Y848"}],"vi4H":[function(require,module,exports) {
 "use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.getTargetNearEntity=o;var e=a(require("../../Entity")),t=require("../../constants"),r=require("../../assets/audio");function a(e){return e&&e.__esModule?e:{default:e}}var n=0,i=["Fighter","Freighter","PBase","PColony","PComm","PLab","SpacePort"].join(","),u=function(e){return!(0,t.isHumanTeam)(e.team)&&-1!==i.indexOf(e.type)};function o(t){var a=e.default.getNearestUnits(t).filter(u);a[++n]||(n=0);var i=a[n];return i&&(0,r.playSound)("bopp"),i}
 },{"../../Entity":"ut18","../../constants":"PH7Q","../../assets/audio":"WovT"}],"WGVz":[function(require,module,exports) {
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var e,t=f(require("../Entity/index")),a=f(require("./control/index")),r=f(require("../Random")),n=f(require("../Graphics/Focus")),i=require("../assets/audio"),l=f(require("./HUD")),o=require("../constants"),u=require("../entityHelpers");function f(e){return e&&e.__esModule?e:{default:e}}function c(e){return g(e)||s(e)||d()}function d(){throw new TypeError("Invalid attempt to spread non-iterable instance")}function s(e){if(Symbol.iterator in Object(e)||"[object Arguments]"===Object.prototype.toString.call(e))return Array.from(e)}function g(e){if(Array.isArray(e)){for(var t=0,a=new Array(e.length);t<e.length;t++)a[t]=e[t];return a}}function p(e,t){var a=!1;if(e.length>0){for(var r=e.length-1;r>=0;r--){var n=e[r];if(!Boolean(n.colonizationTarget)){n.isOrbitingPlanet&&n.exitPlanetOrbit(),n.colonizationTarget=t,a=!0;break}}a&&l.default.displayText(e[0].team,"Freighter fleet heading towards target.")}}function y(e){return!e.pbase||!e.pcolony}function m(e){return e.pcolony&&!e.pcolony.isManufacturing}function h(t,a,n){if(a){var i;if((0,o.isHumanTeam)(t)&&e){var l=e.pcolony;l&&!l.isManufacturing&&(i=l)}i||(i=r.default.arrayElement(a).pcolony),i&&i.orderManufacture(n)}}function T(e){var t=e.planet,a=e.isDockedPlanet,r=e.team,n=e.isDockedSpacePort,u=e.reload_HomingMissile,f=e.reload_ClusterRocket,c=e.reload_LaserBolt,d=!1;n?(e.hp<e.maxHp&&(d=(0,o.isHumanTeam)(r),e.hp=e.maxHp,l.default.displayText(e.team,"Fully repaired.")),u&&e.reload_HomingMissile(!1),f&&e.reload_ClusterRocket(!1),c&&e.reload_LaserBolt(!1)):a&&r===t.team&&t.isOccupied()&&(u&&e.reload_HomingMissile(),f&&e.reload_ClusterRocket(),c&&e.reload_LaserBolt(),e.hp<e.maxHp&&(d=(0,o.isHumanTeam)(r),e.hp+=.5,l.default.displayText(e.team,"Repairing: ".concat(Math.round(e.hp/e.maxHp*100),"%")))),d&&(0,i.playSound)("repaired")}function E(e){if(!e.colonizationTarget){var a,r=1/0;t.default.getByType("Planet").forEach(function(t){var n=(0,u.getDistSquared)(e,t);r>n&&(a=t,r=n)}),a&&(e.exitPlanetOrbit(),e.colonizationTarget=a)}}function v(t,a){var r=t.planet===e||t.spaceport&&t.spaceport.planet===e;return((a.planet===e||a.spaceport&&a.spaceport.planet===e)>>0)-(r>>0)}function A(){e&&!(0,o.isHumanTeam)(e.team)&&(e=null)}function F(e){var i,u=function(t){return t.team===e},f=function(t){return t.team!==e},c=t.default.getByType("Planet").filter(u),d=t.default.getByType("PColony").filter(u),s=t.default.getByType("Freighter").filter(u),g=t.default.getByType("Fighter").filter(u);if(i=(i=c.filter(m)).length>0?i:void 0,0===c.length&&s.length>0?s.forEach(E):c.filter(y).forEach(p.bind(null,s)),g.length<c.length&&h(e,i,"Fighter"),g.length>0){var F=r.default.arrayElement(g);if((0,o.isHumanTeam)(e)&&(A(),a.default.getControlledEntity()||(F=g.filter(function(e){return!e.isFighterAutoAccelerated||!e.attackTarget&&(e.planet||e.spaceport)}).sort(v)[0])&&(a.default.setControlledEntity(F),a.default.setControlToHuman(),n.default.setFocus(F))),F&&!F.attackTarget&&F.isFighterAutoAccelerated){var H,M=Math.random();M<.1?(H=r.default.arrayElement(t.default.getByType("Freighter").filter(f)),l.default.displayText(e,"Friendly Fighter targeting enemy Freighter!")):M<.3&&(H=r.default.arrayElement(t.default.getByType("PBase").filter(f)),l.default.displayText(e,"Friendly Fighter targeting enemy planet!")),H&&(F.attackTarget=H)}}g.forEach(T),c.length>s.length&&h(e,i,"Freighter"),0===d.length&&0===g.length&&0===s.length&&(x=x.filter(function(t){return t!==e}),P(e))}function H(t){(0,i.playSound)("install"),e=t}function M(e){t.default.getByType("Fighter").forEach(function(t){(0,o.isHumanTeam)(t.team)&&(t.attackTarget=e)}),(0,i.playSound)("alert"),l.default.displayText(o.TEAM.MAGENTA,"All fighters attacking your target!")}var x,b=3e3,B=0,k=[o.TEAM.GREEN,o.TEAM.BLUE,o.TEAM.YELLOW,o.TEAM.RED,o.TEAM.MAGENTA];function _(){var e=Date.now();e-B>b&&(x.forEach(F),1===x.length&&O(x[0]),B=e)}var P=new Function,O=new Function,q=function(e){return P=e},C=function(e){return O=e};function w(){var e=t.default.getAll();x=e.length>0?c(x=new Set(e.map(function(e){return e.team}))).filter(function(e){return e>-1}):k.concat()}var S={init:w,update:_,setHumanFightersTarget:M,setHumanTeamHomePlanet:H,setOnTeamLostCallback:q,setOnTeamWinCallback:C};exports.default=S;
+        "use strict";
+        Object.defineProperty(exports, "__esModule", {value: !0}), exports.default = void 0;
+        var e, t = c(require("../Entity/index")), a = c(require("./control/index")), r = c(require("../Random")),
+            n = c(require("../Graphics/Focus")), i = require("../assets/audio"), l = c(require("./HUD")),
+            o = require("../constants"), u = require("../entityHelpers");
+
+        function c(e) {
+            return e && e.__esModule ? e : {default: e}
+        }
+
+        function f(e) {
+            return g(e) || s(e) || d()
+        }
+
+        function d() {
+            throw new TypeError("Invalid attempt to spread non-iterable instance")
+        }
+
+        function s(e) {
+            if (Symbol.iterator in Object(e) || "[object Arguments]" === Object.prototype.toString.call(e)) return Array.from(e)
+        }
+
+        function g(e) {
+            if (Array.isArray(e)) {
+                for (var t = 0, a = new Array(e.length); t < e.length; t++) a[t] = e[t];
+                return a
+            }
+        }
+
+        function p(e, t) {
+            var a = !1;
+            if (e.length > 0) {
+                for (var r = e.length - 1; r >= 0; r--) {
+                    var n = e[r];
+                    if (!Boolean(n.colonizationTarget)) {
+                        n.isOrbitingPlanet && n.exitPlanetOrbit(), n.colonizationTarget = t, a = !0;
+                        break
+                    }
+                }
+                a && l.default.displayText(e[0].team, "Freighter fleet heading towards target.")
+            }
+        }
+
+        function y(e) {
+            return !e.pbase || !e.pcolony
+        }
+
+        function m(e) {
+            return e.pcolony && !e.pcolony.isManufacturing
+        }
+
+        function h(t, a, n) {
+            if (a) {
+                var i;
+                if ((0, o.isHumanTeam)(t) && e) {
+                    var l = e.pcolony;
+                    l && !l.isManufacturing && (i = l)
+                }
+                i || (i = r.default.arrayElement(a).pcolony), i && i.orderManufacture(n)
+            }
+        }
+
+        function T(e) {
+            var t = e.planet, a = e.isDockedPlanet, r = e.team, n = e.isDockedSpacePort, u = e.reload_HomingMissile,
+                c = e.reload_ClusterRocket, f = e.reload_LaserBolt, d = !1;
+            n ? (e.hp < e.maxHp && (d = (0, o.isHumanTeam)(r), e.hp = e.maxHp, l.default.displayText(e.team, "Fully repaired.")), u && e.reload_HomingMissile(!1), c && e.reload_ClusterRocket(!1), f && e.reload_LaserBolt(!1)) : a && r === t.team && t.isOccupied() && (u && e.reload_HomingMissile(), c && e.reload_ClusterRocket(), f && e.reload_LaserBolt(), e.hp < e.maxHp && (d = (0, o.isHumanTeam)(r), e.hp += .5, l.default.displayText(e.team, "Repairing: ".concat(Math.round(e.hp / e.maxHp * 100), "%")))), d && (0, i.playSound)("repaired")
+        }
+
+        function E(e) {
+            if (!e.colonizationTarget) {
+                var a, r = 1 / 0;
+                t.default.getByType("Planet").forEach(function (t) {
+                    var n = (0, u.getDistSquared)(e, t);
+                    r > n && (a = t, r = n)
+                }), a && (e.exitPlanetOrbit(), e.colonizationTarget = a)
+            }
+        }
+
+        function v(t, a) {
+            var r = t.planet === e || t.spaceport && t.spaceport.planet === e;
+            return ((a.planet === e || a.spaceport && a.spaceport.planet === e) >> 0) - (r >> 0)
+        }
+
+        function F() {
+            e && !(0, o.isHumanTeam)(e.team) && (e = null)
+        }
+
+        function A(e) {
+            var i, u = function (t) {
+                    return t.team === e
+                }, c = function (t) {
+                    return t.team !== e
+                }, f = t.default.getByType("Planet").filter(u), d = t.default.getByType("PColony").filter(u),
+                s = t.default.getByType("Freighter").filter(u), g = t.default.getByType("Fighter").filter(u);
+            if (i = (i = f.filter(m)).length > 0 ? i : void 0, 0 === f.length && s.length > 0 ? s.forEach(E) : f.filter(y).forEach(p.bind(null, s)), g.length < f.length && h(e, i, "Fighter"), g.length > 0) {
+                var A = r.default.arrayElement(g);
+                if ((0, o.isHumanTeam)(e) && (F(), a.default.getControlledEntity() || (A = g.filter(function (e) {
+                    return !e.isFighterAutoAccelerated || !e.attackTarget && (e.planet || e.spaceport)
+                }).sort(v)[0]) && (a.default.setControlledEntity(A), a.default.setControlToHuman(), n.default.setFocus(A))), A && !A.attackTarget && A.isFighterAutoAccelerated) {
+                    var H, M, b = Math.random();
+                    b < .1 ? (H = r.default.arrayElement(t.default.getByType("Freighter").filter(c)), M = "Friendly Fighter targeting enemy Freighter!") : b < .3 ? (H = r.default.arrayElement(t.default.getByType("PBase").filter(c)), M = "Friendly Fighter targeting enemy base!") : b < .5 && (H = r.default.arrayElement(t.default.getBodies().filter(function (e) {
+                        return "Planet" === e.type && c(e) && !e.isOccupied()
+                    })), M = "Friendly Fighter moving to secure planet!"), H && (A.attackTarget = H, l.default.displayText(e, M))
+                }
+            }
+            g.forEach(T), f.length > s.length && h(e, i, "Freighter"), 0 === d.length && 0 === g.length && 0 === s.length && (x = x.filter(function (t) {
+                return t !== e
+            }), P(e))
+        }
+
+        function H(t) {
+            (0, i.playSound)("install"), e = t
+        }
+
+        function M(e) {
+            t.default.getByType("Fighter").forEach(function (t) {
+                (0, o.isHumanTeam)(t.team) && (t.attackTarget = e)
+            }), (0, i.playSound)("alert"), l.default.displayText(o.TEAM.MAGENTA, "All fighters attacking your target!")
+        }
+
+        var x, b = 3e3, B = 0, k = [o.TEAM.GREEN, o.TEAM.BLUE, o.TEAM.YELLOW, o.TEAM.RED, o.TEAM.MAGENTA];
+
+        function _() {
+            var e = Date.now();
+            e - B > b && (x.forEach(A), 1 === x.length && O(x[0]), B = e)
+        }
+
+        var P = new Function, O = new Function, q = function (e) {
+            return P = e
+        }, C  = function (e) {
+            return O = e
+        };
+
+        function w() {
+            var e = t.default.getAll();
+            x     = e.length > 0 ? f(x = new Set(e.map(function (e) {
+                return e.team
+            }))).filter(function (e) {
+                return e > -1
+            }) : k.concat()
+        }
+
+        var S           = {
+            init:                   w,
+            update:                 _,
+            setHumanFightersTarget: M,
+            setHumanTeamHomePlanet: H,
+            setOnTeamLostCallback:  q,
+            setOnTeamWinCallback:   C
+        };
+        exports.default = S;
 },{"../Entity/index":"ut18","./control/index":"p4gg","../Random":"ozFQ","../Graphics/Focus":"xtCw","../assets/audio":"WovT","./HUD":"ACUy","../constants":"PH7Q","../entityHelpers":"IAoB"}],"oVku":[function(require,module,exports) {
 "use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var e=a(require("../../HUD")),t=a(require("../../TeamSystem"));function a(e){return e&&e.__esModule?e:{default:e}}var n=function(e,t){var a=t.isDockedPlanet,n=t.isDockedSpacePort,o=t.planet,p=t.spaceport,u=t.team;return a&&o.team===u||n&&p.team===u},o=["Fighter is docked","  [1] Swap weapon","  [2] Set current location as home"],p="Cannon",u=function(a,n){switch(a.menuId){case 0:e.default.displayCommandText(o),a.menuId=1,a.options=[function(){return a.menuId=2},function(){t.default.setHumanTeamHomePlanet(n.planet||n.spaceport.planet),a.shouldReset=!0}];break;case 2:var u=(n.planet||n.spaceport.planet).plab,d=!(!u||!u.developEquipment_equipmentReady||"Shield"===u.developEquipment_equipmentReady)&&u.developEquipment_equipmentReady,i=["Swap Fighter's ".concat(n.attackWeapon," for"),"  [1] Cannon"];a.menuId=3,a.options=[function(){u&&n.attackWeapon!==p&&(u.developEquipment_equipmentReady=n.attackWeapon),n.attackWeapon=p,a.shouldReset=!0}],d&&(i.push("  [2] ".concat(d)),a.options.push(function(){u&&n.attackWeapon!==p&&(u.developEquipment_equipmentReady=n.attackWeapon),n.attackWeapon=d,a.shouldReset=!0})),e.default.displayCommandText(i)}return!0},d=[n,u];exports.default=d;
 },{"../../HUD":"ACUy","../../TeamSystem":"WGVz"}],"LJlB":[function(require,module,exports) {
@@ -482,7 +632,99 @@ function e(e,t){var r=t&&t.cache?t.cache:h,n=t&&t.serializer?t.serializer:u;retu
 var define;
 var o,r=function(){var o=String.fromCharCode,r="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",n="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$",e={};function t(o,r){if(!e[o]){e[o]={};for(var n=0;n<o.length;n++)e[o][o.charAt(n)]=n}return e[o][r]}var s={compressToBase64:function(o){if(null==o)return"";var n=s._compress(o,6,function(o){return r.charAt(o)});switch(n.length%4){default:case 0:return n;case 1:return n+"===";case 2:return n+"==";case 3:return n+"="}},decompressFromBase64:function(o){return null==o?"":""==o?null:s._decompress(o.length,32,function(n){return t(r,o.charAt(n))})},compressToUTF16:function(r){return null==r?"":s._compress(r,15,function(r){return o(r+32)})+" "},decompressFromUTF16:function(o){return null==o?"":""==o?null:s._decompress(o.length,16384,function(r){return o.charCodeAt(r)-32})},compressToUint8Array:function(o){for(var r=s.compress(o),n=new Uint8Array(2*r.length),e=0,t=r.length;e<t;e++){var i=r.charCodeAt(e);n[2*e]=i>>>8,n[2*e+1]=i%256}return n},decompressFromUint8Array:function(r){if(null==r)return s.decompress(r);for(var n=new Array(r.length/2),e=0,t=n.length;e<t;e++)n[e]=256*r[2*e]+r[2*e+1];var i=[];return n.forEach(function(r){i.push(o(r))}),s.decompress(i.join(""))},compressToEncodedURIComponent:function(o){return null==o?"":s._compress(o,6,function(o){return n.charAt(o)})},decompressFromEncodedURIComponent:function(o){return null==o?"":""==o?null:(o=o.replace(/ /g,"+"),s._decompress(o.length,32,function(r){return t(n,o.charAt(r))}))},compress:function(r){return s._compress(r,16,function(r){return o(r)})},_compress:function(o,r,n){if(null==o)return"";var e,t,s,i={},p={},u="",c="",a="",l=2,f=3,h=2,d=[],m=0,v=0;for(s=0;s<o.length;s+=1)if(u=o.charAt(s),Object.prototype.hasOwnProperty.call(i,u)||(i[u]=f++,p[u]=!0),c=a+u,Object.prototype.hasOwnProperty.call(i,c))a=c;else{if(Object.prototype.hasOwnProperty.call(p,a)){if(a.charCodeAt(0)<256){for(e=0;e<h;e++)m<<=1,v==r-1?(v=0,d.push(n(m)),m=0):v++;for(t=a.charCodeAt(0),e=0;e<8;e++)m=m<<1|1&t,v==r-1?(v=0,d.push(n(m)),m=0):v++,t>>=1}else{for(t=1,e=0;e<h;e++)m=m<<1|t,v==r-1?(v=0,d.push(n(m)),m=0):v++,t=0;for(t=a.charCodeAt(0),e=0;e<16;e++)m=m<<1|1&t,v==r-1?(v=0,d.push(n(m)),m=0):v++,t>>=1}0==--l&&(l=Math.pow(2,h),h++),delete p[a]}else for(t=i[a],e=0;e<h;e++)m=m<<1|1&t,v==r-1?(v=0,d.push(n(m)),m=0):v++,t>>=1;0==--l&&(l=Math.pow(2,h),h++),i[c]=f++,a=String(u)}if(""!==a){if(Object.prototype.hasOwnProperty.call(p,a)){if(a.charCodeAt(0)<256){for(e=0;e<h;e++)m<<=1,v==r-1?(v=0,d.push(n(m)),m=0):v++;for(t=a.charCodeAt(0),e=0;e<8;e++)m=m<<1|1&t,v==r-1?(v=0,d.push(n(m)),m=0):v++,t>>=1}else{for(t=1,e=0;e<h;e++)m=m<<1|t,v==r-1?(v=0,d.push(n(m)),m=0):v++,t=0;for(t=a.charCodeAt(0),e=0;e<16;e++)m=m<<1|1&t,v==r-1?(v=0,d.push(n(m)),m=0):v++,t>>=1}0==--l&&(l=Math.pow(2,h),h++),delete p[a]}else for(t=i[a],e=0;e<h;e++)m=m<<1|1&t,v==r-1?(v=0,d.push(n(m)),m=0):v++,t>>=1;0==--l&&(l=Math.pow(2,h),h++)}for(t=2,e=0;e<h;e++)m=m<<1|1&t,v==r-1?(v=0,d.push(n(m)),m=0):v++,t>>=1;for(;;){if(m<<=1,v==r-1){d.push(n(m));break}v++}return d.join("")},decompress:function(o){return null==o?"":""==o?null:s._decompress(o.length,32768,function(r){return o.charCodeAt(r)})},_decompress:function(r,n,e){var t,s,i,p,u,c,a,l=[],f=4,h=4,d=3,m="",v=[],w={val:e(0),position:n,index:1};for(t=0;t<3;t+=1)l[t]=t;for(i=0,u=Math.pow(2,2),c=1;c!=u;)p=w.val&w.position,w.position>>=1,0==w.position&&(w.position=n,w.val=e(w.index++)),i|=(p>0?1:0)*c,c<<=1;switch(i){case 0:for(i=0,u=Math.pow(2,8),c=1;c!=u;)p=w.val&w.position,w.position>>=1,0==w.position&&(w.position=n,w.val=e(w.index++)),i|=(p>0?1:0)*c,c<<=1;a=o(i);break;case 1:for(i=0,u=Math.pow(2,16),c=1;c!=u;)p=w.val&w.position,w.position>>=1,0==w.position&&(w.position=n,w.val=e(w.index++)),i|=(p>0?1:0)*c,c<<=1;a=o(i);break;case 2:return""}for(l[3]=a,s=a,v.push(a);;){if(w.index>r)return"";for(i=0,u=Math.pow(2,d),c=1;c!=u;)p=w.val&w.position,w.position>>=1,0==w.position&&(w.position=n,w.val=e(w.index++)),i|=(p>0?1:0)*c,c<<=1;switch(a=i){case 0:for(i=0,u=Math.pow(2,8),c=1;c!=u;)p=w.val&w.position,w.position>>=1,0==w.position&&(w.position=n,w.val=e(w.index++)),i|=(p>0?1:0)*c,c<<=1;l[h++]=o(i),a=h-1,f--;break;case 1:for(i=0,u=Math.pow(2,16),c=1;c!=u;)p=w.val&w.position,w.position>>=1,0==w.position&&(w.position=n,w.val=e(w.index++)),i|=(p>0?1:0)*c,c<<=1;l[h++]=o(i),a=h-1,f--;break;case 2:return v.join("")}if(0==f&&(f=Math.pow(2,d),d++),l[a])m=l[a];else{if(a!==h)return null;m=s+s.charAt(0)}v.push(m),l[h++]=s+m.charAt(0),s=m,0==--f&&(f=Math.pow(2,d),d++)}}};return s}();"function"==typeof o&&o.amd?o(function(){return r}):"undefined"!=typeof module&&null!=module&&(module.exports=r);
 },{}],"9mwg":[function(require,module,exports) {
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=p,exports.PROPERTY_IS_REFERENCE=void 0;var e=t(require("../Entity/LivingEntity"));function t(e){return e&&e.__esModule?e:{default:e}}function a(e){return i(e)||r(e)||o()}function o(){throw new TypeError("Invalid attempt to spread non-iterable instance")}function r(e){if(Symbol.iterator in Object(e)||"[object Arguments]"===Object.prototype.toString.call(e))return Array.from(e)}function i(e){if(Array.isArray(e)){for(var t=0,a=new Array(e.length);t<e.length;t++)a[t]=e[t];return a}}var n="type,team,x,y,hp,maxHp,rotation,_creationId",l={accelerateFighterToAttackTarget:"isFighterPreviouslyDocked,isFighterAutoAccelerated",accelerateToAttackTarget:"delayBeforeTracking",anchor:"anchor,anchorOffsetX,anchorOffsetY",attack:"attackTarget,attackWeapon,isAttacking",autoTargetEnemy:"autoTargetSearchDist2,autoTargetLastSearchTime",beShielded:"shield",carryFighter:"fighter,isCarryingFighter",colonizePlanet:"colonizationTarget",construct:"constructionTime",damage:"damageHp",developEquipment:"developEquipment_installTimeMax,developEquipment_installTime,developEquipment_timeMax,developEquipment_time,developEquipment_equipmentReady",displayHit:"hitTime",dockPlanet:"isDockedPlanet,planet",dockSpacePort:"isDockedSpacePort,spaceport",explode:"explosionOriginDx,explosionOriginDy,hasExploded",flock:"flockPoint",harvest:"harvestTime",manufacture:"isManufacturing,manufactureTime,manufactureType",metabolize:"hp",mine:"mineTime",moveLinearly:"dx,dy",occupyPlanet:"planet",occupySpacePort:"spaceport",orbitPlanet:"planet,isOrbitingPlanet,orbitDistance,orbitRotation",orbitStar:"star,orbitRotation,orbitDistance",repair:"repairTime",shimmer:"isShimmering,isShimmerBlink,shimmerTime,shimmerTimeMax,shimmerBlinkColor,shimmerNormalColor",shootCannon:"lastShotTime_Cannon,reloadTime_Cannon",shootClusterRocket:"lastShotTime_ClusterRocket,reloadTime_ClusterRocket,ammo_ClusterRocket,ammoMax_ClusterRocket",shootHeavyCannon:"lastShotTime_HeavyCannon,reloadTime_HeavyCannon",shootHomingMissile:"lastShotTime_HomingMissile,ammo_HomingMissile,ammoMax_HomingMissile",shootLaserBolt:"range_LaserBolt,ammo_LaserBolt,ammoMax_LaserBolt,lastShotTime_LaserBolt,reloadTime_LaserBolt",storeMaterials:"MAX_RAW_MATERIALS,MAX_FINISHED_MATERIALS,materialsRaw,materialsFinished"},s={CannonShot:[l.moveLinearly],ClusterRocket:[l.moveLinearly,l.explode],HeavyCannonShot:[l.moveLinearly],HomingMissile:[l.moveLinearly],LaserBolt:[l.moveLinearly],Shield:[l.anchor,l.displayHit],PShield:[l.anchor,l.displayHit],Fighter:[l.explode,l.attack,l.beShielded,l.shootCannon,l.shootClusterRocket,l.shootHeavyCannon,l.shootHomingMissile,l.shootLaserBolt,l.moveLinearly,l.dockPlanet,l.dockSpacePort,l.accelerateFighterToAttackTarget],Freighter:[l.explode,l.attack,l.displayHit,l.colonizePlanet,l.storeMaterials,l.autoTargetEnemy,l.shootLaserBolt,l.shootHomingMissile,l.shootCannon,l.orbitPlanet],Probe:[],PBase:[l.occupyPlanet,l.explode,l.displayHit,l.attack,l.storeMaterials,l.harvest,l.repair,l.construct,l.shootCannon,l.autoTargetEnemy,l.beShielded],PColony:[l.occupyPlanet,l.explode,l.displayHit,l.mine,l.manufacture,l.repair],PComm:[l.occupyPlanet,l.explode,l.displayHit,l.repair,l.beShielded],PLab:[l.occupyPlanet,l.explode,l.displayHit,l.developEquipment,l.shimmer],SensorArray:[l.occupySpacePort,l.explode,l.displayHit,l.repair],SpaceDock:[l.occupySpacePort,l.explode,l.displayHit,l.repair,l.manufacture],SpacePort:[l.orbitPlanet,l.explode,l.displayHit,l.attack,l.shootCannon,l.carryFighter,l.storeMaterials],Star:[],Planet:[l.orbitStar,l.storeMaterials,"star,pbase,plab,pcolony,pcomm,spacedock,sensorarray,spaceport"]};for(var c in s)s[c]=s[c].concat(n).join(",").split(","),s[c]=a(new Set(s[c])).filter(Boolean);function p(t){var a=s[t.type]||[],o={};return a.forEach(function(a){t[a]instanceof e.default?o[a]=t[a]._creationId:o[a]=t[a]}),o}var m=new RegExp("^".concat(["star","planet","pbase","pcolony","plab","pcomm","spacedock","spaceport","sensorarray","fighter","attackTarget","shield","colonizationTarget","anchor"].join("|"),"$"));exports.PROPERTY_IS_REFERENCE=m;
+        "use strict";
+        Object.defineProperty(exports, "__esModule", {value: !0}), exports.default = p, exports.PROPERTY_IS_REFERENCE = void 0;
+        var e = t(require("../Entity/LivingEntity"));
+
+        function t(e) {
+            return e && e.__esModule ? e : {default: e}
+        }
+
+        function a(e) {
+            return i(e) || r(e) || o()
+        }
+
+        function o() {
+            throw new TypeError("Invalid attempt to spread non-iterable instance")
+        }
+
+        function r(e) {
+            if (Symbol.iterator in Object(e) || "[object Arguments]" === Object.prototype.toString.call(e)) return Array.from(e)
+        }
+
+        function i(e) {
+            if (Array.isArray(e)) {
+                for (var t = 0, a = new Array(e.length); t < e.length; t++) a[t] = e[t];
+                return a
+            }
+        }
+
+        var n = "type,team,x,y,hp,maxHp,rotation,_creationId", l = {
+            accelerateFighterToAttackTarget: "isFighterPreviouslyDocked,isFighterAutoAccelerated,hasFighterSlowedForLanding",
+            accelerateToAttackTarget:        "delayBeforeTracking",
+            anchor:                          "anchor,anchorOffsetX,anchorOffsetY",
+            attack:                          "attackTarget,attackWeapon,isAttacking",
+            autoTargetEnemy:                 "autoTargetSearchDist2,autoTargetLastSearchTime",
+            beShielded:                      "shield",
+            carryFighter:                    "fighter,isCarryingFighter",
+            colonizePlanet:                  "colonizationTarget",
+            construct:                       "constructionTime",
+            damage:                          "damageHp",
+            developEquipment:                "developEquipment_installTimeMax,developEquipment_installTime,developEquipment_timeMax,developEquipment_time,developEquipment_equipmentReady",
+            displayHit:                      "hitTime",
+            dockPlanet:                      "isDockedPlanet,planet",
+            dockSpacePort:                   "isDockedSpacePort,spaceport",
+            explode:                         "explosionOriginDx,explosionOriginDy,hasExploded",
+            flock:                           "flockPoint",
+            harvest:                         "harvestTime",
+            manufacture:                     "isManufacturing,manufactureTime,manufactureType",
+            metabolize:                      "hp",
+            mine:                            "mineTime",
+            moveLinearly:                    "dx,dy",
+            occupyPlanet:                    "planet",
+            occupySpacePort:                 "spaceport",
+            orbitPlanet:                     "planet,isOrbitingPlanet,orbitDistance,orbitRotation",
+            orbitStar:                       "star,orbitRotation,orbitDistance",
+            repair:                          "repairTime",
+            shimmer:                         "isShimmering,isShimmerBlink,shimmerTime,shimmerTimeMax,shimmerBlinkColor,shimmerNormalColor",
+            shootCannon:                     "lastShotTime_Cannon,reloadTime_Cannon",
+            shootClusterRocket:              "lastShotTime_ClusterRocket,reloadTime_ClusterRocket,ammo_ClusterRocket,ammoMax_ClusterRocket",
+            shootHeavyCannon:                "lastShotTime_HeavyCannon,reloadTime_HeavyCannon",
+            shootHomingMissile:              "lastShotTime_HomingMissile,ammo_HomingMissile,ammoMax_HomingMissile",
+            shootLaserBolt:                  "range_LaserBolt,ammo_LaserBolt,ammoMax_LaserBolt,lastShotTime_LaserBolt,reloadTime_LaserBolt",
+            storeMaterials:                  "MAX_RAW_MATERIALS,MAX_FINISHED_MATERIALS,materialsRaw,materialsFinished"
+        }, s  = {
+            CannonShot:      [l.moveLinearly],
+            ClusterRocket:   [l.moveLinearly, l.explode],
+            HeavyCannonShot: [l.moveLinearly],
+            HomingMissile:   [l.moveLinearly],
+            LaserBolt:       [l.moveLinearly],
+            Shield:          [l.anchor, l.displayHit],
+            PShield:         [l.anchor, l.displayHit],
+            Fighter:         [l.explode, l.attack, l.beShielded, l.shootCannon, l.shootClusterRocket, l.shootHeavyCannon, l.shootHomingMissile, l.shootLaserBolt, l.moveLinearly, l.dockPlanet, l.dockSpacePort, l.accelerateFighterToAttackTarget],
+            Freighter:       [l.explode, l.attack, l.displayHit, l.colonizePlanet, l.storeMaterials, l.autoTargetEnemy, l.shootLaserBolt, l.shootHomingMissile, l.shootCannon, l.orbitPlanet],
+            Probe:           [],
+            PBase:           [l.occupyPlanet, l.explode, l.displayHit, l.attack, l.storeMaterials, l.harvest, l.repair, l.construct, l.shootCannon, l.autoTargetEnemy, l.beShielded],
+            PColony:         [l.occupyPlanet, l.explode, l.displayHit, l.mine, l.manufacture, l.repair],
+            PComm:           [l.occupyPlanet, l.explode, l.displayHit, l.repair, l.beShielded],
+            PLab:            [l.occupyPlanet, l.explode, l.displayHit, l.developEquipment, l.shimmer],
+            SensorArray:     [l.occupySpacePort, l.explode, l.displayHit, l.repair],
+            SpaceDock:       [l.occupySpacePort, l.explode, l.displayHit, l.repair, l.manufacture],
+            SpacePort:       [l.orbitPlanet, l.explode, l.displayHit, l.attack, l.shootCannon, l.carryFighter, l.storeMaterials],
+            Star:            [],
+            Planet:          [l.orbitStar, l.storeMaterials, "star,pbase,plab,pcolony,pcomm,spacedock,sensorarray,spaceport"]
+        };
+        for (var c in s) s[c] = s[c].concat(n).join(",").split(","), s[c] = a(new Set(s[c])).filter(Boolean);
+
+        function p(t) {
+            var a = s[t.type] || [], o = {};
+            return a.forEach(function (a) {
+                t[a] instanceof e.default ? o[a] = t[a]._creationId : o[a] = t[a]
+            }), o
+        }
+
+        var m                         = new RegExp("^".concat(["star", "planet", "pbase", "pcolony", "plab", "pcomm", "spacedock", "spaceport", "sensorarray", "fighter", "attackTarget", "shield", "colonizationTarget", "anchor"].join("|"), "$"));
+        exports.PROPERTY_IS_REFERENCE = m;
 },{"../Entity/LivingEntity":"WJ1g"}],"eQyJ":[function(require,module,exports) {
 "use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.serialize=f,exports.deserialize=p,exports.saveToLocalStorage=g,exports.restoreFromLocalStorage=S,exports.StorageGameState=void 0;var e,t=require("lz-string"),r=u(require("../Entity")),o=c(require("./getEntityProperties")),a=u(require("../Score")),n=u(require("../GameScreen/control")),i=u(require("../Entity/LivingEntity")),l=u(require("../Graphics/Focus")),s=u(require("../GameScreen/TeamSystem"));function c(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var r in e)if(Object.prototype.hasOwnProperty.call(e,r)){var o=Object.defineProperty&&Object.getOwnPropertyDescriptor?Object.getOwnPropertyDescriptor(e,r):{};o.get||o.set?Object.defineProperty(t,r,o):t[r]=e[r]}return t.default=e,t}function u(e){return e&&e.__esModule?e:{default:e}}function f(){return JSON.stringify(r.default.getAll().map(o.default),null,2)}function d(e,t,r){Object.keys(e).forEach(function(t){var a=e[t];o.PROPERTY_IS_REFERENCE.test(t)&&!isNaN(a)&&(e[t]=r.find(function(e){return e._creationId===a}))})}function p(e){var t=JSON.parse(e),o=0;r.default.clearAll(),t.forEach(function(e){r.default.create(e.type,e),o<e._creationId&&(o=e._creationId)}),r.default.resetCreationId(o+10),r.default.getAll().forEach(d),s.default.init()}function g(){var r=f();localStorage.setItem(e.Entities,(0,t.compress)(r));var o=n.default.getLastControlledLivingEntity();o&&o instanceof i.default&&localStorage.setItem(e.ControlledEntity,o._creationId);var l=a.default.getAll();localStorage.setItem(e.Scores,(0,t.compress)(JSON.stringify(l)))}function S(){p((0,t.decompress)(localStorage.getItem(e.Entities)));var o=parseFloat(localStorage.getItem(e.ControlledEntity)||""),i=r.default.getAll().find(function(e){return e._creationId===o});i&&(n.default.setControlledEntity(i),n.default.setControlToHuman(),l.default.setFocus(i));var s=JSON.parse((0,t.decompress)(localStorage.getItem(e.Scores)));a.default.setAll(s.score,s.battleResults)}exports.StorageGameState=e,function(e){e.Scores="score",e.Entities="entities",e.ControlledEntity="controlledEntity"}(e||(exports.StorageGameState=e={}));
 },{"lz-string":"gKDo","../Entity":"ut18","./getEntityProperties":"9mwg","../Score":"C3sm","../GameScreen/control":"p4gg","../Entity/LivingEntity":"WJ1g","../Graphics/Focus":"xtCw","../GameScreen/TeamSystem":"WGVz"}],"GcXU":[function(require,module,exports) {
@@ -576,7 +818,76 @@ var o,r=function(){var o=String.fromCharCode,r="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef
 "use strict";function e(e,r){for(var t=0;t<e.length;t++)if(!e[t](r))return!1;return!0}function r(e,r){for(var t=0;t<e.length;t++)if(e[t](r))return!0;return!1}Object.defineProperty(exports,"__esModule",{value:!0}),exports.evalSequence=e,exports.evalSelector=r;
 },{}],"XgTb":[function(require,module,exports) {
 
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var t=require("../constants"),a=require("../entityHelpers"),e=require("../behaviorTreeHelper"),r=.1,o=2*t.ROTATION_RATE_FIGHTER,i=Math.PI/t.ROTATION_RATE_FIGHTER,s=Math.pow(500,2),c=Math.pow(400,2),n=Math.pow(200,2)/1.4,h=5,M=.01;function l(t,a){var e=a-t.rotation;Math.abs(e)>Math.PI&&(a>Math.PI?a-=2*Math.PI:a<-Math.PI&&(a+=2*Math.PI),e=a-t.rotation),Math.abs(e)>=M&&(e>0?t.rotation+=o:t.rotation-=o)}function u(a){var e=arguments.length>1&&void 0!==arguments[1]?arguments[1]:t.ACCELERATION_FIGHTER;a.accelerate(e),a.flameOn()}function A(a){var e=a.isDockedPlanet,r=a.isDockedSpacePort,o=a.isFighterPreviouslyDocked;if(e)return a.isFighterPreviouslyDocked=!0,a.undockPlanet(),u(a,2*t.ACCELERATION_FIGHTER_UNDOCK+t.ACCELERATION_FIGHTER),!0;if(r)return a.isFighterPreviouslyDocked=!0,a.undockSpacePort(),u(a,t.ACCELERATION_FIGHTER_UNDOCK+t.ACCELERATION_FIGHTER),!0;var i=a.dx,s=a.dy,c=Math.pow(i,2)+Math.pow(s,2);return!!(o&&c<9)&&(u(a),!0)}function T(e){var o,M,A=e.attackTarget,T=e.dx,I=e.dy,E=(0,a.getDistSquared)(e,A),d=Math.pow(T,2)+Math.pow(I,2);M="PBase"===A.type?c:s;var v=(0,a.getAngleFromTo)(e,A),g=Math.atan2(I,T);if(e.isFighterPreviouslyDocked=!1,e.isAttacking=!1,E<n/d)o=v-Math.PI;else if(E<M){var p=5*Math.cos(v),F=5*Math.sin(v);o=Math.atan2(F-I,p-T),e.isAttacking=Math.abs(o-e.rotation)<r}else{var P=Math.sqrt(Math.sqrt(E)/t.ACCELERATION_FIGHTER)+i+h;o=Math.sqrt(E/d)<P?g+Math.PI:v}l(e,o),!e.isAttacking&&Math.abs(Math.cos(o)-Math.cos(e.rotation))<r&&u(e)}var I=[A,T];function E(t){var a=t.attackTarget;t.flameOff(),a&&(a.hp>0?(0,e.evalSelector)(I,t):(t.attackTarget=null,t.isAttacking=!1))}function d(t){t.isFighterAutoAccelerated&&E(t)}var v={isFighterPreviouslyDocked:!1,isFighterAutoAccelerated:!0},g={componentFlag:"canAccelerateFighterToAttackTarget",DEFAULTS:v,process:d};exports.default=g;
+        "use strict";
+        Object.defineProperty(exports, "__esModule", {value: !0}), exports.default = void 0;
+        var t = require("../constants"), a = require("../entityHelpers"), e = require("../behaviorTreeHelper"), r = .1,
+            o = 2 * t.ROTATION_RATE_FIGHTER, i = Math.PI / t.ROTATION_RATE_FIGHTER, n = Math.pow(500, 2),
+            h = Math.pow(400, 2), s = Math.pow(200, 2), c = Math.pow(200, 2) / 1.4, l = 5, M = .01;
+
+        function g(t, a) {
+            var e = a - t.rotation;
+            Math.abs(e) > Math.PI && (a > Math.PI ? a -= 2 * Math.PI : a < -Math.PI && (a += 2 * Math.PI), e = a - t.rotation), Math.abs(e) >= M && (e > 0 ? t.rotation += o : t.rotation -= o)
+        }
+
+        function d(a) {
+            var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : t.ACCELERATION_FIGHTER;
+            a.accelerate(e), a.flameOn()
+        }
+
+        function u(a) {
+            var e = a.isDockedPlanet, r = a.isDockedSpacePort, o = a.isFighterPreviouslyDocked;
+            if (e) return a.isFighterPreviouslyDocked = !0, a.undockPlanet(), d(a, 2 * t.ACCELERATION_FIGHTER_UNDOCK + t.ACCELERATION_FIGHTER), !0;
+            if (r) return a.isFighterPreviouslyDocked = !0, a.undockSpacePort(), d(a, t.ACCELERATION_FIGHTER_UNDOCK + t.ACCELERATION_FIGHTER), !0;
+            var i = a.dx, n = a.dy, h = Math.pow(i, 2) + Math.pow(n, 2);
+            return !!(o && h < 9) && (d(a), !0)
+        }
+
+        function T(e) {
+            var o, s, M = e.attackTarget, u = e.dx, T = e.dy, A = (0, a.getDistSquared)(e, M),
+                F = Math.pow(u, 2) + Math.pow(T, 2);
+            s = "PBase" === M.type ? h : n;
+            var I = (0, a.getAngleFromTo)(e, M), v = Math.atan2(T, u);
+            if (e.isFighterPreviouslyDocked = !1, e.isAttacking = !1, A < c / F) o = I - Math.PI; else if (A < s) {
+                var E = 5 * Math.cos(I), P = 5 * Math.sin(I);
+                o = Math.atan2(P - T, E - u), e.isAttacking = Math.abs(o - e.rotation) < r
+            } else {
+                var p = Math.sqrt(Math.sqrt(A) / t.ACCELERATION_FIGHTER) + i + l;
+                o     = Math.sqrt(A / F) < p ? v + Math.PI : I
+            }
+            g(e, o), !e.isAttacking && Math.abs(Math.cos(o) - Math.cos(e.rotation)) < r && d(e)
+        }
+
+        function A(e) {
+            var o, n = e.attackTarget, h = e.dx, c = e.dy, M = e.hasFighterSlowedForLanding, u = !0,
+                T = (0, a.getDistSquared)(e, n), A = Math.pow(h, 2) + Math.pow(c, 2),
+                F = (0, a.getAngleFromTo)(e, n), I = Math.atan2(c, h);
+            if (e.isFighterPreviouslyDocked = !1, e.isAttacking = !1, T < s) !M && A > 4 ? o = I + Math.PI : (e.hasFighterSlowedForLanding = !0, o = Math.PI + F, u = A > 4); else {
+                e.hasFighterSlowedForLanding = !1;
+                var v                        = Math.sqrt(Math.sqrt(T) / t.ACCELERATION_FIGHTER) + i + l;
+                o                            = Math.sqrt(T / A) < v ? I + Math.PI : F
+            }
+            g(e, o), u && Math.abs(Math.cos(o) - Math.cos(e.rotation)) < r && d(e)
+        }
+
+        function F(t) {
+            var a = t.isDockedPlanet, e = t.attackTarget, r = t.planet;
+            return !(!a || e !== r) && (t.attackTarget = null, !0)
+        }
+
+        var I = [u, T], v = [F, u, A];
+
+        function E(t) {
+            var a = t.attackTarget;
+            t.flameOff(), a && (a.hp > 0 ? "Planet" === a.type ? (0, e.evalSelector)(v, t) : (0, e.evalSelector)(I, t) : (t.attackTarget = null, t.isAttacking = !1))
+        }
+
+        function P(t) {
+            t.isFighterAutoAccelerated && E(t)
+        }
+
+        var p = {hasFighterSlowedForLanding: !1, isFighterPreviouslyDocked: !1, isFighterAutoAccelerated: !0},
+            k = {componentFlag: "canAccelerateFighterToAttackTarget", DEFAULTS: p, process: P};
+        exports.default = k;
 },{"../constants":"PH7Q","../entityHelpers":"IAoB","../behaviorTreeHelper":"jeCq"}],"JEmE":[function(require,module,exports) {
 
 "use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var e={hitTime:-1};function t(e){e.renderHit&&e.renderHit()}var r={componentFlag:"canDisplayHit",DEFAULTS:e,process:t};exports.default=r;
@@ -648,7 +959,87 @@ var o,r=function(){var o=String.fromCharCode,r="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef
 },{"fscreen":"ClcH","pixi.js":"5hn+","../Entity":"ut18"}],"dCX1":[function(require,module,exports) {
 "use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.createSolarSystem=s;var t=u(require("../Entity")),e=u(require("../Random")),r=require("../constants"),a=require("../entityHelpers");function u(t){return t&&t.__esModule?t:{default:t}}var n=2,o=.8,f=8e3,i=Math.pow(f,2);function l(){return{x:e.default.float(f,r.MAX_COORDINATE-f),y:e.default.float(f,r.MAX_COORDINATE-f)}}function d(e){for(var r=t.default.getByType("Star"),u=0;u<r.length;u++)if(r[u]!==e&&(0,a.getDistSquared)(e,r[u])<i)return!1;return!0}function s(){var r;do{r=l()}while(!d(r));var a=t.default.create("Star",r),u=a;if(e.default.float(0,1)<o)for(var f=e.default.int(1,n),i=0;i<f;i++)u=t.default.create("Planet",{star:a,orbitDistance:1600+i*e.default.int(2,5)*800,orbitRotation:e.default.float(-Math.PI,Math.PI)});return u}
 },{"../Entity":"ut18","../Random":"ozFQ","../constants":"PH7Q","../entityHelpers":"IAoB"}],"WfgX":[function(require,module,exports) {
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.createBaseOrInvasionFleet=n;var e=require("../constants"),a=i(require("../Entity")),t=i(require("../Random")),r=i(require("../GameScreen/HUD"));function i(e){return e&&e.__esModule?e:{default:e}}var l=["Cannon","HeavyCannon","LaserBolt","HomingMissile","ClusterRocket"];function n(i,n){var o=e.TEAM[i];if("Star"===n.type){var s=t.default.float(-Math.PI,Math.PI),d={x:n.x+1e3*Math.cos(s),y:n.y+1e3*Math.sin(s)},u=a.default.create("Fighter",{x:d.x+t.default.int(-100,100),y:d.y+t.default.int(-100,100),attackWeapon:t.default.arrayElement(l),isFighterAutoAccelerated:!(0,e.isHumanTeam)(o),reloadTime_HeavyCannon:60,team:o});u.shield=a.default.create("Shield",{x:u.x,y:u.y,team:o,anchor:u}),a.default.create("Freighter",{x:d.x+t.default.int(-100,100),y:d.y+t.default.int(-100,100),team:o,isOrbitingPlanet:!1,materialsFinished:500}),a.default.create("Freighter",{x:d.x+t.default.int(-100,100),y:d.y+t.default.int(-100,100),team:o,attackWeapon:"HomingMissile",ammo_HomingMissile:240,target:u,isOrbitingPlanet:!1,materialsFinished:500}),a.default.create("Freighter",{x:d.x+t.default.int(-100,100),y:d.y+t.default.int(-100,100),team:o,attackWeapon:"HomingMissile",isOrbitingPlanet:!1,materialsFinished:500}),a.default.create("Freighter",{x:d.x+t.default.int(-100,100),y:d.y+t.default.int(-100,100),team:o,isOrbitingPlanet:!1,materialsFinished:500}),r.default.displayText(o,"Invasion fleet en route to hostile world.")}else{var c={team:o,planet:n};n.team=o,n.updateFlagColor(),a.default.create("Fighter",{isFighterAutoAccelerated:!(0,e.isHumanTeam)(o),team:o}).dockPlanet(n);var f=.4;n.pbase=a.default.create("PBase",c),Math.random()<f&&(n.pbase.shield=a.default.create("PShield",{team:o,anchor:n.pbase})),n.pcolony=a.default.create("PColony",c),n.plab=a.default.create("PLab",c),f=.15,n.pcomm=a.default.create("PComm",c),Math.random()<f&&(n.pcomm.shield=a.default.create("PShield",{team:o,anchor:n.pcomm})),n.spaceport=a.default.create("SpacePort",c);var m=Object.assign({},c,{spaceport:n.spaceport});n.spacedock=a.default.create("SpaceDock",m),n.sensorarray=a.default.create("SensorArray",m),a.default.getByType("Planet").filter(function(e){return e.star===n.star&&e!==n}).forEach(function(e){e.team=o,e.updateFlagColor()})}}
+        "use strict";
+        Object.defineProperty(exports, "__esModule", {value: !0}), exports.createBaseOrInvasionFleet = n;
+        var e = require("../constants"), t = i(require("../Entity")), a = i(require("../Random")),
+            r = i(require("../GameScreen/HUD"));
+
+        function i(e) {
+            return e && e.__esModule ? e : {default: e}
+        }
+
+        var l = ["Cannon", "HeavyCannon", "LaserBolt", "HomingMissile", "ClusterRocket"];
+
+        function n(i, n) {
+            var o = e.TEAM[i];
+            if ("Star" === n.type) {
+                var s = a.default.float(-Math.PI, Math.PI),
+                    d = {x: n.x + 1e3 * Math.cos(s), y: n.y + 1e3 * Math.sin(s)}, u = t.default.create("Fighter", {
+                        x:                        d.x + a.default.int(-100, 100),
+                        y:                        d.y + a.default.int(-100, 100),
+                        attackWeapon:             a.default.arrayElement(l),
+                        isFighterAutoAccelerated: !(0, e.isHumanTeam)(o),
+                        reloadTime_HeavyCannon:   60,
+                        team:                     o
+                    });
+                u.shield = t.default.create("Shield", {
+                    x:      u.x,
+                    y:      u.y,
+                    team:   o,
+                    anchor: u
+                }), t.default.create("Freighter", {
+                    x:                 d.x + a.default.int(-100, 100),
+                    y:                 d.y + a.default.int(-100, 100),
+                    team:              o,
+                    isOrbitingPlanet:  !1,
+                    materialsFinished: 500
+                }), t.default.create("Freighter", {
+                    x:                  d.x + a.default.int(-100, 100),
+                    y:                  d.y + a.default.int(-100, 100),
+                    team:               o,
+                    attackWeapon:       "HomingMissile",
+                    ammo_HomingMissile: 240,
+                    target:             u,
+                    isOrbitingPlanet:   !1,
+                    materialsFinished:  500
+                }), t.default.create("Freighter", {
+                    x:                 d.x + a.default.int(-100, 100),
+                    y:                 d.y + a.default.int(-100, 100),
+                    team:              o,
+                    attackWeapon:      "HomingMissile",
+                    isOrbitingPlanet:  !1,
+                    materialsFinished: 500
+                }), t.default.create("Freighter", {
+                    x:                 d.x + a.default.int(-100, 100),
+                    y:                 d.y + a.default.int(-100, 100),
+                    team:              o,
+                    isOrbitingPlanet:  !1,
+                    materialsFinished: 500
+                }), r.default.displayText(o, "Invasion fleet en route to hostile world.")
+            } else {
+                var c = {team: o, planet: n};
+                n.team = o, n.updateFlagColor(), t.default.create("Fighter", {
+                    x:                        n.x + a.default.float(-10, 10),
+                    y:                        n.x + a.default.float(-10, 10),
+                    isFighterAutoAccelerated: !(0, e.isHumanTeam)(o),
+                    team:                     o
+                }).dockPlanet(n);
+                var f = .4;
+                n.pbase = t.default.create("PBase", c), Math.random() < f && (n.pbase.shield = t.default.create("PShield", {
+                    team:   o,
+                    anchor: n.pbase
+                })), n.pcolony = t.default.create("PColony", c), n.plab = t.default.create("PLab", c), f = .15, n.pcomm = t.default.create("PComm", c), Math.random() < f && (n.pcomm.shield = t.default.create("PShield", {
+                    team:   o,
+                    anchor: n.pcomm
+                })), n.spaceport = t.default.create("SpacePort", Object.assign({}, c, {orbitRotation: a.default.float(-Math.PI, Math.PI)}));
+                var m = Object.assign({}, c, {spaceport: n.spaceport});
+                n.spacedock = t.default.create("SpaceDock", m), n.sensorarray = t.default.create("SensorArray", m), t.default.getByType("Planet").filter(function (e) {
+                    return e.star === n.star && e !== n
+                }).forEach(function (e) {
+                    e.team = o, e.updateFlagColor()
+                })
+            }
+        }
 },{"../constants":"PH7Q","../Entity":"ut18","../Random":"ozFQ","../GameScreen/HUD":"ACUy"}],"6GJp":[function(require,module,exports) {
 "use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var e=a(require("../Random")),r=require("./createSolarSystem"),t=require("./createBaseOrInvasionFleet");function a(e){return e&&e.__esModule?e:{default:e}}var o=["BLUE","GREEN","RED","YELLOW","MAGENTA"],n=2,u=5;function i(){for(var a=e.default.int(n,u),i=o.concat(),s=0;s<a;s++){var l=(0,r.createSolarSystem)(),c=i.pop();c&&(0,t.createBaseOrInvasionFleet)(c,l)}}var s={init:i};exports.default=s;
 },{"../Random":"ozFQ","./createSolarSystem":"dCX1","./createBaseOrInvasionFleet":"WfgX"}],"qSa1":[function(require,module,exports) {
@@ -662,7 +1053,65 @@ var o,r=function(){var o=String.fromCharCode,r="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef
 },{"../Graphics/Starfield":"SAW4","../Graphics":"Oi2H","../Graphics/Focus":"xtCw","./control":"p4gg","../Galaxy":"6GJp","../Entity":"ut18","./HUD":"ACUy","./TeamSystem":"WGVz","../UI/Modal/GalaxyWonModal":"qSa1","../UI/Modal/GalaxyLostModal":"FP5D","../assets/audio":"WovT","../constants":"PH7Q","../Score":"C3sm","../UI/Modal/GameOverModal":"MR2i","../Graphics/NavBeaconHuman":"4+dV"}],"Nuqc":[function(require,module,exports) {
 "use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var t=e(require("../Input"));function e(t){return t&&t.__esModule?t:{default:t}}var u=0,o=16,r=1e3/o;function n(e){var o=Date.now(),n=o-u;if(n>r){var a=t.default.getDevice(),d=a.getInputState;(0,a.getEvents)();var v=d();v.up||v.up_arrow?e.prevButton():v.down||v.down_arrow?e.nextButton():(v.f||v.button0||v.button1||v.button2||v.button3)&&e.clickButton(),u=o-n%r}}var a={update:n};exports.default=a;
 },{"../Input":"zA7B"}],"MGd9":[function(require,module,exports) {
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var e=i(require("pixi.js")),t=l(require(".")),o=l(require("../Button")),r=require("../../constants"),a=require("../../Geometry"),n=require("../../GameState");function l(e){return e&&e.__esModule?e:{default:e}}function i(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var o in e)if(Object.prototype.hasOwnProperty.call(e,o)){var r=Object.defineProperty&&Object.getOwnPropertyDescriptor?Object.getOwnPropertyDescriptor(e,o):{};r.get||r.set?Object.defineProperty(t,o,r):t[o]=e[o]}return t.default=e,t}var d=function(){return window.open("how-to-play","_blank")},c=function(){return window.open("http://github.com/jsyang/celestial","_blank")},u=340,s=420;function f(l){var i=l.onClickNewGame,f=l.onClickLoadGame,y=localStorage.getItem(n.StorageGameState.Scores),p=t.default.create({width:u,height:s}),m=new e.Text("Build: ".concat("2018-12-15T14:30:24.466Z"," -- ").concat("739c267"),{fontFamily:"arial",fontSize:12,fill:1122833,align:"left"});m.x=0,m.y=s+10,p.modal.addChild(m);var h=s;h-=60;var g=o.default.create({text:"Source code",onClick:c});g.x=20,g.y=h,p.modal.addChild(g),h-=60;var w=o.default.create({text:"How to play",onClick:d});w.x=20,w.y=h,p.modal.addChild(w),h-=60;var v=o.default.create({text:"Load game",onClick:f});v.x=20,v.y=h,y||(v.children[0].tint=2236962,v.tint=3355443,v.interactive=!1),p.modal.addChild(v),h-=60;var b=o.default.create({text:"New game",onClick:i});b.x=20,b.y=h,p.modal.addChild(b),p.buttons.push(b),y&&p.buttons.push(v),p.buttons.push(w),p.buttons.push(g);var x,P,S=new e.Graphics;S.lineStyle(2,16776960,1);var C=.0625,E=.05;x=40,P=60,"celestial".split("").forEach(function(e){S.drawPolygon((0,a.transformPolygon)(r.LETTERS[e],x,P,C,E)),x+=30}),x=90,P=100,"combat".split("").forEach(function(e){S.drawPolygon((0,a.transformPolygon)(r.LETTERS[e],x,P,C,E)),x+=30});var T=new e.Graphics;return x=190,P=20,C=1/3,E=1/3,T.lineStyle(12,3355392,1),T.drawPolygon((0,a.transformPolygon)(r.LETTERS.symbol[0],x,P,C,E)),T.lineStyle(32,3355392,1),T.drawPolygon((0,a.transformPolygon)(r.LETTERS.symbol[1],x,P,C,E)),p.modal.addChild(T),p.modal.addChild(S),p}var y={create:f};exports.default=y;
+        "use strict";
+        Object.defineProperty(exports, "__esModule", {value: !0}), exports.default = void 0;
+        var e = i(require("pixi.js")), t = l(require(".")), o = l(require("../Button")), r = require("../../constants"),
+            a = require("../../Geometry"), n = require("../../GameState");
+
+        function l(e) {
+            return e && e.__esModule ? e : {default: e}
+        }
+
+        function i(e) {
+            if (e && e.__esModule) return e;
+            var t = {};
+            if (null != e) for (var o in e) if (Object.prototype.hasOwnProperty.call(e, o)) {
+                var r = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(e, o) : {};
+                r.get || r.set ? Object.defineProperty(t, o, r) : t[o] = e[o]
+            }
+            return t.default = e, t
+        }
+
+        var d = function () {
+            return window.open("how-to-play", "_blank")
+        }, c  = function () {
+            return window.open("http://github.com/jsyang/celestial", "_blank")
+        }, u  = 340, s = 420;
+
+        function f(l) {
+            var i = l.onClickNewGame, f = l.onClickLoadGame, y = localStorage.getItem(n.StorageGameState.Scores),
+                p = t.default.create({width: u, height: s}),
+                m = new e.Text("Build: ".concat("2018-12-15T23:02:26.627Z", " -- ").concat("31a1334"), {
+                    fontFamily: "arial",
+                    fontSize:   12,
+                    fill:       1122833,
+                    align:      "left"
+                });
+            m.x = 0, m.y = s + 10, p.modal.addChild(m);
+            var h = s;
+            h -= 60;
+            var g = o.default.create({text: "Source code", onClick: c});
+            g.x = 20, g.y = h, p.modal.addChild(g), h -= 60;
+            var w = o.default.create({text: "How to play", onClick: d});
+            w.x = 20, w.y = h, p.modal.addChild(w), h -= 60;
+            var v = o.default.create({text: "Load game", onClick: f});
+            v.x = 20, v.y = h, y || (v.children[0].tint = 2236962, v.tint = 3355443, v.interactive = !1), p.modal.addChild(v), h -= 60;
+            var b = o.default.create({text: "New game", onClick: i});
+            b.x = 20, b.y = h, p.modal.addChild(b), p.buttons.push(b), y && p.buttons.push(v), p.buttons.push(w), p.buttons.push(g);
+            var x, P, S = new e.Graphics;
+            S.lineStyle(2, 16776960, 1);
+            var C = .0625, E = .05;
+            x = 40, P = 60, "celestial".split("").forEach(function (e) {
+                S.drawPolygon((0, a.transformPolygon)(r.LETTERS[e], x, P, C, E)), x += 30
+            }), x = 90, P = 100, "combat".split("").forEach(function (e) {
+                S.drawPolygon((0, a.transformPolygon)(r.LETTERS[e], x, P, C, E)), x += 30
+            });
+            var T = new e.Graphics;
+            return x = 190, P = 20, C = 1 / 3, E = 1 / 3, T.lineStyle(12, 3355392, 1), T.drawPolygon((0, a.transformPolygon)(r.LETTERS.symbol[0], x, P, C, E)), T.lineStyle(32, 3355392, 1), T.drawPolygon((0, a.transformPolygon)(r.LETTERS.symbol[1], x, P, C, E)), p.modal.addChild(T), p.modal.addChild(S), p
+        }
+
+        var y           = {create: f};
+        exports.default = y;
 },{"pixi.js":"5hn+",".":"Q7na","../Button":"xE1Y","../../constants":"PH7Q","../../Geometry":"e9yM","../../GameState":"eQyJ"}],"qtxK":[function(require,module,exports) {
 "use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var e,t,a=d(require("../Graphics")),r=d(require("../Graphics/Starfield")),n=d(require("./control")),i=d(require("../UI/Modal/TitleScreenModal")),u=d(require("../GameScreen")),o=require("../GameState");function d(e){return e&&e.__esModule?e:{default:e}}var l=60,f=1e3/l,c={x:0,y:0},s=600,m=0,v=Math.PI/180*.02,h=.05,p=1,q=!1;function G(){var i=Date.now(),u=i-t,o=!0;q||n.default.update(x),u>f&&(q?(a.default.setGlobalAlpha(p),p>0?p-=h:(p=1,o=!1)):(c.x=Math.cos(m)*s,c.y=Math.sin(m)*s,m+=v,a.default.centerOn(c),r.default.process(c)),a.default.render(),t=i-u%f),o?e=requestAnimationFrame(G):F()}var M,x=i.default.create({onClickNewGame:function(){return q=!0},onClickLoadGame:function(){L(function(){u.default.init(!1),(0,o.restoreFromLocalStorage)(),u.default.start()}),q=!0}});function C(){addEventListener("resize",S),a.default.init(),r.default.init().forEach(a.default.addChild),a.default.addChildToHUD(x),t=Date.now(),G()}function S(){a.default.onResize()}function F(){cancelAnimationFrame(e),M&&(removeEventListener("resize",S),M())}function L(e){M=e}var _={setFadeOutCallback:L,start:C};exports.default=_;
 },{"../Graphics":"Oi2H","../Graphics/Starfield":"SAW4","./control":"Nuqc","../UI/Modal/TitleScreenModal":"MGd9","../GameScreen":"3Rht","../GameState":"eQyJ"}],"9VZu":[function(require,module,exports) {
@@ -720,10 +1169,35 @@ module.exports="/switch-flick.48748ac9.ogg";
 },{"./audio":"WovT","./sounds":"Db6I"}],"EBhS":[function(require,module,exports) {
 "use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var e,t=n(require(".")),r=n(require("../Graphics/Focus")),u=n(require("../Graphics/Starfield")),a=require("../GameScreen/control/getFighter"),i=n(require("../GameScreen/HUD/RadarGalaxyExpanded")),l=n(require("../Input"));function n(e){return e&&e.__esModule?e:{default:e}}var s=function(t){return e=t},d=function(){return e},o={};function f(){var e=l.default.getDevice().getEvents();e.PAUSE&&!o.PAUSE&&t.default.togglePause(),t.default.getIsPaused()||(e.FOCUS_NEXT_ENEMY&&!o.FOCUS_NEXT_ENEMY&&(u.default.process(null),r.default.setFocus(s((0,a.getFighter)(!0)))),e.TOGGLE_RADAR&&!o.TOGGLE_RADAR&&i.default.setVisible(!i.default.getIsVisible())),o=e}var c={update:f,getControlledEntity:d,setControlledEntity:s};exports.default=c;
 },{".":"RNXT","../Graphics/Focus":"xtCw","../Graphics/Starfield":"SAW4","../GameScreen/control/getFighter":"MpYu","../GameScreen/HUD/RadarGalaxyExpanded":"6yS+","../Input":"zA7B"}],"rX71":[function(require,module,exports) {
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var e=r(require("../Entity")),t=require("../constants"),a=r(require("../Graphics/Focus"));function r(e){return e&&e.__esModule?e:{default:e}}var u=t.TEAM.MAGENTA,i=t.TEAM.BLUE;function o(){var t=e.default.create("Star",{x:5e3,y:5e3}),r=e.default.create("Planet",{star:t,orbitDistance:3200,orbitRotation:0});r.team=i,r.updateFlagColor();var o={team:r.team,planet:r};r.pbase=e.default.create("PBase",o);var s=e.default.create("Fighter",{x:15e3,y:15e3,isFighterAutoAccelerated:!0,team:u,attackTarget:r.pbase});a.default.setFocus(s)}var s={init:o};exports.default=s;
+        "use strict";
+        Object.defineProperty(exports, "__esModule", {value: !0}), exports.default = void 0;
+        var e = a(require("../Entity")), t = require("../constants"), r = a(require("../Graphics/Focus"));
+
+        function a(e) {
+            return e && e.__esModule ? e : {default: e}
+        }
+
+        var u = t.TEAM.MAGENTA, i = t.TEAM.NONE;
+
+        function o() {
+            var t = e.default.create("Star", {x: 5e3, y: 5e3}),
+                a = e.default.create("Planet", {star: t, orbitDistance: 3200, orbitRotation: 0});
+            a.team = i, a.updateFlagColor();
+            var o = e.default.create("Fighter", {
+                x:                        15e3,
+                y:                        15e3,
+                isFighterAutoAccelerated: !0,
+                team:                     u,
+                attackTarget:             a
+            });
+            r.default.setFocus(o)
+        }
+
+        var s           = {init: o};
+        exports.default = s;
 },{"../Entity":"ut18","../constants":"PH7Q","../Graphics/Focus":"xtCw"}],"RNXT":[function(require,module,exports) {
 "use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var e,t=l(require("../Graphics/Starfield")),u=l(require("../Graphics")),a=l(require("../Graphics/Focus")),r=l(require("./control")),i=l(require("../Entity")),n=l(require("../GameScreen/HUD")),d=l(require("./ScenarioSystem"));function l(e){return e&&e.__esModule?e:{default:e}}var f=60,o=1e3/f,s=!1;function c(){i.default.updateAll(),i.default.prepareNext()}function p(){var i=Date.now(),d=i-e;if(!s&&c(),r.default.update(),d>o){var l=a.default.getFocus();l&&(n.default.setFocus(l),u.default.centerOn(l)),u.default.cullRenderable(),t.default.process(l),n.default.update(),u.default.render(),e=i-d%o}requestAnimationFrame(p)}function q(){e=Date.now(),p()}function v(){addEventListener("resize",h),i.default.clearAll(),u.default.init(),t.default.init().forEach(u.default.addChild),n.default.init(r.default),d.default.init()}function h(){n.default.onResize(),t.default.onResize(),u.default.onResize()}var g=function(){s=!s,n.default.setPauseVisible(s)},m={init:v,start:q,togglePause:g,getIsPaused:function(){return s}};exports.default=m;
 },{"../Graphics/Starfield":"SAW4","../Graphics":"Oi2H","../Graphics/Focus":"xtCw","./control":"EBhS","../Entity":"ut18","../GameScreen/HUD":"ACUy","./ScenarioSystem":"rX71"}],"Md9U":[function(require,module,exports) {
 "use strict";var e=i(require("./GeometryEditScreen")),t=i(require("./GameScreen")),r=i(require("./TitleScreen")),a=i(require("./assets")),n=i(require("./startupOptions")),u=i(require("./TestScreen"));function i(e){return e&&e.__esModule?e:{default:e}}var d=function(){t.default.init(),t.default.start()};function s(){var t;removeEventListener("DOMContentLoaded",s),n.default.isTestSectorInUse?t=function(){u.default.init(),u.default.start()}:n.default.shouldSkipTitleScreen?t=d:n.default.isGeometryEditorInUse?t=e.default.start:(r.default.setFadeOutCallback(d),t=r.default.start),a.default.load().then(t)}addEventListener("DOMContentLoaded",s);
 },{"./GeometryEditScreen":"o5Bo","./GameScreen":"3Rht","./TitleScreen":"qtxK","./assets":"IHy0","./startupOptions":"Y848","./TestScreen":"RNXT"}]},{},["Md9U"], null)
-//# sourceMappingURL=/client.dee64bce.map
+//# sourceMappingURL=/client.dc645cbe.map

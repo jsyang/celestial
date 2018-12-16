@@ -6,7 +6,7 @@ const F_base = 'type,team,x,y,hp,maxHp,rotation,_creationId';
 // Relevant to components
 // todo: perhaps just loop through each component's DEFAULTS object and get the keys from there?
 const F_ = {
-    accelerateFighterToAttackTarget: 'isFighterPreviouslyDocked,isFighterAutoAccelerated',
+    accelerateFighterToAttackTarget: 'isFighterPreviouslyDocked,isFighterAutoAccelerated,hasFighterSlowedForLanding',
     accelerateToAttackTarget:        'delayBeforeTracking',
     anchor:                          'anchor,anchorOffsetX,anchorOffsetY',
     attack:                          'attackTarget,attackWeapon,isAttacking',
