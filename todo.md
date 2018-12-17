@@ -1,4 +1,48 @@
-# Todo / idea list
+# TODOs 
+
+## v1.3
+- friendly units show stats
+    - indicator to show currently active wingmates (and their objectives)
+    - activity indicator?
+        - producing
+        - repairing
+        - manufacturing
+        - developing
+    - receiving damage = show health bars
+    - manufacturing / refining = show progress bar
+
+- improve + extend fighter AI
+    - pilot characteristics 
+        - aggression level (proximity to target)
+        - different attack patterns for different targets
+        - self-preservation (health threshold before retreating for repair)
+        - preferred weapon
+    - land on spaceport
+    - move to point and be at rest
+    - retarget when current attackTarget is dead / objective met
+    - avoid stars
+
+## v1.4
+
+- sectors are generated before game begins
+    - retreat / advance / develop sector
+
+- persist saved games in cloud?
+    - player auth
+    - maximum of 3 saved games
+    - highest score yet
+    - playtime of saved game (in real elapsed time, only count minutes)
+    - site to browse saved games
+    - upload avatar
+    - simple forum
+
+- strategic AI
+    - combined arms
+    - spearhead operations
+    - logistically minded
+
+
+## Concepts for improving the game
 
 ### Core Gameplay
 - unified UX model for game
@@ -114,6 +158,9 @@ https://github.com/pixijs/pixi.js/issues/1841
  
 - asteroids / uninhabitable worlds
 - ability to destroy planets
+
+
+## Research
 
 ### Similar games
 - https://www.myabandonware.com/game/conquest-frontier-wars-cvk

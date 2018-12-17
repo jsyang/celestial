@@ -56,46 +56,13 @@ See `LETTERS` within `src/client/constants.ts` for an example.
 
 ---
 
-## TODO for v1.3
+## Tasks in progress
 
-- friendly units show stats
-    - indicator to show currently active wingmates (and their objectives)
-    - activity indicator?
-        - producing
-        - repairing
-        - manufacturing
-        - developing
-    - receiving damage = show health bars
-    - manufacturing / refining = show progress bar
+- p2p play, with peer broker on heroku
+    - net code to sync states
 
-- improve + extend fighter AI
-    - land on spaceport
-    - move to point and be at rest
-    - aggression level (proximity to target)
-    - retarget when current attackTarget is dead / objective met
-    - avoid stars
-    - different attack patterns for different targets
-    - self-preservation (health threshold before retreating for repair)
-    - preferred weapon
-
-## TODO for v1.4
-
-- sectors are generated before game begins
-    - retreat / advance / develop sector
-
-- persist saved games in cloud?
-    - player auth
-    - maximum of 3 saved games
-    - highest score yet
-    - playtime of saved game (in real elapsed time, only count minutes)
-    - site to browse saved games
-    - upload avatar
-    - simple forum
-
-- strategic AI
-    - combined arms
-    - spearhead operations
-    - logistically minded
+- use pixijs pointer events rather than mouse/tap
+https://pixijs.download/v4.6.2/docs/PIXI.interaction.InteractionManager.html
 
 ---
 

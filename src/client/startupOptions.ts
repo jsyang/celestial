@@ -3,10 +3,10 @@
 enum GameFeature {
     AudioMuted          = 'mute',
     GamePadInUse        = 'gamepad',
-
     SkipTitleScreen     = 'game',
     GeometryEditorInUse = 'editor',
-    TestSectorInUse     = 'test'
+    TestSectorInUse     = 'test',
+    P2PTesting          = 'p2p'
 }
 
 const featureToggle: Record<string, any> = {};
@@ -26,5 +26,6 @@ export default {
 
     shouldSkipTitleScreen: getToggleStatus(GameFeature.SkipTitleScreen),
     isTestSectorInUse:     getToggleStatus(GameFeature.TestSectorInUse),
+    isP2PTesting:          getToggleStatus(GameFeature.P2PTesting),
     isGeometryEditorInUse: getToggleStatus(GameFeature.GeometryEditorInUse)
 };
