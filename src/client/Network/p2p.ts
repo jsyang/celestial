@@ -1,5 +1,7 @@
 import Peer from 'peerjs';
 
+const BROKER_ORIGIN = 'https://celcom-peer-broker.herokuapp.com';
+
 const connections: any = {
     broker: null,
     peer:   null
@@ -64,7 +66,7 @@ const sendToPeer = data => {
 };
 
 function getActivePeers() {
-    fetch(`http://localhost:3001/peers`, {
+    fetch(`${BROKER_ORIGIN}/peers`, {
         method:  'post',
         body:    JSON.stringify({id: peerId}),
         headers: {'Content-Type': 'application/json'}
@@ -80,12 +82,12 @@ function getActivePeers() {
 
 // Establish connection to peer broker
 export const init = () => {
-    connections.broker = new Peer(peerId, {host: 'localhost', port: 3001, path: '/'});
+    connections.broker = new Peer(peerId, {host: BROKER_ORIGIN, port: 3001, path: '/'});
     connections.broker.on('open', id => {
         console.log(`Connection to broker successful! Your id is ${id}`);
 
         localStorage.setItem('p2p-whitelist', peerWhitelist.join(','));
-        fetch(`http://localhost:3001/whitelist`,
+        fetch(`${BROKER_ORIGIN}/whitelist`,
             {
                 method:  'post',
                 body:    JSON.stringify({id: peerId, peerWhitelist}),
