@@ -2,7 +2,7 @@ const express    = require('express');
 const PeerServer = require('peer').PeerServer;
 
 const activeConnections = {};
-const port              = 3001;
+const port              = process.env.PORT || 3001;
 
 const server = PeerServer({port, path: '/', allow_discovery: true});
 server.use(express.json());

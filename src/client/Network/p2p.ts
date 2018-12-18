@@ -85,7 +85,7 @@ function getActivePeers() {
 export const init = () => {
     connections.broker = new Peer(peerId, {
         host:   BROKER_HOSTNAME,
-        port:   3001,
+        port:   80,
         path:   '/',
         secure: /https/g.test(BROKER_PROTOCOL)
     });
