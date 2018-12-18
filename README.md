@@ -19,6 +19,9 @@ Some specifics about the game:
 - custom game engine: uses only vector graphics
 - collision detection is done within an entity grid and via SAT (Separating Axis Theorem)
 
+Additional detail about how the game was coded can be found in `devlogs/`:
+- [Implementing saved games](saved-games.md)
+
 #### Feature toggles
 
 You have the option of toggling game functionality via the URL you use to access the game.
