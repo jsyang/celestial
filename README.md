@@ -2,17 +2,22 @@
 
 Celestial Combat is a game of galactic conquest and colonization. 
 
-See this page for [How to Play](http://jsyang.ca/celestial/how-to-play) this game.
+See this page for [How to Play](http://jsyang.ca/celestial/how-to-play) this game or
+dive right in and [play with a keyboard + mouse](http://jsyang.ca/celestial) or
+[play a gamepad](http://jsyang.ca/celestial).
 
-## Launching the game
+## List of things currently being worked on 
 
-- [Play Celestial Combat with keyboard + mouse](http://jsyang.ca/celestial)
-- [Play Celestial Combat with a game pad](http://jsyang.ca/celestial?gamepad)
+- net code to sync states for p2p
+- use pixijs pointer events rather than mouse/tap
+https://pixijs.download/v4.6.2/docs/PIXI.interaction.InteractionManager.html
 
-## Development
+## For Developers
 
-This game implements the Entity-Component-System model of dealing with data and interactions
-between game pieces.
+Some specifics about the game:
+- game implements ECS
+- custom game engine: uses only vector graphics
+- collision detection is done within an entity grid and via SAT (Separating Axis Theorem)
 
 #### Feature toggles
 
@@ -53,16 +58,6 @@ See `LETTERS` within `src/client/constants.ts` for an example.
 
 1. `yarn watch`
 2. http://localhost:3000/?editor
-
----
-
-## Tasks in progress
-
-- p2p play, with peer broker on heroku
-    - net code to sync states
-
-- use pixijs pointer events rather than mouse/tap
-https://pixijs.download/v4.6.2/docs/PIXI.interaction.InteractionManager.html
 
 ---
 

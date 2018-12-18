@@ -41,8 +41,6 @@ const F_ = {
     storeMaterials:                  'MAX_RAW_MATERIALS,MAX_FINISHED_MATERIALS,materialsRaw,materialsFinished'
 };
 
-
-// todo: make strings out of fields needed for each component
 const FIELDS_BY_ENTITY: any = {
     // Projectiles
     CannonShot:      [F_.moveLinearly],
