@@ -65,7 +65,7 @@ map references from one entity to another. In Celestial Combat, an ID is a numbe
 These changes were done in a few steps:
 
 1. Within the `create()` of `src/client/Entity/index.ts`, we need to assign an ID field
-that is auto-incrementing:.
+that is auto-incrementing. Its value is not mutated during the course of the game.
 
 2. This field needs to be set to a specific value when loading (deserializing) a saved game. Make it
 auto-increment by default or have it take a `creationId` just like any other field during the `create()` call. 
@@ -82,11 +82,11 @@ for this purpose.
 Once serialized, the game will need some way of recreating those references when loading a saved game.
 The game can do this in 2 passes:
 
-1. Deserialize the saved game data into an intermediate state. All entities are created and have their
+1. Deserialize the saved game data into an intermediate game state. All entities are created and have their
 non-reference fields filled in. Reference fields are not yet linked and remain represented as numbers.
 
 2. Inflate the references. From a collection of all entities, find by ID and set the values of the 
-reference fields: numbers mapped to entity instances.
+reference fields: numbers are mapped to entity instances.
 
 ```
 function inflateReferencesForEntity(entity, index, allEntities) {
@@ -140,7 +140,10 @@ Of course, we also want to save other info about a game session, not just entiti
 - score
 - number of consecutive wins / losses (for game over)
 
-These are easily handled by `JSON.stringify()` and `JSON.parse()`.
+These are easily handled by `JSON.stringify()` and `JSON.parse()` and stored in the same
+manner. Each being assigned its own localStorage key.
 
 You can find the all source code for saving / loading games under 
-`src/client/GameState`. Thanks for reading!
+`src/client/GameState`.
+
+Thanks for reading!
