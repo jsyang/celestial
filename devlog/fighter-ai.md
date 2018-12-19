@@ -6,3 +6,6 @@ _Tags: #routines #behaviortree_
 - landing
 - movement
 - attack pattern
+- calculation optimizations
+- use of testing feature toggle
+    - repeatable scenarios
