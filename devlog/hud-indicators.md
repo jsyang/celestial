@@ -107,4 +107,4 @@ Pseudocode for `drawPointerFor()` is shown below:
         hide pointer
 ```
 
-Full source code for the pointer UI resides in `src/client/GameScreen/HUD/Pointers.ts`.
+Full source code for the pointer UI resides in [`src/client/GameScreen/HUD/Pointers.ts`](https://github.com/jsyang/celestial/blob/master/src/client/GameScreen/HUD/Pointers.ts).
