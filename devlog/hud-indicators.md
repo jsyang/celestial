@@ -1,7 +1,7 @@
 # HUD Indicator designs
 _Tags: #design #UX_
  
-2018-12-xx
+2018-12-23
 
 UX design is everything in the realm of games and when something is lacking in that
 department, it stands out. CelCom has had an example of this where everything about
@@ -56,7 +56,13 @@ obscure the player's visual focus. Couldn't use this design as is.
 the player's screen if the enemy is out of view and disappears when the enemy is in view. This was
 the perfect design to replace the old dials in Celestial combat  
 
-## Coding the new design 
+Additionally, the safe landing speed threshold was bumped up. Game would allow for rougher
+landings. A landing speed indicator was also set to be shown only when the player's fighter ship was within 
+a certain distance of a planet.
+
+![landing speed gauge](images/landing-speed.png)
+
+## Coding the new design for the indicators
 
 We ended up coding 4 distinct indicators for this UI component:
 - nearest planet

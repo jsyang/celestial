@@ -8,15 +8,19 @@ const connections: any = {
     peer:   null
 };
 
-// Red square tracks the peer's cursor to show data is being sent / received
-const remoteCursor        = document.createElement('div');
-remoteCursor.style.height = remoteCursor.style.width = '20px';
-remoteCursor.style.position   = 'absolute';
-remoteCursor.style.background = 'red';
-remoteCursor.style.transform  = 'translate(-50%,-50%)';
+let remoteCursor;
 
-document.body.appendChild(remoteCursor);
-addEventListener('mousemove', e => sendToPeer({x: e.clientX, y: e.clientY}));
+function createRemoteCursor() {
+    // Red square tracks the peer's cursor to show data is being sent / received
+    remoteCursor              = document.createElement('div');
+    remoteCursor.style.height = remoteCursor.style.width = '20px';
+    remoteCursor.style.position   = 'absolute';
+    remoteCursor.style.background = 'red';
+    remoteCursor.style.transform  = 'translate(-50%,-50%)';
+
+    document.body.appendChild(remoteCursor);
+    addEventListener('mousemove', e => sendToPeer({x: e.clientX, y: e.clientY}));
+}
 
 // Peer sent data to you
 function onData(data) {
@@ -40,10 +44,15 @@ function onOpen() {
     }
 }
 
-let peerId        = prompt('Set peer id:', `jim`) || Date.now().toString(16);
-let peerWhitelist = (prompt('Set comma-separated whitelist of peers allowed to connect to you:',
-    localStorage.getItem('p2p-whitelist') || 'bob'
-) || '').split(',');
+let peerId;
+let peerWhitelist;
+
+function setP2PConnectionSettings() {
+    peerId        = prompt('Set peer id:', `jim`) || Date.now().toString(16);
+    peerWhitelist = (prompt('Set comma-separated whitelist of peers allowed to connect to you:',
+        localStorage.getItem('p2p-whitelist') || 'bob'
+    ) || '').split(',');
+}
 
 const bindPeerConnectionEvents = potentialConnection => {
     potentialConnection.on('data', onData);
@@ -83,12 +92,16 @@ function getActivePeers() {
 
 // Establish connection to peer broker
 export const init = () => {
+    createRemoteCursor();
+    setP2PConnectionSettings();
+
     connections.broker = new Peer(peerId, {
         host:   BROKER_HOSTNAME,
         port:   /https/g.test(BROKER_PROTOCOL) ? 443 : 80,
         path:   '/',
         secure: /https/g.test(BROKER_PROTOCOL)
     });
+
     connections.broker.on('open', id => {
         console.log(`Connection to broker successful! Your id is ${id}`);
 
