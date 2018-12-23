@@ -1,6 +1,26 @@
 # TODOs 
 
 ## v1.3
+
+- user accounts
+    - persist games
+    - maximum of 3 saved games
+    - persist settings
+    - leaderboards (highest, lowest score per playtime)
+    - playtime of saved game (in real elapsed time, only count minutes)
+    - upload avatar
+    - site to browse saved games
+        - simple forum
+    - statistics
+        - total X killed
+
+- game controls modal
+    - volume controls
+    - key remap
+    - save preferences to account / localstorage
+
+## v1.4
+
 - friendly units show stats
     - indicator to show currently active wingmates (and their objectives)
     - activity indicator?
@@ -10,6 +30,8 @@
         - developing
     - receiving damage = show health bars
     - manufacturing / refining = show progress bar
+
+## v1.5
 
 - improve + extend fighter AI
     - pilot characteristics 
@@ -22,19 +44,11 @@
     - retarget when current attackTarget is dead / objective met
     - avoid stars
 
-## v1.4
+## v2.0
 
 - sectors are generated before game begins
     - retreat / advance / develop sector
 
-- persist saved games in cloud?
-    - player auth
-    - maximum of 3 saved games
-    - highest score yet
-    - playtime of saved game (in real elapsed time, only count minutes)
-    - site to browse saved games
-    - upload avatar
-    - simple forum
 
 - strategic AI
     - combined arms

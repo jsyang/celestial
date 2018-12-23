@@ -12,14 +12,8 @@ dive right in and [play with a keyboard + mouse](http://jsyang.ca/celestial) or
 - use pixijs pointer events rather than mouse/tap
 https://pixijs.download/v4.6.2/docs/PIXI.interaction.InteractionManager.html
 
-## For Developers
+## Development logs
 
-Some specifics about the game:
-- game implements ECS
-- custom game engine: uses only vector graphics
-- collision detection is done within an entity grid and via SAT (Separating Axis Theorem)
-
-Additional detail about how the game was coded can be found in `devlogs/`:
 - [Implementing saved games](saved-games.md)
 
 #### Feature toggles
@@ -51,16 +45,6 @@ your system unfold.
 2. http://localhost:3000/?test
 3. Edit `src/client/TestScreen/ScenarioSystem.ts` to create the scenario's initial conditions
 4. Edit `src/client/component/*.ts` to tweak components that implement the behavior 
-
-#### Geometry editor
-
-You can use the geometry editor to create polygons to be displayed inside the game engine.
-See `LETTERS` within `src/client/constants.ts` for an example. 
-
-- [Start Geometry editor](http://jsyang.ca/celestial?editor)<br><br><img src="how-to-play/editor.png">
-
-1. `yarn watch`
-2. http://localhost:3000/?editor
 
 ---
 

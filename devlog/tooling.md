@@ -25,7 +25,18 @@ can be afforded.
 coding these polygons by hand would be tedious every time you wanted to create or modify a polygon. so writing a tool
 to do this makes perfect sense: the geometry editor is the resulting product.
 
-(move README geometry editor notes in here)
+### Geometry editor
+
+You can use the geometry editor to create polygons to be displayed inside the game engine. 
+[Launch geometry editor](http://jsyang.ca/celestial?editor).
+
+![geometry editor](how-to-play/editor.png)
+
+See `LETTERS` within `src/client/constants.ts` for an example of the output. Developers can also run the game locally
+and start the editor there: 
+
+1. `yarn watch`
+2. http://localhost:3000/?editor
 
 ## Creating builds
 
