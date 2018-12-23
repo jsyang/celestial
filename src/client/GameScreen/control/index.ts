@@ -49,38 +49,32 @@ function setControlToHuman() {
 function update() {
     const device     = Input.getDevice();
     const events     = device.getEvents();
-    const inputState = device.getInputState();
 
     if (events.PAUSE && !prevEvents.PAUSE) {
         GameScreen.togglePause();
     }
 
-    // No controls if paused
-    if (GameScreen.getIsPaused()) {
-        if (controlledEntity && controlledEntity.modal) {
-            // Modals handled even during paused state
-            controlActiveModal(controlledEntity, inputState);
-        }
-    } else {
-        if (controlledEntity) {
-            if (controlledEntity.modal) {
-                // Modals handled first
-                controlActiveModal(controlledEntity, inputState);
-            } else if (controlledEntity.hp > 0) {
-                // Only allow player control if same faction
-                if (isHumanTeam(controlledEntity.team)) {
-                    setControlToHuman();
+    // Modals handled even during paused state
+    if (controlledEntity && controlledEntity.modal) {
+        return controlActiveModal(controlledEntity, events, prevEvents);
+    }
 
-                    switch (controlledEntity.type) {
-                        case 'Fighter':
-                            controlFighter(controlledEntity, events, prevEvents);
-                            break;
-                    }
+    // No controls if paused
+    if (!GameScreen.getIsPaused()) {
+        if (controlledEntity && controlledEntity.hp > 0) {
+            // Only allow player control if same faction
+            if (isHumanTeam(controlledEntity.team)) {
+                setControlToHuman();
+
+                switch (controlledEntity.type) {
+                    case 'Fighter':
+                        controlFighter(controlledEntity, events, prevEvents);
+                        break;
                 }
-            } else {
-                command.reset(); // todo more sophisticated cancelling of commands
-                setControlledEntity(null);
             }
+        } else {
+            command.reset(); // todo more sophisticated cancelling of commands
+            setControlledEntity(null);
         }
 
         // Select enemy fighters to focus on

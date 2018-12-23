@@ -137,6 +137,7 @@ function onTeamWon(team) {
 }
 
 function init(isNewGame = true) {
+    removeEventListener('resize', onResize);
     addEventListener('resize', onResize);
 
     isFadingIn      = true;
