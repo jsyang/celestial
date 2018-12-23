@@ -1,7 +1,7 @@
 # Entity Component System (ECS)
 _Tags: #architecture #patterns #code_
 
-2018-12-22
+In progress 2018-12-22
 
 games are massively data-driven systems that require a software architecture
 to afford the game developer enough ease and flexibility to create and extend

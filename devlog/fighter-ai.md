@@ -1,7 +1,7 @@
 # Fighter Spaceship AI
 _Tags: #routines #behaviortree_
  
-2018-12-xx
+In progress 2018-12-xx
 
 AI is a nebulous term, trending in the popular lexicon over the past few years.
 In our case, game AI, specifically: game AI for Celestial Combat basically means

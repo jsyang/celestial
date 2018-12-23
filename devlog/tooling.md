@@ -1,7 +1,7 @@
 # Simplifying development tooling
 _Tags: #tooling #code_
  
-2018-12-22
+In progress 2018-12-22
 
 Being a developer, writing code is preferable 9 times out of 10 to get something done on a software project.
 For those other times, code can hinder rather than help the realization of ideas. Some factors that make it important

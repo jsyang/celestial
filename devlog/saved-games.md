@@ -1,7 +1,7 @@
 # Implementing saved games
 _Tags: #featuredev, #code_
  
-2018-12-16
+Written 2018-12-16
 
 Celestial Combat is a game large in ambition and scope. Battles
 often span multiple solar systems with hundreds of spacecraft and

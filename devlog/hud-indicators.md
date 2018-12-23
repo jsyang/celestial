@@ -1,7 +1,7 @@
 # HUD Indicator designs
 _Tags: #design #UX_
  
-2018-12-23
+In progress 2018-12-23
 
 UX design is everything in the realm of games and when something is lacking in that
 department, it stands out. CelCom has had an example of this where everything about
