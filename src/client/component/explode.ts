@@ -3,15 +3,15 @@ import Entity from '../Entity';
 import Random from '../Random';
 import {TEAM} from '../constants';
 
-function explode() {
+function explode(entity) {
     const {
               EXPLOSION_SOUND, EXPLOSION_FRAGMENTS,
               x, y, dx, dy,
               explosionOriginDx,
               explosionOriginDy
-          } = this;
+          } = entity;
 
-    playSoundLocalized(EXPLOSION_SOUND, this);
+    playSoundLocalized(EXPLOSION_SOUND, entity);
 
     for (let fragmentCount = EXPLOSION_FRAGMENTS; fragmentCount > 0; fragmentCount--) {
         Entity.create('CannonShot', {
@@ -23,7 +23,7 @@ function explode() {
         });
     }
 
-    this.hasExploded = true;
+    entity.hasExploded = true;
 }
 
 const DEFAULTS = {
@@ -45,7 +45,7 @@ function process(entity) {
     // Ensure the explosion is intentional
     // i.e. Freighters should not explode when colonizing
     if (hp <= 0 && !hasExploded && canExplode) {
-        explode.call(entity);
+        explode(entity);
     }
 }
 
