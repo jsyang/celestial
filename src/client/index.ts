@@ -4,7 +4,6 @@ import TitleScreen from './TitleScreen';
 import Assets from './assets';
 import startupOptions from './startupOptions';
 import TestScreen from './TestScreen';
-import {init} from './Network/p2p';
 
 const onTitleScreenFadeout = () => {
     GameScreen.init();
@@ -15,17 +14,12 @@ function onDOMContentLoaded() {
     removeEventListener('DOMContentLoaded', onDOMContentLoaded);
 
     let onAssetsLoad;
-    let shouldLoadAssets = true;
 
     if (startupOptions.isTestSectorInUse) {
         onAssetsLoad = () => {
             TestScreen.init();
             TestScreen.start();
         };
-    } else if (startupOptions.isP2PTesting) {
-        // todo: flesh this out more
-        shouldLoadAssets = false;
-        init();
     } else if (startupOptions.shouldSkipTitleScreen) {
         onAssetsLoad = onTitleScreenFadeout;
     } else if (startupOptions.isGeometryEditorInUse) {
@@ -35,11 +29,9 @@ function onDOMContentLoaded() {
         onAssetsLoad = TitleScreen.start;
     }
 
-    if (shouldLoadAssets) {
-        Assets
-            .load()
-            .then(onAssetsLoad);
-    }
+    Assets
+        .load()
+        .then(onAssetsLoad);
 }
 
 addEventListener('DOMContentLoaded', onDOMContentLoaded);

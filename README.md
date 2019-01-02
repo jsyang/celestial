@@ -8,13 +8,12 @@ dive right in and [play with a keyboard + mouse](http://jsyang.ca/celestial) or
 
 ## List of things currently being worked on 
 
-- net code to sync states for p2p
-- use pixijs pointer events rather than mouse/tap
-https://pixijs.download/v4.6.2/docs/PIXI.interaction.InteractionManager.html
+- use pixijs [pointer events](https://pixijs.download/v4.6.2/docs/PIXI.interaction.InteractionManager.html) rather than mouse/tap
 
-## Development logs
+## Dev Logs
 
-- [Implementing saved games](saved-games.md)
+- [Implementing saved games](devlog/saved-games.md)
+- [Improving HUD indicator designs](devlog/hud-indicators.md)
 
 #### Feature toggles
 
