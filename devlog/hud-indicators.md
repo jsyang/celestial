@@ -64,6 +64,10 @@ The game would allow for rougher landings to avoid discouraging players.
 
 ![landing speed gauge](images/landing-speed.png)
 
+This is what it looks like in action:
+
+![new-indicators](images/new-indicators.gif)
+
 ## Coding the new design for the indicators
 
 We ended up coding 4 distinct indicators for this UI component:
