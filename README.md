@@ -14,6 +14,7 @@ dive right in and [play with a keyboard + mouse](http://jsyang.ca/celestial) or
 
 - [Implementing saved games](devlog/saved-games.md)
 - [Improving HUD indicator designs](devlog/hud-indicators.md)
+- [Simplifying development tooling](devlog/tooling.md)
 
 #### Feature toggles
 

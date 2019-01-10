@@ -11,13 +11,9 @@
     "url": "git://github.com/jsyang/celestial.git"
   },
   "main": "celestialcombat.js",
-  "engines": {
-    "node": "8.11.1"
-  },
   "scripts": {
     "ts-watch": "tsc --noEmit -w -p .",
     "regen-env": "node scripts/generateDotEnv.js",
-    "p2p-broker": "node src/server/p2p-broker.js",
     "watch": "yarn regen-sounds; yarn regen-env ; parcel _dev.html --port 3000 --no-hmr --no-source-maps",
     "regen-js": "rm -rf .cache ; yarn regen-sounds; yarn regen-env ; parcel build _dev.html --out-dir . ; yarn cleanup",
     "cleanup": "git checkout _dev.html ; mv client.*.js celestialcombat.js ; rm *.map *.ogg",
@@ -32,15 +28,9 @@
     "fscreen": "^1.0.2",
     "lz-string": "^1.4.4",
     "parcel-bundler": "^1.10.3",
-    "peer": "^0.2.10",
-    "peerjs": "^0.3.18",
     "pixi.js": "^4.8.2",
     "sat": "^0.6.0",
     "snarkdown": "^1.2.2",
     "typescript": "^3.2.1"
-  },
-  "dependencies": {
-    "express": "^4.16.4",
-    "peer": "^0.2.10"
   }
 }
