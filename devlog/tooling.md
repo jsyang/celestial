@@ -31,7 +31,7 @@ The editor can create layers of polygons with an infinite undo history. See `LET
 for an example of the output. Further tweaks to the resulting coordinate arrays is possible with the simple helper 
 function `transformPolygon()` inside [`src/client/Geometry.ts`](https://github.com/jsyang/celestial/blob/master/src/client/Geometry.ts).   
 
-![geometry editor](how-to-play/editor.png)
+![geometry editor](images/editor.png)
 
 ## Creating builds (FASTER + CHEAPER)
 
