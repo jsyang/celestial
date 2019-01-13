@@ -36,7 +36,8 @@ function clickButton() {
     const activeButton = this.buttons[this.activeIndex];
 
     if (activeButton) {
-        activeButton.click();
+        activeButton.emit('pointerdown');
+        activeButton.emit('pointerup');
     }
 }
 

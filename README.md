@@ -6,15 +6,15 @@ See this page for [How to Play](http://jsyang.ca/celestial/how-to-play) this gam
 dive right in and [play with a keyboard + mouse](http://jsyang.ca/celestial) or
 [play a gamepad](http://jsyang.ca/celestial?gamepad).
 
-## List of things currently being worked on 
+## Devlogs
 
-- use pixijs [pointer events](https://pixijs.download/v4.6.2/docs/PIXI.interaction.InteractionManager.html) rather than mouse/tap
+Writing on the game's development and design:
 
-## Dev Logs
+1. [Implementing saved games](devlog/saved-games.md)
+2. [Improving HUD indicator designs](devlog/hud-indicators.md)
+3. [Simplifying development tooling](devlog/tooling.md)
 
-- [Implementing saved games](devlog/saved-games.md)
-- [Improving HUD indicator designs](devlog/hud-indicators.md)
-- [Simplifying development tooling](devlog/tooling.md)
+## For developers
 
 #### Feature toggles
 

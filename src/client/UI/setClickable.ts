@@ -3,6 +3,15 @@ export function setClickable(pixiElement: any, onClick: Function) {
     pixiElement.interactiveChildren = false;
     pixiElement.buttonMode          = true;
 
-    pixiElement.click = onClick;
-    pixiElement.tap   = onClick;
+    let wasPointerDown = false;
+
+    pixiElement.on('pointerdown', () => wasPointerDown = true);
+    pixiElement.on('pointerupoutside', () => wasPointerDown = false);
+    pixiElement.on('pointerup', () => {
+        if (wasPointerDown) {
+            onClick();
+        }
+
+        wasPointerDown = false;
+    });
 }
