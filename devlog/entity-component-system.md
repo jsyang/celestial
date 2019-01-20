@@ -1,35 +1,24 @@
 # Entity Component System (ECS)
 _Tags: #architecture #patterns #code_
 
-In progress 2018-12-22
+In progress 2018-01-20
 
-games are massively data-driven systems that require a software architecture
-to afford the game developer enough ease and flexibility to create and extend
-game behavior and logic, especially when the game has many types of interacting pieces
+Games are massively data-driven systems that require a balanced software architecture. With this, we desire to achieve:
+- ease of development for creating and extending game behavior and logic
+- flexibility in acccomodating many types of interacting game pieces
 
-one common pattern used in writing logic for games is the Entity-Component-System
-architectural pattern. it defines a game as interactions between 3 kinds of data:
-1. game entities: the "things" of a game
-2. components: the "properties" (or attributes) of a game "thing"
-3. systems: how the game updates "things" because of their "properties"
+The ECS architectural pattern defines a game as interactions between 3 kinds of data:
+1. **Entities**: common nouns, game things  (e.g. spaceships)
+2. **Components**: adjectives, properties of game things (e.g. explodable)
+3. **Systems**: sentences, how game things update when they have certain properties
 
-## A concept re-adapted 
+## As implemented
 
-when creating new things, we don't always need to stick exactly to the definition of
-the concept that we are implementing. there is always freedom to explore and experiment
-with the methodology as long as the resulting product meets our high level requirements.
-
-in this case, the requirement is that the game IS a game. how the logic is structured
-can then be considered a side-effect, rather than the cause of the how the game behaves.
-
-for celestial combat, entities are classes, all extending a main base class `LivingEntity`.
-We use classes and not POJOs (Plain-Old-Javascript-Objects) because there are times when 
-it is more logical and convenient to call a class method than to have a separate handlers
-for specific actions. 
+In CelCom, all Entities (`src/client/Entity`) are classes, all extending a main base class `LivingEntity`.
+We use classes and not POJOs (Plain-Old-Javascript-Objects) because there are times when it is more logical and convenient to call a class method than to have separate handlers for specific actions. A prime example being `LivingEntity.assignTeamColor()`.
 
 These classes contain many properties, e.g. `x`, `y`, `rotation`. Some properties are tied
-to a Component, which is a JS module that contains both the flag property for it, and the
-handler for the entity which owns that property.
+to a Component, which is a JS module that contains both the flag property for it, and the handler for the how the entity should update given that it has this property.
 
 A system in our implementation is at a conceptually higher level than the original ECS concept.
 Systems handle how factions operate: 

@@ -1,10 +1,9 @@
 # Celestial Combat ![](favicon.png)
 
 Celestial Combat is a game of galactic conquest and colonization. 
-
-See this page for [How to Play](http://jsyang.ca/celestial/how-to-play) this game or
-dive right in and [play with a keyboard + mouse](http://jsyang.ca/celestial) or
-[play a gamepad](http://jsyang.ca/celestial?gamepad).
+Learn [How to Play](http://jsyang.ca/celestial/how-to-play), then dive right in:
+- [play with  keyboard + mouse](http://jsyang.ca/celestial)
+- [play with gamepad](http://jsyang.ca/celestial?gamepad)
 
 ## Devlogs
 
