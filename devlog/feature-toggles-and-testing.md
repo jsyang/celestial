@@ -1,7 +1,7 @@
 # Feature Toggles and Testing 
 _Tags: #testing, #scenarios_
  
-Written 2018-01-20
+Written 2019-01-20
 
 Some of the code for Celestial Combat has been structured to provide a easy facility for
 switching major subsystems of the game on/off. Additionally, unit testing is not time-efficient
