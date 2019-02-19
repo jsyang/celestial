@@ -1,7 +1,7 @@
 # Improving HUD indicator designs
 _Tags: #design #UX_
  
-Written 2018-01-02
+Written 2019-01-02
 
 Game design is essentially UX design. Bad experience design is more than jarring: it drives beginner players
 away. CelCom previously had an example of bad experience design in one of it core gameplay mechanics:
