@@ -13,7 +13,7 @@ function process(entity) {
         entity.rotation = rotation;
     } else {
         if (entity.explode) {
-            entity.explode();
+            entity.explode(entity);
         }
 
         Entity.destroy(entity);

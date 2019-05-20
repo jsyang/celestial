@@ -19,7 +19,7 @@ export const ERROR_MARGIN_LANDING_SPEED2 = 3.5 ** 2;
 const PIPI = Math.PI * 2;
 
 function crash(entity) {
-    entity.explode();
+    entity.explode(entity);
     Entity.destroy(entity);
 
     if (isHumanTeam(entity.team)) {
