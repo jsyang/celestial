@@ -56,6 +56,7 @@ function update() {
 
     // Modals handled even during paused state
     if (controlledEntity && controlledEntity.modal) {
+        prevEvents = events;
         return controlActiveModal(controlledEntity, events, prevEvents);
     }
 
