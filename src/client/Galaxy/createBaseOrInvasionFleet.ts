@@ -103,7 +103,7 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
 
         let SHIELDED_CHANCE    = 0.4;
         startingLocation.pbase = Entity.create('PBase', planetStructureParams);
-        if (Math.random() < SHIELDED_CHANCE) {
+        if (Random.int(0, 1) < SHIELDED_CHANCE) {
             startingLocation.pbase.shield = Entity.create(
                 'PShield',
                 {
@@ -118,7 +118,7 @@ export function createBaseOrInvasionFleet(teamName, startingLocation) {
 
         SHIELDED_CHANCE        = 0.15;
         startingLocation.pcomm = Entity.create('PComm', planetStructureParams);
-        if (Math.random() < SHIELDED_CHANCE) {
+        if (Random.int(0, 1) < SHIELDED_CHANCE) {
             startingLocation.pcomm.shield = Entity.create(
                 'PShield',
                 {

@@ -186,7 +186,7 @@ function processTeam(team) {
 
         // Attack if idle
         if (fighter && !fighter.attackTarget && fighter.isFighterAutoAccelerated) {
-            const whichAttackType = Math.random();
+            const whichAttackType = Random.int(0, 1);
             let potentialTarget;
             let messageText;
 
@@ -271,7 +271,7 @@ function update() {
 let onTeamLost              = new Function();
 let onTeamWin               = new Function();
 const setOnTeamLostCallback = cb => onTeamLost = cb;
-const setOnTeamWinCallback = cb => onTeamWin = cb;
+const setOnTeamWinCallback  = cb => onTeamWin = cb;
 
 function init() {
     // If loading a previous game ensure this

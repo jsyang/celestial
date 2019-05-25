@@ -1,5 +1,6 @@
 import {TEAM, TEAM_COLOR} from '../constants';
 import {IMutableGeometry} from '../Geometry';
+import Random from '../Random';
 
 export default class LivingEntity {
     hp: number;
@@ -58,7 +59,7 @@ export default class LivingEntity {
     renderHit(): void {
         if (this.hitTime > 0) {
             this.hitTime--;
-            this.geo.graphics.alpha = Math.random();
+            this.geo.graphics.alpha = Random.float(0, 1);
         } else if (this.hitTime === 0) {
             this.hitTime            = -1;
             this.geo.graphics.alpha = 1;

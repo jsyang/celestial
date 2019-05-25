@@ -95,7 +95,7 @@ function process(entity) {
             entity.developEquipment_time = developEquipment_timeMax;
 
             const weaponToDevelop = Random.arrayElement(Object.keys(DEVELOPABLE));
-            if (Math.random() < DEVELOPABLE[weaponToDevelop]) {
+            if (Random.int(0, 1) < DEVELOPABLE[weaponToDevelop]) {
                 // Successfully developed this weapon
                 entity.developEquipment_equipmentReady = weaponToDevelop;
 
