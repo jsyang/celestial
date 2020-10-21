@@ -136,6 +136,22 @@ Armor           ||||......
 Storage         ||||||||||
 ```
 
+### Scout
+
+![](scout.png)
+
+Scout ships can attach themselves to the surface of a planet and act as a static defense garrison.
+They are used primarily to enforce claims on a hostile planet. Weak individually, fleets of these
+ships are deadly en masse.
+
+```
+Speed           |.........
+Firepower       |......... 
+Armor           |.........
+Storage         ..........
+```
+
+
 ## Facilities
 
 ![1](planet.png)

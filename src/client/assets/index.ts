@@ -7,7 +7,7 @@ function load(): Promise<any> {
             fetch(`sounds/${name}`)
                 .then(res => res.arrayBuffer())
                 .then(arrayBuffer => defineSound({
-                    name: name.replace('.ogg', ''),
+                    name: name.split('.')[0],
                     arrayBuffer
                 }))
         )
