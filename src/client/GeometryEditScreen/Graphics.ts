@@ -24,7 +24,7 @@ function init() {
 
     if (typeof renderer === 'undefined') {
         onResize();
-        renderer = new PIXI.WebGLRenderer(width, height);
+        renderer = new PIXI.Renderer({width, height});
         document.body.appendChild(renderer.view);
     }
 }

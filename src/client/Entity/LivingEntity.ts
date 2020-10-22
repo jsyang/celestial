@@ -1,6 +1,5 @@
 import {TEAM, TEAM_COLOR} from '../constants';
 import {IMutableGeometry} from '../Geometry';
-import Random from '../Random';
 
 export default class LivingEntity {
     hp: number;
@@ -11,7 +10,7 @@ export default class LivingEntity {
     dy: number;
 
     // This is probably over complicated... getters and setters
-    // operating on another level of getters and setters is probably 
+    // operating on another level of getters and setters is probably
     // the wrong way to go about this.
     get x(): number {
         return this.geo.x;
@@ -50,8 +49,11 @@ export default class LivingEntity {
     }
 
     assignTeamColor(): number | void {
-        const color                             = TEAM_COLOR[this.team];
-        this.geo.graphics.currentPath.lineColor = color;
+        const color = TEAM_COLOR[this.team];
+
+        // https://www.html5gamedevs.com/topic/42958-updating-line-style-in-pixi-v5/?do=findComment&comment=254411
+        this.geo.graphics.geometry.graphicsData[0].lineStyle.color = color;
+        this.geo.graphics.geometry.invalidate();
 
         return color;
     }
@@ -59,7 +61,7 @@ export default class LivingEntity {
     renderHit(): void {
         if (this.hitTime > 0) {
             this.hitTime--;
-            this.geo.graphics.alpha = Random.float(0, 1);
+            this.geo.graphics.alpha = (this.hitTime % 3) * 0.33;
         } else if (this.hitTime === 0) {
             this.hitTime            = -1;
             this.geo.graphics.alpha = 1;

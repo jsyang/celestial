@@ -80,7 +80,7 @@ function init(): void {
     if (typeof renderer === 'undefined') {
         onResize();
         scene.addChild(stage);
-        renderer = new PIXI.WebGLRenderer(width, height);
+        renderer = new PIXI.Renderer({width, height});
         document.body.appendChild(renderer.view);
 
         if (getIsMobile()) {

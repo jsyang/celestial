@@ -226,7 +226,10 @@ export default class Freighter extends LivingEntity {
     }
 
     assignTeamColor() {
-        this.getChildAt(1).currentPath.lineColor = TEAM_COLOR[this.team];
+        const flagLine                                    = this.getChildAt(1);
+        // https://www.html5gamedevs.com/topic/42958-updating-line-style-in-pixi-v5/?do=findComment&comment=254411
+        flagLine.geometry.graphicsData[0].lineStyle.color = TEAM_COLOR[this.team];
+        flagLine.geometry.invalidate();
     }
 
     loadSupply = () => {

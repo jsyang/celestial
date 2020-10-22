@@ -89,18 +89,20 @@ function create({onClickNewGame, onClickLoadGame}) {
     dx = 40;
     dy = 60;
     'celestial'.split('').forEach(letter => {
-        title.drawPolygon(
-            transformPolygon(LETTERS[letter], dx, dy, scaleX, scaleY)
-        );
+        const letterPoly       = new PIXI.Polygon(transformPolygon(LETTERS[letter], dx, dy, scaleX, scaleY));
+        letterPoly.closeStroke = false;
+
+        title.drawPolygon(letterPoly);
         dx += 30;
     });
 
     dx = 90;
     dy = 100;
     'combat'.split('').forEach(letter => {
-        title.drawPolygon(
-            transformPolygon(LETTERS[letter], dx, dy, scaleX, scaleY)
-        );
+        const letterPoly       = new PIXI.Polygon(transformPolygon(LETTERS[letter], dx, dy, scaleX, scaleY));
+        letterPoly.closeStroke = false;
+
+        title.drawPolygon(letterPoly);
         dx += 30;
     });
 
