@@ -7,9 +7,9 @@ export function setClickable(pixiElement: any, onClick: Function) {
 
     pixiElement.on('pointerdown', () => wasPointerDown = true);
     pixiElement.on('pointerupoutside', () => wasPointerDown = false);
-    pixiElement.on('pointerup', () => {
+    pixiElement.on('pointerup', e => {
         if (wasPointerDown) {
-            onClick();
+            onClick(e);
         }
 
         wasPointerDown = false;

@@ -41,10 +41,17 @@ function update(): void {
         targetReticle.beginFill(0, 0);
         targetReticle.lineStyle(1, isShimmering % 6 ? 0xff0000 : 0x00ffff, 1);
 
-        targetReticle.drawPolygon(transformPolygon(TARGET_RETICLE[0], -reticleWidth2, -reticleHeight2));
-        targetReticle.drawPolygon(transformPolygon(TARGET_RETICLE[1], reticleWidth2, -reticleHeight2));
-        targetReticle.drawPolygon(transformPolygon(TARGET_RETICLE[2], reticleWidth2, reticleHeight2));
-        targetReticle.drawPolygon(transformPolygon(TARGET_RETICLE[3], -reticleWidth2, reticleHeight2));
+        [
+            transformPolygon(TARGET_RETICLE[0], -reticleWidth2, -reticleHeight2), // TOP LEFT
+            transformPolygon(TARGET_RETICLE[1], reticleWidth2, -reticleHeight2), // TOP RIGHT
+            transformPolygon(TARGET_RETICLE[2], reticleWidth2, reticleHeight2), // BOTTOM RIGHT
+            transformPolygon(TARGET_RETICLE[3], -reticleWidth2, reticleHeight2) // BOTTOM LEFT
+        ].forEach(p => {
+            const poly       = new PIXI.Polygon(p);
+            poly.closeStroke = false;
+            targetReticle.drawPolygon(poly);
+        });
+
         targetReticle.endFill();
 
         isShimmering++;
