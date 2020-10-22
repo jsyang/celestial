@@ -144,6 +144,11 @@ const getTurretRotation = (spaceport, x, y) => {
     // direction of shot is independent of direction of shooter
     const {attackTarget} = spaceport;
 
+    // Don't change rotation if target is dead
+    if (attackTarget.hp <= 0) {
+        return spaceport.rotation;
+    }
+
     const targetDx = attackTarget.dx || 0;
     const targetDy = attackTarget.dy || 0;
 

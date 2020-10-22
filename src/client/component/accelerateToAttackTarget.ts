@@ -11,7 +11,7 @@ function process(entity) {
     } else {
         const {attackTarget} = entity;
 
-        if (attackTarget) {
+        if (attackTarget && attackTarget.hp > 0) {
             const {x, y} = attackTarget;
 
             if (entity.x > x) {

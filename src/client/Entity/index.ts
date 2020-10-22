@@ -130,6 +130,16 @@ const isHPAbove0 = (e: any) => e.hp > 0;
 function prepareNext() {
     gridUnits.prepareNext();
     projectiles = projectiles.filter(isHPAbove0);
+
+    // We need to destroy this instance as well to prevent memory leaks
+    // https://github.com/pixijs/pixi.js/pull/5544/files
+    pixiGraphicsToBeDestroyed.forEach(pGraphics => {
+        // Throws an error if not
+        if (pGraphics._geometry) {
+            pGraphics.destroy();
+        }
+    });
+    pixiGraphicsToBeDestroyed = [];
 }
 
 function commit(entity) {
@@ -167,6 +177,13 @@ function getNearestUnits(entity) {
     return gridUnits.get1CellRadiusAroundEntity(entity);
 }
 
+let pixiGraphicsToBeDestroyed: PIXI.Graphics[] = [];
+
+function destroy(entity: any) {
+    DB.remove(entity);
+    pixiGraphicsToBeDestroyed.push(entity.geo.graphics);
+}
+
 export default {
     resetCreationId,
     create,
@@ -180,7 +197,7 @@ export default {
     getNearestUnits,
 
     clearAll,
+    destroy,
     getAll:    DB.getAll,
-    destroy:   DB.remove,
     getByType: DB.getByType
 };

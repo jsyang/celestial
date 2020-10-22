@@ -138,6 +138,11 @@ const getTurretRotation = (freighter, x, y) => {
     let {attackTarget} = freighter;
     attackTarget       = attackTarget || {};
 
+    // Don't change rotation if target is dead
+    if (attackTarget.hp <= 0) {
+        return freighter.rotation;
+    }
+
     const targetDx = attackTarget.dx || 0;
     const targetDy = attackTarget.dy || 0;
 
