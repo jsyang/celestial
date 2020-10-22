@@ -115,7 +115,10 @@ export const removeChildFromHUD = child => {
 export const addChild    = child => stage.addChild(child);
 export const removeChild = child => stage.removeChild(child);
 
-export const render = () => renderer.render(scene);
+export const render = () => {
+    renderer.renderTexture.clear();
+    renderer.render(scene);
+}
 
 const RENDER_CULLING_MARGIN = 200;
 
