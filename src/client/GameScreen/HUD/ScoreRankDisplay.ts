@@ -37,6 +37,7 @@ function update(): void {
         updateTime--;
 
     } else {
+        scoreRankDisplay.clear();
         const {rank, score, nextRank} = Score.getScoreRank();
         rankText.text                 = rank.name;
 

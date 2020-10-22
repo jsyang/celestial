@@ -39,6 +39,8 @@ function update(): void {
         const {dx, dy} = controlledEntity;
 
         if (!isNaN(dx + dy)) {
+            speedIndicator.clear();
+
             let color = 0x00ff00;
 
             const speed2        = dx * dx + dy * dy;

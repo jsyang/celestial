@@ -16,7 +16,7 @@ function createStar({color, size, x, y}: ICreateStarParams): PIXI.Graphics {
 
     g.beginFill(color);
     g.drawRect(0, 0, size, size);
-    g.lineWidth = size;
+    g.lineStyle(size);
     g.endFill();
 
     g.x = x;

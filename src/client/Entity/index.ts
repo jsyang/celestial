@@ -40,8 +40,8 @@ import LaserBolt from './LaserBolt';
 import HomingMissile from './HomingMissile';
 import ClusterRocket from './ClusterRocket';
 
-let projectiles         = [];
-const TYPES_PROJECTILES = {
+let projectiles: LivingEntity[] = [];
+const TYPES_PROJECTILES         = {
     CannonShot,
     HeavyCannonShot,
     LaserBolt,
@@ -53,6 +53,7 @@ const TYPES_PROJECTILES = {
 import Planet from './Planet';
 import Star from './Star';
 import {getDistSquared} from '../entityHelpers';
+import LivingEntity from './LivingEntity';
 
 let bodies: any    = [];
 const TYPES_BODIES = {
@@ -129,7 +130,16 @@ const isHPAbove0 = (e: any) => e.hp > 0;
 
 function prepareNext() {
     gridUnits.prepareNext();
-    projectiles = projectiles.filter(isHPAbove0);
+
+    // Ensure we destroy the graphics for projectiles too
+    projectiles = projectiles.filter(p => {
+        if (isHPAbove0(p)) {
+            return true;
+        } else {
+            p.geo.graphics.destroy();
+            return false;
+        }
+    });
 
     // We need to destroy this instance as well to prevent memory leaks
     // https://github.com/pixijs/pixi.js/pull/5544/files

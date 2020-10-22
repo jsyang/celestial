@@ -56,7 +56,8 @@ function create({width = 640, height = 480}) {
     onResize();
 
     return {
-        id: Date.now().toString(16),
+        id:      Date.now().toString(16),
+        destroy: () => modal.destroy(),
         modal,
         onResize,
 
@@ -70,8 +71,9 @@ function create({width = 640, height = 480}) {
     };
 }
 
-function destroy({modal}) {
-    Graphics.removeChildFromHUD(modal);
+function destroy(options) {
+    Graphics.removeChildFromHUD(options.modal);
+    options.destroy();
 }
 
 export default {
