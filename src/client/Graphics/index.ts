@@ -122,12 +122,18 @@ export const render = () => {
 
 const RENDER_CULLING_MARGIN = 200;
 
-export const isOutsideViewport = ({x, y}) => (
-    x < -stage.x - RENDER_CULLING_MARGIN ||
-    x > -stage.x + width + RENDER_CULLING_MARGIN ||
-    y < -stage.y - RENDER_CULLING_MARGIN ||
-    y > -stage.y + height + RENDER_CULLING_MARGIN
-);
+export const isOutsideViewport = entity => {
+    if (!entity || entity.hp <= 0) {
+        return true;
+    } else {
+        return (
+            entity.x < -stage.x - RENDER_CULLING_MARGIN ||
+            entity.x > -stage.x + width + RENDER_CULLING_MARGIN ||
+            entity.y < -stage.y - RENDER_CULLING_MARGIN ||
+            entity.y > -stage.y + height + RENDER_CULLING_MARGIN
+        );
+    }
+}
 
 export const centerOn = (point: IPoint) => {
     if (point) {
